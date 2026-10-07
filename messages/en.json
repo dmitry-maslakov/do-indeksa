@@ -128,7 +128,6 @@
     "score": "of {max, number} · {correct, number} of {total, number} correct",
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Solve again",
-    "practice": "Practice: {topic}",
     "strip": "{score, number} of {max, number} points",
     "task": "Task",
     "points": "Points",
@@ -143,7 +142,8 @@
     "timeTitle": "Where the time went",
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "Over the norm: #{numbers}.",
-    "inNorm": "Every task within the norm."
+    "inNorm": "Every task within the norm.",
+    "similar": "Like the mistakes · {count, number}"
   },
   "Stats": {
     "title": "Stats",
@@ -171,7 +171,8 @@
     "recent": "Recent tests",
     "all": "all →",
     "noRuns": "No finished tests yet.",
-    "score": "{score, number} points"
+    "score": "{score, number} points",
+    "repeated": "Mistakes repeat on #{numbers}."
   },
   "Home": {
     "continue": "Continue",

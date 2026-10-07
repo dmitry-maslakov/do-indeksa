@@ -8,11 +8,15 @@ interface RecentRun {
   id: string;
   title: string;
   segments: Segment[];
+  misses: number[];
   score: number;
 }
 
 export function RecentRuns({ runs }: { runs: RecentRun[] }) {
   const t = useTranslations("Stats");
+  const repeated = [...new Set(runs.flatMap((r) => r.misses))]
+    .filter((n) => runs.filter((r) => r.misses.includes(n)).length > 1)
+    .sort((a, b) => a - b);
 
   return (
     <Card className="gap-3.5">
@@ -45,6 +49,11 @@ export function RecentRuns({ runs }: { runs: RecentRun[] }) {
             </li>
           ))}
         </ul>
+      )}
+      {repeated.length > 0 && (
+        <p className="text-[13px] text-subtle">
+          {t("repeated", { numbers: repeated.join(", ") })}
+        </p>
       )}
     </Card>
   );
