@@ -29,5 +29,25 @@
     "signIn": "Войти",
     "signOut": "Выйти",
     "account": "Аккаунт"
+  },
+  "Bank": {
+    "title": "Банк задач",
+    "search": "Поиск по условию",
+    "number": "Номер",
+    "level": "Сложность",
+    "topic": "Тема",
+    "any": "Любой",
+    "allTopics": "Все темы",
+    "levels": "{level, select, easy {Лёгкие} medium {Средние} hard {Сложные} other {}}",
+    "reset": "Сбросить фильтры",
+    "count": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}}",
+    "sort": "Порядок",
+    "sortNumber": "По номеру",
+    "sortEasy": "Сначала лёгкие",
+    "sortHard": "Сначала сложные",
+    "empty": "Ничего не нашлось",
+    "emptyHint": "Сними часть фильтров или измени запрос",
+    "showAll": "Показать все задачи",
+    "meta": "№{number, number} · {level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}"
   }
 }
