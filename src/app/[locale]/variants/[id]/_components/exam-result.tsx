@@ -19,7 +19,8 @@ interface ExamResultProps {
 
 export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
   const t = useTranslations("Exam");
-  const score = result.points.reduce((sum, p) => sum + p, 0);
+  const score =
+    Math.round(result.points.reduce((sum, p) => sum + p, 0) * 10) / 10;
   const max = tasks.reduce((sum, task) => sum + task.points, 0);
   const segments = result.parts.map((parts, i) =>
     result.answered[i] ? segmentOf(parts) : "none",
@@ -43,7 +44,7 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
           <li key={task.id} className="flex items-center gap-3 py-3">
             <span className="w-8 font-semibold">{task.number}</span>
             <span className="min-w-0 flex-1 truncate">{task.topicName}</span>
-            {segments[i] === "done" ? (
+            {(result.points[i] ?? 0) > 0 ? (
               <Badge variant="success" size="sm">
                 +{result.points[i]}
               </Badge>

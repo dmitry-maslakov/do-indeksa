@@ -5,6 +5,7 @@ import { getTask } from "@/content/tasks";
 import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, runs } from "@/db/schema";
 import { isEquivalent } from "@/lib/math";
+import { creditOf } from "@/lib/review";
 import { getSession } from "./auth";
 import { db } from "./db";
 
@@ -54,7 +55,7 @@ export async function finishRun(
   const result = {
     answered: graded.map((g) => g.answers.some(Boolean)),
     parts: graded.map((g) => g.parts),
-    points: graded.map((g) => (g.correct ? pointsOf(g.taskId) : 0)),
+    points: graded.map((g) => creditOf(g.parts, pointsOf(g.taskId))),
   };
 
   const session = await getSession();
