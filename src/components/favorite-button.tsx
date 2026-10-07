@@ -39,12 +39,13 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
       onClick={toggle}
       disabled={isPending}
       aria-pressed={shown}
-      className="bg-transparent"
+      aria-label={shown ? t("saved") : t("save")}
+      className="-mr-2 bg-transparent px-2 sm:px-4"
     >
       <StarIcon
         className={cn("text-subtle", shown && "fill-overtime text-overtime")}
       />
-      {shown ? t("saved") : t("save")}
+      <span className="hidden sm:inline">{shown ? t("saved") : t("save")}</span>
     </Button>
   );
 }
