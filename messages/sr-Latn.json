@@ -56,12 +56,10 @@
     "favorite": "Omiljeno"
   },
   "Solve": {
-    "back": "← Lista",
     "inTopic": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} u oblasti",
     "hint": "Nagoveštaj {number, number}",
     "answer": "Rezultat",
     "solution": "Rešenje",
-    "next": "Sledeći zadatak →",
     "check": "Proveri",
     "correct": "Tačno",
     "wrong": "Nije tačno",
@@ -72,7 +70,13 @@
     "expand": "Proširi listu",
     "collapse": "Skupi listu",
     "topic": "Tema",
-    "tally": "tačno {right, number} · greške {wrong, number}"
+    "tally": "{right, number} tačno · {wrong, plural, one {# greška} few {# greške} other {# grešaka}}",
+    "list": "Lista",
+    "solve": "Reši",
+    "doneOf": "{done, number} od {total, number}",
+    "solvedMark": "rešen",
+    "wrongMark": "greška",
+    "skip": "Preskoči →"
   },
   "Variants": {
     "title": "Probni testovi",

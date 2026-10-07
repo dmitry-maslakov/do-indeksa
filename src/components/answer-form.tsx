@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { type CheckResult, checkAnswer } from "@/server/answers";
 import { AnswerField, type AnswerState } from "./answer-field";
 import { useHints } from "./hints";
@@ -10,9 +11,10 @@ import { useHints } from "./hints";
 interface AnswerFormProps {
   taskId: string;
   labels: (string | null)[];
+  skip?: string;
 }
 
-export function AnswerForm({ taskId, labels }: AnswerFormProps) {
+export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
   const t = useTranslations("Solve");
   const [result, action, pending] = useActionState<
     CheckResult | null,
@@ -64,6 +66,14 @@ export function AnswerForm({ taskId, labels }: AnswerFormProps) {
           >
             {result.correct ? t("correct") : t("wrong")}
           </span>
+        )}
+        {skip && (
+          <Link
+            href={skip}
+            className="ml-auto text-[15px] text-subtle hover:text-foreground"
+          >
+            {t("skip")}
+          </Link>
         )}
       </div>
     </form>

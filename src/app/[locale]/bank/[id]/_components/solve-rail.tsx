@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { LinkTabs } from "@/components/link-tabs";
 import { TaskRow } from "@/components/task-row";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -93,13 +94,14 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
 
   return (
     <Card size="sm" className="order-last gap-4 md:order-none">
-      <div className="flex items-center justify-between gap-2 px-1 text-sm">
-        <Link
-          href="/bank"
-          className="font-semibold text-subtle hover:text-foreground"
-        >
-          {t("back")}
-        </Link>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <LinkTabs
+          variant="underline"
+          items={[
+            { href: "/bank", label: t("list"), active: false },
+            { href: `/bank/${current}`, label: t("solve"), active: true },
+          ]}
+        />
         <Button
           size="icon-sm"
           variant="ghost"
@@ -126,8 +128,12 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
         ))}
       </NativeSelect>
       <div className="flex flex-col gap-2 px-1">
-        <div className="flex justify-between gap-2 text-sm text-subtle">
-          <span>{t("inTopic", { count: rail.length })}</span>
+        <div className="flex justify-between gap-2 whitespace-nowrap text-[13px] text-subtle">
+          <span>
+            {session
+              ? t("doneOf", { done: right + wrong, total: rail.length })
+              : t("inTopic", { count: rail.length })}
+          </span>
           {session && <span>{t("tally", { right, wrong })}</span>}
         </div>
         <VariantStrip
@@ -150,7 +156,13 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
             key={s.id}
             task={s}
             active={s.id === current}
-            meta={s.meta}
+            meta={
+              statuses[s.id] === "solved"
+                ? `${s.meta} · ${t("solvedMark")}`
+                : statuses[s.id] === "wrong"
+                  ? `${s.meta} · ${t("wrongMark")}`
+                  : s.meta
+            }
             status={statuses[s.id]}
           />
         ))}
