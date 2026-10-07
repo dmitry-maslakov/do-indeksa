@@ -14,6 +14,9 @@ describe("isEquivalent", () => {
     ["\\sqrt{2}, 4", "4, \\sqrt{2}"],
     ["x=5", "5"],
     ["\\left(0,1,2\\right)", "(0,1,2)"],
+    ["(2,\\infty)\\cup(-\\infty,0)", "(-\\infty,0)\\cup(2,+\\infty)"],
+    ["x\\in(-1,0)\\cup(2,3)", "(-1,0)\\cup(2,3)"],
+    ["[-1,\\frac{6}{2}]", "[-1,3]"],
   ])("accepts %s for %s", (input, expected) => {
     expect(isEquivalent(input, expected)).toBe(true);
   });
@@ -25,6 +28,8 @@ describe("isEquivalent", () => {
     ["4, 4", "4, \\sqrt{2}"],
     ["(2,1,0)", "(0,1,2)"],
     ["120", "\\frac{2\\pi}{3}"],
+    ["(-\\infty,0]\\cup(2,\\infty)", "(-\\infty,0)\\cup(2,\\infty)"],
+    ["(-1,3)", "[-1,3]"],
     ["\\frac{1", "1"],
     ["", "1"],
   ])("rejects %s for %s", (input, expected) => {
