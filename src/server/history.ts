@@ -46,7 +46,7 @@ export const getAttempts = cache(async (userId: string) =>
     .orderBy(desc(attempts.createdAt)),
 );
 
-export const getRecentRuns = cache(async (userId: string) =>
+export const getRuns = cache(async (userId: string) =>
   db
     .select({
       id: runs.id,
@@ -56,10 +56,5 @@ export const getRecentRuns = cache(async (userId: string) =>
     })
     .from(runs)
     .where(eq(runs.userId, userId))
-    .orderBy(desc(runs.finishedAt))
-    .limit(5),
-);
-
-export const getRunCount = cache(async (userId: string) =>
-  db.$count(runs, eq(runs.userId, userId)),
+    .orderBy(desc(runs.finishedAt)),
 );

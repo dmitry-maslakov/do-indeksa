@@ -1,3 +1,4 @@
+import "server-only";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { ExamVariant } from "@/content/variants";
 

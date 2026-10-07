@@ -83,7 +83,15 @@
     "play": "Играть",
     "random": "Случайный вариант",
     "randomText": "{tasks, number} задач, по одной на каждую позицию, как на экзамене.",
-    "compose": "Собрать"
+    "compose": "Собрать",
+    "history": "История",
+    "historyGuest": "Войди, чтобы видеть историю своих вариантов.",
+    "historyEmpty": "Пока нет завершённых вариантов.",
+    "recent": "Недавно",
+    "inProgress": "{done, number} из {total, number}",
+    "notSolved": "не решал",
+    "continue": "Продолжить",
+    "review": "Разбор"
   },
   "Exam": {
     "timeLeft": "Осталось",

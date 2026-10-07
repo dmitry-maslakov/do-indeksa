@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { variantTitle } from "@/components/variant-title";
+import { variantTitle } from "@/content/variant-title";
 import { getVariant, minutesOf, tasksFor } from "@/content/variants";
 import { ExamRunner } from "./_components/exam-runner";
 
