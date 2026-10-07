@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SignInCard } from "@/components/sign-in-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getTask } from "@/content/tasks";
 import { variantTitle } from "@/content/variant-title";
 import { getVariant, tasksFor } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
@@ -9,6 +10,7 @@ import { review } from "@/lib/review";
 import { getSession } from "@/server/auth";
 import { getRun } from "@/server/history";
 import { LostPoints } from "./_components/lost-points";
+import { PracticeLinks } from "./_components/practice-links";
 import { ReviewRows } from "./_components/review-rows";
 import { ReviewSummary } from "./_components/review-summary";
 import { TimeSpent } from "./_components/time-spent";
@@ -28,7 +30,9 @@ export default async function ReviewPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className="py-6 font-bold text-3xl">{t("title")}</h1>
+      <h1 className={found ? "sr-only" : "py-6 font-bold text-3xl"}>
+        {t("title")}
+      </h1>
       {!session ? (
         <SignInCard text={t("guest")} />
       ) : !found ? (
@@ -58,7 +62,7 @@ async function RunReview({
   const variant = getVariant(found.run.variantId);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pt-2.5">
       <ReviewSummary
         review={result}
         variantId={found.run.variantId}
@@ -66,7 +70,20 @@ async function RunReview({
         finishedAt={found.run.finishedAt}
       />
       <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-        <ReviewRows review={result} tasks={tasks} />
+        <ReviewRows
+          review={result}
+          tasks={tasks}
+          answers={Object.fromEntries(
+            found.run.taskIds.map((id) => [
+              id,
+              {
+                given:
+                  found.attempts.find((a) => a.taskId === id)?.answers ?? [],
+                key: getTask(id)?.check.map((c) => c.expected) ?? [],
+              },
+            ]),
+          )}
+        />
         <div className="flex flex-col gap-5">
           <LostPoints
             review={result}
@@ -75,6 +92,12 @@ async function RunReview({
             )}
           />
           <TimeSpent review={result} />
+          <PracticeLinks
+            topics={result.lost.flatMap((l) => {
+              const task = tasks.find((x) => x.topic === l.topic);
+              return task ? { id: task.topic, name: task.topicName } : [];
+            })}
+          />
         </div>
       </div>
     </div>

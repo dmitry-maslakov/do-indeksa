@@ -4,14 +4,16 @@ import { MathHtml } from "@/components/math-html";
 import { Reveal } from "@/components/reveal";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
+import { latexToHtml } from "@/lib/latex";
 import type { Review, ReviewRow } from "@/lib/review";
 
 interface ReviewRowsProps {
   review: Review;
   tasks: ExamTask[];
+  answers: Record<string, { given: string[]; key: string[] }>;
 }
 
-export function ReviewRows({ review, tasks }: ReviewRowsProps) {
+export function ReviewRows({ review, tasks, answers }: ReviewRowsProps) {
   const t = useTranslations("Review");
   const missed = review.rows.filter((r) => r.earned < r.points);
   const rest = review.rows.length - missed.length;
@@ -27,7 +29,14 @@ export function ReviewRows({ review, tasks }: ReviewRowsProps) {
       <ul className="divide-y divide-subtle/15 border-subtle/15 border-t">
         {missed.map((row) => {
           const task = tasks.find((x) => x.id === row.taskId);
-          return task ? <Row key={row.taskId} row={row} task={task} /> : null;
+          return task ? (
+            <Row
+              key={row.taskId}
+              row={row}
+              task={task}
+              answer={answers[row.taskId]}
+            />
+          ) : null;
         })}
       </ul>
       {rest > 0 && (
@@ -39,16 +48,17 @@ export function ReviewRows({ review, tasks }: ReviewRowsProps) {
   );
 }
 
-function Row({ row, task }: { row: ReviewRow; task: ExamTask }) {
+interface RowProps {
+  row: ReviewRow;
+  task: ExamTask;
+  answer?: { given: string[]; key: string[] };
+}
+
+function Row({ row, task, answer }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
   const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
-  const status =
-    row.segment === "partial"
-      ? t("partial")
-      : row.attempt
-        ? t("wrong")
-        : t("skipped");
+  const single = answer?.key.length === 1 && row.attempt;
 
   return (
     <li>
@@ -69,8 +79,26 @@ function Row({ row, task }: { row: ReviewRow; task: ExamTask }) {
               html={task.statement}
               className="truncate [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline"
             />
-            <span className="text-subtle text-xs">
-              {task.topicName} · {status}
+            <span className="text-subtle text-xs [&_.katex]:text-[1em]">
+              {task.topicName} ·{" "}
+              {!row.attempt ? (
+                t("skipped")
+              ) : single ? (
+                <>
+                  {t("gave")}{" "}
+                  <MathHtml
+                    as="span"
+                    html={latexToHtml(answer.given[0] ?? "")}
+                  />
+                  , {t("key")}{" "}
+                  <MathHtml as="span" html={latexToHtml(answer.key[0] ?? "")} />
+                </>
+              ) : (
+                t("partsRight", {
+                  right: row.attempt.parts.filter(Boolean).length,
+                  total: row.attempt.parts.length,
+                })
+              )}
             </span>
           </span>
           <span

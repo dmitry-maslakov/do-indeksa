@@ -128,7 +128,7 @@
     "guest": "Войди, чтобы видеть разбор своих вариантов: баллы, время и где теряешь баллы.",
     "empty": "Пока нет завершённых вариантов. Реши один, и разбор появится здесь.",
     "toVariants": "К вариантам",
-    "crumb": "← {title} · завершён {date}",
+    "crumb": "← Варианты · {title} · решён {date}",
     "score": "из {max, number} · верно {correct, number} из {total, number}",
     "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
     "retry": "Решить заново",
@@ -137,8 +137,6 @@
     "points": "Баллы",
     "time": "Время",
     "rest": "{count, plural, one {Остальная # задача решена верно} few {Остальные # задачи решены верно} other {Остальные # задач решены верно}}",
-    "partial": "частично верно",
-    "wrong": "неверно",
     "skipped": "без ответа",
     "minutes": "{minutes, number} мин",
     "lost": "Где потерял баллы",
@@ -147,7 +145,11 @@
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "Дольше нормы: №{numbers}.",
     "inNorm": "Все задачи уложились в норму.",
-    "similar": "Похожие на ошибки · {count, number}"
+    "similar": "Похожие на ошибки · {count, number}",
+    "gave": "ответил",
+    "key": "верно",
+    "partsRight": "верно {right, number} из {total, number} пунктов",
+    "practice": "Порешать: {topic}"
   },
   "Stats": {
     "title": "Статистика",
