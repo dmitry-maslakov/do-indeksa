@@ -83,7 +83,7 @@
     "strip": "Вариант из {count, number} задач",
     "daily": "Вариант дня",
     "dailyOn": "Вариант дня · {date}",
-    "dailyMeta": "{tasks, number} задач, каждый день новый",
+    "dailyMeta": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {minutes, number} мин",
     "play": "Играть",
     "random": "Случайный вариант",
     "history": "История",
@@ -199,7 +199,11 @@
     "timeEmpty": "Реши первый вариант, и здесь появится, на каких номерах уходит больше всего времени.",
     "startTest": "Выбрать вариант",
     "mistakesGuest": "Войди, и ошибки будут сохраняться, чтобы к ним вернуться.",
-    "byNumberHint": "Клик — все задачи этого номера"
+    "byNumberHint": "Клик — все задачи этого номера",
+    "progressLeft": "{done, number} из {total, number} · осталось {minutes, number} мин",
+    "next": "Дальше — №{number, number}, {topic}",
+    "attemptsShort": "{count, plural, one {# попытка} few {# попытки} other {# попыток}}",
+    "moreTopics": "ещё {count, number} →"
   },
   "Compose": {
     "title": "Собрать свой",

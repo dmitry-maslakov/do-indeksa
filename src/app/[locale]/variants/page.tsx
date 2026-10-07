@@ -5,10 +5,16 @@ import { SignInCard } from "@/components/sign-in-card";
 import { Card } from "@/components/ui/card";
 import { VariantRow } from "@/components/variant-row";
 import { VariantStrip } from "@/components/variant-strip";
-import { dailySize, positions } from "@/content/exam";
+import { positions } from "@/content/exam";
 import { type RunSummary, summarizeRuns } from "@/content/runs";
 import { topicName } from "@/content/topics";
-import { curatedVariants, officialVariants } from "@/content/variants";
+import {
+  belgradeDate,
+  curatedVariants,
+  getVariant,
+  minutesOf,
+  officialVariants,
+} from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { getSession } from "@/server/auth";
 import { getAttempts, getRuns } from "@/server/history";
@@ -21,6 +27,8 @@ type Tab = (typeof tabs)[number];
 export default async function VariantsPage({
   searchParams,
 }: PageProps<"/[locale]/variants">) {
+  const daily = getVariant(`daily-${belgradeDate()}`);
+  if (!daily) throw new Error("no daily test");
   const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
@@ -60,7 +68,10 @@ export default async function VariantsPage({
           )}
         </div>
         <aside className="order-first flex flex-col gap-5 md:order-none">
-          <DailyBanner tasks={dailySize} />
+          <DailyBanner
+            tasks={daily.taskIds.length}
+            minutes={minutesOf(daily)}
+          />
           <ComposeCard
             minutes={minutes}
             topics={positions.map((p) => ({

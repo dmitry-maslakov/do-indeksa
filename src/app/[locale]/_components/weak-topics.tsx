@@ -40,7 +40,9 @@ export function WeakTopics({
               </span>
               <span className="shrink-0">
                 <b className="font-semibold">{topic.pct}%</b>{" "}
-                <span className="text-subtle">· {topic.total}</span>
+                <span className="text-subtle">
+                  · {t("attemptsShort", { count: topic.total })}
+                </span>
               </span>
             </div>
             <ProgressBar value={topic.pct / 100} />

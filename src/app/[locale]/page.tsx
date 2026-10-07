@@ -1,17 +1,14 @@
 import { DailyBanner } from "@/components/daily-banner";
 import { statAttempts } from "@/content/attempts";
-import { dailySize, positions } from "@/content/exam";
+import { positions } from "@/content/exam";
 import {
+  belgradeDate,
   curatedVariants,
+  getVariant,
   minutesOf,
   officialVariants,
 } from "@/content/variants";
-import {
-  meanTimeByNumber,
-  mistakesThisWeek,
-  streak,
-  weakest,
-} from "@/lib/stats";
+import { meanTimeByNumber, mistakesThisWeek, weakest } from "@/lib/stats";
 import { getSession } from "@/server/auth";
 import { getAttempts } from "@/server/history";
 import { ContinueCard } from "./_components/continue-card";
@@ -21,6 +18,8 @@ import { TimeCard } from "./_components/time-card";
 import { WeakTopics } from "./_components/weak-topics";
 
 export default async function HomePage() {
+  const daily = getVariant(`daily-${belgradeDate()}`);
+  if (!daily) throw new Error("no daily test");
   const session = await getSession();
   const attempts = session
     ? statAttempts(await getAttempts(session.user.id))
@@ -71,7 +70,7 @@ export default async function HomePage() {
         </div>
       </div>
       <div className="contents md:flex md:flex-col md:gap-6">
-        <DailyBanner tasks={dailySize} />
+        <DailyBanner tasks={daily.taskIds.length} minutes={minutesOf(daily)} />
         <WeakTopics
           topics={weakest(
             attempts,
@@ -82,7 +81,6 @@ export default async function HomePage() {
         />
         <MistakesCard
           taskIds={mistakesThisWeek(attempts, now)}
-          streak={streak(attempts, now)}
           signedIn={signedIn}
         />
       </div>

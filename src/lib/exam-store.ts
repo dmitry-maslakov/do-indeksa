@@ -2,9 +2,17 @@ import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export interface ExamRun {
+interface RunMeta {
+  title: string;
+  minutes: number;
+  timed: boolean;
+  tasks: { number: number; topic: string; parts: number }[];
+}
+
+export interface ExamRun extends Partial<Omit<RunMeta, "tasks" | "timed">> {
   runId: string;
   timed: boolean;
+  tasks?: { number: number; topic: string }[];
   startedAt: number;
   enteredAt: number;
   current: number;
@@ -14,7 +22,7 @@ export interface ExamRun {
 
 interface ExamState {
   runs: Record<string, ExamRun>;
-  start: (variantId: string, parts: number[], timed: boolean) => void;
+  start: (variantId: string, meta: RunMeta) => void;
   answer: (variantId: string, part: number, value: string) => void;
   go: (variantId: string, index: number) => void;
   clear: (variantId: string) => void;
@@ -31,18 +39,23 @@ export const useExamStore = create<ExamState>()(
 
       return {
         runs: {},
-        start: (variantId, parts, timed) =>
+        start: (variantId, { title, minutes, timed, tasks }) =>
           set((s) => {
             if (s.runs[variantId]) return s;
             const now = Date.now();
             const run: ExamRun = {
               runId: crypto.randomUUID(),
+              title,
+              minutes,
               timed,
+              tasks: tasks.map(({ number, topic }) => ({ number, topic })),
               startedAt: now,
               enteredAt: now,
               current: 0,
-              answers: parts.map((n) => Array.from({ length: n }, () => "")),
-              spent: parts.map(() => 0),
+              answers: tasks.map((t) =>
+                Array.from({ length: t.parts }, () => ""),
+              ),
+              spent: tasks.map(() => 0),
             };
             return { runs: { ...s.runs, [variantId]: run } };
           }),
