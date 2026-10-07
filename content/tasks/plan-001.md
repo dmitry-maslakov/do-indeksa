@@ -1,0 +1,28 @@
+---
+topic: plane-geometry
+difficulty: 3
+source: Do indeksa
+answer: $d_1=24$, $d_2=10$, $P=120$, $r=\frac{60}{13}$
+check:
+- label: P
+  expected: '120'
+- label: r
+  expected: \frac{60}{13}
+hints:
+- |
+  Dijagonale romba su normalne i polove se, pa Pitagorina teorema na polovinama dijagonala vezuje $d_1$ i $d_2$ sa stranicom. Površina se izražava preko dijagonala, a upisana kružnica ima prečnik jednak visini romba.
+- |
+  Kreni od $d_1^2+d_2^2=4a^2=4\cdot 13^2=676$, a uslov $d_1-d_2=14$ kvadriraj: $d_1^2-2d_1d_2+d_2^2=196$ — oduzimanjem dobijaš $d_1d_2$. Zatim iz $(d_1+d_2)^2=d_1^2+d_2^2+2d_1d_2$ nalaziš zbir dijagonala, pa rešavaš sistem. Za poluprečnik iskoristi $h=\dfrac{P}{a}$ i $r=\dfrac{h}{2}$.
+solution: |
+  Dijagonale romba su normalne i polove se, pa je $d_1^2+d_2^2=4a^2=4\cdot 13^2=676$.
+
+  Iz $d_1-d_2=14$ kvadriranjem: $d_1^2-2d_1d_2+d_2^2=196$, odakle $d_1d_2=\dfrac{676-196}{2}=240$. Tada
+
+  $$(d_1+d_2)^2=d_1^2+d_2^2+2d_1d_2=676+480=1156\;\Rightarrow\;d_1+d_2=34.$$
+
+  Iz sistema $d_1-d_2=14$, $d_1+d_2=34$: $d_1=24$, $d_2=10$.
+
+  Površina $P=\dfrac{d_1d_2}{2}=120$. Visina romba $h=\dfrac{P}{a}=\dfrac{120}{13}$; kružnica upisana u romb ima prečnik jednak visini, pa je $r=\dfrac{h}{2}=\dfrac{60}{13}$.
+---
+
+Razlika dijagonala romba je $14$, a stranica je $13$. Naći dijagonale, površinu i poluprečnik upisane kružnice.
