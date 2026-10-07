@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { type ExamOption, ExamSwitcher } from "./exam-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { NavLinks } from "./nav-links";
+import { StreakBadge } from "./streak-badge";
 import { UserMenu } from "./user-menu";
 
 const exams: ExamOption[] = allExams.map((e) => ({
@@ -26,6 +27,7 @@ export function TopNav() {
       <ExamSwitcher exams={exams} current="ftn-p1" />
       <NavLinks />
       <div className="ml-auto flex items-center gap-2 md:gap-3">
+        <StreakBadge />
         <LocaleSwitcher />
         <UserMenu />
       </div>
