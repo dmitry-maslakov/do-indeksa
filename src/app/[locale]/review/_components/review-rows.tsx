@@ -5,22 +5,27 @@ import { Reveal } from "@/components/reveal";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
 import { latexToHtml } from "@/lib/latex";
-import type { Review, ReviewRow } from "@/lib/review";
+import type { Review, ReviewAttempt, ReviewRow } from "@/lib/review";
+
+type Attempt = ReviewAttempt & { answers: string[] };
 
 interface ReviewRowsProps {
-  review: Review;
+  review: Review<Attempt>;
   tasks: ExamTask[];
-  answers: Record<string, { given: string[]; key: string[] }>;
+  keys: Record<string, string[]>;
 }
 
-export function ReviewRows({ review, tasks, answers }: ReviewRowsProps) {
+const columns =
+  "grid grid-cols-[28px_minmax(0,1fr)_48px] gap-3.5 px-5 md:grid-cols-[28px_minmax(0,1fr)_56px_64px] md:px-6";
+
+export function ReviewRows({ review, tasks, keys }: ReviewRowsProps) {
   const t = useTranslations("Review");
   const missed = review.rows.filter((r) => r.earned < r.points);
   const rest = review.rows.length - missed.length;
 
   return (
     <Card className="gap-0 p-0 py-2 md:p-0 md:py-2">
-      <div className="grid grid-cols-[28px_minmax(0,1fr)_48px] md:grid-cols-[28px_minmax(0,1fr)_56px_64px] gap-3.5 px-5 py-2.5 text-subtle text-xs md:px-6">
+      <div className={cn(columns, "py-2.5 text-subtle text-xs")}>
         <span>№</span>
         <span>{t("task")}</span>
         <span>{t("points")}</span>
@@ -29,14 +34,16 @@ export function ReviewRows({ review, tasks, answers }: ReviewRowsProps) {
       <ul className="divide-y divide-subtle/15 border-subtle/15 border-t">
         {missed.map((row) => {
           const task = tasks.find((x) => x.id === row.taskId);
-          return task ? (
-            <Row
-              key={row.taskId}
-              row={row}
-              task={task}
-              answer={answers[row.taskId]}
-            />
-          ) : null;
+          return (
+            task && (
+              <Row
+                key={row.taskId}
+                row={row}
+                task={task}
+                answerKey={keys[row.taskId] ?? []}
+              />
+            )
+          );
         })}
       </ul>
       {rest > 0 && (
@@ -49,21 +56,25 @@ export function ReviewRows({ review, tasks, answers }: ReviewRowsProps) {
 }
 
 interface RowProps {
-  row: ReviewRow;
+  row: ReviewRow<Attempt>;
   task: ExamTask;
-  answer?: { given: string[]; key: string[] };
+  answerKey: string[];
 }
 
-function Row({ row, task, answer }: RowProps) {
+function Row({ row, task, answerKey }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
   const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
-  const single = answer?.key.length === 1 && row.attempt;
 
   return (
     <li>
       <details className="group/row">
-        <summary className="grid cursor-pointer list-none grid-cols-[28px_minmax(0,1fr)_48px] md:grid-cols-[28px_minmax(0,1fr)_56px_64px] items-center gap-3.5 px-5 py-3.5 text-sm hover:bg-muted/50 md:px-6 [&::-webkit-details-marker]:hidden">
+        <summary
+          className={cn(
+            columns,
+            "cursor-pointer list-none items-center py-3.5 text-sm hover:bg-muted/50 [&::-webkit-details-marker]:hidden",
+          )}
+        >
           <span
             className={cn(
               "flex size-7 items-center justify-center rounded-lg font-semibold text-[13px]",
@@ -81,23 +92,10 @@ function Row({ row, task, answer }: RowProps) {
             />
             <span className="text-subtle text-xs [&_.katex]:text-[1em]">
               {task.topicName} ·{" "}
-              {!row.attempt ? (
-                t("skipped")
-              ) : single ? (
-                <>
-                  {t("gave")}{" "}
-                  <MathHtml
-                    as="span"
-                    html={latexToHtml(answer.given[0] ?? "")}
-                  />
-                  , {t("key")}{" "}
-                  <MathHtml as="span" html={latexToHtml(answer.key[0] ?? "")} />
-                </>
+              {row.attempt ? (
+                <Outcome attempt={row.attempt} answerKey={answerKey} />
               ) : (
-                t("partsRight", {
-                  right: row.attempt.parts.filter(Boolean).length,
-                  total: row.attempt.parts.length,
-                })
+                t("skipped")
               )}
             </span>
           </span>
@@ -124,5 +122,30 @@ function Row({ row, task, answer }: RowProps) {
         </div>
       </details>
     </li>
+  );
+}
+
+function Outcome({
+  attempt,
+  answerKey,
+}: {
+  attempt: Attempt;
+  answerKey: string[];
+}) {
+  const t = useTranslations("Review");
+  const [key] = answerKey;
+
+  if (answerKey.length !== 1 || key === undefined) {
+    return t("partsRight", {
+      right: attempt.parts.filter(Boolean).length,
+      total: attempt.parts.length,
+    });
+  }
+  return (
+    <>
+      {t("gave")}{" "}
+      <MathHtml as="span" html={latexToHtml(attempt.answers[0] ?? "")} />,{" "}
+      {t("key")} <MathHtml as="span" html={latexToHtml(key)} />
+    </>
   );
 }

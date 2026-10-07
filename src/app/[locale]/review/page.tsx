@@ -73,14 +73,10 @@ async function RunReview({
         <ReviewRows
           review={result}
           tasks={tasks}
-          answers={Object.fromEntries(
+          keys={Object.fromEntries(
             found.run.taskIds.map((id) => [
               id,
-              {
-                given:
-                  found.attempts.find((a) => a.taskId === id)?.answers ?? [],
-                key: getTask(id)?.check.map((c) => c.expected) ?? [],
-              },
+              getTask(id)?.check.map((c) => c.expected) ?? [],
             ]),
           )}
         />
