@@ -6,5 +6,19 @@
   "NotFound": {
     "title": "Stranica nije pronađena",
     "home": "Na početnu"
+  },
+  "Nav": {
+    "home": "Početna",
+    "bank": "Banka zadataka",
+    "variants": "Probni testovi",
+    "stats": "Statistika"
+  },
+  "LocaleSwitcher": {
+    "label": "Jezik"
+  },
+  "Locale": {
+    "sr-Latn": "Srpski",
+    "ru": "Русский",
+    "en": "English"
   }
 }

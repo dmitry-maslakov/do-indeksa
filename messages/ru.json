@@ -6,5 +6,19 @@
   "NotFound": {
     "title": "Страница не найдена",
     "home": "На главную"
+  },
+  "Nav": {
+    "home": "Главная",
+    "bank": "Банк задач",
+    "variants": "Варианты",
+    "stats": "Статистика"
+  },
+  "LocaleSwitcher": {
+    "label": "Язык"
+  },
+  "Locale": {
+    "sr-Latn": "Srpski",
+    "ru": "Русский",
+    "en": "English"
   }
 }
