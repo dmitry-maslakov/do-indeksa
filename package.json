@@ -13,10 +13,12 @@
     "commitlint": "commitlint",
     "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
+    "@cortex-js/compute-engine": "^0.148.0",
     "better-auth": "^1.7.7",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
@@ -54,7 +56,8 @@
     "shadcn": "^4.21.3",
     "tailwindcss": "^4",
     "typescript": "^7.0.2",
-    "unified": "^11.0.5"
+    "unified": "^11.0.5",
+    "vitest": "^5.0.3"
   },
   "packageManager": "pnpm@12.9.1",
   "devEngines": {
