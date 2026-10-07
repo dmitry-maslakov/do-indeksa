@@ -198,7 +198,8 @@
     "playDaily": "Play the daily test",
     "timeEmpty": "Finish your first test to see which numbers take the most time.",
     "startTest": "Pick a test",
-    "mistakesGuest": "Sign in to keep your mistakes and come back to them."
+    "mistakesGuest": "Sign in to keep your mistakes and come back to them.",
+    "byNumberHint": "Click for every task of that number"
   },
   "Compose": {
     "title": "Compose your own",

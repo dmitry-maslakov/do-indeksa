@@ -24,6 +24,7 @@ export function EntryCards() {
             </Link>
           ))}
         </div>
+        <span className="text-[13px] text-subtle">{t("byNumberHint")}</span>
       </Card>
       <Card size="sm" className="gap-3.5">
         <h2 className="font-semibold text-lg">{t("byTopic")}</h2>
