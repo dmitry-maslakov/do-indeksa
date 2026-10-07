@@ -9,6 +9,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write",
+    "knip": "knip",
     "commitlint": "commitlint"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "knip": "^6.39.0",
     "tailwindcss": "^4",
     "typescript": "^7.0.2"
   },
