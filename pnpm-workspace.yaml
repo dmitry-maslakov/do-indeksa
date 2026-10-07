@@ -1,0 +1,5 @@
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+blockExoticSubdeps: true
+trustPolicy: no-downgrade
