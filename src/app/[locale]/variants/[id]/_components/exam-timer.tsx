@@ -45,6 +45,14 @@ export function ExamTimer({
         {timed && left < 0 && "+"}
         {clock(Math.abs(left))}
       </span>
+      {timed && left < 0 && (
+        <p
+          role="alert"
+          className="mt-2 rounded-xl bg-overtime-tint px-3 py-2 text-[13px] text-overtime-text"
+        >
+          {t("timeUp")}
+        </p>
+      )}
     </div>
   );
 }
