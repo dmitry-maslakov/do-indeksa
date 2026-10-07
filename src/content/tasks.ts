@@ -29,3 +29,11 @@ export function summarize(task: Task): TaskSummary {
 }
 
 export const tasks = allTasks;
+
+export function getTask(id: string) {
+  return allTasks.find((t) => t.id === id);
+}
+
+export function siblings(task: Task) {
+  return allTasks.filter((t) => t.topic === task.topic).map(summarize);
+}
