@@ -69,5 +69,13 @@
     "yourAnswer": "Твой ответ",
     "save": "Сохранить",
     "saved": "Сохранено"
+  },
+  "Variants": {
+    "title": "Варианты",
+    "format": "{tasks, number} задач · {minutes, number} мин",
+    "official": "Официальные",
+    "curated": "Наши варианты",
+    "start": "Начать",
+    "strip": "Вариант из {count, number} задач"
   }
 }

@@ -37,10 +37,10 @@ const tasks = defineCollection({
     solution: z.string().min(1),
   }),
   transform: async (
-    { _meta, content, answer, check, hints, solution, ...task },
+    { content, answer, check, hints, solution, ...task },
     { documents },
   ) => {
-    const origin = _meta.filePath;
+    const origin = task._meta.filePath;
     if (!documents(topics).some((t) => t._meta.path === task.topic)) {
       throw new Error(`${origin}: unknown topic "${task.topic}"`);
     }
@@ -50,7 +50,7 @@ const tasks = defineCollection({
     }
     const render = (source: string) => renderMarkdown(source, origin);
     return {
-      id: _meta.path,
+      id: task._meta.path,
       ...task,
       text: content,
       statement: await render(content),
@@ -86,17 +86,19 @@ const exams = defineCollection({
       )
       .min(1),
   }),
-  transform: ({ _meta, positions, ...exam }, { documents }) => {
+  transform: ({ positions, ...exam }, { documents }) => {
     const topicIds = new Set(documents(topics).map((t) => t._meta.path));
     const covered = new Set(documents(tasks).map((t) => t.topic));
     const unknown = positions.find((p) => !topicIds.has(p.topic));
     if (unknown)
-      throw new Error(`${_meta.filePath}: unknown topic "${unknown.topic}"`);
+      throw new Error(
+        `${exam._meta.filePath}: unknown topic "${unknown.topic}"`,
+      );
     const empty = positions.find((p) => !covered.has(p.topic));
     if (empty)
-      throw new Error(`${_meta.filePath}: no tasks for "${empty.topic}"`);
+      throw new Error(`${exam._meta.filePath}: no tasks for "${empty.topic}"`);
     return {
-      id: _meta.path,
+      id: exam._meta.path,
       ...exam,
       positions: positions.map((p, i) => ({ number: i + 1, ...p })),
       maxPoints: positions.reduce((sum, p) => sum + p.points, 0),
@@ -104,4 +106,35 @@ const exams = defineCollection({
   },
 });
 
-export default defineConfig({ content: [topics, tasks, exams] });
+const variants = defineCollection({
+  name: "variants",
+  directory: `${root}/variants`,
+  include: "*.yaml",
+  parser: "yaml",
+  schema: z.object({
+    exam: z.string(),
+    kind: z.enum(["official", "curated"]),
+    year: z.number().int().optional(),
+    title: z.string().optional(),
+    taskIds: z.array(z.string()).min(1),
+  }),
+  transform: (variant, { documents }) => {
+    const origin = variant._meta.filePath;
+    const exam = documents(exams).find((e) => e._meta.path === variant.exam);
+    if (!exam) throw new Error(`${origin}: unknown exam "${variant.exam}"`);
+    const tasksById = new Map(documents(tasks).map((t) => [t._meta.path, t]));
+    if (variant.taskIds.length !== exam.positions.length) {
+      throw new Error(`${origin}: expected ${exam.positions.length} tasks`);
+    }
+    variant.taskIds.forEach((id, i) => {
+      const task = tasksById.get(id);
+      if (!task) throw new Error(`${origin}: unknown task "${id}"`);
+      if (task.topic !== exam.positions[i]?.topic) {
+        throw new Error(`${origin}: "${id}" does not fit position ${i + 1}`);
+      }
+    });
+    return { ...variant, id: variant._meta.path };
+  },
+});
+
+export default defineConfig({ content: [topics, tasks, exams, variants] });

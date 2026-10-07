@@ -69,5 +69,13 @@
     "yourAnswer": "Tvoj odgovor",
     "save": "Sačuvaj",
     "saved": "Sačuvano"
+  },
+  "Variants": {
+    "title": "Probni testovi",
+    "format": "{tasks, number} zadataka · {minutes, number} min",
+    "official": "Zvanični rokovi",
+    "curated": "Naši testovi",
+    "start": "Počni",
+    "strip": "Test od {count, number} zadataka"
   }
 }
