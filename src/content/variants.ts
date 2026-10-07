@@ -13,18 +13,16 @@ export const officialVariants = allVariants
 export const curatedVariants = allVariants.filter((v) => v.kind === "curated");
 
 export interface ExamVariant extends Pick<Variant, "id" | "title" | "year"> {
-  kind: Variant["kind"] | "daily" | "random";
+  kind: Variant["kind"] | "daily" | "random" | "custom";
   taskIds: string[];
 }
 
-const byPosition = positions.map((p) =>
+export const byPosition = positions.map((p) =>
   tasks.filter((t) => t.topic === p.topic).map((t) => t.id),
 );
 
 export const belgradeDate = (at = new Date()) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Belgrade" }).format(at);
-
-export const randomId = () => `random-${crypto.randomUUID().slice(0, 8)}`;
 
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
@@ -39,15 +37,26 @@ export function getVariant(id: string): ExamVariant | undefined {
       taskIds: pick(byPosition, positions.length, id),
     };
   }
+  const set = /^set-([a-z0-9-]+(?:\.[a-z0-9-]+){0,9})$/.exec(id)?.[1];
+  const ids = set?.split(".") ?? [];
+  if (ids.length > 0 && ids.every((taskId) => getTask(taskId))) {
+    return { id, kind: "custom", taskIds: byNumber(ids) };
+  }
 }
 
-export function minutesOf(variant: ExamVariant) {
-  const topics = new Set(
-    variant.taskIds.map((id) => tasks.find((t) => t.id === id)?.topic),
+export const byNumber = (ids: string[]) =>
+  [...new Set(ids)].sort(
+    (a, b) =>
+      numberOf(getTask(a)?.topic ?? "") - numberOf(getTask(b)?.topic ?? ""),
   );
-  return positions
-    .filter((p) => topics.has(p.topic))
-    .reduce((sum, p) => sum + p.minutes, 0);
+
+export function minutesOf(variant: ExamVariant) {
+  return variant.taskIds.reduce((sum, id) => {
+    const task = getTask(id);
+    return (
+      sum + (task ? (positions[numberOf(task.topic) - 1]?.minutes ?? 0) : 0)
+    );
+  }, 0);
 }
 
 export function pointsOf(taskId: string) {

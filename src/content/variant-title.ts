@@ -12,5 +12,6 @@ export async function variantTitle(variant: ExamVariant) {
     });
   }
   if (variant.kind === "random") return t("random");
+  if (variant.kind === "custom") return t("custom");
   return variant.title ?? String(variant.year);
 }

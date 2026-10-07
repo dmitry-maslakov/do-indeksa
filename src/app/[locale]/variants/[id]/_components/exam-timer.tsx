@@ -14,9 +14,11 @@ const clock = (ms: number) => {
 export function ExamTimer({
   startedAt,
   minutes,
+  timed,
 }: {
   startedAt: number;
   minutes: number;
+  timed: boolean;
 }) {
   const t = useTranslations("Exam");
   const [now, setNow] = useState(Date.now);
@@ -26,21 +28,21 @@ export function ExamTimer({
     return () => clearInterval(id);
   }, []);
 
-  const left = startedAt + minutes * 60_000 - now;
+  const left = timed ? startedAt + minutes * 60_000 - now : startedAt - now;
 
   return (
     <div className="flex flex-col gap-0.5 px-1">
       <span className="text-sm text-subtle">
-        {left >= 0 ? t("timeLeft") : t("overtime")}
+        {!timed ? t("elapsed") : left >= 0 ? t("timeLeft") : t("overtime")}
       </span>
       <span
         role="timer"
         className={cn(
           "font-semibold text-3xl tabular-nums tracking-tight",
-          left < 0 && "text-overtime-text",
+          timed && left < 0 && "text-overtime-text",
         )}
       >
-        {left < 0 && "+"}
+        {timed && left < 0 && "+"}
         {clock(Math.abs(left))}
       </span>
     </div>

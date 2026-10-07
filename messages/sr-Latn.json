@@ -76,7 +76,7 @@
   },
   "Variants": {
     "title": "Probni testovi",
-    "format": "{tasks, number} zadataka · {minutes, number} min",
+    "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {minutes, number} min",
     "official": "Zvanični rokovi",
     "curated": "Naši testovi",
     "start": "Počni",
@@ -86,8 +86,6 @@
     "dailyMeta": "{tasks, number} zadataka, svaki dan novi",
     "play": "Igraj",
     "random": "Nasumični test",
-    "randomText": "{tasks, number} zadataka, po jedan sa svake pozicije, kao na prijemnom.",
-    "compose": "Sastavi",
     "history": "Istorija",
     "historyGuest": "Prijavi se da vidiš istoriju svojih testova.",
     "historyEmpty": "Još nema završenih testova.",
@@ -95,7 +93,8 @@
     "inProgress": "{done, number} od {total, number}",
     "notSolved": "nije rešen",
     "continue": "Nastavi",
-    "review": "Analiza"
+    "review": "Analiza",
+    "custom": "Moj test"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",
@@ -116,7 +115,8 @@
     "guest": "Prijavi se da se rezultati čuvaju u istoriji i statistici.",
     "signIn": "Prijavi se",
     "back": "Na testove",
-    "retry": "Ponovo"
+    "retry": "Ponovo",
+    "elapsed": "Proteklo vreme"
   },
   "Review": {
     "title": "Analiza",
@@ -197,5 +197,14 @@
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim brojevima trošiš najviše vremena.",
     "startTest": "Izaberi test",
     "mistakesGuest": "Prijavi se i greške će se čuvati, da im se vratiš kasnije."
+  },
+  "Compose": {
+    "title": "Sastavi svoj",
+    "exam": "Kao na ispitu",
+    "weak": "Iz tema gde sam slabiji",
+    "unsolved": "Samo nerešeni",
+    "topics": "Izaberi teme",
+    "timer": "Tajmer {minutes, number} min",
+    "compose": "Sastavi"
   }
 }

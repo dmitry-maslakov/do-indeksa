@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface ExamRun {
   runId: string;
+  timed: boolean;
   startedAt: number;
   enteredAt: number;
   current: number;
@@ -13,7 +14,7 @@ export interface ExamRun {
 
 interface ExamState {
   runs: Record<string, ExamRun>;
-  start: (variantId: string, parts: number[]) => void;
+  start: (variantId: string, parts: number[], timed: boolean) => void;
   answer: (variantId: string, part: number, value: string) => void;
   go: (variantId: string, index: number) => void;
   clear: (variantId: string) => void;
@@ -30,12 +31,13 @@ export const useExamStore = create<ExamState>()(
 
       return {
         runs: {},
-        start: (variantId, parts) =>
+        start: (variantId, parts, timed) =>
           set((s) => {
             if (s.runs[variantId]) return s;
             const now = Date.now();
             const run: ExamRun = {
               runId: crypto.randomUUID(),
+              timed,
               startedAt: now,
               enteredAt: now,
               current: 0,

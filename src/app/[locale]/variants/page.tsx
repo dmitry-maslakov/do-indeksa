@@ -2,16 +2,17 @@ import type { Variant } from "content-collections";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { DailyBanner } from "@/components/daily-banner";
 import { SignInCard } from "@/components/sign-in-card";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantRow } from "@/components/variant-row";
 import { VariantStrip } from "@/components/variant-strip";
 import { dailySize, positions } from "@/content/exam";
 import { type RunSummary, summarizeRuns } from "@/content/runs";
+import { topicName } from "@/content/topics";
 import { curatedVariants, officialVariants } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { getSession } from "@/server/auth";
 import { getAttempts, getRuns } from "@/server/history";
+import { ComposeCard } from "./_components/compose-card";
 import { VariantTabs } from "./_components/variant-tabs";
 
 const tabs = ["official", "curated", "history"] as const;
@@ -24,11 +25,12 @@ export default async function VariantsPage({
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
   const session = await getSession();
+  const locale = await getLocale();
   const runs = session
     ? await summarizeRuns(
         await getRuns(session.user.id),
         await getAttempts(session.user.id),
-        await getLocale(),
+        locale,
       )
     : [];
   const minutes = positions.reduce((sum, p) => sum + p.minutes, 0);
@@ -59,20 +61,13 @@ export default async function VariantsPage({
         </div>
         <aside className="order-first flex flex-col gap-5 md:order-none">
           <DailyBanner tasks={dailySize} />
-          <Card className="gap-3">
-            <h2 className="font-semibold text-lg">{t("random")}</h2>
-            <p className="text-sm text-subtle">
-              {t("randomText", { tasks: positions.length })}
-            </p>
-            <Button
-              variant="secondary"
-              className="w-full"
-              render={<Link href="/variants/random" prefetch={false} />}
-              nativeButton={false}
-            >
-              {t("compose")}
-            </Button>
-          </Card>
+          <ComposeCard
+            minutes={minutes}
+            topics={positions.map((p) => ({
+              id: p.topic,
+              name: topicName(p.topic, locale),
+            }))}
+          />
           {runs.length > 0 && <Recent runs={runs.slice(0, 3)} />}
         </aside>
       </div>
