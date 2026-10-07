@@ -68,7 +68,11 @@
     "answerPart": "Ответ {number, number}",
     "yourAnswer": "Твой ответ",
     "save": "Сохранить",
-    "saved": "Сохранено"
+    "saved": "Сохранено",
+    "expand": "Развернуть список",
+    "collapse": "Свернуть список",
+    "topic": "Тема",
+    "tally": "верно {right, number} · ошибок {wrong, number}"
   },
   "Variants": {
     "title": "Варианты",

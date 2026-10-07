@@ -68,7 +68,11 @@
     "answerPart": "Answer {number, number}",
     "yourAnswer": "Your answer",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "expand": "Expand the list",
+    "collapse": "Collapse the list",
+    "topic": "Topic",
+    "tally": "{right, number} right · {wrong, number} wrong"
   },
   "Variants": {
     "title": "Practice exams",

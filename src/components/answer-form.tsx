@@ -5,6 +5,7 @@ import { useActionState, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { type CheckResult, checkAnswer } from "@/server/answers";
 import { AnswerField, type AnswerState } from "./answer-field";
+import { useHints } from "./hints";
 
 interface AnswerFormProps {
   taskId: string;
@@ -20,6 +21,7 @@ export function AnswerForm({ taskId, labels }: AnswerFormProps) {
   const [startedAt] = useState(() => Date.now());
   const [edited, setEdited] = useState(false);
   const markEdited = useCallback(() => setEdited(true), []);
+  const hints = useHints();
 
   const stateOf = (i: number): AnswerState =>
     !result || edited ? "empty" : result.parts[i] ? "correct" : "wrong";
@@ -34,6 +36,7 @@ export function AnswerForm({ taskId, labels }: AnswerFormProps) {
     >
       <input type="hidden" name="taskId" value={taskId} />
       <input type="hidden" name="startedAt" value={startedAt} />
+      <input type="hidden" name="hintsUsed" value={hints?.used ?? 0} />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {labels.map((labelHtml, i) => (
           <AnswerField
