@@ -30,4 +30,5 @@ jobs:
       - run: pnpm exec biome ci
       - run: pnpm typecheck
       - run: pnpm knip
+      - run: pnpm i18n
       - run: pnpm build

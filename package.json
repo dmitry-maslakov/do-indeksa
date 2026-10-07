@@ -10,7 +10,8 @@
     "lint": "biome check",
     "format": "biome format --write",
     "knip": "knip",
-    "commitlint": "commitlint"
+    "commitlint": "commitlint",
+    "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src"
   },
   "dependencies": {
     "next": "16.3.8",
@@ -23,6 +24,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@commitlint/types": "^21.2.3",
+    "@lingual/i18n-check": "^0.9.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24",
     "@types/react": "^19",
