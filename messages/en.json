@@ -83,7 +83,7 @@
     "strip": "Exam of {count, number} tasks",
     "daily": "Daily test",
     "dailyOn": "Daily test · {date}",
-    "dailyMeta": "{tasks, number} tasks, new every day",
+    "dailyMeta": "{tasks, plural, one {# task} other {# tasks}} · {minutes, number} min",
     "play": "Play",
     "random": "Random test",
     "history": "History",
@@ -199,7 +199,11 @@
     "timeEmpty": "Finish your first test to see which numbers take the most time.",
     "startTest": "Pick a test",
     "mistakesGuest": "Sign in to keep your mistakes and come back to them.",
-    "byNumberHint": "Click for every task of that number"
+    "byNumberHint": "Click for every task of that number",
+    "progressLeft": "{done, number} of {total, number} · {minutes, number} min left",
+    "next": "Next — #{number, number}, {topic}",
+    "attemptsShort": "{count, plural, one {# attempt} other {# attempts}}",
+    "moreTopics": "{count, number} more →"
   },
   "Compose": {
     "title": "Compose your own",

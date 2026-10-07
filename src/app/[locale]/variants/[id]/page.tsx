@@ -16,11 +16,12 @@ export default async function VariantPage({
   const t = await getTranslations("Variants");
   const tasks = tasksFor(variant.taskIds, await getLocale());
   const minutes = minutesOf(variant);
+  const title = await variantTitle(variant);
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <div className="flex flex-wrap items-baseline justify-between gap-2 py-6">
-        <h1 className="font-bold text-3xl">{await variantTitle(variant)}</h1>
+        <h1 className="font-bold text-3xl">{title}</h1>
         <span className="text-sm text-subtle">
           {t("format", { tasks: tasks.length, minutes })}
         </span>
@@ -30,6 +31,7 @@ export default async function VariantPage({
         tasks={tasks}
         minutes={minutes}
         timed={timer !== "off"}
+        title={title}
       />
     </main>
   );

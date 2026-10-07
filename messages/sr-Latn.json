@@ -83,7 +83,7 @@
     "strip": "Test od {count, number} zadataka",
     "daily": "Test dana",
     "dailyOn": "Test dana · {date}",
-    "dailyMeta": "{tasks, number} zadataka, svaki dan novi",
+    "dailyMeta": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {minutes, number} min",
     "play": "Igraj",
     "random": "Nasumični test",
     "history": "Istorija",
@@ -199,7 +199,11 @@
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim brojevima trošiš najviše vremena.",
     "startTest": "Izaberi test",
     "mistakesGuest": "Prijavi se i greške će se čuvati, da im se vratiš kasnije.",
-    "byNumberHint": "Klik — svi zadaci tog broja"
+    "byNumberHint": "Klik — svi zadaci tog broja",
+    "progressLeft": "{done, number} od {total, number} · ostalo {minutes, number} min",
+    "next": "Dalje — №{number, number}, {topic}",
+    "attemptsShort": "{count, plural, one {# pokušaj} few {# pokušaja} other {# pokušaja}}",
+    "moreTopics": "još {count, number} →"
   },
   "Compose": {
     "title": "Sastavi svoj",

@@ -29,7 +29,7 @@ export function EntryCards() {
       <Card size="sm" className="gap-3.5">
         <h2 className="font-semibold text-lg">{t("byTopic")}</h2>
         <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[13px]">
-          {positions.map((p) => (
+          {positions.slice(0, 7).map((p) => (
             <Link
               key={p.topic}
               href={`/bank?topic=${p.topic}`}
@@ -38,6 +38,11 @@ export function EntryCards() {
               {topicName(p.topic, locale)}
             </Link>
           ))}
+          {positions.length > 7 && (
+            <Link href="/bank" className="text-subtle hover:text-data">
+              {t("moreTopics", { count: positions.length - 7 })}
+            </Link>
+          )}
         </div>
       </Card>
       <Link href="/variants" className="rounded-3xl">

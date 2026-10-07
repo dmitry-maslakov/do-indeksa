@@ -5,11 +5,10 @@ import { EmptyNote } from "./empty-note";
 
 interface MistakesCardProps {
   taskIds: string[];
-  streak: number;
   signedIn: boolean;
 }
 
-export function MistakesCard({ taskIds, streak, signedIn }: MistakesCardProps) {
+export function MistakesCard({ taskIds, signedIn }: MistakesCardProps) {
   const t = useTranslations("Home");
   const count = taskIds.length;
 
@@ -29,9 +28,6 @@ export function MistakesCard({ taskIds, streak, signedIn }: MistakesCardProps) {
           <span className="font-semibold">{t("mistakes")}</span>
           <span className="text-sm text-subtle">
             {count > 0 ? t("mistakesCount", { count }) : t("noMistakes")}
-          </span>
-          <span className="text-sm text-subtle">
-            {t("streak", { count: streak })}
           </span>
         </div>
         <span className="flex gap-1">

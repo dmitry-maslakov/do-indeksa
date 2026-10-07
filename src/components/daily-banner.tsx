@@ -2,7 +2,13 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
-export function DailyBanner({ tasks }: { tasks: number }) {
+export function DailyBanner({
+  tasks,
+  minutes,
+}: {
+  tasks: number;
+  minutes: number;
+}) {
   const t = useTranslations("Variants");
 
   return (
@@ -10,7 +16,7 @@ export function DailyBanner({ tasks }: { tasks: number }) {
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="font-semibold text-[15px]">{t("daily")}</span>
         <span className="text-daily-muted text-xs">
-          {t("dailyMeta", { tasks })}
+          {t("dailyMeta", { tasks, minutes })}
         </span>
       </div>
       <Button

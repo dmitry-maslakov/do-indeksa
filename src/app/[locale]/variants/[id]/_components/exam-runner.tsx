@@ -21,6 +21,7 @@ interface ExamRunnerProps {
   tasks: ExamTask[];
   minutes: number;
   timed: boolean;
+  title: string;
 }
 
 export function ExamRunner({
@@ -28,6 +29,7 @@ export function ExamRunner({
   tasks,
   minutes,
   timed,
+  title,
 }: ExamRunnerProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
@@ -37,11 +39,23 @@ export function ExamRunner({
   const { start, answer, go, clear } = useExamStore.getState();
   const [result, setResult] = useState<RunResult>();
   const [pending, startTransition] = useTransition();
-  const parts = useMemo(() => tasks.map((task) => task.labels.length), [tasks]);
+  const meta = useMemo(
+    () => ({
+      title,
+      minutes,
+      timed,
+      tasks: tasks.map((task) => ({
+        number: task.number,
+        topic: task.topicName,
+        parts: task.labels.length,
+      })),
+    }),
+    [title, minutes, timed, tasks],
+  );
 
   useEffect(() => {
-    if (hydrated) start(variantId, parts, timed);
-  }, [hydrated, start, variantId, parts, timed]);
+    if (hydrated) start(variantId, meta);
+  }, [hydrated, start, variantId, meta]);
 
   const current = run?.current ?? 0;
   const task = tasks[current];
@@ -60,7 +74,7 @@ export function ExamRunner({
         result={result}
         onRetry={() => {
           setResult(undefined);
-          start(variantId, parts, timed);
+          start(variantId, meta);
         }}
       />
     );
