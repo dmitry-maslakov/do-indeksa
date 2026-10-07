@@ -20,5 +20,9 @@
     "sr-Latn": "Srpski",
     "ru": "Русский",
     "en": "English"
+  },
+  "ExamSwitcher": {
+    "meta": "{tasks, number} задач · {hours, number} ч",
+    "more": "Другие факультеты появятся позже"
   }
 }
