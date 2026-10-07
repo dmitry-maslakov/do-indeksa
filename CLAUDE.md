@@ -12,8 +12,10 @@ Free platform for Serbian high school graduates preparing for university entranc
 ## Stack
 
 - Single Next.js app (App Router, TypeScript). No separate backend service.
-- Auth.js (Google), Drizzle + Postgres (Neon), TanStack Query.
-- UI: shadcn/ui themed with the design tokens; KaTeX for math.
+- better-auth (Google), Drizzle + Postgres (Neon), next-intl.
+- Content: content-collections, KaTeX at build time. Answers: MathLive input, Compute Engine checking on the server.
+- UI: shadcn/ui (Base UI) + Tailwind themed with the design tokens. Zustand only for the exam runner.
+- Tooling: pnpm, Biome, Vitest, Playwright.
 - Content lives in git as Markdown + YAML frontmatter in `content/`, not in the database. The database holds user data only.
 - Prefer established libraries over hand-written code. Keep the codebase small.
 
