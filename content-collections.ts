@@ -4,11 +4,13 @@ import { routing } from "./src/i18n/routing";
 import { renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
 
+const root = process.env.CONTENT_DIR ?? "content";
+
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
 
 const topics = defineCollection({
   name: "topics",
-  directory: "content/topics",
+  directory: `${root}/topics`,
   include: "*.yaml",
   parser: "yaml",
   schema: z.object({ name: localized }),
@@ -17,7 +19,7 @@ const topics = defineCollection({
 
 const tasks = defineCollection({
   name: "tasks",
-  directory: "content/tasks",
+  directory: `${root}/tasks`,
   include: "*.md",
   schema: z.object({
     content: z.string().min(1),
@@ -67,7 +69,7 @@ const tasks = defineCollection({
 
 const exams = defineCollection({
   name: "exams",
-  directory: "content/exams",
+  directory: `${root}/exams`,
   include: "*.yaml",
   parser: "yaml",
   schema: z.object({
