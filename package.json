@@ -14,8 +14,9 @@
     "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "test": "vitest run",
-    "assets": "mkdir -p public/mathlive-fonts && cp -R node_modules/mathlive/fonts/. public/mathlive-fonts/"
+    "test": "vitest run --dir src",
+    "assets": "mkdir -p public/mathlive-fonts && cp -R node_modules/mathlive/fonts/. public/mathlive-fonts/",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -45,6 +46,7 @@
     "@content-collections/core": "0.15.3",
     "@content-collections/next": "0.2.11",
     "@lingual/i18n-check": "^0.9.5",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24",
     "@types/pg": "^8.23.1",
