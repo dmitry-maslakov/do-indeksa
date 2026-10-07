@@ -83,7 +83,15 @@
     "play": "Igraj",
     "random": "Nasumični test",
     "randomText": "{tasks, number} zadataka, po jedan sa svake pozicije, kao na prijemnom.",
-    "compose": "Sastavi"
+    "compose": "Sastavi",
+    "history": "Istorija",
+    "historyGuest": "Prijavi se da vidiš istoriju svojih testova.",
+    "historyEmpty": "Još nema završenih testova.",
+    "recent": "Nedavno",
+    "inProgress": "{done, number} od {total, number}",
+    "notSolved": "nije rešen",
+    "continue": "Nastavi",
+    "review": "Analiza"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",

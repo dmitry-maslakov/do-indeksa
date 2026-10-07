@@ -83,7 +83,15 @@
     "play": "Play",
     "random": "Random test",
     "randomText": "{tasks, number} tasks, one for each position, like the real exam.",
-    "compose": "Compose"
+    "compose": "Compose",
+    "history": "History",
+    "historyGuest": "Sign in to see the history of your tests.",
+    "historyEmpty": "No finished tests yet.",
+    "recent": "Recent",
+    "inProgress": "{done, number} of {total, number}",
+    "notSolved": "not solved",
+    "continue": "Continue",
+    "review": "Review"
   },
   "Exam": {
     "timeLeft": "Time left",

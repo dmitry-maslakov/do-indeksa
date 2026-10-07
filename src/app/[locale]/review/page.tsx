@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SignInCard } from "@/components/sign-in-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { variantTitle } from "@/components/variant-title";
+import { variantTitle } from "@/content/variant-title";
 import { getVariant, tasksFor } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { review } from "@/lib/review";

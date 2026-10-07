@@ -1,15 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { SignInCard } from "@/components/sign-in-card";
-import { variantTitle } from "@/components/variant-title";
 import { statAttempts } from "@/content/attempts";
 import { positions } from "@/content/exam";
+import { summarizeRuns } from "@/content/runs";
 import { tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
-import { getVariant, tasksFor } from "@/content/variants";
-import { review } from "@/lib/review";
 import { accuracyBy, meanTimeByNumber, totals } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getAttempts, getRecentRuns, getRunCount } from "@/server/history";
+import { getAttempts, getRuns } from "@/server/history";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
 import { RecentRuns } from "./_components/recent-runs";
@@ -45,11 +43,7 @@ async function Stats({
   byNumber: boolean;
 }) {
   const locale = await getLocale();
-  const [rows, recent, runCount] = await Promise.all([
-    getAttempts(userId),
-    getRecentRuns(userId),
-    getRunCount(userId),
-  ]);
+  const [rows, all] = await Promise.all([getAttempts(userId), getRuns(userId)]);
   const attempts = statAttempts(rows);
   const summary = totals(attempts);
   const numbers = positions.map((p) => p.number);
@@ -64,24 +58,7 @@ async function Stats({
         (a) => a.topic,
       ).map((a) => ({ ...a, label: topicName(String(a.key), locale) }));
 
-  const runs = await Promise.all(
-    recent.map(async (run) => {
-      const variant = getVariant(run.variantId);
-      const result = review(
-        tasksFor(run.taskIds, locale).map((task) => ({
-          ...task,
-          taskId: task.id,
-        })),
-        rows.filter((r) => r.runId === run.id),
-      );
-      return {
-        id: run.id,
-        title: variant ? await variantTitle(variant) : run.variantId,
-        segments: result.rows.map((r) => r.segment),
-        score: result.score,
-      };
-    }),
-  );
+  const runs = await summarizeRuns(all.slice(0, 5), rows, locale);
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -95,7 +72,7 @@ async function Stats({
         />
       </div>
       <div className="flex flex-col gap-5">
-        <TotalsCard totals={summary} runs={runCount} />
+        <TotalsCard totals={summary} runs={all.length} />
         <BankCard totals={summary} size={tasks.length} />
         <RecentRuns runs={runs} />
       </div>
