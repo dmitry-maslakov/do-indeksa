@@ -24,13 +24,16 @@ export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
           ]}
         />
       </CardHeader>
-      <ul className="grid grid-cols-[104px_minmax(0,1fr)_40px] items-center gap-x-4 gap-y-2.5 text-sm md:grid-cols-[170px_minmax(0,1fr)_44px_92px]">
+      <ul className="flex flex-col gap-3.5 text-sm md:grid md:grid-cols-[170px_minmax(0,1fr)_44px_92px] md:gap-x-4 md:gap-y-2.5">
         {rows.map((row) => (
-          <li key={row.key} className="contents">
+          <li
+            key={row.key}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 md:col-span-4 md:grid-cols-subgrid"
+          >
             <span className={cn("truncate", row.pct === null && "text-subtle")}>
               {row.label}
             </span>
-            <span>
+            <span className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto">
               <ProgressBar value={(row.pct ?? 0) / 100} />
             </span>
             <b
