@@ -46,6 +46,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm knip
       - run: pnpm i18n
+      - run: pnpm test
       - run: pnpm exec drizzle-kit check
       - name: Migrations match the schema
         run: timeout 60 pnpm db:generate </dev/null && git diff --exit-code drizzle/ && test -z "$(git status --porcelain drizzle/)"
