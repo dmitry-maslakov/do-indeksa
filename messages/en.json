@@ -24,5 +24,10 @@
   "ExamSwitcher": {
     "meta": "{tasks, number} tasks · {hours, number} h",
     "more": "More faculties coming soon"
+  },
+  "UserMenu": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account"
   }
 }
