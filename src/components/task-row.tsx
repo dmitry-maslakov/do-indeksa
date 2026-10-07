@@ -2,14 +2,16 @@ import { cn } from "cn";
 import { MathHtml } from "@/components/math-html";
 import type { TaskSummary } from "@/content/tasks";
 import { Link } from "@/i18n/navigation";
+import type { TaskStatus } from "@/lib/progress";
 
 interface TaskRowProps {
   task: TaskSummary;
   active: boolean;
   meta: string;
+  status?: TaskStatus;
 }
 
-export function TaskRow({ task, active, meta }: TaskRowProps) {
+export function TaskRow({ task, active, meta, status }: TaskRowProps) {
   return (
     <Link
       href={`/bank/${task.id}`}
@@ -22,6 +24,8 @@ export function TaskRow({ task, active, meta }: TaskRowProps) {
       <span
         className={cn(
           "mt-1.5 size-2 shrink-0 rounded-full border-[1.5px] border-border",
+          status === "solved" && "border-0 bg-data",
+          status === "wrong" && "border-error bg-error-tint",
           active && "border-0 bg-primary",
         )}
       />

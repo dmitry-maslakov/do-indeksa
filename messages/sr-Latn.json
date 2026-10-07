@@ -68,7 +68,11 @@
     "answerPart": "Odgovor {number, number}",
     "yourAnswer": "Tvoj odgovor",
     "save": "Sačuvaj",
-    "saved": "Sačuvano"
+    "saved": "Sačuvano",
+    "expand": "Proširi listu",
+    "collapse": "Skupi listu",
+    "topic": "Tema",
+    "tally": "tačno {right, number} · greške {wrong, number}"
   },
   "Variants": {
     "title": "Probni testovi",

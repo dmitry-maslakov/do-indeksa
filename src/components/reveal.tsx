@@ -2,6 +2,7 @@
 
 import { ChevronDownIcon } from "lucide-react";
 import { useState, useTransition } from "react";
+import { useHints } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
 import { type RevealPart, reveal } from "@/server/reveal";
 
@@ -14,9 +15,12 @@ interface RevealProps {
 export function Reveal({ label, taskId, part }: RevealProps) {
   const [html, setHtml] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const hints = useHints();
 
   function load(open: boolean) {
-    if (!open || html !== null) return;
+    if (!open) return;
+    if (typeof part === "number") hints?.open(part);
+    if (html !== null) return;
     startTransition(async () => setHtml(await reveal(taskId, part)));
   }
 
