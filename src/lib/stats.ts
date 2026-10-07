@@ -62,3 +62,41 @@ export function totals(newestFirst: StatAttempt[]) {
     spentMs: newestFirst.reduce((sum, a) => sum + a.durationMs, 0),
   };
 }
+
+const DAY = 24 * 60 * 60 * 1000;
+
+const belgradeDay = (at: Date) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Belgrade" }).format(at);
+
+export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
+  const recent = attempts.filter(
+    (a) => now.getTime() - a.createdAt.getTime() <= 30 * DAY,
+  );
+  return accuracyBy(recent, topics, (a) => a.topic)
+    .filter((a): a is Accuracy & { pct: number } => a.pct !== null)
+    .sort((a, b) => a.pct - b.pct)
+    .slice(0, 4);
+}
+
+export function mistakesThisWeek(newestFirst: StatAttempt[], now: Date) {
+  const latest = new Map<string, StatAttempt>();
+  for (const a of newestFirst)
+    if (!latest.has(a.taskId)) latest.set(a.taskId, a);
+  return [...latest.values()]
+    .filter(
+      (a) => !a.correct && now.getTime() - a.createdAt.getTime() <= 7 * DAY,
+    )
+    .map((a) => a.taskId);
+}
+
+export function streak(newestFirst: StatAttempt[], now: Date) {
+  const days = new Set(newestFirst.map((a) => belgradeDay(a.createdAt)));
+  let count = 0;
+  let at = now.getTime();
+  if (!days.has(belgradeDay(now))) at -= DAY;
+  while (days.has(belgradeDay(new Date(at)))) {
+    count++;
+    at -= DAY;
+  }
+  return count;
+}

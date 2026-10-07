@@ -2,13 +2,7 @@
 
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-  useTransition,
-} from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { AnswerField } from "@/components/answer-field";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
+import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { finishRun, type RunResult } from "@/server/runs";
 import { ExamResult } from "./exam-result";
-import { useExamStore } from "./exam-store";
 import { ExamTimer } from "./exam-timer";
 import { FinishDialog } from "./finish-dialog";
 
@@ -28,21 +22,10 @@ interface ExamRunnerProps {
   minutes: number;
 }
 
-function useHydrated() {
-  useEffect(() => {
-    useExamStore.persist.rehydrate();
-  }, []);
-  return useSyncExternalStore(
-    (onChange) => useExamStore.persist.onFinishHydration(onChange),
-    () => useExamStore.persist.hasHydrated(),
-    () => false,
-  );
-}
-
 export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
-  const hydrated = useHydrated();
+  const hydrated = useExamHydrated();
   const router = useRouter();
   const run = useExamStore((s) => s.runs[variantId]);
   const { start, answer, go, clear } = useExamStore.getState();

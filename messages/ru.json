@@ -159,5 +159,26 @@
     "all": "все →",
     "noRuns": "Пока нет завершённых вариантов.",
     "score": "{score, number} баллов"
+  },
+  "Home": {
+    "guest": "Войди, чтобы следить за прогрессом: слабые темы, ошибки и время по задачам.",
+    "continue": "Продолжить",
+    "progress": "{done, number} из {total, number}",
+    "byNumber": "По номеру",
+    "byTopic": "По теме",
+    "variants": "Варианты",
+    "official": "{count, plural, one {# официальный} few {# официальных} other {# официальных}}",
+    "curated": "{count, plural, one {# наш} few {# наших} other {# наших}}",
+    "open": "Открыть →",
+    "weaker": "Где ты слабее",
+    "days30": "за 30 дней",
+    "practice": "Порешать: {topic}",
+    "mistakes": "Вернуться к ошибкам",
+    "mistakesCount": "{count, plural, one {# задача} few {# задачи} other {# задач}} с ошибкой на этой неделе",
+    "noMistakes": "На этой неделе ошибок нет",
+    "streak": "{count, plural, =0 {Серия ещё не началась} one {Серия: # день} few {Серия: # дня} other {Серия: # дней}}",
+    "time": "Где уходит время",
+    "norm": "норма {minutes, number} мин на задачу",
+    "minutes": "{minutes, number} мин"
   }
 }

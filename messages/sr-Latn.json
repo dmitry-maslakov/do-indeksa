@@ -159,5 +159,26 @@
     "all": "svi →",
     "noRuns": "Još nema završenih testova.",
     "score": "{score, number} bodova"
+  },
+  "Home": {
+    "guest": "Prijavi se da pratiš napredak: slabe teme, greške i vreme po zadacima.",
+    "continue": "Nastavi",
+    "progress": "{done, number} od {total, number}",
+    "byNumber": "Po broju",
+    "byTopic": "Po temi",
+    "variants": "Testovi",
+    "official": "{count, plural, one {# zvanični} few {# zvanična} other {# zvaničnih}}",
+    "curated": "{count, plural, one {# naš} few {# naša} other {# naših}}",
+    "open": "Otvori →",
+    "weaker": "Gde si slabiji",
+    "days30": "za 30 dana",
+    "practice": "Vežbaj: {topic}",
+    "mistakes": "Vrati se na greške",
+    "mistakesCount": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} sa greškom ove nedelje",
+    "noMistakes": "Ove nedelje nema grešaka",
+    "streak": "{count, plural, =0 {Serija još nije počela} one {Serija: # dan} few {Serija: # dana} other {Serija: # dana}}",
+    "time": "Gde odlazi vreme",
+    "norm": "norma {minutes, number} min po zadatku",
+    "minutes": "{minutes, number} min"
   }
 }
