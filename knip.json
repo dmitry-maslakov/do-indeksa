@@ -3,5 +3,5 @@
   "ignoreIssues": {
     "src/components/ui/**": ["exports", "types"]
   },
-  "entry": ["content-collections.ts"]
+  "entry": ["content-collections.ts", "src/db/migrate.mts"]
 }
