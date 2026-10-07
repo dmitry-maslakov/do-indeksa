@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { Golos_Text } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
+
+const golos = Golos_Text({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  variable: "--font-sans",
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -22,7 +28,7 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={golos.variable}>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
