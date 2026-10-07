@@ -2,6 +2,7 @@ import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
 import { renderMarkdown } from "./src/content/markdown";
 import { routing } from "./src/i18n/routing";
+import { parseMath } from "./src/lib/math";
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
 
@@ -40,6 +41,10 @@ const tasks = defineCollection({
     const origin = _meta.filePath;
     if (!documents(topics).some((t) => t._meta.path === task.topic)) {
       throw new Error(`${origin}: unknown topic "${task.topic}"`);
+    }
+    const invalid = check.find((c) => !parseMath(c.expected).isValid);
+    if (invalid) {
+      throw new Error(`${origin}: cannot parse expected "${invalid.expected}"`);
     }
     const render = (source: string) => renderMarkdown(source, origin);
     return {
