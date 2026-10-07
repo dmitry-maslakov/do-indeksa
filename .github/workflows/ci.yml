@@ -60,8 +60,7 @@ jobs:
 
   image:
     needs: check
-    if: vars.BUILDER != ''
-    runs-on: ${{ vars.BUILDER }}
+    runs-on: ubuntu-24.04
     env:
       WEB: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/do-indeksa-web:${{ github.sha }}
       MIGRATE: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/do-indeksa-migrate:${{ github.sha }}
