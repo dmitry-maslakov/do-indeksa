@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { answeredCount, blankSegments, runSegments } from "@/lib/run";
 import type { Segment } from "@/lib/strip";
 import { VariantStrip } from "./variant-strip";
 
@@ -12,20 +13,17 @@ interface VariantRowProps {
   id: string;
   title: string;
   tasks: number;
-  latest?: { runId: string; segments: Segment[]; score: number; max: number };
+  latest?: { id: string; segments: Segment[]; score: number; max: number };
 }
 
 export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
   const t = useTranslations("Variants");
   const hydrated = useExamHydrated();
   const run = useExamStore((s) => (hydrated ? s.runs[id] : undefined));
-  const done = run?.answers.filter((a) => a.some(Boolean)).length ?? 0;
-
-  const segments: Segment[] = run
-    ? run.answers.map((a, i) =>
-        i === run.current ? "current" : a.some(Boolean) ? "done" : "none",
-      )
-    : (latest?.segments ?? Array.from({ length: tasks }, () => "none"));
+  const done = run ? answeredCount(run) : 0;
+  const segments = run
+    ? runSegments(run)
+    : (latest?.segments ?? blankSegments(tasks));
 
   return (
     <li
@@ -66,7 +64,7 @@ export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
         <Button
           size="sm"
           variant="ghost"
-          render={<Link href={`/review?run=${latest.runId}`} />}
+          render={<Link href={`/review?run=${latest.id}`} />}
           nativeButton={false}
         >
           {t("review")}

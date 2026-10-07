@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
 import { Link } from "@/i18n/navigation";
-import { type ExamRun, useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import {
+  answeredCount,
+  blankSegments,
+  minutesLeft,
+  nextIndex,
+  runSegments,
+} from "@/lib/run";
 import type { Segment } from "@/lib/strip";
 
 interface ContinueCardProps {
@@ -13,26 +20,11 @@ interface ContinueCardProps {
   start: { id: string; title: string; tasks: number; minutes: number };
 }
 
-const answered = (a: string[]) => a.some(Boolean);
-
-function nextOf(run: ExamRun) {
-  const order = [run.current, ...run.answers.keys()];
-  const index = order.find((i) => !answered(run.answers[i] ?? []));
-  return index === undefined ? undefined : run.tasks?.[index];
-}
-
-function minutesLeft(run: ExamRun) {
-  if (!run.timed || !run.minutes) return undefined;
-  const ms = run.startedAt + run.minutes * 60_000 - Date.now();
-  return Math.max(Math.round(ms / 60_000), 0);
-}
-
 export function ContinueCard({ titles, start }: ContinueCardProps) {
   const t = useTranslations("Home");
   const variants = useTranslations("Variants");
   const hydrated = useExamHydrated();
   const runs = useExamStore((s) => s.runs);
-
   const [variantId, run] = hydrated
     ? (Object.entries(runs).sort(
         ([, a], [, b]) => b.startedAt - a.startedAt,
@@ -40,10 +32,6 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
     : [];
 
   if (!variantId || !run) {
-    const segments: Segment[] = Array.from(
-      { length: start.tasks },
-      () => "none",
-    );
     return (
       <Shell
         label={t("startNext")}
@@ -52,17 +40,18 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
           minutes: start.minutes,
         })}
         title={start.title}
-        segments={segments}
+        segments={blankSegments(start.tasks)}
         href={`/variants/${start.id}`}
         action={variants("start")}
       />
     );
   }
 
-  const done = run.answers.filter(answered).length;
+  const done = answeredCount(run);
   const total = run.answers.length;
-  const left = minutesLeft(run);
-  const next = nextOf(run);
+  const left = minutesLeft(run, Date.now());
+  const index = nextIndex(run);
+  const next = index === undefined ? undefined : run.tasks?.[index];
 
   return (
     <Shell
@@ -75,13 +64,9 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
       title={
         run.title ??
         titles[variantId] ??
-        (variantId.startsWith("daily-")
-          ? variants("daily")
-          : variants("random"))
+        variants(variantId.startsWith("daily-") ? "daily" : "random")
       }
-      segments={run.answers.map((a, i) =>
-        i === run.current ? "current" : answered(a) ? "done" : "none",
-      )}
+      segments={runSegments(run)}
       hint={next && t("next", { number: next.number, topic: next.topic })}
       href={`/variants/${variantId}`}
       action={t("continue")}
