@@ -93,6 +93,17 @@
     "answered": "{count, number} of {total, number} answered",
     "meta": "#{number, number} · {points, plural, one {# point} other {# points}}",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "finish": "Finish",
+    "finishTitle": "Finish the test?",
+    "finishLeft": "{count, plural, one {# task} other {# tasks}} without an answer. Answers can't be changed after finishing.",
+    "finishAll": "Answers can't be changed after finishing.",
+    "cancel": "Keep going",
+    "result": "Result",
+    "strip": "{score, number} of {max, number} points",
+    "guest": "Sign in to keep results in your history and stats.",
+    "signIn": "Sign in",
+    "back": "To tests",
+    "retry": "Again"
   }
 }

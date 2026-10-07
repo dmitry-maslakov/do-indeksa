@@ -93,6 +93,17 @@
     "answered": "Odgovoreno {count, number} od {total, number}",
     "meta": "№{number, number} · {points, plural, one {# bod} few {# boda} other {# bodova}}",
     "prev": "Prethodni",
-    "next": "Sledeći"
+    "next": "Sledeći",
+    "finish": "Završi test",
+    "finishTitle": "Završiti test?",
+    "finishLeft": "Bez odgovora: {count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}. Posle završetka odgovori se ne mogu menjati.",
+    "finishAll": "Posle završetka odgovori se ne mogu menjati.",
+    "cancel": "Nastavi",
+    "result": "Rezultat",
+    "strip": "{score, number} od {max, number} bodova",
+    "guest": "Prijavi se da se rezultati čuvaju u istoriji i statistici.",
+    "signIn": "Prijavi se",
+    "back": "Na testove",
+    "retry": "Ponovo"
   }
 }

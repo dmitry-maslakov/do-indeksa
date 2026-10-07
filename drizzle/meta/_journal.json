@@ -15,6 +15,13 @@
       "when": 1791377374401,
       "tag": "0001_progress",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791405512073,
+      "tag": "0002_curated_runs",
+      "breakpoints": true
     }
   ]
 }
