@@ -105,5 +105,31 @@
     "signIn": "Prijavi se",
     "back": "Na testove",
     "retry": "Ponovo"
+  },
+  "Review": {
+    "title": "Analiza",
+    "guest": "Prijavi se da vidiš analizu svojih testova: bodove, vreme i gde gubiš poene.",
+    "empty": "Još nema završenih testova. Reši jedan i analiza će se pojaviti ovde.",
+    "toVariants": "Na testove",
+    "crumb": "← {title} · završen {date}",
+    "score": "od {max, number} · tačno {correct, number} od {total, number}",
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "retry": "Reši ponovo",
+    "practice": "Vežbaj: {topic}",
+    "strip": "{score, number} od {max, number} bodova",
+    "task": "Zadatak",
+    "points": "Bodovi",
+    "time": "Vreme",
+    "rest": "{count, plural, one {Ostali # zadatak je rešen tačno} few {Ostala # zadatka su rešena tačno} other {Ostalih # zadataka je rešeno tačno}}",
+    "partial": "delimično tačno",
+    "wrong": "netačno",
+    "skipped": "bez odgovora",
+    "minutes": "{minutes, number} min",
+    "lost": "Gde si izgubio bodove",
+    "skippedTopic": "Bez odgovora",
+    "timeTitle": "Kuda je otišlo vreme",
+    "timeOf": "{spent, number} od {norm, number} min",
+    "overNorm": "Duže od norme: №{numbers}.",
+    "inNorm": "Svi zadaci u okviru norme."
   }
 }

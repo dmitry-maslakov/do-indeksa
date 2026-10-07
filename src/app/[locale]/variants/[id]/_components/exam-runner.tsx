@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
+import { useRouter } from "@/i18n/navigation";
 import { finishRun, type RunResult } from "@/server/runs";
 import { ExamResult } from "./exam-result";
 import { useExamStore } from "./exam-store";
@@ -42,6 +43,7 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
   const hydrated = useHydrated();
+  const router = useRouter();
   const run = useExamStore((s) => s.runs[variantId]);
   const { start, answer, go, clear } = useExamStore.getState();
   const [result, setResult] = useState<RunResult>();
@@ -90,7 +92,8 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
         durations: run.spent.map((ms, i) => (i === current ? ms + spent : ms)),
       });
       clear(variantId);
-      setResult(saved);
+      if (saved.saved) router.push(`/review?run=${run.runId}`);
+      else setResult(saved);
     });
 
   return (
@@ -126,7 +129,7 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
       </Card>
       <Card className="gap-6 md:p-9">
         <div className="flex flex-wrap items-center gap-2 text-sm text-subtle">
-          <Badge variant="tint">{task.topic}</Badge>
+          <Badge variant="tint">{task.topicName}</Badge>
           <span>{t("meta", { number: task.number, points: task.points })}</span>
         </div>
         <MathHtml

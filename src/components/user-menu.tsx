@@ -2,8 +2,8 @@
 
 import { LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SignInButton } from "@/components/sign-in-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,30 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function UserMenu() {
   const t = useTranslations("UserMenu");
-  const pathname = usePathname();
   const { data, isPending } = authClient.useSession();
 
   if (isPending) return <span className="size-9 rounded-full bg-data-tint" />;
 
   if (!data) {
-    return (
-      <Button
-        size="sm"
-        onClick={() =>
-          authClient.signIn.social({
-            provider: "google",
-            callbackURL: pathname,
-          })
-        }
-      >
-        {t("signIn")}
-      </Button>
-    );
+    return <SignInButton size="sm">{t("signIn")}</SignInButton>;
   }
 
   const { user } = data;

@@ -105,5 +105,31 @@
     "signIn": "Sign in",
     "back": "To tests",
     "retry": "Again"
+  },
+  "Review": {
+    "title": "Review",
+    "guest": "Sign in to review your tests: points, time and where you lose points.",
+    "empty": "No finished tests yet. Solve one and its review shows up here.",
+    "toVariants": "To tests",
+    "crumb": "← {title} · finished {date}",
+    "score": "of {max, number} · {correct, number} of {total, number} correct",
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "retry": "Solve again",
+    "practice": "Practice: {topic}",
+    "strip": "{score, number} of {max, number} points",
+    "task": "Task",
+    "points": "Points",
+    "time": "Time",
+    "rest": "{count, plural, one {The other # task is correct} other {The other # tasks are correct}}",
+    "partial": "partly correct",
+    "wrong": "wrong",
+    "skipped": "no answer",
+    "minutes": "{minutes, number} min",
+    "lost": "Where you lost points",
+    "skippedTopic": "No answer",
+    "timeTitle": "Where the time went",
+    "timeOf": "{spent, number} of {norm, number} min",
+    "overNorm": "Over the norm: #{numbers}.",
+    "inNorm": "Every task within the norm."
   }
 }

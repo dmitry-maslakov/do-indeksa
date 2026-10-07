@@ -1,13 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SignInButton } from "@/components/sign-in-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
 import type { ExamTask } from "@/content/variants";
-import { Link, usePathname } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth-client";
+import { Link } from "@/i18n/navigation";
 import { segmentOf } from "@/lib/strip";
 import type { RunResult } from "@/server/runs";
 
@@ -19,7 +19,6 @@ interface ExamResultProps {
 
 export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
   const t = useTranslations("Exam");
-  const pathname = usePathname();
   const score = result.points.reduce((sum, p) => sum + p, 0);
   const max = tasks.reduce((sum, task) => sum + task.points, 0);
   const segments = result.parts.map((parts, i) =>
@@ -43,7 +42,7 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
         {tasks.map((task, i) => (
           <li key={task.id} className="flex items-center gap-3 py-3">
             <span className="w-8 font-semibold">{task.number}</span>
-            <span className="min-w-0 flex-1 truncate">{task.topic}</span>
+            <span className="min-w-0 flex-1 truncate">{task.topicName}</span>
             {segments[i] === "done" ? (
               <Badge variant="success" size="sm">
                 +{result.points[i]}
@@ -62,18 +61,9 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
       {!result.saved && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-muted px-5 py-4 text-sm">
           <span>{t("guest")}</span>
-          <Button
-            size="sm"
-            variant="tint"
-            onClick={() =>
-              authClient.signIn.social({
-                provider: "google",
-                callbackURL: pathname,
-              })
-            }
-          >
+          <SignInButton size="sm" variant="tint">
             {t("signIn")}
-          </Button>
+          </SignInButton>
         </div>
       )}
       <div className="flex flex-wrap justify-between gap-3">
