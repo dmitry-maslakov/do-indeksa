@@ -135,3 +135,17 @@
     }
   }
 }
+
+@layer components {
+  math-field {
+    font-size: 1.125rem;
+    &::part(menu-toggle) {
+      display: none;
+    }
+    @media (pointer: fine) {
+      &::part(virtual-keyboard-toggle) {
+        display: none;
+      }
+    }
+  }
+}

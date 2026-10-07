@@ -61,6 +61,11 @@
     "hint": "Nagoveštaj {number, number}",
     "answer": "Rezultat",
     "solution": "Rešenje",
-    "next": "Sledeći zadatak →"
+    "next": "Sledeći zadatak →",
+    "check": "Proveri",
+    "correct": "Tačno",
+    "wrong": "Nije tačno",
+    "answerPart": "Odgovor {number, number}",
+    "yourAnswer": "Tvoj odgovor"
   }
 }

@@ -61,6 +61,11 @@
     "hint": "Hint {number, number}",
     "answer": "Answer",
     "solution": "Solution",
-    "next": "Next task →"
+    "next": "Next task →",
+    "check": "Check",
+    "correct": "Correct",
+    "wrong": "Not quite",
+    "answerPart": "Answer {number, number}",
+    "yourAnswer": "Your answer"
   }
 }
