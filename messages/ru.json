@@ -61,6 +61,11 @@
     "hint": "Подсказка {number, number}",
     "answer": "Ответ",
     "solution": "Решение",
-    "next": "Следующая задача →"
+    "next": "Следующая задача →",
+    "check": "Проверить",
+    "correct": "Верно",
+    "wrong": "Неверно",
+    "answerPart": "Ответ {number, number}",
+    "yourAnswer": "Твой ответ"
   }
 }

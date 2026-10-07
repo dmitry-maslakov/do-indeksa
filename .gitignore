@@ -11,3 +11,4 @@ playwright-report/
 next-env.d.ts
 *.d.json.ts
 .content-collections/
+public/mathlive-fonts/

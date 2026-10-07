@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { AnswerForm } from "@/components/answer-form";
 import { MathHtml } from "@/components/math-html";
 import { Reveal } from "@/components/reveal";
 import { TaskRow } from "@/components/task-row";
@@ -68,6 +69,10 @@ export default async function SolvePage({
           <MathHtml
             html={task.statement}
             className="font-semibold text-lg tracking-tight md:text-task-lg"
+          />
+          <AnswerForm
+            taskId={task.id}
+            labels={task.check.map((c) => c.label)}
           />
           <div className="flex flex-col gap-2">
             {task.hints.map((hint, i) => (
