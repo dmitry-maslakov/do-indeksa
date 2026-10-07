@@ -2,6 +2,8 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { headers } from "next/headers";
+import { cache } from "react";
 import { db } from "./db";
 import { env } from "./env";
 
@@ -24,3 +26,7 @@ export const auth = betterAuth({
   telemetry: { enabled: false },
   plugins: [nextCookies()],
 });
+
+export const getSession = cache(async () =>
+  auth.api.getSession({ headers: await headers() }),
+);
