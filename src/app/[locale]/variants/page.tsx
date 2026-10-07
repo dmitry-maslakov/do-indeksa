@@ -107,7 +107,7 @@ function Rows({ variants, runs }: { variants: Variant[]; runs: RunSummary[] }) {
               tasks={v.taskIds.length}
               latest={
                 latest && {
-                  runId: latest.id,
+                  id: latest.id,
                   segments: latest.segments,
                   score: latest.score,
                   max: latest.max,
