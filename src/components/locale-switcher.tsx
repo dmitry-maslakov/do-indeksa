@@ -42,7 +42,7 @@ export function LocaleSwitcher() {
         aria-label={t("label")}
       >
         <LanguagesIcon />
-        {names(locale)}
+        <span className="hidden sm:inline">{names(locale)}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-auto">
         <DropdownMenuRadioGroup value={locale} onValueChange={select}>
