@@ -48,6 +48,11 @@
     "empty": "Nothing found",
     "emptyHint": "Remove a filter or change the query",
     "showAll": "Show all tasks",
-    "meta": "№{number, number} · {level, select, easy {easy} medium {medium} hard {hard} other {}}"
+    "meta": "№{number, number} · {level, select, easy {easy} medium {medium} hard {hard} other {}}",
+    "status": "Status",
+    "statuses": "{status, select, new {Not solved} solved {Solved} wrong {Wrong} favorite {Favorites} other {}}",
+    "solved": "solved",
+    "wrong": "wrong",
+    "favorite": "Favorite"
   }
 }

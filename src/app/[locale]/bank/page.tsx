@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Link } from "@/i18n/navigation";
-import { findTasks, levels } from "@/server/tasks";
+import { getSession } from "@/server/auth";
+import { getProgress } from "@/server/progress";
+import { findTasks, levels, statusFilters } from "@/server/tasks";
 
 const optional = <T extends z.ZodType>(schema: T) =>
   schema.optional().catch(undefined);
@@ -18,20 +20,23 @@ const searchParamsSchema = z.object({
   topic: optional(z.string().min(1)),
   level: optional(z.enum(levels)),
   sort: optional(z.enum(["easy", "hard"])),
+  status: optional(z.enum(statusFilters)),
 });
 
 export default async function BankPage({
   searchParams,
 }: PageProps<"/[locale]/bank">) {
   const filters = searchParamsSchema.parse(await searchParams);
-  const tasks = findTasks(filters);
+  const session = await getSession();
+  const progress = session ? await getProgress(session.user.id) : undefined;
+  const tasks = findTasks(filters, progress);
   const t = await getTranslations("Bank");
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <h1 className="py-6 font-bold text-3xl">{t("title")}</h1>
       <div className="grid items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
-        <BankFilters filters={filters} />
+        <BankFilters filters={filters} signedIn={Boolean(session)} />
         <section className="flex flex-col gap-3.5">
           <div className="flex items-center justify-between gap-4 px-1 text-sm">
             <span className="font-semibold">
@@ -69,7 +74,14 @@ export default async function BankPage({
               </Button>
             </Card>
           ) : (
-            tasks.map((task) => <TaskCard key={task.id} task={task} />)
+            tasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                status={progress?.statuses.get(task.id)}
+                favorite={progress?.favorites.has(task.id)}
+              />
+            ))
           )}
         </section>
       </div>

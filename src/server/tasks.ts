@@ -1,8 +1,10 @@
 import "server-only";
 import { allExams, allTasks, allTopics, type Task } from "content-collections";
 import type { Locale } from "next-intl";
+import type { Progress } from "./progress";
 
 export const levels = ["easy", "medium", "hard"] as const;
+export const statusFilters = ["new", "solved", "wrong", "favorite"] as const;
 export type Level = (typeof levels)[number];
 
 const exam = allExams.find((e) => e.id === "ftn-p1");
@@ -48,18 +50,34 @@ export interface TaskFilters {
   topic?: string;
   level?: Level;
   sort?: "easy" | "hard";
+  status?: (typeof statusFilters)[number];
 }
 
-export function findTasks({ q, number, topic, level, sort }: TaskFilters) {
+export function findTasks(
+  { q, number, topic, level, sort, status }: TaskFilters,
+  progress?: Progress,
+) {
   const query = q && fold(q);
   const found = allTasks
     .filter((t) => !query || fold(t.text).includes(query))
     .filter((t) => !topic || t.topic === topic)
     .filter((t) => !level || levelOf(t.difficulty) === level)
+    .filter(
+      (t) => !status || !progress || matchesStatus(status, t.id, progress),
+    )
     .map(summarize)
     .filter((t) => !number || t.number === number);
   const order = sort === "hard" ? -1 : sort === "easy" ? 1 : 0;
   return found.sort(
     (a, b) => order * (a.difficulty - b.difficulty) || a.number - b.number,
   );
+}
+
+function matchesStatus(
+  filter: NonNullable<TaskFilters["status"]>,
+  id: string,
+  progress: Progress,
+) {
+  if (filter === "favorite") return progress.favorites.has(id);
+  return (progress.statuses.get(id) ?? "new") === filter;
 }

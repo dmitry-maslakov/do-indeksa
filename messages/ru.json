@@ -48,6 +48,11 @@
     "empty": "Ничего не нашлось",
     "emptyHint": "Сними часть фильтров или измени запрос",
     "showAll": "Показать все задачи",
-    "meta": "№{number, number} · {level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}"
+    "meta": "№{number, number} · {level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}",
+    "status": "Статус",
+    "statuses": "{status, select, new {Не решал} solved {Решил} wrong {Ошибся} favorite {Избранное} other {}}",
+    "solved": "решил",
+    "wrong": "ошибся",
+    "favorite": "В избранном"
   }
 }
