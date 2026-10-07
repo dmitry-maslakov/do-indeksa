@@ -5,12 +5,22 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Link } from "@/i18n/navigation";
-import { levels, positions, type TaskFilters } from "@/server/tasks";
+import {
+  levels,
+  positions,
+  statusFilters,
+  type TaskFilters,
+} from "@/server/tasks";
 import { FilterSelect } from "./filter-select";
 
 export const BANK_FORM = "bank-filters";
 
-export function BankFilters({ filters }: { filters: TaskFilters }) {
+interface BankFiltersProps {
+  filters: TaskFilters;
+  signedIn: boolean;
+}
+
+export function BankFilters({ filters, signedIn }: BankFiltersProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
 
@@ -75,6 +85,25 @@ export function BankFilters({ filters }: { filters: TaskFilters }) {
             ))}
           </FilterSelect>
         </label>
+        {signedIn && (
+          <label className="col-span-2 md:col-span-1">
+            <span className="mb-1 block text-subtle text-xs">
+              {t("status")}
+            </span>
+            <FilterSelect
+              name="status"
+              defaultValue={filters.status ?? ""}
+              className="w-full"
+            >
+              <NativeSelectOption value="">{t("any")}</NativeSelectOption>
+              {statusFilters.map((s) => (
+                <NativeSelectOption key={s} value={s}>
+                  {t("statuses", { status: s })}
+                </NativeSelectOption>
+              ))}
+            </FilterSelect>
+          </label>
+        )}
       </Form>
       <Link
         href="/bank"

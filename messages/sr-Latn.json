@@ -48,6 +48,11 @@
     "empty": "Ništa nije pronađeno",
     "emptyHint": "Ukloni neki filter ili promeni upit",
     "showAll": "Prikaži sve zadatke",
-    "meta": "№{number, number} · {level, select, easy {lako} medium {srednje} hard {teško} other {}}"
+    "meta": "№{number, number} · {level, select, easy {lako} medium {srednje} hard {teško} other {}}",
+    "status": "Status",
+    "statuses": "{status, select, new {Nerešeni} solved {Rešeni} wrong {Sa greškom} favorite {Omiljeni} other {}}",
+    "solved": "rešeno",
+    "wrong": "greška",
+    "favorite": "Omiljeno"
   }
 }
