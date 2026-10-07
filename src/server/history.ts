@@ -30,3 +30,36 @@ export const getRun = cache(async (userId: string, runId?: string) => {
     .where(and(eq(attempts.userId, userId), eq(attempts.runId, run.id)));
   return { run, attempts: rows };
 });
+
+export const getAttempts = cache(async (userId: string) =>
+  db
+    .select({
+      taskId: attempts.taskId,
+      runId: attempts.runId,
+      parts: attempts.parts,
+      correct: attempts.correct,
+      durationMs: attempts.durationMs,
+      createdAt: attempts.createdAt,
+    })
+    .from(attempts)
+    .where(eq(attempts.userId, userId))
+    .orderBy(desc(attempts.createdAt)),
+);
+
+export const getRecentRuns = cache(async (userId: string) =>
+  db
+    .select({
+      id: runs.id,
+      variantId: runs.variantId,
+      taskIds: runs.taskIds,
+      finishedAt: runs.finishedAt,
+    })
+    .from(runs)
+    .where(eq(runs.userId, userId))
+    .orderBy(desc(runs.finishedAt))
+    .limit(5),
+);
+
+export const getRunCount = cache(async (userId: string) =>
+  db.$count(runs, eq(runs.userId, userId)),
+);

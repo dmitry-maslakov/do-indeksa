@@ -131,5 +131,33 @@
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "Over the norm: #{numbers}.",
     "inNorm": "Every task within the norm."
+  },
+  "Stats": {
+    "title": "Stats",
+    "guest": "Sign in to see your stats: accuracy by topic and number, time and progress.",
+    "weaker": "Where you are weaker",
+    "topics": "Topics",
+    "numbers": "Numbers",
+    "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+    "sample": "A percentage shows after {count, number} attempts.",
+    "time": "Where the time goes",
+    "timeNote": "mean per number · line — {norm, number} min",
+    "minutes": "{minutes, number} min",
+    "overNorm": "Over the norm: #{numbers}.",
+    "inNorm": "Every number within the norm.",
+    "solved": "tasks solved",
+    "firstTry": "right on the first try",
+    "runs": "tests finished",
+    "spent": "in total",
+    "hours": "{hours, number} h",
+    "bank": "P1 bank",
+    "bankOf": "{solved, number} of {size, number}",
+    "bankSolved": "solved",
+    "bankWrong": "with a mistake",
+    "bankNew": "untouched",
+    "recent": "Recent tests",
+    "all": "all →",
+    "noRuns": "No finished tests yet.",
+    "score": "{score, number} points"
   }
 }

@@ -131,5 +131,33 @@
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "Дольше нормы: №{numbers}.",
     "inNorm": "Все задачи уложились в норму."
+  },
+  "Stats": {
+    "title": "Статистика",
+    "guest": "Войди, чтобы видеть статистику: точность по темам и номерам, время и прогресс.",
+    "weaker": "Где ты слабее",
+    "topics": "Темы",
+    "numbers": "Номера",
+    "attempts": "{count, plural, one {# попытка} few {# попытки} other {# попыток}}",
+    "sample": "Процент появляется после {count, number} попыток.",
+    "time": "Где уходит время",
+    "timeNote": "среднее по номеру · черта — {norm, number} мин",
+    "minutes": "{minutes, number} мин",
+    "overNorm": "Дольше нормы: №{numbers}.",
+    "inNorm": "Все номера укладываются в норму.",
+    "solved": "задач решено",
+    "firstTry": "верно с первой попытки",
+    "runs": "вариантов пройдено",
+    "spent": "за всё время",
+    "hours": "{hours, number} ч",
+    "bank": "Банк P1",
+    "bankOf": "{solved, number} из {size, number}",
+    "bankSolved": "решено",
+    "bankWrong": "с ошибкой",
+    "bankNew": "не трогал",
+    "recent": "Последние варианты",
+    "all": "все →",
+    "noRuns": "Пока нет завершённых вариантов.",
+    "score": "{score, number} баллов"
   }
 }

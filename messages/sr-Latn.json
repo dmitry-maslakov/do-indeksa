@@ -131,5 +131,33 @@
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "Duže od norme: №{numbers}.",
     "inNorm": "Svi zadaci u okviru norme."
+  },
+  "Stats": {
+    "title": "Statistika",
+    "guest": "Prijavi se da vidiš statistiku: tačnost po temama i brojevima, vreme i napredak.",
+    "weaker": "Gde si slabiji",
+    "topics": "Teme",
+    "numbers": "Brojevi",
+    "attempts": "{count, plural, one {# pokušaj} few {# pokušaja} other {# pokušaja}}",
+    "sample": "Procenat se prikazuje posle {count, number} pokušaja.",
+    "time": "Gde odlazi vreme",
+    "timeNote": "prosek po broju · crta — {norm, number} min",
+    "minutes": "{minutes, number} min",
+    "overNorm": "Duže od norme: №{numbers}.",
+    "inNorm": "Svi brojevi su u okviru norme.",
+    "solved": "zadataka rešeno",
+    "firstTry": "tačno iz prvog puta",
+    "runs": "testova završeno",
+    "spent": "ukupno vremena",
+    "hours": "{hours, number} h",
+    "bank": "Banka P1",
+    "bankOf": "{solved, number} od {size, number}",
+    "bankSolved": "rešeno",
+    "bankWrong": "sa greškom",
+    "bankNew": "nedirnuto",
+    "recent": "Poslednji testovi",
+    "all": "svi →",
+    "noRuns": "Još nema završenih testova.",
+    "score": "{score, number} bodova"
   }
 }
