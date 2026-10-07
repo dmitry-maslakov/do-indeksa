@@ -5,18 +5,47 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  repository_dispatch:
-    types: [content]
+  schedule:
+    - cron: "17 * * * *"
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
 jobs:
+  bank:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      build: ${{ steps.tag.outputs.build }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ secrets.CONTENT_REPO }}
+          ssh-key: ${{ secrets.CONTENT_DEPLOY_KEY }}
+      - id: tag
+        env:
+          EVENT: ${{ github.event_name }}
+          REGISTRY: ${{ secrets.ZOT_REGISTRY }}
+          AUTH: ${{ secrets.ZOT_USER }}:${{ secrets.ZOT_PASS }}
+        run: |
+          tag="$GITHUB_SHA-$(git rev-parse --short=12 HEAD)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT" = schedule ] && curl -fsI -u "$AUTH" \
+            -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json" \
+            "https://$REGISTRY/v2/do-indeksa/migrate/manifests/$tag" >/dev/null; then
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   check:
+    needs: bank
+    if: ${{ !cancelled() && needs.bank.outputs.build != 'false' }}
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -62,11 +91,13 @@ jobs:
           GOOGLE_CLIENT_SECRET: build-only
 
   image:
-    needs: check
+    needs: [bank, check]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
     runs-on: ubuntu-24.04
     env:
-      WEB: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/app:${{ github.sha }}
-      MIGRATE: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/migrate:${{ github.sha }}
+      TAG: ${{ needs.bank.outputs.tag || github.sha }}
+      WEB: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/app:${{ needs.bank.outputs.tag || github.sha }}
+      MIGRATE: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/migrate:${{ needs.bank.outputs.tag || github.sha }}
       PUSH: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -88,7 +119,7 @@ jobs:
           context: .
           target: runner
           build-args: |
-            GIT_SHA=${{ github.sha }}
+            GIT_SHA=${{ env.TAG }}
             CONTENT_DIR=${{ env.PUSH == 'true' && 'bank' || 'content' }}
           load: true
           tags: ${{ env.WEB }}
