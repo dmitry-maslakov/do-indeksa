@@ -2,5 +2,6 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreIssues": {
     "src/components/ui/**": ["exports", "types"]
-  }
+  },
+  "entry": ["content-collections.ts"]
 }
