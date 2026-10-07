@@ -2,6 +2,7 @@ import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
 import { pick } from "@/lib/pick";
+import { parseVariantId } from "@/lib/variant-id";
 import { dailySize, numberOf, positions } from "./exam";
 import { getTask, tasks } from "./tasks";
 import { topicName } from "./topics";
@@ -27,25 +28,27 @@ export const belgradeDate = (at = new Date()) =>
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
-  if (/^daily-\d{4}-\d{2}-\d{2}$/.test(id)) {
+  const parsed = parseVariantId(id);
+  if (parsed?.kind === "daily") {
     return { id, kind: "daily", taskIds: pick(byPosition, dailySize, id) };
   }
-  if (/^random-[0-9a-f]{8}$/.test(id)) {
+  if (parsed?.kind === "random") {
     return {
       id,
       kind: "random",
       taskIds: pick(byPosition, positions.length, id),
     };
   }
-  const set = /^set-([a-z0-9-]+(?:\.[a-z0-9-]+){0,9})$/.exec(id)?.[1];
-  const ids = set?.split(".") ?? [];
-  if (ids.length > 0 && ids.every((taskId) => getTask(taskId))) {
-    return { id, kind: "custom", taskIds: byNumber(ids) };
+  if (
+    parsed?.kind === "custom" &&
+    parsed.taskIds.every((taskId) => getTask(taskId))
+  ) {
+    return { id, kind: "custom", taskIds: byNumber(parsed.taskIds) };
   }
 }
 
 export const byNumber = (ids: string[]) =>
-  [...new Set(ids)].sort(
+  [...ids].sort(
     (a, b) =>
       numberOf(getTask(a)?.topic ?? "") - numberOf(getTask(b)?.topic ?? ""),
   );

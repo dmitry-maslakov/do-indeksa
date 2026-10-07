@@ -6,6 +6,7 @@ import { positions } from "@/content/exam";
 import { redirect } from "@/i18n/navigation";
 import { latestStatuses } from "@/lib/progress";
 import { weakest } from "@/lib/stats";
+import { setId } from "@/lib/variant-id";
 import { getSession } from "@/server/auth";
 import { getAttempts } from "@/server/history";
 
@@ -38,7 +39,7 @@ export default async function ComposePage({
   );
   const query = timer === "off" ? "?timer=off" : "";
   redirect({
-    href: `/variants/set-${ids.join(".")}${query}`,
+    href: `/variants/${setId(ids)}${query}`,
     locale: await getLocale(),
   });
 }
