@@ -37,6 +37,7 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
       variant="ghost"
       size="sm"
       onClick={toggle}
+      disabled={isPending}
       aria-pressed={shown}
       className="bg-transparent"
     >
