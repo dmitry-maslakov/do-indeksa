@@ -6,5 +6,19 @@
   "NotFound": {
     "title": "Page not found",
     "home": "Back to home"
+  },
+  "Nav": {
+    "home": "Home",
+    "bank": "Task bank",
+    "variants": "Practice exams",
+    "stats": "Statistics"
+  },
+  "LocaleSwitcher": {
+    "label": "Language"
+  },
+  "Locale": {
+    "sr-Latn": "Srpski",
+    "ru": "Русский",
+    "en": "English"
   }
 }
