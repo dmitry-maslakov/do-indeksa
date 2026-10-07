@@ -64,9 +64,6 @@ async function RunReview({
         variantId={found.run.variantId}
         title={variant ? await variantTitle(variant) : found.run.variantId}
         finishedAt={found.run.finishedAt}
-        weakest={tasks.find(
-          (task) => task.topic === result.lost.find((l) => l.topic)?.topic,
-        )}
       />
       <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <ReviewRows review={result} tasks={tasks} />

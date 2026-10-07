@@ -128,7 +128,6 @@
     "score": "из {max, number} · верно {correct, number} из {total, number}",
     "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
     "retry": "Решить заново",
-    "practice": "Порешать: {topic}",
     "strip": "{score, number} из {max, number} баллов",
     "task": "Задача",
     "points": "Баллы",
@@ -143,7 +142,8 @@
     "timeTitle": "Куда ушло время",
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "Дольше нормы: №{numbers}.",
-    "inNorm": "Все задачи уложились в норму."
+    "inNorm": "Все задачи уложились в норму.",
+    "similar": "Похожие на ошибки · {count, number}"
   },
   "Stats": {
     "title": "Статистика",
@@ -171,7 +171,8 @@
     "recent": "Последние варианты",
     "all": "все →",
     "noRuns": "Пока нет завершённых вариантов.",
-    "score": "{score, number} баллов"
+    "score": "{score, number} баллов",
+    "repeated": "Ошибки повторяются на №{numbers}."
   },
   "Home": {
     "continue": "Продолжить",

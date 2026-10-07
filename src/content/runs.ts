@@ -26,6 +26,7 @@ export interface RunSummary {
   title: string;
   finishedAt: Date;
   segments: Segment[];
+  misses: number[];
   score: number;
   max: number;
 }
@@ -51,6 +52,9 @@ export function summarizeRuns(
         title: variant ? await variantTitle(variant) : run.variantId,
         finishedAt: run.finishedAt,
         segments: result.rows.map((r) => r.segment),
+        misses: result.rows
+          .filter((r) => r.earned < r.points)
+          .map((r) => r.number),
         score: result.score,
         max: result.max,
       };

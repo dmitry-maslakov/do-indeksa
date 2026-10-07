@@ -128,7 +128,6 @@
     "score": "od {max, number} · tačno {correct, number} od {total, number}",
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Reši ponovo",
-    "practice": "Vežbaj: {topic}",
     "strip": "{score, number} od {max, number} bodova",
     "task": "Zadatak",
     "points": "Bodovi",
@@ -143,7 +142,8 @@
     "timeTitle": "Kuda je otišlo vreme",
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "Duže od norme: №{numbers}.",
-    "inNorm": "Svi zadaci u okviru norme."
+    "inNorm": "Svi zadaci u okviru norme.",
+    "similar": "Slični greškama · {count, number}"
   },
   "Stats": {
     "title": "Statistika",
@@ -171,7 +171,8 @@
     "recent": "Poslednji testovi",
     "all": "svi →",
     "noRuns": "Još nema završenih testova.",
-    "score": "{score, number} bodova"
+    "score": "{score, number} bodova",
+    "repeated": "Greške se ponavljaju na №{numbers}."
   },
   "Home": {
     "continue": "Nastavi",
