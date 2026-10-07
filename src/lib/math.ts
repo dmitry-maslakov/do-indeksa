@@ -47,3 +47,6 @@ export function isEquivalent(input: string, expected: string): boolean {
       : [given];
   return candidates.some((c) => sameItems(items(target), items(c)));
 }
+
+export const gradeParts = (expected: string[], answers: string[]) =>
+  expected.map((e, i) => isEquivalent(answers[i] ?? "", e));

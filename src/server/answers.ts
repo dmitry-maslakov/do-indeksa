@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { getTask } from "@/content/tasks";
 import { attempts } from "@/db/schema";
-import { isEquivalent } from "@/lib/math";
+import { gradeParts } from "@/lib/math";
 import { getSession } from "./auth";
 import { db } from "./db";
 
@@ -34,8 +34,9 @@ export async function checkAnswer(
   const task = getTask(taskId);
   if (!task) throw new Error(`unknown task ${taskId}`);
 
-  const parts = task.check.map((c, i) =>
-    isEquivalent(answers[i] ?? "", c.expected),
+  const parts = gradeParts(
+    task.check.map((c) => c.expected),
+    answers,
   );
   const correct = parts.every(Boolean);
 

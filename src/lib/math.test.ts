@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isEquivalent } from "./math";
+import { gradeParts, isEquivalent } from "./math";
 
 describe("isEquivalent", () => {
   it.each([
@@ -34,5 +34,15 @@ describe("isEquivalent", () => {
     ["", "1"],
   ])("rejects %s for %s", (input, expected) => {
     expect(isEquivalent(input, expected)).toBe(false);
+  });
+});
+
+describe("gradeParts", () => {
+  it("grades each part and treats a missing answer as wrong", () => {
+    expect(gradeParts(["2", "\\frac{1}{2}"], ["2"])).toEqual([true, false]);
+    expect(gradeParts(["2", "\\frac{1}{2}"], ["1", "0{,}5"])).toEqual([
+      false,
+      true,
+    ]);
   });
 });
