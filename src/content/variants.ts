@@ -59,21 +59,25 @@ export interface ExamTask {
   id: string;
   number: number;
   topic: string;
+  topicName: string;
   points: number;
+  minutes: number;
   statement: string;
   labels: (string | null)[];
 }
 
-export function examTasks(variant: ExamVariant, locale: Locale): ExamTask[] {
-  return variant.taskIds.flatMap((id) => {
+export function tasksFor(taskIds: string[], locale: Locale): ExamTask[] {
+  return taskIds.flatMap((id) => {
     const task = getTask(id);
     if (!task) return [];
     const number = numberOf(task.topic);
     return {
       id,
       number,
-      topic: topicName(task.topic, locale),
+      topic: task.topic,
+      topicName: topicName(task.topic, locale),
       points: pointsOf(id),
+      minutes: positions[number - 1]?.minutes ?? 0,
       statement: task.statement,
       labels: task.check.map((c) => c.label),
     };

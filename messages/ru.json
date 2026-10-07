@@ -105,5 +105,31 @@
     "signIn": "Войти",
     "back": "К вариантам",
     "retry": "Ещё раз"
+  },
+  "Review": {
+    "title": "Разбор",
+    "guest": "Войди, чтобы видеть разбор своих вариантов: баллы, время и где теряешь баллы.",
+    "empty": "Пока нет завершённых вариантов. Реши один, и разбор появится здесь.",
+    "toVariants": "К вариантам",
+    "crumb": "← {title} · завершён {date}",
+    "score": "из {max, number} · верно {correct, number} из {total, number}",
+    "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
+    "retry": "Решить заново",
+    "practice": "Порешать: {topic}",
+    "strip": "{score, number} из {max, number} баллов",
+    "task": "Задача",
+    "points": "Баллы",
+    "time": "Время",
+    "rest": "{count, plural, one {Остальная # задача решена верно} few {Остальные # задачи решены верно} other {Остальные # задач решены верно}}",
+    "partial": "частично верно",
+    "wrong": "неверно",
+    "skipped": "без ответа",
+    "minutes": "{minutes, number} мин",
+    "lost": "Где потерял баллы",
+    "skippedTopic": "Без ответа",
+    "timeTitle": "Куда ушло время",
+    "timeOf": "{spent, number} из {norm, number} мин",
+    "overNorm": "Дольше нормы: №{numbers}.",
+    "inNorm": "Все задачи уложились в норму."
   }
 }
