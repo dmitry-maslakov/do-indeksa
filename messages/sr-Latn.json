@@ -24,5 +24,10 @@
   "ExamSwitcher": {
     "meta": "{tasks, number} zadataka · {hours, number} h",
     "more": "Ostali fakulteti uskoro"
+  },
+  "UserMenu": {
+    "signIn": "Prijavi se",
+    "signOut": "Odjavi se",
+    "account": "Nalog"
   }
 }
