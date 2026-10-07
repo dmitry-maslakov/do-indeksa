@@ -11,6 +11,9 @@ const sections = [
   { href: "/stats", key: "stats" },
 ] as const;
 
+const reveal = (link: HTMLAnchorElement | null) =>
+  link?.scrollIntoView({ block: "nearest", inline: "nearest" });
+
 function isActive(pathname: string, href: string) {
   return href === "/"
     ? pathname === "/"
@@ -29,6 +32,7 @@ export function NavLinks() {
           <Link
             key={key}
             href={href}
+            ref={active ? reveal : undefined}
             aria-current={active ? "page" : undefined}
             className={cn(
               "whitespace-nowrap font-medium text-subtle transition-colors hover:text-foreground",
