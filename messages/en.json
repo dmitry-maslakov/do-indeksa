@@ -20,5 +20,9 @@
     "sr-Latn": "Srpski",
     "ru": "Русский",
     "en": "English"
+  },
+  "ExamSwitcher": {
+    "meta": "{tasks, number} tasks · {hours, number} h",
+    "more": "More faculties coming soon"
   }
 }
