@@ -5,6 +5,10 @@ services:
       POSTGRES_USER: do_indeksa
       POSTGRES_PASSWORD: do_indeksa
       POSTGRES_DB: do_indeksa
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "do_indeksa"]
+      interval: 2s
+      retries: 15
     ports:
       - "5432:5432"
     volumes:
