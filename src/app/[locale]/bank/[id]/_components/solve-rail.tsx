@@ -1,7 +1,6 @@
 "use client";
 
-import { cn } from "cn";
-import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
+import { PanelLeftCloseIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LinkTabs } from "@/components/link-tabs";
@@ -14,10 +13,13 @@ import {
 } from "@/components/ui/native-select";
 import { VariantStrip } from "@/components/variant-strip";
 import type { TaskSummary } from "@/content/tasks";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import type { TaskStatus } from "@/lib/progress";
+import { statusSegment } from "@/lib/strip";
+import { useStoredFlag } from "@/lib/use-stored-flag";
 import { getStatuses } from "@/server/statuses";
+import { RailNumbers } from "./rail-numbers";
 
 interface SolveRailProps {
   current: string;
@@ -26,71 +28,34 @@ interface SolveRailProps {
   topics: { id: string; name: string; first: string }[];
 }
 
-const KEY = "do-indeksa-rail";
-
 export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
   const t = useTranslations("Solve");
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>({});
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    try {
-      setCollapsed(localStorage.getItem(KEY) === "collapsed");
-    } catch {}
-  }, []);
+  const [collapsed, toggle] = useStoredFlag("do-indeksa-rail-collapsed");
 
   useEffect(() => {
     if (session) getStatuses().then(setStatuses);
   }, [session]);
 
-  function toggle() {
-    setCollapsed((c) => {
-      try {
-        localStorage.setItem(KEY, c ? "open" : "collapsed");
-      } catch {}
-      return !c;
-    });
+  if (collapsed) {
+    return (
+      <RailNumbers
+        ids={rail.map((s) => s.id)}
+        current={current}
+        statuses={statuses}
+        onExpand={toggle}
+      />
+    );
   }
 
   const right = rail.filter((s) => statuses[s.id] === "solved").length;
   const wrong = rail.filter((s) => statuses[s.id] === "wrong").length;
-
-  if (collapsed) {
-    return (
-      <Card
-        data-rail="collapsed"
-        size="sm"
-        className="order-last items-center gap-2 md:order-none"
-      >
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          onClick={toggle}
-          aria-label={t("expand")}
-        >
-          <PanelLeftOpenIcon />
-        </Button>
-        {rail.map((s, i) => (
-          <Link
-            key={s.id}
-            href={`/bank/${s.id}`}
-            aria-current={s.id === current ? "page" : undefined}
-            className={cn(
-              "flex size-8 items-center justify-center rounded-lg border border-border font-semibold text-[13px] text-subtle",
-              statuses[s.id] === "solved" && "border-0 bg-data-tint text-data",
-              statuses[s.id] === "wrong" &&
-                "border-0 bg-error-tint text-error-text",
-              s.id === current && "border-0 bg-primary text-primary-foreground",
-            )}
-          >
-            {i + 1}
-          </Link>
-        ))}
-      </Card>
-    );
-  }
+  const marks: Partial<Record<TaskStatus, string>> = {
+    solved: t("solvedMark"),
+    wrong: t("wrongMark"),
+  };
 
   return (
     <Card size="sm" className="order-last gap-4 md:order-none">
@@ -140,32 +105,23 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
           size="sm"
           label={t("tally", { right, wrong })}
           segments={rail.map((s) =>
-            s.id === current
-              ? "current"
-              : statuses[s.id] === "solved"
-                ? "done"
-                : statuses[s.id] === "wrong"
-                  ? "error"
-                  : "none",
+            s.id === current ? "current" : statusSegment(statuses[s.id]),
           )}
         />
       </div>
       <nav className="flex flex-col gap-0.5">
-        {rail.map((s) => (
-          <TaskRow
-            key={s.id}
-            task={s}
-            active={s.id === current}
-            meta={
-              statuses[s.id] === "solved"
-                ? `${s.meta} · ${t("solvedMark")}`
-                : statuses[s.id] === "wrong"
-                  ? `${s.meta} · ${t("wrongMark")}`
-                  : s.meta
-            }
-            status={statuses[s.id]}
-          />
-        ))}
+        {rail.map((s) => {
+          const mark = marks[statuses[s.id] ?? "new"];
+          return (
+            <TaskRow
+              key={s.id}
+              task={s}
+              active={s.id === current}
+              meta={mark ? `${s.meta} · ${mark}` : s.meta}
+              status={statuses[s.id]}
+            />
+          );
+        })}
       </nav>
     </Card>
   );
