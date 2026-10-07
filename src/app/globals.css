@@ -38,6 +38,7 @@
   --color-success-text: var(--success-text);
   --color-success-tint: var(--success-tint);
   --color-daily: var(--daily);
+  --color-daily-muted: var(--daily-muted);
 
   --radius-xs: 3px;
   --radius-sm: calc(var(--radius) * 0.6);
@@ -94,6 +95,7 @@
   --success-text: #1f8a5b;
   --success-tint: #e3f5ec;
   --daily: #2b2560;
+  --daily-muted: #b4b3ba;
 }
 
 @layer base {

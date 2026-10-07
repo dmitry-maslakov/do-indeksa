@@ -85,6 +85,7 @@ const exams = defineCollection({
         }),
       )
       .min(1),
+    daily: z.object({ size: z.number().int().positive() }).default({ size: 5 }),
   }),
   transform: ({ positions, ...exam }, { documents }) => {
     const topicIds = new Set(documents(topics).map((t) => t._meta.path));

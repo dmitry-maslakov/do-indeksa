@@ -6,6 +6,8 @@ if (!exam) throw new Error("exam ftn-p1 is missing");
 
 export const positions = exam.positions;
 
+export const dailySize = exam.daily.size;
+
 const numbers = new Map(positions.map((p) => [p.topic, p.number]));
 
 export const numberOf = (topic: string) => numbers.get(topic) ?? 0;
