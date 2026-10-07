@@ -29,6 +29,7 @@ export default async function SolvePage({
   const locale = await getLocale();
   const summary = summarize(task);
   const rail = siblings(task);
+  const hintNumbers = task.hints.map((_, i) => i + 1);
   const next = rail[(rail.findIndex((s) => s.id === id) + 1) % rail.length];
 
   return (
@@ -75,15 +76,16 @@ export default async function SolvePage({
             labels={task.check.map((c) => c.label)}
           />
           <div className="flex flex-col gap-2">
-            {task.hints.map((hint, i) => (
+            {hintNumbers.map((n) => (
               <Reveal
-                key={hint}
-                label={t("hint", { number: i + 1 })}
-                html={hint}
+                key={n}
+                label={t("hint", { number: n })}
+                taskId={task.id}
+                part={n - 1}
               />
             ))}
-            <Reveal label={t("answer")} html={task.answer} />
-            <Reveal label={t("solution")} html={task.solution} />
+            <Reveal label={t("answer")} taskId={task.id} part="answer" />
+            <Reveal label={t("solution")} taskId={task.id} part="solution" />
           </div>
           {next && next.id !== id && (
             <Button
