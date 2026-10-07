@@ -35,3 +35,9 @@ jobs:
       - run: pnpm knip
       - run: pnpm i18n
       - run: pnpm build
+        env:
+          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
+          BETTER_AUTH_SECRET: build-only-not-a-secret-build-only
+          BETTER_AUTH_URL: http://localhost:3000
+          GOOGLE_CLIENT_ID: build-only
+          GOOGLE_CLIENT_SECRET: build-only
