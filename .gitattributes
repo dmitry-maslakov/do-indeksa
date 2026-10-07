@@ -1,1 +1,3 @@
 src/components/ui/** linguist-generated
+drizzle/** linguist-generated
+src/db/auth-schema.ts linguist-generated
