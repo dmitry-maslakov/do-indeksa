@@ -12,7 +12,8 @@ interface AnswerFieldProps {
   label: string;
   labelHtml: string | null;
   state: AnswerState;
-  onEdit: () => void;
+  defaultValue?: string;
+  onEdit: (value: string) => void;
 }
 
 let setup: Promise<unknown> | undefined;
@@ -31,10 +32,11 @@ export function AnswerField({
   label,
   labelHtml,
   state,
+  defaultValue = "",
   onEdit,
 }: AnswerFieldProps) {
   const field = useRef<MathfieldElement>(null);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
     loadMathlive();
@@ -42,7 +44,7 @@ export function AnswerField({
     if (!el) return;
     const sync = () => {
       setValue(el.value);
-      onEdit();
+      onEdit(el.value);
     };
     el.addEventListener("input", sync);
     return () => el.removeEventListener("input", sync);
@@ -68,7 +70,9 @@ export function AnswerField({
           state === "wrong" &&
             "bg-error-tint text-error-text ring-[1.5px] ring-error ring-inset",
         )}
-      />
+      >
+        {defaultValue}
+      </math-field>
       <input type="hidden" name={name} value={value} />
     </div>
   );

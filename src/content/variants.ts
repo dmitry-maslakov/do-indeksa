@@ -1,8 +1,10 @@
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
+import type { Locale } from "next-intl";
 import { pick } from "@/lib/pick";
-import { dailySize, positions } from "./exam";
-import { tasks } from "./tasks";
+import { dailySize, numberOf, positions } from "./exam";
+import { getTask, tasks } from "./tasks";
+import { topicName } from "./topics";
 
 export const officialVariants = allVariants
   .filter((v) => v.kind === "official")
@@ -46,4 +48,29 @@ export function minutesOf(variant: ExamVariant) {
   return positions
     .filter((p) => topics.has(p.topic))
     .reduce((sum, p) => sum + p.minutes, 0);
+}
+
+export interface ExamTask {
+  id: string;
+  number: number;
+  topic: string;
+  points: number;
+  statement: string;
+  labels: (string | null)[];
+}
+
+export function examTasks(variant: ExamVariant, locale: Locale): ExamTask[] {
+  return variant.taskIds.flatMap((id) => {
+    const task = getTask(id);
+    if (!task) return [];
+    const number = numberOf(task.topic);
+    return {
+      id,
+      number,
+      topic: topicName(task.topic, locale),
+      points: positions[number - 1]?.points ?? 0,
+      statement: task.statement,
+      labels: task.check.map((c) => c.label),
+    };
+  });
 }

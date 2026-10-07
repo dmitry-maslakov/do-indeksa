@@ -84,5 +84,15 @@
     "random": "Random test",
     "randomText": "{tasks, number} tasks, one for each position, like the real exam.",
     "compose": "Compose"
+  },
+  "Exam": {
+    "timeLeft": "Time left",
+    "overtime": "Overtime",
+    "tasks": "Tasks",
+    "task": "Task {number, number}",
+    "answered": "{count, number} of {total, number} answered",
+    "meta": "#{number, number} · {points, plural, one {# point} other {# points}}",
+    "prev": "Previous",
+    "next": "Next"
   }
 }
