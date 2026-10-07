@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { SignInButton } from "@/components/sign-in-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
 import type { ExamTask } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
@@ -29,7 +29,7 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
   return (
     <Card className="max-w-3xl gap-6 md:p-9">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-lg">{t("result")}</h2>
+        <CardTitle>{t("result")}</CardTitle>
         <span className="text-sm text-subtle">
           <b className="font-bold text-3xl text-foreground">{score}</b> / {max}
         </span>

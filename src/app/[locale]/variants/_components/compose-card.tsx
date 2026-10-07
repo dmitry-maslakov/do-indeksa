@@ -5,7 +5,7 @@ import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { useRouter } from "@/i18n/navigation";
 
 const modes = ["exam", "weak", "unsolved", "topics"] as const;
@@ -31,7 +31,7 @@ export function ComposeCard({ topics, minutes }: ComposeCardProps) {
 
   return (
     <Card className="gap-4">
-      <h2 className="font-semibold text-lg">{t("title")}</h2>
+      <CardTitle>{t("title")}</CardTitle>
       <fieldset className="flex flex-col gap-1.5 text-sm">
         {modes.map((m) => (
           <label

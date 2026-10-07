@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { StackBar } from "@/components/stack-bar";
-import { Card } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import type { Review } from "@/lib/review";
 
 const tones = ["bg-data", "bg-data-soft", "bg-data/40", "bg-data/20"];
@@ -20,7 +20,7 @@ export function LostPoints({
 
   return (
     <Card className="gap-3.5">
-      <h2 className="font-semibold text-lg">{t("lost")}</h2>
+      <CardTitle>{t("lost")}</CardTitle>
       <StackBar
         label={t("lost")}
         parts={top.map((l, i) => ({

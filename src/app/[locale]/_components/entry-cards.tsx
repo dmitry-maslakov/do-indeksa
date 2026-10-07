@@ -1,5 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { positions } from "@/content/exam";
 import { topicName } from "@/content/topics";
 import { curatedVariants, officialVariants } from "@/content/variants";
@@ -12,7 +12,7 @@ export function EntryCards() {
   return (
     <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,0.7fr)]">
       <Card size="sm" className="gap-3.5">
-        <h2 className="font-semibold text-lg">{t("byNumber")}</h2>
+        <CardTitle>{t("byNumber")}</CardTitle>
         <div className="grid grid-cols-5 gap-1.5">
           {positions.map((p) => (
             <Link
@@ -27,7 +27,7 @@ export function EntryCards() {
         <span className="text-[13px] text-subtle">{t("byNumberHint")}</span>
       </Card>
       <Card size="sm" className="gap-3.5">
-        <h2 className="font-semibold text-lg">{t("byTopic")}</h2>
+        <CardTitle>{t("byTopic")}</CardTitle>
         <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[13px]">
           {positions.slice(0, 7).map((p) => (
             <Link
@@ -50,7 +50,7 @@ export function EntryCards() {
           size="sm"
           className="h-full gap-2.5 transition-shadow hover:shadow-raised"
         >
-          <h2 className="font-semibold text-lg">{t("variants")}</h2>
+          <CardTitle>{t("variants")}</CardTitle>
           <span className="text-sm text-subtle leading-relaxed">
             {t("official", { count: officialVariants.length })}
             <br />

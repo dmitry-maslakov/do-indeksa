@@ -1,6 +1,11 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { positions } from "@/content/exam";
 import { EmptyNote } from "./empty-note";
 
@@ -24,12 +29,10 @@ export function TimeCard({
 
   return (
     <Card className="gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-lg">{t("time")}</h2>
-        <span className="text-sm text-subtle">
-          {t("norm", { minutes: norm })}
-        </span>
-      </div>
+      <CardHeader>
+        <CardTitle>{t("time")}</CardTitle>
+        <CardDescription>{t("norm", { minutes: norm })}</CardDescription>
+      </CardHeader>
       {rows.length === 0 && (
         <EmptyNote
           text={t("timeEmpty")}

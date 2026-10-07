@@ -1,6 +1,11 @@
 import { useTranslations } from "next-intl";
 import { StackBar } from "@/components/stack-bar";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { Review } from "@/lib/review";
 
 export function TimeSpent({ review }: { review: Review }) {
@@ -11,12 +16,10 @@ export function TimeSpent({ review }: { review: Review }) {
 
   return (
     <Card className="gap-3.5">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-semibold text-lg">{t("timeTitle")}</h2>
-        <span className="text-sm text-subtle">
-          {t("timeOf", { spent, norm })}
-        </span>
-      </div>
+      <CardHeader>
+        <CardTitle>{t("timeTitle")}</CardTitle>
+        <CardDescription>{t("timeOf", { spent, norm })}</CardDescription>
+      </CardHeader>
       <StackBar
         label={t("timeOf", { spent, norm })}
         parts={[
