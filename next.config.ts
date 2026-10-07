@@ -15,7 +15,10 @@ const withNextIntl = createNextIntlPlugin({
 });
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  deploymentId: process.env.GIT_SHA,
   agentRules: false,
+  serverExternalPackages: ["@cortex-js/compute-engine"],
 };
 
 export default withContentCollections(withNextIntl(nextConfig));
