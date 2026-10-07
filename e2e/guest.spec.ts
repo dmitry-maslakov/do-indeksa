@@ -29,7 +29,7 @@ test("a guest composes an untimed test from a topic", async ({ page }) => {
   await page.goto("/variants");
   await page.getByText("Izaberi teme").click();
   await page.getByRole("button", { name: "Logaritmi" }).click();
-  await page.getByRole("checkbox").uncheck({ force: true });
+  await page.getByRole("switch", { name: "Tajmer" }).click();
   await page.getByRole("button", { name: "Sastavi", exact: true }).click();
   await expect(page).toHaveURL(/\/variants\/set-[a-z0-9.-]+\?timer=off$/);
   await expect(page.getByText("Proteklo vreme")).toBeVisible();

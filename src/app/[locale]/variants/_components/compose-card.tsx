@@ -3,12 +3,13 @@
 import { cn } from "cn";
 import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useRouter } from "@/i18n/navigation";
-
-const modes = ["exam", "weak", "unsolved", "topics"] as const;
+import { composeModes } from "@/lib/compose";
 
 interface ComposeCardProps {
   topics: { id: string; name: string }[];
@@ -18,9 +19,10 @@ interface ComposeCardProps {
 export function ComposeCard({ topics, minutes }: ComposeCardProps) {
   const t = useTranslations("Compose");
   const router = useRouter();
-  const [mode, setMode] = useState<(typeof modes)[number]>("exam");
+  const [mode, setMode] = useState<(typeof composeModes)[number]>("exam");
   const [chosen, setChosen] = useState<string[]>([]);
   const [timer, setTimer] = useState(true);
+  const timerId = useId();
 
   function compose() {
     const query = new URLSearchParams({ mode });
@@ -33,7 +35,7 @@ export function ComposeCard({ topics, minutes }: ComposeCardProps) {
     <Card className="gap-4">
       <CardTitle>{t("title")}</CardTitle>
       <fieldset className="flex flex-col gap-1.5 text-sm">
-        {modes.map((m) => (
+        {composeModes.map((m) => (
           <label
             key={m}
             className={cn(
@@ -57,44 +59,25 @@ export function ComposeCard({ topics, minutes }: ComposeCardProps) {
       </fieldset>
       {mode === "topics" && (
         <div className="flex flex-wrap gap-1.5">
-          {topics.map((topic) => {
-            const on = chosen.includes(topic.id);
-            return (
-              <button
-                key={topic.id}
-                type="button"
-                aria-pressed={on}
-                onClick={() =>
-                  setChosen((c) =>
-                    on ? c.filter((x) => x !== topic.id) : [...c, topic.id],
-                  )
-                }
-                className={cn(
-                  "rounded-full px-3 py-1 text-[13px] transition-colors",
-                  on
-                    ? "bg-data-tint text-data"
-                    : "bg-muted text-subtle hover:text-foreground",
-                )}
-              >
-                {topic.name}
-              </button>
-            );
-          })}
+          {topics.map((topic) => (
+            <Toggle
+              key={topic.id}
+              pressed={chosen.includes(topic.id)}
+              onPressedChange={(on) =>
+                setChosen((c) =>
+                  on ? [...c, topic.id] : c.filter((x) => x !== topic.id),
+                )
+              }
+            >
+              {topic.name}
+            </Toggle>
+          ))}
         </div>
       )}
-      <label className="flex cursor-pointer items-center justify-between gap-3 text-sm">
-        {t("timer", { minutes })}
-        <input
-          type="checkbox"
-          checked={timer}
-          onChange={(e) => setTimer(e.target.checked)}
-          className="peer sr-only"
-        />
-        <span
-          aria-hidden
-          className="relative h-6 w-10 rounded-full bg-untouched transition-colors after:absolute after:top-0.5 after:left-0.5 after:size-5 after:rounded-full after:bg-card after:shadow-sm after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
-        />
-      </label>
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <label htmlFor={timerId}>{t("timer", { minutes })}</label>
+        <Switch id={timerId} checked={timer} onCheckedChange={setTimer} />
+      </div>
       <Button
         variant="secondary"
         className="w-full"
