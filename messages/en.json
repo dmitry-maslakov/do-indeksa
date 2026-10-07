@@ -66,6 +66,8 @@
     "correct": "Correct",
     "wrong": "Not quite",
     "answerPart": "Answer {number, number}",
-    "yourAnswer": "Your answer"
+    "yourAnswer": "Your answer",
+    "save": "Save",
+    "saved": "Saved"
   }
 }
