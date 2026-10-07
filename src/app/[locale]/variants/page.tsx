@@ -1,6 +1,7 @@
 import type { Variant } from "content-collections";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { DailyBanner } from "@/components/daily-banner";
+import { LinkTabs } from "@/components/link-tabs";
 import { SignInCard } from "@/components/sign-in-card";
 import { Card } from "@/components/ui/card";
 import { VariantRow } from "@/components/variant-row";
@@ -19,7 +20,6 @@ import { Link } from "@/i18n/navigation";
 import { getSession } from "@/server/auth";
 import { getAttempts, getRuns } from "@/server/history";
 import { ComposeCard } from "./_components/compose-card";
-import { VariantTabs } from "./_components/variant-tabs";
 
 const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
@@ -49,7 +49,14 @@ export default async function VariantsPage({
       <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-3.5">
           <div className="flex flex-wrap items-center justify-between gap-3 px-1">
-            <VariantTabs tabs={tabs} current={tab} />
+            <LinkTabs
+              variant="underline"
+              items={tabs.map((x) => ({
+                href: x === "official" ? "/variants" : `/variants?tab=${x}`,
+                label: t(x),
+                active: x === tab,
+              }))}
+            />
             <span className="text-sm text-subtle">
               {t("format", { tasks: positions.length, minutes })}
             </span>
