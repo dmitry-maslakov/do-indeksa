@@ -1,16 +1,26 @@
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { EmptyNote } from "./empty-note";
 
-export function MistakesCard({
-  taskIds,
-  streak,
-}: {
+interface MistakesCardProps {
   taskIds: string[];
   streak: number;
-}) {
+  signedIn: boolean;
+}
+
+export function MistakesCard({ taskIds, streak, signedIn }: MistakesCardProps) {
   const t = useTranslations("Home");
   const count = taskIds.length;
+
+  if (!signedIn) {
+    return (
+      <Card className="gap-3">
+        <span className="font-semibold">{t("mistakes")}</span>
+        <EmptyNote text={t("mistakesGuest")} signedIn={false} />
+      </Card>
+    );
+  }
 
   return (
     <Link href="/bank?status=wrong" className="rounded-3xl">

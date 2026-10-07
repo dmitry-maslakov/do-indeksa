@@ -1,6 +1,8 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
+import { positions } from "@/content/exam";
+import { EmptyNote } from "./empty-note";
 
 interface TimeRow {
   number: number;
@@ -8,19 +10,35 @@ interface TimeRow {
   normMs: number;
 }
 
-export function TimeCard({ rows }: { rows: TimeRow[] }) {
+export function TimeCard({
+  rows,
+  signedIn,
+}: {
+  rows: TimeRow[];
+  signedIn: boolean;
+}) {
   const t = useTranslations("Home");
-  const top = Math.max(...rows.map((r) => Math.max(r.meanMs, r.normMs))) * 1.1;
+  const norm = positions[0]?.minutes ?? 0;
+  const top =
+    Math.max(...rows.map((r) => Math.max(r.meanMs, r.normMs)), 1) * 1.1;
 
   return (
     <Card className="gap-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-semibold text-lg">{t("time")}</h2>
         <span className="text-sm text-subtle">
-          {t("norm", { minutes: Math.round((rows[0]?.normMs ?? 0) / 60_000) })}
+          {t("norm", { minutes: norm })}
         </span>
       </div>
-      <ul className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2.5 text-sm">
+      {rows.length === 0 && (
+        <EmptyNote
+          text={t("timeEmpty")}
+          signedIn={signedIn}
+          href="/variants"
+          action={t("startTest")}
+        />
+      )}
+      <ul className="empty:hidden grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2.5 text-sm">
         {rows.map((row) => {
           const over = row.meanMs > row.normMs;
           return (
