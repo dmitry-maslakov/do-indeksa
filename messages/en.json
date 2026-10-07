@@ -54,5 +54,13 @@
     "solved": "solved",
     "wrong": "wrong",
     "favorite": "Favorite"
+  },
+  "Solve": {
+    "back": "← List",
+    "inTopic": "{count, plural, one {# task} other {# tasks}} in the topic",
+    "hint": "Hint {number, number}",
+    "answer": "Answer",
+    "solution": "Solution",
+    "next": "Next task →"
   }
 }

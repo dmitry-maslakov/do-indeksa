@@ -54,5 +54,13 @@
     "solved": "rešeno",
     "wrong": "greška",
     "favorite": "Omiljeno"
+  },
+  "Solve": {
+    "back": "← Lista",
+    "inTopic": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} u oblasti",
+    "hint": "Nagoveštaj {number, number}",
+    "answer": "Rezultat",
+    "solution": "Rešenje",
+    "next": "Sledeći zadatak →"
   }
 }

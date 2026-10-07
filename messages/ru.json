@@ -54,5 +54,13 @@
     "solved": "решил",
     "wrong": "ошибся",
     "favorite": "В избранном"
+  },
+  "Solve": {
+    "back": "← К списку",
+    "inTopic": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}} в теме",
+    "hint": "Подсказка {number, number}",
+    "answer": "Ответ",
+    "solution": "Решение",
+    "next": "Следующая задача →"
   }
 }
