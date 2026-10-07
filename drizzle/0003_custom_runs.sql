@@ -1,0 +1,1 @@
+ALTER TYPE "public"."run_kind" ADD VALUE 'custom';

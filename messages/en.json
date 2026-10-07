@@ -76,7 +76,7 @@
   },
   "Variants": {
     "title": "Practice exams",
-    "format": "{tasks, number} tasks · {minutes, number} min",
+    "format": "{tasks, plural, one {# task} other {# tasks}} · {minutes, number} min",
     "official": "Official exams",
     "curated": "Our exams",
     "start": "Start",
@@ -86,8 +86,6 @@
     "dailyMeta": "{tasks, number} tasks, new every day",
     "play": "Play",
     "random": "Random test",
-    "randomText": "{tasks, number} tasks, one for each position, like the real exam.",
-    "compose": "Compose",
     "history": "History",
     "historyGuest": "Sign in to see the history of your tests.",
     "historyEmpty": "No finished tests yet.",
@@ -95,7 +93,8 @@
     "inProgress": "{done, number} of {total, number}",
     "notSolved": "not solved",
     "continue": "Continue",
-    "review": "Review"
+    "review": "Review",
+    "custom": "My test"
   },
   "Exam": {
     "timeLeft": "Time left",
@@ -116,7 +115,8 @@
     "guest": "Sign in to keep results in your history and stats.",
     "signIn": "Sign in",
     "back": "To tests",
-    "retry": "Again"
+    "retry": "Again",
+    "elapsed": "Elapsed"
   },
   "Review": {
     "title": "Review",
@@ -197,5 +197,14 @@
     "timeEmpty": "Finish your first test to see which numbers take the most time.",
     "startTest": "Pick a test",
     "mistakesGuest": "Sign in to keep your mistakes and come back to them."
+  },
+  "Compose": {
+    "title": "Compose your own",
+    "exam": "Like the exam",
+    "weak": "From my weak topics",
+    "unsolved": "Unsolved only",
+    "topics": "Pick topics",
+    "timer": "Timer {minutes, number} min",
+    "compose": "Compose"
   }
 }

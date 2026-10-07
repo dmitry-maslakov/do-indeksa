@@ -20,9 +20,15 @@ interface ExamRunnerProps {
   variantId: string;
   tasks: ExamTask[];
   minutes: number;
+  timed: boolean;
 }
 
-export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
+export function ExamRunner({
+  variantId,
+  tasks,
+  minutes,
+  timed,
+}: ExamRunnerProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
   const hydrated = useExamHydrated();
@@ -34,8 +40,8 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
   const parts = useMemo(() => tasks.map((task) => task.labels.length), [tasks]);
 
   useEffect(() => {
-    if (hydrated) start(variantId, parts);
-  }, [hydrated, start, variantId, parts]);
+    if (hydrated) start(variantId, parts, timed);
+  }, [hydrated, start, variantId, parts, timed]);
 
   const current = run?.current ?? 0;
   const task = tasks[current];
@@ -54,7 +60,7 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
         result={result}
         onRetry={() => {
           setResult(undefined);
-          start(variantId, parts);
+          start(variantId, parts, timed);
         }}
       />
     );
@@ -82,7 +88,11 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
   return (
     <div className="grid items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
       <Card size="sm" className="gap-4">
-        <ExamTimer startedAt={run.startedAt} minutes={minutes} />
+        <ExamTimer
+          startedAt={run.startedAt}
+          minutes={minutes}
+          timed={run.timed !== false}
+        />
         <nav aria-label={t("tasks")} className="grid grid-cols-5 gap-2">
           {tasks.map((item, i) => (
             <button

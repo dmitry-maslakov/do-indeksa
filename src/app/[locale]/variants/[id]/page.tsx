@@ -6,8 +6,10 @@ import { ExamRunner } from "./_components/exam-runner";
 
 export default async function VariantPage({
   params,
+  searchParams,
 }: PageProps<"/[locale]/variants/[id]">) {
   const { id } = await params;
+  const { timer } = await searchParams;
   const variant = getVariant(id);
   if (!variant) notFound();
 
@@ -23,7 +25,12 @@ export default async function VariantPage({
           {t("format", { tasks: tasks.length, minutes })}
         </span>
       </div>
-      <ExamRunner variantId={variant.id} tasks={tasks} minutes={minutes} />
+      <ExamRunner
+        variantId={variant.id}
+        tasks={tasks}
+        minutes={minutes}
+        timed={timer !== "off"}
+      />
     </main>
   );
 }

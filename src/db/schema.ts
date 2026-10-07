@@ -20,6 +20,7 @@ export const runKind = pgEnum("run_kind", [
   "curated",
   "daily",
   "random",
+  "custom",
 ]);
 
 export const runs = pgTable(
