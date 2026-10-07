@@ -161,7 +161,6 @@
     "score": "{score, number} points"
   },
   "Home": {
-    "guest": "Sign in to track progress: weak topics, mistakes and time per task.",
     "continue": "Continue",
     "progress": "{done, number} of {total, number}",
     "byNumber": "By number",
@@ -179,6 +178,12 @@
     "streak": "{count, plural, =0 {No streak yet} one {Streak: # day} other {Streak: # days}}",
     "time": "Where the time goes",
     "norm": "norm {minutes, number} min per task",
-    "minutes": "{minutes, number} min"
+    "minutes": "{minutes, number} min",
+    "startNext": "Start a test",
+    "weakEmpty": "After a few tasks per topic you will see where you lose points.",
+    "playDaily": "Play the daily test",
+    "timeEmpty": "Finish your first test to see which numbers take the most time.",
+    "startTest": "Pick a test",
+    "mistakesGuest": "Sign in to keep your mistakes and come back to them."
   }
 }

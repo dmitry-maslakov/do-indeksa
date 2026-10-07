@@ -5,15 +5,17 @@ import { Card } from "@/components/ui/card";
 import { topicName } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
 import type { Accuracy } from "@/lib/stats";
+import { EmptyNote } from "./empty-note";
 
 export function WeakTopics({
   topics,
+  signedIn,
 }: {
   topics: (Accuracy & { pct: number })[];
+  signedIn: boolean;
 }) {
   const t = useTranslations("Home");
   const locale = useLocale();
-  if (topics.length === 0) return null;
 
   return (
     <Card className="gap-4">
@@ -21,7 +23,15 @@ export function WeakTopics({
         <h2 className="font-semibold text-lg">{t("weaker")}</h2>
         <span className="text-sm text-subtle">{t("days30")}</span>
       </div>
-      <ul className="flex flex-col gap-3.5 text-sm">
+      {topics.length === 0 && (
+        <EmptyNote
+          text={t("weakEmpty")}
+          signedIn={signedIn}
+          href="/variants/daily"
+          action={t("playDaily")}
+        />
+      )}
+      <ul className="flex flex-col gap-3.5 text-sm empty:hidden">
         {topics.map((topic) => (
           <li key={topic.key} className="flex flex-col gap-1.5">
             <div className="flex justify-between gap-3">
@@ -37,7 +47,7 @@ export function WeakTopics({
           </li>
         ))}
       </ul>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 empty:hidden">
         {topics.slice(0, 2).map((topic) => (
           <Button
             key={topic.key}

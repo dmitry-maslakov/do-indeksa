@@ -1,9 +1,11 @@
-import { getTranslations } from "next-intl/server";
 import { DailyBanner } from "@/components/daily-banner";
-import { SignInCard } from "@/components/sign-in-card";
 import { statAttempts } from "@/content/attempts";
 import { dailySize, positions } from "@/content/exam";
-import { curatedVariants, officialVariants } from "@/content/variants";
+import {
+  curatedVariants,
+  minutesOf,
+  officialVariants,
+} from "@/content/variants";
 import {
   meanTimeByNumber,
   mistakesThisWeek,
@@ -19,12 +21,14 @@ import { TimeCard } from "./_components/time-card";
 import { WeakTopics } from "./_components/weak-topics";
 
 export default async function HomePage() {
-  const t = await getTranslations("Home");
   const session = await getSession();
   const attempts = session
     ? statAttempts(await getAttempts(session.user.id))
     : [];
   const now = new Date();
+  const signedIn = Boolean(session);
+  const [first] = [...officialVariants, ...curatedVariants];
+  if (!first) throw new Error("no tests in the bank");
   const titles = Object.fromEntries(
     [...officialVariants, ...curatedVariants].map((v) => [
       v.id,
@@ -50,35 +54,37 @@ export default async function HomePage() {
   return (
     <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
       <div className="contents md:flex md:flex-col md:gap-6">
-        <ContinueCard titles={titles} />
+        <ContinueCard
+          titles={titles}
+          start={{
+            id: first.id,
+            title: titles[first.id] ?? first.id,
+            tasks: first.taskIds.length,
+            minutes: minutesOf(first),
+          }}
+        />
         <div className="max-md:order-1">
           <EntryCards />
         </div>
-        {slowest.length > 0 && (
-          <div className="max-md:order-1">
-            <TimeCard rows={slowest} />
-          </div>
-        )}
+        <div className="max-md:order-1">
+          <TimeCard rows={slowest} signedIn={signedIn} />
+        </div>
       </div>
       <div className="contents md:flex md:flex-col md:gap-6">
         <DailyBanner tasks={dailySize} />
-        {session ? (
-          <>
-            <WeakTopics
-              topics={weakest(
-                attempts,
-                positions.map((p) => p.topic),
-                now,
-              )}
-            />
-            <MistakesCard
-              taskIds={mistakesThisWeek(attempts, now)}
-              streak={streak(attempts, now)}
-            />
-          </>
-        ) : (
-          <SignInCard text={t("guest")} />
-        )}
+        <WeakTopics
+          topics={weakest(
+            attempts,
+            positions.map((p) => p.topic),
+            now,
+          )}
+          signedIn={signedIn}
+        />
+        <MistakesCard
+          taskIds={mistakesThisWeek(attempts, now)}
+          streak={streak(attempts, now)}
+          signedIn={signedIn}
+        />
       </div>
     </main>
   );
