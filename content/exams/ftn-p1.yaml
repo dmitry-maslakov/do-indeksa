@@ -1,0 +1,34 @@
+faculty: FTN
+title: FTN · P1
+durationMinutes: 240
+positions:
+  - topic: complex-numbers
+    points: 6
+    minutes: 24
+  - topic: quadratic-equations
+    points: 6
+    minutes: 24
+  - topic: logarithms
+    points: 6
+    minutes: 24
+  - topic: exponential-equations
+    points: 6
+    minutes: 24
+  - topic: trigonometry
+    points: 6
+    minutes: 24
+  - topic: vectors-analytic-geometry
+    points: 6
+    minutes: 24
+  - topic: plane-geometry
+    points: 6
+    minutes: 24
+  - topic: solid-geometry
+    points: 6
+    minutes: 24
+  - topic: functions-integrals
+    points: 6
+    minutes: 24
+  - topic: combinatorics
+    points: 6
+    minutes: 24
