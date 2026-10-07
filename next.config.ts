@@ -13,6 +13,8 @@ const withNextIntl = createNextIntlPlugin({
   },
 });
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  agentRules: false,
+};
 
 export default withNextIntl(nextConfig);
