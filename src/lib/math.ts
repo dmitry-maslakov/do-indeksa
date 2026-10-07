@@ -9,15 +9,18 @@ const ce = new ComputeEngine();
 
 export function parseMath(latex: string): BoxedExpression {
   const expr = ce.parse(latex.replaceAll("{,}", "."));
-  return isFunction(expr) && expr.operator === "Equal" && isSymbol(expr.op1)
+  return isFunction(expr) &&
+    ["Equal", "Element"].includes(expr.operator) &&
+    isSymbol(expr.op1)
     ? expr.op2
     : expr;
 }
 
-const isOrdered = (latex: string) => /^\s*(\\left)?\(/.test(latex);
+const isOrdered = (latex: string) =>
+  /^\s*(\\left)?\(/.test(latex) && !latex.includes("\\cup");
 
 const items = (expr: BoxedExpression) =>
-  isFunction(expr) && (expr.operator === "Tuple" || expr.operator === "Set")
+  isFunction(expr) && ["Tuple", "Set", "Union"].includes(expr.operator)
     ? [...expr.ops]
     : [expr];
 
