@@ -1,13 +1,8 @@
 import "server-only";
 import { desc, eq } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
-import { latestStatuses, type TaskStatus } from "@/lib/progress";
+import { latestStatuses, type Progress } from "@/lib/progress";
 import { db } from "./db";
-
-export interface Progress {
-  statuses: Map<string, TaskStatus>;
-  favorites: Set<string>;
-}
 
 export async function getProgress(userId: string): Promise<Progress> {
   const [results, starred] = await Promise.all([

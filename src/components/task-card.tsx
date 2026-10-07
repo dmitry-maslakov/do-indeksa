@@ -4,9 +4,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import type { TaskSummary } from "@/content/tasks";
+import { topicName } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
 import type { TaskStatus } from "@/lib/progress";
-import { type TaskSummary, topicName } from "@/server/tasks";
 
 interface TaskCardProps {
   task: TaskSummary;

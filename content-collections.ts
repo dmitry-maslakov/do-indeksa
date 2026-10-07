@@ -1,7 +1,7 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
-import { renderMarkdown } from "./src/content/markdown";
 import { routing } from "./src/i18n/routing";
+import { renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));

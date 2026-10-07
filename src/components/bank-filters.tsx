@@ -1,22 +1,19 @@
-import { allTopics } from "content-collections";
 import Form from "next/form";
 import { useLocale, useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { NativeSelectOption } from "@/components/ui/native-select";
+import { type BankFilters as Filters, statusFilters } from "@/content/bank";
+import { positions } from "@/content/exam";
+import { levels } from "@/content/tasks";
+import { topics } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
-import {
-  levels,
-  positions,
-  statusFilters,
-  type TaskFilters,
-} from "@/server/tasks";
 import { FilterSelect } from "./filter-select";
 
 export const BANK_FORM = "bank-filters";
 
 interface BankFiltersProps {
-  filters: TaskFilters;
+  filters: Filters;
   signedIn: boolean;
 }
 
@@ -78,7 +75,7 @@ export function BankFilters({ filters, signedIn }: BankFiltersProps) {
             className="w-full"
           >
             <NativeSelectOption value="">{t("allTopics")}</NativeSelectOption>
-            {allTopics.map((topic) => (
+            {topics.map((topic) => (
               <NativeSelectOption key={topic.id} value={topic.id}>
                 {topic.name[locale]}
               </NativeSelectOption>
