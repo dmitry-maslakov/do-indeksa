@@ -29,5 +29,25 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "account": "Account"
+  },
+  "Bank": {
+    "title": "Task bank",
+    "search": "Search the statement",
+    "number": "Number",
+    "level": "Difficulty",
+    "topic": "Topic",
+    "any": "Any",
+    "allTopics": "All topics",
+    "levels": "{level, select, easy {Easy} medium {Medium} hard {Hard} other {}}",
+    "reset": "Reset filters",
+    "count": "{count, plural, one {# task} other {# tasks}}",
+    "sort": "Order",
+    "sortNumber": "By number",
+    "sortEasy": "Easiest first",
+    "sortHard": "Hardest first",
+    "empty": "Nothing found",
+    "emptyHint": "Remove a filter or change the query",
+    "showAll": "Show all tasks",
+    "meta": "№{number, number} · {level, select, easy {easy} medium {medium} hard {hard} other {}}"
   }
 }

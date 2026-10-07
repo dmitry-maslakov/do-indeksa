@@ -50,6 +50,7 @@ const tasks = defineCollection({
     return {
       id: _meta.path,
       ...task,
+      text: content,
       statement: await render(content),
       answer: await render(answer),
       hints: await Promise.all(hints.map(render)),
