@@ -198,7 +198,8 @@
     "playDaily": "Reši test dana",
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim brojevima trošiš najviše vremena.",
     "startTest": "Izaberi test",
-    "mistakesGuest": "Prijavi se i greške će se čuvati, da im se vratiš kasnije."
+    "mistakesGuest": "Prijavi se i greške će se čuvati, da im se vratiš kasnije.",
+    "byNumberHint": "Klik — svi zadaci tog broja"
   },
   "Compose": {
     "title": "Sastavi svoj",
