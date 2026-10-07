@@ -4,11 +4,12 @@ import { cn } from "cn";
 interface MathHtmlProps {
   html: string;
   className?: string;
+  as?: "div" | "span";
 }
 
-export function MathHtml({ html, className }: MathHtmlProps) {
+export function MathHtml({ html, className, as: Tag = "div" }: MathHtmlProps) {
   return (
-    <div
+    <Tag
       className={cn("math-text", className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
