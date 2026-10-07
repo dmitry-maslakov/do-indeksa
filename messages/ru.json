@@ -24,5 +24,10 @@
   "ExamSwitcher": {
     "meta": "{tasks, number} задач · {hours, number} ч",
     "more": "Другие факультеты появятся позже"
+  },
+  "UserMenu": {
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "account": "Аккаунт"
   }
 }
