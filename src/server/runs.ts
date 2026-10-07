@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getTask } from "@/content/tasks";
 import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, runs } from "@/db/schema";
-import { isEquivalent } from "@/lib/math";
+import { gradeParts } from "@/lib/math";
 import { creditOf } from "@/lib/review";
 import { getSession } from "./auth";
 import { db } from "./db";
@@ -40,8 +40,9 @@ export async function finishRun(
   const graded = variant.taskIds.map((taskId, i) => {
     const task = getTask(taskId);
     const answers = run.answers[i] ?? [];
-    const parts = (task?.check ?? []).map((c, j) =>
-      isEquivalent(answers[j] ?? "", c.expected),
+    const parts = gradeParts(
+      (task?.check ?? []).map((c) => c.expected),
+      answers,
     );
     const durationMs = Math.min(run.durations[i] ?? 0, DAY);
     return {
