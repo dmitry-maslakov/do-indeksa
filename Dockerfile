@@ -24,10 +24,10 @@ ENV GIT_SHA=$GIT_SHA \
 RUN --mount=type=cache,target=/app/.next/cache pnpm build
 
 FROM deps AS migrate
-COPY drizzle.config.ts ./
 COPY drizzle ./drizzle
-COPY src/db ./src/db
-CMD ["pnpm", "exec", "drizzle-kit", "migrate"]
+COPY src/db/migrate.mts ./
+USER node
+CMD ["node", "migrate.mts"]
 
 FROM node:24-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS runner
 WORKDIR /app
