@@ -93,6 +93,17 @@
     "answered": "Отвечено {count, number} из {total, number}",
     "meta": "№{number, number} · {points, plural, one {# балл} few {# балла} other {# баллов}}",
     "prev": "Назад",
-    "next": "Дальше"
+    "next": "Дальше",
+    "finish": "Завершить",
+    "finishTitle": "Завершить вариант?",
+    "finishLeft": "Без ответа: {count, plural, one {# задача} few {# задачи} other {# задач}}. После завершения ответы не изменить.",
+    "finishAll": "После завершения ответы не изменить.",
+    "cancel": "Продолжить",
+    "result": "Результат",
+    "strip": "{score, number} из {max, number} баллов",
+    "guest": "Войди, чтобы результаты сохранялись в истории и статистике.",
+    "signIn": "Войти",
+    "back": "К вариантам",
+    "retry": "Ещё раз"
   }
 }

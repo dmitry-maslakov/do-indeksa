@@ -2,15 +2,24 @@
 
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  useTransition,
+} from "react";
 import { AnswerField } from "@/components/answer-field";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
+import { finishRun, type RunResult } from "@/server/runs";
+import { ExamResult } from "./exam-result";
 import { useExamStore } from "./exam-store";
 import { ExamTimer } from "./exam-timer";
+import { FinishDialog } from "./finish-dialog";
 
 interface ExamRunnerProps {
   variantId: string;
@@ -34,15 +43,14 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
   const solve = useTranslations("Solve");
   const hydrated = useHydrated();
   const run = useExamStore((s) => s.runs[variantId]);
-  const { start, answer, go } = useExamStore.getState();
+  const { start, answer, go, clear } = useExamStore.getState();
+  const [result, setResult] = useState<RunResult>();
+  const [pending, startTransition] = useTransition();
+  const parts = useMemo(() => tasks.map((task) => task.labels.length), [tasks]);
 
   useEffect(() => {
-    if (hydrated)
-      start(
-        variantId,
-        tasks.map((task) => task.labels.length),
-      );
-  }, [hydrated, start, variantId, tasks]);
+    if (hydrated) start(variantId, parts);
+  }, [hydrated, start, variantId, parts]);
 
   const current = run?.current ?? 0;
   const task = tasks[current];
@@ -54,9 +62,36 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
     [task, answer, variantId],
   );
 
+  if (result) {
+    return (
+      <ExamResult
+        tasks={tasks}
+        result={result}
+        onRetry={() => {
+          setResult(undefined);
+          start(variantId, parts);
+        }}
+      />
+    );
+  }
+
   if (!run || !task) return <Card className="min-h-96" aria-busy />;
 
-  const done = run.answers.filter((parts) => parts.some(Boolean)).length;
+  const done = run.answers.filter((a) => a.some(Boolean)).length;
+
+  const finish = () =>
+    startTransition(async () => {
+      const spent = Date.now() - run.enteredAt;
+      const saved = await finishRun({
+        runId: run.runId,
+        variantId,
+        startedAt: run.startedAt,
+        answers: run.answers,
+        durations: run.spent.map((ms, i) => (i === current ? ms + spent : ms)),
+      });
+      clear(variantId);
+      setResult(saved);
+    });
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
@@ -83,6 +118,11 @@ export function ExamRunner({ variantId, tasks, minutes }: ExamRunnerProps) {
         <span className="px-1 text-sm text-subtle">
           {t("answered", { count: done, total: tasks.length })}
         </span>
+        <FinishDialog
+          left={tasks.length - done}
+          pending={pending}
+          onFinish={finish}
+        />
       </Card>
       <Card className="gap-6 md:p-9">
         <div className="flex flex-wrap items-center gap-2 text-sm text-subtle">

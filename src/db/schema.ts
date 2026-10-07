@@ -15,7 +15,12 @@ import { user } from "./auth-schema";
 
 export * from "./auth-schema";
 
-export const runKind = pgEnum("run_kind", ["official", "daily", "random"]);
+export const runKind = pgEnum("run_kind", [
+  "official",
+  "curated",
+  "daily",
+  "random",
+]);
 
 export const runs = pgTable(
   "runs",

@@ -50,6 +50,11 @@ export function minutesOf(variant: ExamVariant) {
     .reduce((sum, p) => sum + p.minutes, 0);
 }
 
+export function pointsOf(taskId: string) {
+  const task = getTask(taskId);
+  return task ? (positions[numberOf(task.topic) - 1]?.points ?? 0) : 0;
+}
+
 export interface ExamTask {
   id: string;
   number: number;
@@ -68,7 +73,7 @@ export function examTasks(variant: ExamVariant, locale: Locale): ExamTask[] {
       id,
       number,
       topic: topicName(task.topic, locale),
-      points: positions[number - 1]?.points ?? 0,
+      points: pointsOf(id),
       statement: task.statement,
       labels: task.check.map((c) => c.label),
     };
