@@ -14,7 +14,7 @@
     "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "test": "vitest run --dir src",
+    "test": "vitest run",
     "assets": "mkdir -p public/mathlive-fonts && cp -R node_modules/mathlive/fonts/. public/mathlive-fonts/",
     "e2e": "playwright test"
   },
