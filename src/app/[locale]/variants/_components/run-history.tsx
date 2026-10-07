@@ -1,4 +1,5 @@
 import { useFormatter, useTranslations } from "next-intl";
+import { Score } from "@/components/score";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
 import type { RunSummary } from "@/content/runs";
@@ -39,10 +40,7 @@ export function RunHistory({ runs }: { runs: RunSummary[] }) {
                 label={t("strip", { count: run.segments.length })}
                 className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto"
               />
-              <span className="text-right text-[13px]">
-                <b className="font-semibold">{run.score}</b>{" "}
-                <span className="text-subtle">/ {run.max}</span>
-              </span>
+              <Score value={run.score} max={run.max} className="text-right" />
             </Link>
           </li>
         ))}

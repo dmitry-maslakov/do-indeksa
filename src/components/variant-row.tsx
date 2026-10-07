@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { answeredCount, blankSegments, runSegments } from "@/lib/run";
 import type { Segment } from "@/lib/strip";
+import { Score } from "./score";
 import { VariantStrip } from "./variant-strip";
 
 interface VariantRowProps {
@@ -44,10 +45,7 @@ export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
             {t("inProgress", { done, total: tasks })}
           </span>
         ) : latest ? (
-          <>
-            <b className="font-semibold">{latest.score}</b>{" "}
-            <span className="text-subtle">/ {latest.max}</span>
-          </>
+          <Score value={latest.score} max={latest.max} />
         ) : (
           <span className="text-subtle">{t("notSolved")}</span>
         )}
