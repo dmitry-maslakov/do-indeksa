@@ -119,3 +119,19 @@
     stroke-width: 1.75;
   }
 }
+
+@layer components {
+  .math-text {
+    @apply text-pretty leading-relaxed;
+    & p + p {
+      @apply mt-2;
+    }
+    & .katex-display {
+      @apply my-3 overflow-x-auto overflow-y-hidden py-1;
+    }
+    & ol,
+    & ul {
+      @apply mt-2 flex flex-col gap-1.5 pl-1;
+    }
+  }
+}

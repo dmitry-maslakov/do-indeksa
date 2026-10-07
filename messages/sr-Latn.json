@@ -29,5 +29,25 @@
     "signIn": "Prijavi se",
     "signOut": "Odjavi se",
     "account": "Nalog"
+  },
+  "Bank": {
+    "title": "Banka zadataka",
+    "search": "Pretraga po tekstu",
+    "number": "Broj",
+    "level": "Težina",
+    "topic": "Oblast",
+    "any": "Bilo koji",
+    "allTopics": "Sve oblasti",
+    "levels": "{level, select, easy {Lako} medium {Srednje} hard {Teško} other {}}",
+    "reset": "Poništi filtere",
+    "count": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}",
+    "sort": "Redosled",
+    "sortNumber": "Po broju",
+    "sortEasy": "Prvo lakši",
+    "sortHard": "Prvo teži",
+    "empty": "Ništa nije pronađeno",
+    "emptyHint": "Ukloni neki filter ili promeni upit",
+    "showAll": "Prikaži sve zadatke",
+    "meta": "№{number, number} · {level, select, easy {lako} medium {srednje} hard {teško} other {}}"
   }
 }
