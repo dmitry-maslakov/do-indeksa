@@ -4,8 +4,7 @@ import { z } from "zod";
 import { getTask } from "@/content/tasks";
 import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, runs } from "@/db/schema";
-import { gradeParts } from "@/lib/math";
-import { creditOf } from "@/lib/review";
+import { DAY, gradeRun } from "@/lib/grade";
 import { getSession } from "./auth";
 import { db } from "./db";
 
@@ -15,8 +14,6 @@ export interface RunResult {
   parts: boolean[][];
   points: number[];
 }
-
-const DAY = 24 * 60 * 60 * 1000;
 
 const input = z.object({
   runId: z.uuid(),
@@ -37,26 +34,19 @@ export async function finishRun(
     throw new Error("run is out of time bounds");
   }
 
-  const graded = variant.taskIds.map((taskId, i) => {
-    const task = getTask(taskId);
-    const answers = run.answers[i] ?? [];
-    const parts = gradeParts(
-      (task?.check ?? []).map((c) => c.expected),
-      answers,
-    );
-    const durationMs = Math.min(run.durations[i] ?? 0, DAY);
-    return {
+  const graded = gradeRun(
+    variant.taskIds.map((taskId) => ({
       taskId,
-      answers,
-      parts,
-      correct: parts.every(Boolean),
-      durationMs,
-    };
-  });
+      expected: getTask(taskId)?.check.map((c) => c.expected) ?? [],
+      points: pointsOf(taskId),
+    })),
+    run.answers,
+    run.durations,
+  );
   const result = {
-    answered: graded.map((g) => g.answers.some(Boolean)),
+    answered: graded.map((g) => g.answered),
     parts: graded.map((g) => g.parts),
-    points: graded.map((g) => creditOf(g.parts, pointsOf(g.taskId))),
+    points: graded.map((g) => g.points),
   };
 
   const session = await getSession();
@@ -76,7 +66,7 @@ export async function finishRun(
       })
       .onConflictDoNothing()
       .returning({ id: runs.id });
-    const answered = graded.filter((g) => g.answers.some(Boolean));
+    const answered = graded.filter((g) => g.answered);
     if (!inserted || answered.length === 0) return;
     await tx
       .insert(attempts)
