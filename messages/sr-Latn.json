@@ -66,6 +66,8 @@
     "correct": "Tačno",
     "wrong": "Nije tačno",
     "answerPart": "Odgovor {number, number}",
-    "yourAnswer": "Tvoj odgovor"
+    "yourAnswer": "Tvoj odgovor",
+    "save": "Sačuvaj",
+    "saved": "Sačuvano"
   }
 }

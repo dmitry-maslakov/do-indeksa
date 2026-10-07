@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AnswerForm } from "@/components/answer-form";
+import { FavoriteButton } from "@/components/favorite-button";
 import { MathHtml } from "@/components/math-html";
 import { Reveal } from "@/components/reveal";
 import { TaskRow } from "@/components/task-row";
@@ -60,12 +61,15 @@ export default async function SolvePage({
           </nav>
         </Card>
         <Card className="gap-6 md:p-9">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-subtle">
-            <Badge variant="tint">{topicName(task.topic, locale)}</Badge>
-            <span>
-              {bank("meta", { number: summary.number, level: summary.level })} ·{" "}
-              {task.source}
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-subtle">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="tint">{topicName(task.topic, locale)}</Badge>
+              <span>
+                {bank("meta", { number: summary.number, level: summary.level })}{" "}
+                · {task.source}
+              </span>
+            </div>
+            <FavoriteButton taskId={task.id} />
           </div>
           <MathHtml
             html={task.statement}
