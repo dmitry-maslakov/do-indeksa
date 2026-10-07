@@ -1,0 +1,30 @@
+---
+topic: trigonometry
+difficulty: 2
+source: Do indeksa
+answer: 'na $[0,2\pi)$: $x\in\left\{\frac{\pi}{2},\ \frac{5\pi}{6}\right\}$; u $\left(\frac{2\pi}{3},2\pi\right)$: samo $x=\frac{5\pi}{6}$'
+check:
+- label: na $[0,2\pi)$
+  expected: \frac{\pi}{2}, \frac{5\pi}{6}
+- label: u $\left(\frac{2\pi}{3},2\pi\right)$
+  expected: \frac{5\pi}{6}
+hints:
+- |
+  Podeli jednačinu sa $2$ da dobiješ tabličnu vrednost sinusa. Sinus istu vrednost uzima za dva ugla, pa zapiši obe serije rešenja, a zatim odaberi one korene koji upadaju u tražene intervale.
+- |
+  Iz $\sin\!\left(x-\dfrac{\pi}{6}\right)=\dfrac{\sqrt{3}}{2}$ dobijaš dve serije: $x-\frac{\pi}{6}=\frac{\pi}{3}+2k\pi$ ili $x-\frac{\pi}{6}=\frac{2\pi}{3}+2k\pi$. Prebaci $\dfrac{\pi}{6}$ na desnu stranu, pa proveri koje vrednosti pripadaju svakom od dva intervala.
+solution: |
+  Iz $\sin\!\left(x-\dfrac{\pi}{6}\right)=\dfrac{\sqrt{3}}{2}$ dobijamo dve serije:
+
+  $$x-\frac{\pi}{6}=\frac{\pi}{3}+2k\pi\quad\text{ili}\quad x-\frac{\pi}{6}=\frac{2\pi}{3}+2k\pi,$$
+
+  to jest $x=\dfrac{\pi}{2}+2k\pi$ ili $x=\dfrac{5\pi}{6}+2k\pi$. Na $[0,2\pi)$ ostaju $x=\dfrac{\pi}{2}$ i $x=\dfrac{5\pi}{6}$.
+
+  Odabir korena koji pripadaju $\left(\dfrac{2\pi}{3},2\pi\right)$: $\dfrac{\pi}{2}\approx 1{,}57<\dfrac{2\pi}{3}\approx 2{,}09$ — ne pripada, a $\dfrac{5\pi}{6}\approx 2{,}62$ — pripada.
+---
+
+Naći sva rešenja jednačine
+
+$$2\sin\!\left(x-\frac{\pi}{6}\right)=\sqrt{3},$$
+
+koja pripadaju intervalu $[0,\,2\pi)$, i posebno ona od njih koja leže u $\left(\dfrac{2\pi}{3},\,2\pi\right)$.
