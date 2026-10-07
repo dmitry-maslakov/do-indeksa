@@ -1,6 +1,11 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Bar {
   number: number;
@@ -17,10 +22,10 @@ export function TimeBars({ bars }: { bars: Bar[] }) {
 
   return (
     <Card className="gap-4 md:p-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-semibold text-lg">{t("time")}</h2>
-        <span className="text-sm text-subtle">{t("timeNote", { norm })}</span>
-      </div>
+      <CardHeader>
+        <CardTitle>{t("time")}</CardTitle>
+        <CardDescription>{t("timeNote", { norm })}</CardDescription>
+      </CardHeader>
       <div className="relative grid h-28 grid-cols-10 items-end gap-1.5">
         <span
           className="absolute inset-x-0 h-px bg-foreground/35"

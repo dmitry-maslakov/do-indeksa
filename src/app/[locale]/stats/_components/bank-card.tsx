@@ -1,6 +1,11 @@
 import { useTranslations } from "next-intl";
 import { StackBar } from "@/components/stack-bar";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { totals } from "@/lib/stats";
 
 interface BankCardProps {
@@ -33,12 +38,12 @@ export function BankCard({ totals, size }: BankCardProps) {
 
   return (
     <Card className="gap-3.5">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-semibold text-lg">{t("bank")}</h2>
-        <span className="text-sm text-subtle">
+      <CardHeader>
+        <CardTitle>{t("bank")}</CardTitle>
+        <CardDescription>
           {t("bankOf", { solved: totals.solved, size })}
-        </span>
-      </div>
+        </CardDescription>
+      </CardHeader>
       <StackBar
         parts={parts}
         label={t("bankOf", { solved: totals.solved, size })}

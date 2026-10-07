@@ -1,7 +1,12 @@
 import { useLocale, useTranslations } from "next-intl";
 import { ProgressBar } from "@/components/progress-bar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { topicName } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
 import type { Accuracy } from "@/lib/stats";
@@ -19,10 +24,10 @@ export function WeakTopics({
 
   return (
     <Card className="gap-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-semibold text-lg">{t("weaker")}</h2>
-        <span className="text-sm text-subtle">{t("days30")}</span>
-      </div>
+      <CardHeader>
+        <CardTitle>{t("weaker")}</CardTitle>
+        <CardDescription>{t("days30")}</CardDescription>
+      </CardHeader>
       {topics.length === 0 && (
         <EmptyNote
           text={t("weakEmpty")}
