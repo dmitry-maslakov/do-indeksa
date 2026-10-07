@@ -1,3 +1,4 @@
+import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -76,3 +77,14 @@ export const useExamStore = create<ExamState>()(
     },
   ),
 );
+
+export function useExamHydrated() {
+  useEffect(() => {
+    useExamStore.persist.rehydrate();
+  }, []);
+  return useSyncExternalStore(
+    (onChange) => useExamStore.persist.onFinishHydration(onChange),
+    () => useExamStore.persist.hasHydrated(),
+    () => false,
+  );
+}
