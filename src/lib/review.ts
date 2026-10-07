@@ -15,15 +15,16 @@ export interface ReviewAttempt {
   durationMs: number;
 }
 
-export interface ReviewRow extends ReviewTask {
-  attempt?: ReviewAttempt;
+export interface ReviewRow<A extends ReviewAttempt = ReviewAttempt>
+  extends ReviewTask {
+  attempt?: A;
   earned: number;
   over: boolean;
   segment: Segment;
 }
 
-export interface Review {
-  rows: ReviewRow[];
+export interface Review<A extends ReviewAttempt = ReviewAttempt> {
+  rows: ReviewRow<A>[];
   score: number;
   max: number;
   correct: number;
@@ -38,7 +39,10 @@ export const creditOf = (parts: boolean[], points: number) =>
     : Math.round((points * parts.filter(Boolean).length * 10) / parts.length) /
       10;
 
-export function review(tasks: ReviewTask[], attempts: ReviewAttempt[]): Review {
+export function review<A extends ReviewAttempt>(
+  tasks: ReviewTask[],
+  attempts: A[],
+): Review<A> {
   const byTask = new Map(attempts.map((a) => [a.taskId, a]));
   const rows = tasks.map((task) => {
     const attempt = byTask.get(task.taskId);
