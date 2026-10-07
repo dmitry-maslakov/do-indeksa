@@ -32,6 +32,12 @@ export interface Review {
   lost: { topic: string | null; points: number }[];
 }
 
+export const creditOf = (parts: boolean[], points: number) =>
+  parts.length === 0
+    ? 0
+    : Math.round((points * parts.filter(Boolean).length * 10) / parts.length) /
+      10;
+
 export function review(tasks: ReviewTask[], attempts: ReviewAttempt[]): Review {
   const byTask = new Map(attempts.map((a) => [a.taskId, a]));
   const rows = tasks.map((task) => {
@@ -39,7 +45,7 @@ export function review(tasks: ReviewTask[], attempts: ReviewAttempt[]): Review {
     return {
       ...task,
       attempt,
-      earned: attempt?.correct ? task.points : 0,
+      earned: attempt ? creditOf(attempt.parts, task.points) : 0,
       over: (attempt?.durationMs ?? 0) > task.minutes * 60_000,
       segment: segmentOf(attempt?.parts),
     };
@@ -54,7 +60,7 @@ export function review(tasks: ReviewTask[], attempts: ReviewAttempt[]): Review {
 
   return {
     rows,
-    score: rows.reduce((sum, r) => sum + r.earned, 0),
+    score: Math.round(rows.reduce((sum, r) => sum + r.earned, 0) * 10) / 10,
     max: rows.reduce((sum, r) => sum + r.points, 0),
     correct: rows.filter((r) => r.attempt?.correct).length,
     spentMs: rows.reduce((sum, r) => sum + (r.attempt?.durationMs ?? 0), 0),

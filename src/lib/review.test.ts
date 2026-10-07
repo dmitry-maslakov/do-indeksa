@@ -28,8 +28,8 @@ describe("review", () => {
     { taskId: "c", parts: [false], correct: false, durationMs: 60_000 },
   ]);
 
-  it("scores correct tasks only", () => {
-    expect(result.score).toBe(6);
+  it("credits correct parts", () => {
+    expect(result.score).toBe(9);
     expect(result.max).toBe(24);
     expect(result.correct).toBe(1);
   });
@@ -46,9 +46,9 @@ describe("review", () => {
 
   it("groups lost points by topic with skipped tasks apart", () => {
     expect(result.lost).toEqual([
-      { topic: "logs", points: 6 },
       { topic: "trig", points: 6 },
       { topic: null, points: 6 },
+      { topic: "logs", points: 3 },
     ]);
   });
 
