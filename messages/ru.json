@@ -84,5 +84,15 @@
     "random": "Случайный вариант",
     "randomText": "{tasks, number} задач, по одной на каждую позицию, как на экзамене.",
     "compose": "Собрать"
+  },
+  "Exam": {
+    "timeLeft": "Осталось",
+    "overtime": "Сверх времени",
+    "tasks": "Задачи",
+    "task": "Задача {number, number}",
+    "answered": "Отвечено {count, number} из {total, number}",
+    "meta": "№{number, number} · {points, plural, one {# балл} few {# балла} other {# баллов}}",
+    "prev": "Назад",
+    "next": "Дальше"
   }
 }

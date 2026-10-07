@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
-import { getFormatter, getTranslations } from "next-intl/server";
-import { TaskCard } from "@/components/task-card";
-import { getTask, summarize } from "@/content/tasks";
-import { type ExamVariant, getVariant, minutesOf } from "@/content/variants";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import {
+  type ExamVariant,
+  examTasks,
+  getVariant,
+  minutesOf,
+} from "@/content/variants";
+import { ExamRunner } from "./_components/exam-runner";
 
 export default async function VariantPage({
   params,
@@ -12,26 +16,18 @@ export default async function VariantPage({
   if (!variant) notFound();
 
   const t = await getTranslations("Variants");
-  const tasks = variant.taskIds.flatMap((taskId) => {
-    const task = getTask(taskId);
-    return task ? [summarize(task)] : [];
-  });
+  const tasks = examTasks(variant, await getLocale());
+  const minutes = minutesOf(variant);
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <div className="flex max-w-4xl flex-wrap items-baseline justify-between gap-2 py-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 py-6">
         <h1 className="font-bold text-3xl">{await titleOf(variant)}</h1>
         <span className="text-sm text-subtle">
-          {t("format", { tasks: tasks.length, minutes: minutesOf(variant) })}
+          {t("format", { tasks: tasks.length, minutes })}
         </span>
       </div>
-      <ol className="flex max-w-4xl flex-col gap-3.5">
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <TaskCard task={task} />
-          </li>
-        ))}
-      </ol>
+      <ExamRunner variantId={variant.id} tasks={tasks} minutes={minutes} />
     </main>
   );
 }

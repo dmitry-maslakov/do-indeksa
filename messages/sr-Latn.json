@@ -84,5 +84,15 @@
     "random": "Nasumični test",
     "randomText": "{tasks, number} zadataka, po jedan sa svake pozicije, kao na prijemnom.",
     "compose": "Sastavi"
+  },
+  "Exam": {
+    "timeLeft": "Preostalo vreme",
+    "overtime": "Prekoračenje",
+    "tasks": "Zadaci",
+    "task": "Zadatak {number, number}",
+    "answered": "Odgovoreno {count, number} od {total, number}",
+    "meta": "№{number, number} · {points, plural, one {# bod} few {# boda} other {# bodova}}",
+    "prev": "Prethodni",
+    "next": "Sledeći"
   }
 }
