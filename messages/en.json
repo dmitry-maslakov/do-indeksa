@@ -76,6 +76,13 @@
     "official": "Official exams",
     "curated": "Our exams",
     "start": "Start",
-    "strip": "Exam of {count, number} tasks"
+    "strip": "Exam of {count, number} tasks",
+    "daily": "Daily test",
+    "dailyOn": "Daily test · {date}",
+    "dailyMeta": "{tasks, number} tasks, new every day",
+    "play": "Play",
+    "random": "Random test",
+    "randomText": "{tasks, number} tasks, one for each position, like the real exam.",
+    "compose": "Compose"
   }
 }

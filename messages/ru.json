@@ -76,6 +76,13 @@
     "official": "Официальные",
     "curated": "Наши варианты",
     "start": "Начать",
-    "strip": "Вариант из {count, number} задач"
+    "strip": "Вариант из {count, number} задач",
+    "daily": "Вариант дня",
+    "dailyOn": "Вариант дня · {date}",
+    "dailyMeta": "{tasks, number} задач, каждый день новый",
+    "play": "Играть",
+    "random": "Случайный вариант",
+    "randomText": "{tasks, number} задач, по одной на каждую позицию, как на экзамене.",
+    "compose": "Собрать"
   }
 }

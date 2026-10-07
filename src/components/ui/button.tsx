@@ -12,6 +12,7 @@ const buttonVariants = cva(
         secondary: "bg-data text-primary-foreground",
         tint: "bg-data-tint text-data",
         ghost: "bg-muted text-foreground",
+        inverse: "bg-white text-daily",
         link: "text-primary underline-offset-4 hover:underline hover:brightness-100",
       },
       size: {
