@@ -116,7 +116,8 @@
     "signIn": "Sign in",
     "back": "To tests",
     "retry": "Again",
-    "elapsed": "Elapsed"
+    "elapsed": "Elapsed",
+    "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded."
   },
   "Review": {
     "title": "Review",
