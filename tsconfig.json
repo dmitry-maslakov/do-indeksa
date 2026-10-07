@@ -21,7 +21,8 @@
       "@/*": ["./src/*"]
     },
     "noUncheckedIndexedAccess": true,
-    "allowJs": true
+    "allowJs": true,
+    "allowArbitraryExtensions": true
   },
   "include": [
     "next-env.d.ts",
