@@ -6,12 +6,10 @@ import { HintsProvider } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { positions } from "@/content/exam";
 import { getTask, siblings, summarize, tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
-import { Link } from "@/i18n/navigation";
 import { SolveRail } from "./_components/solve-rail";
 
 export const dynamicParams = false;
@@ -79,6 +77,7 @@ export default async function SolvePage({
             <AnswerForm
               taskId={task.id}
               labels={task.check.map((c) => c.label)}
+              skip={next && next.id !== id ? `/bank/${next.id}` : undefined}
             />
             <div className="flex flex-col gap-2">
               {hintNumbers.map((n) => (
@@ -92,16 +91,6 @@ export default async function SolvePage({
               <Reveal label={t("answer")} taskId={task.id} part="answer" />
               <Reveal label={t("solution")} taskId={task.id} part="solution" />
             </div>
-            {next && next.id !== id && (
-              <Button
-                variant="ghost"
-                className="self-end"
-                render={<Link href={`/bank/${next.id}`} />}
-                nativeButton={false}
-              >
-                {t("next")}
-              </Button>
-            )}
           </Card>
         </HintsProvider>
       </div>

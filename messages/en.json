@@ -56,12 +56,10 @@
     "favorite": "Favorite"
   },
   "Solve": {
-    "back": "← List",
     "inTopic": "{count, plural, one {# task} other {# tasks}} in the topic",
     "hint": "Hint {number, number}",
     "answer": "Answer",
     "solution": "Solution",
-    "next": "Next task →",
     "check": "Check",
     "correct": "Correct",
     "wrong": "Not quite",
@@ -72,7 +70,13 @@
     "expand": "Expand the list",
     "collapse": "Collapse the list",
     "topic": "Topic",
-    "tally": "{right, number} right · {wrong, number} wrong"
+    "tally": "{right, number} right · {wrong, plural, one {# mistake} other {# mistakes}}",
+    "list": "List",
+    "solve": "Solve",
+    "doneOf": "{done, number} of {total, number}",
+    "solvedMark": "solved",
+    "wrongMark": "mistake",
+    "skip": "Skip →"
   },
   "Variants": {
     "title": "Practice exams",

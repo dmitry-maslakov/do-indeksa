@@ -56,12 +56,10 @@
     "favorite": "В избранном"
   },
   "Solve": {
-    "back": "← К списку",
     "inTopic": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}} в теме",
     "hint": "Подсказка {number, number}",
     "answer": "Ответ",
     "solution": "Решение",
-    "next": "Следующая задача →",
     "check": "Проверить",
     "correct": "Верно",
     "wrong": "Неверно",
@@ -72,7 +70,13 @@
     "expand": "Развернуть список",
     "collapse": "Свернуть список",
     "topic": "Тема",
-    "tally": "верно {right, number} · ошибок {wrong, number}"
+    "tally": "{right, number} верно · {wrong, plural, one {# ошибка} few {# ошибки} other {# ошибок}}",
+    "list": "Список",
+    "solve": "Решать",
+    "doneOf": "{done, number} из {total, number}",
+    "solvedMark": "решил",
+    "wrongMark": "ошибся",
+    "skip": "Пропустить →"
   },
   "Variants": {
     "title": "Варианты",
