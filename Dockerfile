@@ -12,7 +12,9 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install
 FROM deps AS builder
 COPY . .
 ARG GIT_SHA
+ARG CONTENT_DIR=content
 ENV GIT_SHA=$GIT_SHA \
+    CONTENT_DIR=$CONTENT_DIR \
     NEXT_TELEMETRY_DISABLED=1 \
     DATABASE_URL=postgres://build:build@localhost:5432/build \
     BETTER_AUTH_SECRET=build-only-not-a-secret-build-only \
