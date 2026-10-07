@@ -69,5 +69,13 @@
     "yourAnswer": "Your answer",
     "save": "Save",
     "saved": "Saved"
+  },
+  "Variants": {
+    "title": "Practice exams",
+    "format": "{tasks, number} tasks · {minutes, number} min",
+    "official": "Official exams",
+    "curated": "Our exams",
+    "start": "Start",
+    "strip": "Exam of {count, number} tasks"
   }
 }
