@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
+import { swapHrefs } from "@/content/compose";
 import { variantTitle } from "@/content/variant-title";
 import { getVariant, minutesOf, tasksFor } from "@/content/variants";
 import { ExamRunner } from "./_components/exam-runner";
@@ -30,6 +31,9 @@ export default async function VariantPage({
         tasks={tasks}
         minutes={minutes}
         title={title}
+        swaps={
+          variant.kind === "custom" ? swapHrefs(variant.taskIds) : undefined
+        }
       />
     </main>
   );

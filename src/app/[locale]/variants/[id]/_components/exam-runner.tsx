@@ -16,6 +16,7 @@ interface ExamRunnerProps {
   tasks: Task[];
   minutes: number;
   title: string;
+  swaps?: (string | undefined)[];
 }
 
 export function ExamRunner({
@@ -23,6 +24,7 @@ export function ExamRunner({
   tasks,
   minutes,
   title,
+  swaps,
 }: ExamRunnerProps) {
   const hydrated = useExamHydrated();
   const router = useRouter();
@@ -62,6 +64,7 @@ export function ExamRunner({
       <ExamIntro
         tasks={tasks}
         minutes={minutes}
+        swaps={swaps}
         onStart={(timed) => start(variantId, { ...meta, timed })}
       />
     );

@@ -123,7 +123,8 @@
     "elapsed": "Proteklo vreme",
     "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se računa.",
     "timer": "Tajmer {minutes, number} min",
-    "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}"
+    "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}",
+    "swap": "Zameni zadatak {number, number}"
   },
   "Review": {
     "title": "Analiza",
