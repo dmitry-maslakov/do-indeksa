@@ -88,7 +88,7 @@ function Row({ row, task, answerKey }: RowProps) {
           <span className="flex min-w-0 flex-col gap-0.5">
             <MathHtml
               html={task.statement}
-              className="truncate [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline"
+              className="truncate [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline [&>:not(:first-child)]:hidden"
             />
             <span className="text-subtle text-xs [&_.katex]:text-[1em]">
               {task.topicName} ·{" "}
