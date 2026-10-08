@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compose } from "./compose";
+import { compose, swap } from "./compose";
 
 const pool = {
   byPosition: [["a1", "a2"], ["b1", "b2"], ["c1"]],
@@ -44,5 +44,18 @@ describe("compose", () => {
     expect(
       compose(pool, { ...input, mode: "topics", topics: ["z"] }, "s"),
     ).toHaveLength(3);
+  });
+});
+
+describe("swap", () => {
+  it("cycles through the other tasks of the same topic", () => {
+    const tasks = [...pool.tasks, { id: "a3", topic: "a" }];
+    expect(swap(tasks, ["a2", "b1"], 0)).toEqual(["a3", "b1"]);
+    expect(swap(tasks, ["a3", "b1"], 0)).toEqual(["a1", "b1"]);
+  });
+
+  it("skips tasks already in the variant", () => {
+    expect(swap(pool.tasks, ["b1", "b2"], 0)).toBeUndefined();
+    expect(swap(pool.tasks, ["c1"], 0)).toBeUndefined();
   });
 });

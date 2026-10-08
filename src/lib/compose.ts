@@ -35,3 +35,13 @@ export function compose(pool: Pool, input: ComposeInput, seed: string) {
   }[input.mode]();
   return picked.length > 0 ? picked : pick(pool.byPosition, size, seed);
 }
+
+export function swap(tasks: Pool["tasks"], ids: string[], index: number) {
+  const topic = tasks.find((t) => t.id === ids[index])?.topic;
+  const same = tasks.filter((t) => t.topic === topic).map((t) => t.id);
+  const at = same.indexOf(ids[index] ?? "");
+  const next = [...same.slice(at + 1), ...same.slice(0, at)].find(
+    (id) => !ids.includes(id),
+  );
+  return next && ids.with(index, next);
+}

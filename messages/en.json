@@ -123,7 +123,8 @@
     "elapsed": "Elapsed",
     "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded.",
     "timer": "Timer {minutes, number} min",
-    "points": "{points, plural, one {# point} other {# points}}"
+    "points": "{points, plural, one {# point} other {# points}}",
+    "swap": "Swap task {number, number}"
   },
   "Review": {
     "title": "Review",

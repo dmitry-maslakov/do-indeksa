@@ -123,7 +123,8 @@
     "elapsed": "Прошло",
     "timeUp": "Время вышло. Заверши вариант или продолжай, превышение записывается.",
     "timer": "Таймер {minutes, number} мин",
-    "points": "{points, plural, one {# балл} few {# балла} other {# баллов}}"
+    "points": "{points, plural, one {# балл} few {# балла} other {# баллов}}",
+    "swap": "Заменить задачу {number, number}"
   },
   "Review": {
     "title": "Разбор",
