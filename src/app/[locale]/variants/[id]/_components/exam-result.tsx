@@ -10,6 +10,7 @@ import type { ExamTask } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { segmentOf } from "@/lib/strip";
 import type { RunResult } from "@/server/runs";
+import { TaskLines } from "./task-lines";
 
 interface ExamResultProps {
   tasks: ExamTask[];
@@ -39,26 +40,23 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
         segments={segments}
         label={t("strip", { score, max })}
       />
-      <ul className="flex flex-col divide-y divide-subtle/15 text-sm">
-        {tasks.map((task, i) => (
-          <li key={task.id} className="flex items-center gap-3 py-3">
-            <span className="w-8 font-semibold">{task.number}</span>
-            <span className="min-w-0 flex-1 truncate">{task.topicName}</span>
-            {(result.points[i] ?? 0) > 0 ? (
-              <Badge variant="success" size="sm">
-                +{result.points[i]}
-              </Badge>
-            ) : (
-              <Badge
-                variant={segments[i] === "none" ? "default" : "error"}
-                size="sm"
-              >
-                0
-              </Badge>
-            )}
-          </li>
-        ))}
-      </ul>
+      <TaskLines
+        tasks={tasks}
+        end={(_, i) =>
+          (result.points[i] ?? 0) > 0 ? (
+            <Badge variant="success" size="sm">
+              +{result.points[i]}
+            </Badge>
+          ) : (
+            <Badge
+              variant={segments[i] === "none" ? "default" : "error"}
+              size="sm"
+            >
+              0
+            </Badge>
+          )
+        }
+      />
       {!result.saved && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-muted px-5 py-4 text-sm">
           <span>{t("guest")}</span>
