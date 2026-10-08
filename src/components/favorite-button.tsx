@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "@/i18n/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 import { isFavorite, setFavorite } from "@/server/favorites";
 
 export function FavoriteButton({ taskId }: { taskId: string }) {
@@ -26,7 +26,7 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
 
   function toggle() {
     if (!session) {
-      authClient.signIn.social({ provider: "google", callbackURL: pathname });
+      signIn(pathname);
       return;
     }
     startTransition(async () => {
