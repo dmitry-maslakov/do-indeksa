@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { statAttempts } from "@/content/attempts";
-import { positions } from "@/content/exam";
+import { minutesAt, positions } from "@/content/exam";
 import { summarizeRuns } from "@/content/runs";
 import { tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
@@ -68,7 +68,7 @@ async function Stats({
         <TimeBars
           bars={meanTimeByNumber(attempts, numbers).map((bar) => ({
             ...bar,
-            normMs: (positions[bar.number - 1]?.minutes ?? 0) * 60_000,
+            normMs: minutesAt(bar.number) * 60_000,
           }))}
         />
       </div>

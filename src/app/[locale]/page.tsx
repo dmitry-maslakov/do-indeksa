@@ -1,6 +1,6 @@
 import { DailyBanner } from "@/components/daily-banner";
 import { statAttempts } from "@/content/attempts";
-import { positions } from "@/content/exam";
+import { minutesAt, positions } from "@/content/exam";
 import {
   curatedVariants,
   minutesOf,
@@ -34,7 +34,7 @@ export default async function HomePage() {
         : {
             ...row,
             meanMs: row.meanMs,
-            normMs: (positions[row.number - 1]?.minutes ?? 0) * 60_000,
+            normMs: minutesAt(row.number) * 60_000,
           },
     )
     .sort((a, b) => b.meanMs / b.normMs - a.meanMs / a.normMs)
