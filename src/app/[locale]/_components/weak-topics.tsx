@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
+import { PracticeLinks } from "@/components/practice-links";
 import { ProgressBar } from "@/components/progress-bar";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { topicName } from "@/content/topics";
-import { Link } from "@/i18n/navigation";
 import type { Accuracy } from "@/lib/stats";
 import { EmptyNote } from "./empty-note";
 
@@ -54,19 +53,12 @@ export function WeakTopics({
           </li>
         ))}
       </ul>
-      <div className="flex flex-wrap gap-2 empty:hidden">
-        {topics.slice(0, 2).map((topic) => (
-          <Button
-            key={topic.key}
-            size="sm"
-            variant="tint"
-            render={<Link href={`/bank?topic=${topic.key}`} />}
-            nativeButton={false}
-          >
-            {t("practice", { topic: topicName(String(topic.key), locale) })}
-          </Button>
-        ))}
-      </div>
+      <PracticeLinks
+        topics={topics.map((topic) => ({
+          id: String(topic.key),
+          name: topicName(String(topic.key), locale),
+        }))}
+      />
     </Card>
   );
 }

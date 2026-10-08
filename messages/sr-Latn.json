@@ -53,7 +53,8 @@
     "statuses": "{status, select, new {Nerešeni} solved {Rešeni} wrong {Sa greškom} favorite {Omiljeni} other {}}",
     "solved": "rešeno",
     "wrong": "greška",
-    "favorite": "Omiljeno"
+    "favorite": "Omiljeno",
+    "practice": "Vežbaj: {topic}"
   },
   "Solve": {
     "inTopic": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} u oblasti",
@@ -147,8 +148,7 @@
     "similar": "Slični greškama · {count, number}",
     "gave": "odgovor",
     "key": "tačno",
-    "partsRight": "tačno {right, number} od {total, number} delova",
-    "practice": "Vežbaj: {topic}"
+    "partsRight": "tačno {right, number} od {total, number} delova"
   },
   "Stats": {
     "title": "Statistika",
@@ -190,7 +190,6 @@
     "open": "Otvori →",
     "weaker": "Gde si slabiji",
     "days30": "za 30 dana",
-    "practice": "Vežbaj: {topic}",
     "mistakes": "Vrati se na greške",
     "mistakesCount": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} sa greškom ove nedelje",
     "noMistakes": "Ove nedelje nema grešaka",

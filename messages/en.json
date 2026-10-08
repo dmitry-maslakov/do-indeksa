@@ -53,7 +53,8 @@
     "statuses": "{status, select, new {Not solved} solved {Solved} wrong {Wrong} favorite {Favorites} other {}}",
     "solved": "solved",
     "wrong": "wrong",
-    "favorite": "Favorite"
+    "favorite": "Favorite",
+    "practice": "Practice: {topic}"
   },
   "Solve": {
     "inTopic": "{count, plural, one {# task} other {# tasks}} in the topic",
@@ -147,8 +148,7 @@
     "similar": "Like the mistakes · {count, number}",
     "gave": "answered",
     "key": "correct",
-    "partsRight": "{right, number} of {total, number} parts right",
-    "practice": "Practice: {topic}"
+    "partsRight": "{right, number} of {total, number} parts right"
   },
   "Stats": {
     "title": "Stats",
@@ -190,7 +190,6 @@
     "open": "Open →",
     "weaker": "Where you are weaker",
     "days30": "last 30 days",
-    "practice": "Practice: {topic}",
     "mistakes": "Back to mistakes",
     "mistakesCount": "{count, plural, one {# task} other {# tasks}} with a mistake this week",
     "noMistakes": "No mistakes this week",

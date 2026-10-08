@@ -53,7 +53,8 @@
     "statuses": "{status, select, new {Не решал} solved {Решил} wrong {Ошибся} favorite {Избранное} other {}}",
     "solved": "решил",
     "wrong": "ошибся",
-    "favorite": "В избранном"
+    "favorite": "В избранном",
+    "practice": "Порешать: {topic}"
   },
   "Solve": {
     "inTopic": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}} в теме",
@@ -147,8 +148,7 @@
     "similar": "Похожие на ошибки · {count, number}",
     "gave": "ответил",
     "key": "верно",
-    "partsRight": "верно {right, number} из {total, number} пунктов",
-    "practice": "Порешать: {topic}"
+    "partsRight": "верно {right, number} из {total, number} пунктов"
   },
   "Stats": {
     "title": "Статистика",
@@ -190,7 +190,6 @@
     "open": "Открыть →",
     "weaker": "Где ты слабее",
     "days30": "за 30 дней",
-    "practice": "Порешать: {topic}",
     "mistakes": "Вернуться к ошибкам",
     "mistakesCount": "{count, plural, one {# задача} few {# задачи} other {# задач}} с ошибкой на этой неделе",
     "noMistakes": "На этой неделе ошибок нет",
