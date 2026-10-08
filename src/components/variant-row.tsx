@@ -3,6 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { answeredCount, blankSegments, runSegments } from "@/lib/run";
@@ -15,9 +16,16 @@ interface VariantRowProps {
   title: string;
   tasks: number;
   latest?: { id: string; segments: Segment[]; score: number; max: number };
+  pending?: boolean;
 }
 
-export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
+export function VariantRow({
+  id,
+  title,
+  tasks,
+  latest,
+  pending,
+}: VariantRowProps) {
   const t = useTranslations("Variants");
   const hydrated = useExamHydrated();
   const run = useExamStore((s) => (hydrated ? s.runs[id] : undefined));
@@ -44,6 +52,8 @@ export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
           <span className="text-subtle">
             {t("inProgress", { done, total: tasks })}
           </span>
+        ) : pending ? (
+          <Skeleton className="h-3 w-14" />
         ) : latest ? (
           <Score value={latest.score} max={latest.max} />
         ) : (
@@ -58,6 +68,8 @@ export function VariantRow({ id, title, tasks, latest }: VariantRowProps) {
         >
           {t("continue")}
         </Button>
+      ) : pending ? (
+        <Skeleton className="h-9 w-24 rounded-lg" />
       ) : latest ? (
         <Button
           size="sm"

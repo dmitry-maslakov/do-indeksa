@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { SignInButton } from "@/components/sign-in-button";
@@ -10,6 +11,7 @@ interface EmptyNoteProps {
   signedIn: boolean;
   href?: string;
   action?: string;
+  className?: string;
 }
 
 export function EmptyNote({
@@ -18,11 +20,12 @@ export function EmptyNote({
   signedIn,
   href,
   action,
+  className,
 }: EmptyNoteProps) {
   const t = useTranslations("UserMenu");
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", className)}>
       <div className="mask-b-from-30% **:data-[slot=skeleton]:animate-none **:data-[slot=skeleton]:bg-none">
         {ghost}
       </div>

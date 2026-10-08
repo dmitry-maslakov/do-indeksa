@@ -1,4 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { Await } from "@/components/await";
 import { DailyBanner } from "@/components/daily-banner";
 import { LinkTabs } from "@/components/link-tabs";
 import { PageTitle } from "@/components/page-title";
@@ -17,21 +19,28 @@ import { VariantList } from "./_components/variant-list";
 const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
 
+async function loadRuns() {
+  const session = await getSession();
+  if (!session) return { signedIn: false, runs: [] };
+  const [rows, attempts] = await Promise.all([
+    getRuns(session.user.id),
+    getAttempts(session.user.id),
+  ]);
+  return {
+    signedIn: true,
+    runs: await summarizeRuns(rows, attempts, await getLocale()),
+  };
+}
+
 export default async function VariantsPage({
   searchParams,
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
-  const session = await getSession();
   const locale = await getLocale();
-  const [runRows, attempts] = session
-    ? await Promise.all([
-        getRuns(session.user.id),
-        getAttempts(session.user.id),
-      ])
-    : [[], []];
-  const runs = await summarizeRuns(runRows, attempts, locale);
+  const runs = loadRuns();
+  const variants = tab === "official" ? officialVariants : curatedVariants;
   const minutes = positions.reduce((sum, p) => sum + p.minutes, 0);
 
   return (
@@ -54,16 +63,23 @@ export default async function VariantsPage({
             </span>
           </div>
           {tab === "history" ? (
-            session ? (
-              <RunHistory runs={runs} />
-            ) : (
-              <SignInCard text={t("historyGuest")} />
-            )
+            <Suspense fallback={<RunHistory />}>
+              <Await promise={runs}>
+                {(r) =>
+                  r.signedIn ? (
+                    <RunHistory runs={r.runs} />
+                  ) : (
+                    <SignInCard text={t("historyGuest")} />
+                  )
+                }
+              </Await>
+            </Suspense>
           ) : (
-            <VariantList
-              variants={tab === "official" ? officialVariants : curatedVariants}
-              runs={runs}
-            />
+            <Suspense fallback={<VariantList variants={variants} />}>
+              <Await promise={runs}>
+                {(r) => <VariantList variants={variants} runs={r.runs} />}
+              </Await>
+            </Suspense>
           )}
         </div>
         <aside className="flex flex-col gap-5">
@@ -73,7 +89,13 @@ export default async function VariantsPage({
               name: topicName(p.topic, locale),
             }))}
           />
-          {runs.length > 0 && <RecentCard runs={runs.slice(0, 3)} />}
+          <Suspense>
+            <Await promise={runs}>
+              {(r) =>
+                r.runs.length > 0 && <RecentCard runs={r.runs.slice(0, 3)} />
+              }
+            </Await>
+          </Suspense>
         </aside>
       </div>
     </main>
