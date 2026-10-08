@@ -6,13 +6,7 @@ import { SignInCard } from "@/components/sign-in-card";
 import { positions } from "@/content/exam";
 import { summarizeRuns } from "@/content/runs";
 import { topicName } from "@/content/topics";
-import {
-  belgradeDate,
-  curatedVariants,
-  getVariant,
-  minutesOf,
-  officialVariants,
-} from "@/content/variants";
+import { curatedVariants, officialVariants } from "@/content/variants";
 import { getSession } from "@/server/auth";
 import { getAttempts, getRuns } from "@/server/history";
 import { ComposeCard } from "./_components/compose-card";
@@ -26,8 +20,6 @@ type Tab = (typeof tabs)[number];
 export default async function VariantsPage({
   searchParams,
 }: PageProps<"/[locale]/variants">) {
-  const daily = getVariant(`daily-${belgradeDate()}`);
-  if (!daily) throw new Error("no daily test");
   const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
@@ -46,7 +38,7 @@ export default async function VariantsPage({
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
       <div className="grid items-start gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr]">
-        <DailyBanner tasks={daily.taskIds.length} minutes={minutesOf(daily)} />
+        <DailyBanner />
         <div className="flex flex-col gap-3.5 md:col-start-1 md:row-span-2 md:row-start-1">
           <div className="flex flex-wrap items-center justify-between gap-3 px-1">
             <LinkTabs
