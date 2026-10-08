@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
+import { PracticeLinks } from "@/components/practice-links";
 import { SignInCard } from "@/components/sign-in-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import { review } from "@/lib/review";
 import { getSession } from "@/server/auth";
 import { getRun } from "@/server/history";
 import { LostPoints } from "./_components/lost-points";
-import { PracticeLinks } from "./_components/practice-links";
 import { ReviewRows } from "./_components/review-rows";
 import { ReviewSummary } from "./_components/review-summary";
 import { TimeSpent } from "./_components/time-spent";

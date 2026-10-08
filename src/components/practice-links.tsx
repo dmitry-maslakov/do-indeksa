@@ -7,7 +7,7 @@ export function PracticeLinks({
 }: {
   topics: { id: string; name: string }[];
 }) {
-  const t = useTranslations("Review");
+  const t = useTranslations("Bank");
   if (topics.length === 0) return null;
 
   return (
