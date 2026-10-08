@@ -8,12 +8,13 @@ import { getStreak } from "@/server/streak";
 
 export function StreakBadge() {
   const t = useTranslations("Home");
-  const { data: session } = authClient.useSession();
+  const userId = authClient.useSession().data?.user.id;
   const [days, setDays] = useState(0);
 
   useEffect(() => {
-    if (session) getStreak().then(setDays);
-  }, [session]);
+    if (userId) getStreak().then(setDays);
+    else setDays(0);
+  }, [userId]);
 
   if (days === 0) return null;
   return (

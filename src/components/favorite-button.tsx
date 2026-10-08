@@ -17,9 +17,12 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
   const [shown, setShown] = useOptimistic(saved);
   const [, startTransition] = useTransition();
 
+  const userId = session?.user.id;
+
   useEffect(() => {
-    if (session) isFavorite(taskId).then(setSaved);
-  }, [session, taskId]);
+    if (userId) isFavorite(taskId).then(setSaved);
+    else setSaved(false);
+  }, [userId, taskId]);
 
   function toggle() {
     if (!session) {
