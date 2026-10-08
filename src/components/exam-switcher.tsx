@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export interface ExamOption {
+interface ExamOption {
   id: string;
   faculty: string;
   title: string;
