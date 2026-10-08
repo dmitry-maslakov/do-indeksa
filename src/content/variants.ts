@@ -14,7 +14,7 @@ export const officialVariants = allVariants
 export const curatedVariants = allVariants.filter((v) => v.kind === "curated");
 
 export interface ExamVariant extends Pick<Variant, "id" | "title" | "year"> {
-  kind: Variant["kind"] | "daily" | "random" | "custom";
+  kind: Variant["kind"] | "daily" | "custom";
   taskIds: string[];
 }
 
@@ -31,13 +31,6 @@ export function getVariant(id: string): ExamVariant | undefined {
   const parsed = parseVariantId(id);
   if (parsed?.kind === "daily") {
     return { id, kind: "daily", taskIds: pick(byPosition, dailySize, id) };
-  }
-  if (parsed?.kind === "random") {
-    return {
-      id,
-      kind: "random",
-      taskIds: pick(byPosition, positions.length, id),
-    };
   }
   if (
     parsed?.kind === "custom" &&

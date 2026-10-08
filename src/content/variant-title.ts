@@ -11,7 +11,6 @@ export async function variantTitle(variant: ExamVariant) {
       date: format.dateTime(date, { day: "numeric", month: "long" }),
     });
   }
-  if (variant.kind === "random") return t("random");
   if (variant.kind === "custom") return t("custom");
   return variant.title ?? String(variant.year);
 }

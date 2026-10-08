@@ -89,7 +89,6 @@
     "dailyOn": "Daily test · {date}",
     "dailyMeta": "{tasks, plural, one {# task} other {# tasks}} · {minutes, number} min",
     "play": "Play",
-    "random": "Random test",
     "history": "History",
     "historyGuest": "Sign in to see the history of your tests.",
     "historyEmpty": "No finished tests yet.",

@@ -61,11 +61,7 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
           ? t("progress", { done, total })
           : t("progressLeft", { done, total, minutes: left })
       }
-      title={
-        run.title ??
-        titles[variantId] ??
-        variants(variantId.startsWith("daily-") ? "daily" : "random")
-      }
+      title={run.title ?? titles[variantId] ?? variants("daily")}
       segments={runSegments(run)}
       hint={next && t("next", { number: next.number, topic: next.topic })}
       href={`/variants/${variantId}`}
