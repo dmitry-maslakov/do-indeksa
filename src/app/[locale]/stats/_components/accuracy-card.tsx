@@ -3,14 +3,16 @@ import { useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { ProgressBar } from "@/components/progress-bar";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
 
 interface AccuracyCardProps {
   rows: (Accuracy & { label: string })[];
   byNumber: boolean;
+  pending?: boolean;
 }
 
-export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
+export function AccuracyCard({ rows, byNumber, pending }: AccuracyCardProps) {
   const t = useTranslations("Stats");
   return (
     <Card size="lg" className="gap-5">
@@ -34,16 +36,32 @@ export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
               {row.label}
             </span>
             <span className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto">
-              <ProgressBar value={(row.pct ?? 0) / 100} />
+              {pending ? (
+                <Skeleton className="h-2.5" />
+              ) : (
+                <ProgressBar value={(row.pct ?? 0) / 100} />
+              )}
             </span>
-            <b
-              className={cn("font-semibold", row.pct === null && "text-subtle")}
-            >
-              {row.pct === null ? "—" : `${row.pct}%`}
-            </b>
-            <span className="hidden text-[13px] text-subtle md:block">
-              {t("attempts", { count: row.total })}
-            </span>
+            {pending ? (
+              <>
+                <Skeleton className="h-3 w-9" />
+                <Skeleton className="hidden h-3 w-16 md:block" />
+              </>
+            ) : (
+              <>
+                <b
+                  className={cn(
+                    "font-semibold",
+                    row.pct === null && "text-subtle",
+                  )}
+                >
+                  {row.pct === null ? "—" : `${row.pct}%`}
+                </b>
+                <span className="hidden text-[13px] text-subtle md:block">
+                  {t("attempts", { count: row.total })}
+                </span>
+              </>
+            )}
           </li>
         ))}
       </ul>

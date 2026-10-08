@@ -1,4 +1,7 @@
+import { useLocale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { statAttempts } from "@/content/attempts";
@@ -15,38 +18,49 @@ import { RecentRuns } from "./_components/recent-runs";
 import { TimeBars } from "./_components/time-bars";
 import { TotalsCard } from "./_components/totals-card";
 
+async function loadStats() {
+  const session = await getSession();
+  if (!session) return undefined;
+  const [rows, all] = await Promise.all([
+    getAttempts(session.user.id),
+    getRuns(session.user.id),
+  ]);
+  return {
+    attempts: statAttempts(rows),
+    runCount: all.length,
+    runs: await summarizeRuns(all.slice(0, 5), rows, await getLocale()),
+  };
+}
+
+type Stats = NonNullable<Awaited<ReturnType<typeof loadStats>>>;
+
 export default async function StatsPage({
   searchParams,
 }: PageProps<"/[locale]/stats">) {
   const t = await getTranslations("Stats");
-  const session = await getSession();
+  const byNumber = (await searchParams).by === "number";
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
-      {session ? (
-        <Stats
-          userId={session.user.id}
-          byNumber={(await searchParams).by === "number"}
-        />
-      ) : (
-        <SignInCard text={t("guest")} />
-      )}
+      <Suspense fallback={<StatsCards byNumber={byNumber} />}>
+        <Await promise={loadStats()}>
+          {(stats) =>
+            stats ? (
+              <StatsCards byNumber={byNumber} stats={stats} />
+            ) : (
+              <SignInCard text={t("guest")} />
+            )
+          }
+        </Await>
+      </Suspense>
     </main>
   );
 }
 
-async function Stats({
-  userId,
-  byNumber,
-}: {
-  userId: string;
-  byNumber: boolean;
-}) {
-  const locale = await getLocale();
-  const [rows, all] = await Promise.all([getAttempts(userId), getRuns(userId)]);
-  const attempts = statAttempts(rows);
-  const summary = totals(attempts);
+function StatsCards({ byNumber, stats }: { byNumber: boolean; stats?: Stats }) {
+  const locale = useLocale();
+  const attempts = stats?.attempts ?? [];
   const numbers = positions.map((p) => p.number);
   const accuracy = byNumber
     ? accuracyBy(attempts, numbers, (a) => a.number).map((a) => ({
@@ -58,24 +72,24 @@ async function Stats({
         positions.map((p) => p.topic),
         (a) => a.topic,
       ).map((a) => ({ ...a, label: topicName(String(a.key), locale) }));
-
-  const runs = await summarizeRuns(all.slice(0, 5), rows, locale);
+  const summary = stats && totals(attempts);
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
-        <AccuracyCard rows={accuracy} byNumber={byNumber} />
+        <AccuracyCard rows={accuracy} byNumber={byNumber} pending={!stats} />
         <TimeBars
           bars={meanTimeByNumber(attempts, numbers).map((bar) => ({
             ...bar,
             normMs: minutesAt(bar.number) * 60_000,
           }))}
+          pending={!stats}
         />
       </div>
       <div className="flex flex-col gap-5">
-        <TotalsCard totals={summary} runs={all.length} />
+        <TotalsCard totals={summary} runs={stats?.runCount} />
         <BankCard totals={summary} size={tasks.length} />
-        <RecentRuns runs={runs} />
+        <RecentRuns runs={stats?.runs} />
       </div>
     </div>
   );

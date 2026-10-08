@@ -1,5 +1,8 @@
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { EmptyNote } from "@/components/empty-note";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
@@ -12,10 +15,26 @@ interface RecentRun {
   score: number;
 }
 
-export function RecentRuns({ runs }: { runs: RecentRun[] }) {
+const row = "grid grid-cols-[96px_minmax(0,1fr)_28px] items-center gap-3";
+
+const ghost = (
+  <ul className="flex flex-col gap-1">
+    {[1, 2, 3].map((n) => (
+      <li key={n} className={cn(row, "py-2")}>
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-2" />
+        <Skeleton className="h-3" />
+      </li>
+    ))}
+  </ul>
+);
+
+export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
   const t = useTranslations("Stats");
-  const repeated = [...new Set(runs.flatMap((r) => r.misses))]
-    .filter((n) => runs.filter((r) => r.misses.includes(n)).length > 1)
+  const home = useTranslations("Home");
+  const done = runs ?? [];
+  const repeated = [...new Set(done.flatMap((r) => r.misses))]
+    .filter((n) => done.filter((r) => r.misses.includes(n)).length > 1)
     .sort((a, b) => a - b);
 
   return (
@@ -29,15 +48,23 @@ export function RecentRuns({ runs }: { runs: RecentRun[] }) {
           {t("all")}
         </Link>
       </CardHeader>
-      {runs.length === 0 ? (
-        <p className="text-sm text-subtle">{t("noRuns")}</p>
+      {!runs ? (
+        ghost
+      ) : runs.length === 0 ? (
+        <EmptyNote
+          ghost={ghost}
+          text={t("noRuns")}
+          signedIn
+          href="/variants/daily"
+          action={home("playDaily")}
+        />
       ) : (
         <ul className="flex flex-col gap-1 text-sm">
           {runs.map((run) => (
             <li key={run.id}>
               <Link
                 href={`/review?run=${run.id}`}
-                className="grid grid-cols-[96px_minmax(0,1fr)_28px] items-center gap-3 rounded-lg py-1.5 hover:bg-muted/50"
+                className={cn(row, "rounded-lg py-1.5 hover:bg-muted/50")}
               >
                 <span className="truncate font-semibold">{run.title}</span>
                 <VariantStrip
