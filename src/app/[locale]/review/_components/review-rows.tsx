@@ -16,7 +16,7 @@ interface ReviewRowsProps {
 }
 
 const columns =
-  "grid grid-cols-[28px_minmax(0,1fr)_48px] gap-3.5 px-5 md:grid-cols-[28px_minmax(0,1fr)_56px_64px] md:px-6";
+  "grid grid-cols-[28px_minmax(0,1fr)_48px] gap-3.5 px-5 md:grid-cols-[44px_minmax(0,1fr)_70px_90px] md:px-6";
 
 export function ReviewRows({ review, tasks, keys }: ReviewRowsProps) {
   const t = useTranslations("Review");
