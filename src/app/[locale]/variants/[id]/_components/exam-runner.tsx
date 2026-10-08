@@ -62,6 +62,7 @@ export function ExamRunner({
   if (hydrated && !run) {
     return (
       <ExamIntro
+        title={title}
         tasks={tasks}
         minutes={minutes}
         swaps={swaps}

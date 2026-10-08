@@ -3,6 +3,7 @@
 import { RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
+import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -11,13 +12,20 @@ import { Link } from "@/i18n/navigation";
 import { TaskLines } from "./task-lines";
 
 interface ExamIntroProps {
+  title: string;
   tasks: ExamTask[];
   minutes: number;
   swaps?: (string | undefined)[];
   onStart: (timed: boolean) => void;
 }
 
-export function ExamIntro({ tasks, minutes, swaps, onStart }: ExamIntroProps) {
+export function ExamIntro({
+  title,
+  tasks,
+  minutes,
+  swaps,
+  onStart,
+}: ExamIntroProps) {
   const t = useTranslations("Exam");
   const variants = useTranslations("Variants");
   const [timed, setTimed] = useState(true);
@@ -34,6 +42,7 @@ export function ExamIntro({ tasks, minutes, swaps, onStart }: ExamIntroProps) {
         <Button className="w-full" onClick={() => onStart(timed)}>
           {variants("start")}
         </Button>
+        <ShareButton title={title} />
       </Card>
       <Card className="py-3 md:py-4">
         <TaskLines

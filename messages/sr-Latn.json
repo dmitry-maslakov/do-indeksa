@@ -98,7 +98,7 @@
     "notSolved": "nije rešen",
     "continue": "Nastavi",
     "review": "Analiza",
-    "custom": "Moj test"
+    "custom": "Sastavljeni test"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",
@@ -219,5 +219,9 @@
     "unsolved": "Samo nerešeni",
     "topics": "Izaberi teme",
     "compose": "Sastavi"
+  },
+  "Share": {
+    "share": "Podeli",
+    "copied": "Link je kopiran"
   }
 }

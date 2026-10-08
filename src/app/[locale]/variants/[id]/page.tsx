@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
@@ -5,6 +6,21 @@ import { swapHrefs } from "@/content/compose";
 import { variantTitle } from "@/content/variant-title";
 import { getVariant, minutesOf, tasksFor } from "@/content/variants";
 import { ExamRunner } from "./_components/exam-runner";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/variants/[id]">): Promise<Metadata> {
+  const variant = getVariant((await params).id);
+  if (!variant) return {};
+  const t = await getTranslations("Variants");
+  return {
+    title: await variantTitle(variant),
+    description: t("format", {
+      tasks: variant.taskIds.length,
+      minutes: minutesOf(variant),
+    }),
+  };
+}
 
 export default async function VariantPage({
   params,
