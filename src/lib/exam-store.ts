@@ -96,7 +96,7 @@ export const useExamStore = create<ExamState>()(
 
 export function useExamHydrated() {
   useEffect(() => {
-    useExamStore.persist.rehydrate();
+    if (!useExamStore.persist.hasHydrated()) useExamStore.persist.rehydrate();
   }, []);
   return useSyncExternalStore(
     (onChange) => useExamStore.persist.onFinishHydration(onChange),
