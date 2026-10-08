@@ -35,9 +35,12 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
   const [statuses, setStatuses] = useState<Record<string, TaskStatus>>({});
   const [collapsed, toggle] = useStoredFlag("do-indeksa-rail-collapsed");
 
+  const userId = session?.user.id;
+
   useEffect(() => {
-    if (session) getStatuses().then(setStatuses);
-  }, [session]);
+    if (userId) getStatuses().then(setStatuses);
+    else setStatuses({});
+  }, [userId]);
 
   if (collapsed) {
     return (

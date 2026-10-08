@@ -12,10 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export function UserMenu() {
   const t = useTranslations("UserMenu");
+  const router = useRouter();
   const { data, isPending } = authClient.useSession();
 
   if (isPending) return <span className="size-9 rounded-full bg-data-tint" />;
@@ -41,7 +43,13 @@ export function UserMenu() {
           <span className="font-normal text-subtle text-xs">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => authClient.signOut()}>
+        <DropdownMenuItem
+          onClick={() =>
+            authClient.signOut({
+              fetchOptions: { onSuccess: () => router.refresh() },
+            })
+          }
+        >
           <LogOutIcon />
           {t("signOut")}
         </DropdownMenuItem>
