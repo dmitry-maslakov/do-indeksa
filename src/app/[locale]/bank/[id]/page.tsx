@@ -4,6 +4,7 @@ import { AnswerForm } from "@/components/answer-form";
 import { FavoriteButton } from "@/components/favorite-button";
 import { HintsProvider } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
+import { PageTitle } from "@/components/page-title";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -35,7 +36,7 @@ export default async function SolvePage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className="py-6 font-bold text-3xl">{bank("title")}</h1>
+      <PageTitle>{bank("title")}</PageTitle>
       <div className="grid items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:has-data-[rail=collapsed]:grid-cols-[56px_minmax(0,1fr)]">
         <SolveRail
           current={id}

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { PageTitle } from "@/components/page-title";
 import { variantTitle } from "@/content/variant-title";
 import { getVariant, minutesOf, tasksFor } from "@/content/variants";
 import { ExamRunner } from "./_components/exam-runner";
@@ -21,7 +22,7 @@ export default async function VariantPage({
   return (
     <main className="px-4 pb-9 md:px-9">
       <div className="flex flex-wrap items-baseline justify-between gap-2 py-6">
-        <h1 className="font-bold text-3xl">{title}</h1>
+        <PageTitle className="p-0">{title}</PageTitle>
         <span className="text-sm text-subtle">
           {t("format", { tasks: tasks.length, minutes })}
         </span>

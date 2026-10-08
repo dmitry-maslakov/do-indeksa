@@ -10,13 +10,13 @@ const list = cva("flex", {
   },
 });
 
-const tab = cva("font-medium text-sm transition-colors", {
+const tab = cva("font-medium transition-colors", {
   variants: {
     variant: {
       underline:
-        "border-b-2 pb-1.5 data-[active=true]:border-primary data-[active=false]:border-transparent data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
+        "border-b-2 pb-1 text-[15px] data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=false]:border-transparent data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
       segmented:
-        "rounded-lg px-3 py-1.5 data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
+        "rounded-lg px-3 py-1.5 text-sm data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
     },
   },
 });
