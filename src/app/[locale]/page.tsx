@@ -46,7 +46,7 @@ export default async function HomePage() {
         <ContinueCard
           start={{
             id: first.id,
-            title: first.title ?? String(first.year),
+            title: first.title,
             tasks: first.taskIds.length,
             minutes: minutesOf(first),
           }}

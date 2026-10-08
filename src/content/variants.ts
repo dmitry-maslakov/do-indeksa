@@ -13,7 +13,9 @@ export const officialVariants = allVariants
 
 export const curatedVariants = allVariants.filter((v) => v.kind === "curated");
 
-export interface ExamVariant extends Pick<Variant, "id" | "title" | "year"> {
+export interface ExamVariant
+  extends Pick<Variant, "id">,
+    Partial<Pick<Variant, "title" | "year">> {
   kind: Variant["kind"] | "daily" | "custom";
   taskIds: string[];
 }

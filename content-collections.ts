@@ -134,7 +134,9 @@ const variants = defineCollection({
         throw new Error(`${origin}: "${id}" does not fit position ${i + 1}`);
       }
     });
-    return { ...variant, id: variant._meta.path };
+    const title = variant.title ?? variant.year?.toString();
+    if (!title) throw new Error(`${origin}: needs a title or a year`);
+    return { ...variant, id: variant._meta.path, title };
   },
 });
 
