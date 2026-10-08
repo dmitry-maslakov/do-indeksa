@@ -8,7 +8,7 @@ export function VariantList({
   runs,
 }: {
   variants: Variant[];
-  runs: RunSummary[];
+  runs?: RunSummary[];
 }) {
   return (
     <Card className="p-0 md:p-0">
@@ -19,7 +19,8 @@ export function VariantList({
             id={v.id}
             title={v.title}
             tasks={v.taskIds.length}
-            latest={runs.find((r) => r.variantId === v.id)}
+            latest={runs?.find((r) => r.variantId === v.id)}
+            pending={!runs}
           />
         ))}
       </ul>
