@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -20,7 +21,7 @@ export function UserMenu() {
   const router = useRouter();
   const { data, isPending } = authClient.useSession();
 
-  if (isPending) return <span className="size-9 rounded-full bg-data-tint" />;
+  if (isPending) return <Skeleton className="size-9" />;
 
   if (!data) {
     return <SignInButton size="sm">{t("signIn")}</SignInButton>;

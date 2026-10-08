@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useHints } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
+import { Skeleton } from "@/components/ui/skeleton";
 import { type RevealPart, reveal } from "@/server/reveal";
 
 interface RevealProps {
@@ -33,9 +34,7 @@ export function Reveal({ label, taskId, part }: RevealProps) {
         {label}
         <ChevronDownIcon className="size-4 text-subtle transition-transform group-open:rotate-180" />
       </summary>
-      {pending && (
-        <div className="mt-3 h-5 w-2/3 animate-pulse rounded bg-untouched" />
-      )}
+      {pending && <Skeleton className="mt-4 mb-1 h-3.5 w-2/3" />}
       {html && <MathHtml html={html} className="mt-3" />}
     </details>
   );
