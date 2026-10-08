@@ -25,10 +25,10 @@ export function nextIndex(run: RunProgress) {
 }
 
 export function minutesLeft(
-  run: { startedAt: number; minutes?: number; timed: boolean },
+  run: { startedAt: number; minutes: number; timed: boolean },
   now: number,
 ) {
-  if (!run.timed || !run.minutes) return undefined;
+  if (!run.timed) return undefined;
   return Math.max(
     Math.round((run.startedAt + run.minutes * 60_000 - now) / 60_000),
     0,

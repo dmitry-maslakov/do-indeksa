@@ -28,12 +28,6 @@ export default async function HomePage() {
   const signedIn = Boolean(session);
   const [first] = [...officialVariants, ...curatedVariants];
   if (!first) throw new Error("no tests in the bank");
-  const titles = Object.fromEntries(
-    [...officialVariants, ...curatedVariants].map((v) => [
-      v.id,
-      v.title ?? String(v.year),
-    ]),
-  );
   const slowest = meanTimeByNumber(
     attempts,
     positions.map((p) => p.number),
@@ -54,10 +48,9 @@ export default async function HomePage() {
     <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
       <div className="contents md:flex md:flex-col md:gap-6">
         <ContinueCard
-          titles={titles}
           start={{
             id: first.id,
-            title: titles[first.id] ?? first.id,
+            title: first.title ?? String(first.year),
             tasks: first.taskIds.length,
             minutes: minutesOf(first),
           }}

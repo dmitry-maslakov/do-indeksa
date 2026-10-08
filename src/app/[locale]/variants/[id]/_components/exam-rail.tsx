@@ -34,7 +34,7 @@ export function ExamRail({
       <ExamTimer
         startedAt={run.startedAt}
         minutes={minutes}
-        timed={run.timed !== false}
+        timed={run.timed}
       />
       <nav aria-label={t("tasks")} className="grid grid-cols-5 gap-2">
         {tasks.map((task, i) => (
