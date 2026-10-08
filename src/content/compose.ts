@@ -10,7 +10,6 @@ export const composeSchema = z.object({
     .union([z.string(), z.array(z.string())])
     .optional()
     .transform((t) => (t === undefined ? [] : [t].flat())),
-  timer: z.string().optional(),
 });
 
 export const composeTaskIds = (

@@ -121,7 +121,9 @@
     "back": "Na testove",
     "retry": "Ponovo",
     "elapsed": "Proteklo vreme",
-    "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se računa."
+    "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se računa.",
+    "timer": "Tajmer {minutes, number} min",
+    "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}"
   },
   "Review": {
     "title": "Analiza",
@@ -215,7 +217,6 @@
     "weak": "Iz tema gde sam slabiji",
     "unsolved": "Samo nerešeni",
     "topics": "Izaberi teme",
-    "timer": "Tajmer {minutes, number} min",
     "compose": "Sastavi"
   }
 }

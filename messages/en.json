@@ -121,7 +121,9 @@
     "back": "To tests",
     "retry": "Again",
     "elapsed": "Elapsed",
-    "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded."
+    "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded.",
+    "timer": "Timer {minutes, number} min",
+    "points": "{points, plural, one {# point} other {# points}}"
   },
   "Review": {
     "title": "Review",
@@ -215,7 +217,6 @@
     "weak": "From my weak topics",
     "unsolved": "Unsolved only",
     "topics": "Pick topics",
-    "timer": "Timer {minutes, number} min",
     "compose": "Compose"
   }
 }

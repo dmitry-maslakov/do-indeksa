@@ -13,6 +13,7 @@ test("a guest checks an answer", async ({ page }) => {
 test("a guest finishes the daily test", async ({ page }) => {
   await page.goto("/variants/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
+  await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
   await page.getByRole("button", { name: "Završi test" }).click();
   await page
@@ -29,8 +30,9 @@ test("a guest composes an untimed test from a topic", async ({ page }) => {
   await page.goto("/variants");
   await page.getByText("Izaberi teme").click();
   await page.getByRole("button", { name: "Logaritmi" }).click();
-  await page.getByRole("switch", { name: "Tajmer" }).click();
   await page.getByRole("button", { name: "Sastavi", exact: true }).click();
-  await expect(page).toHaveURL(/\/variants\/set-[a-z0-9.-]+\?timer=off$/);
+  await expect(page).toHaveURL(/\/variants\/set-[a-z0-9.-]+$/);
+  await page.getByRole("switch", { name: "Tajmer" }).click();
+  await page.getByRole("button", { name: "Počni" }).click();
   await expect(page.getByText("Proteklo vreme")).toBeVisible();
 });

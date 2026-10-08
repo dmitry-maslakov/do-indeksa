@@ -13,7 +13,7 @@ export default async function ComposePage({
   searchParams,
 }: PageProps<"/[locale]/variants/compose">) {
   await connection();
-  const { mode, topic, timer } = composeSchema.parse(await searchParams);
+  const { mode, topic } = composeSchema.parse(await searchParams);
   const session = await getSession();
   const attempts = session ? await getStatAttempts(session.user.id) : [];
   const statuses = latestStatuses(attempts);
@@ -34,9 +34,8 @@ export default async function ComposePage({
     },
     crypto.randomUUID(),
   );
-  const query = timer === "off" ? "?timer=off" : "";
   redirect({
-    href: `/variants/${setId(ids)}${query}`,
+    href: `/variants/${setId(ids)}`,
     locale: await getLocale(),
   });
 }

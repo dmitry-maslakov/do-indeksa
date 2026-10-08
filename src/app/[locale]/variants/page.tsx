@@ -68,7 +68,6 @@ export default async function VariantsPage({
         </div>
         <aside className="flex flex-col gap-5">
           <ComposeCard
-            minutes={minutes}
             topics={positions.map((p) => ({
               id: p.topic,
               name: topicName(p.topic, locale),
