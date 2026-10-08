@@ -94,8 +94,8 @@ function Shell({
   action,
 }: ShellProps) {
   return (
-    <Card className="gap-4 md:p-8">
-      <div className="flex justify-between gap-3 text-sm text-subtle">
+    <Card size="lg" className="gap-4">
+      <div className="flex justify-between gap-3 text-[13px] text-subtle">
         <span>{label}</span>
         <span>{meta}</span>
       </div>
