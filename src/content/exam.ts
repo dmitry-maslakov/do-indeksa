@@ -1,8 +1,18 @@
 import "server-only";
 import { allExams } from "content-collections";
 
-const exam = allExams.find((e) => e.id === "ftn-p1");
-if (!exam) throw new Error("exam ftn-p1 is missing");
+export const currentExam = "ftn-p1";
+
+const exam = allExams.find((e) => e.id === currentExam);
+if (!exam) throw new Error(`exam ${currentExam} is missing`);
+
+export const examOptions = allExams.map((e) => ({
+  id: e.id,
+  faculty: e.faculty,
+  title: e.title,
+  tasks: e.positions.length,
+  hours: e.durationMinutes / 60,
+}));
 
 export const positions = exam.positions;
 
