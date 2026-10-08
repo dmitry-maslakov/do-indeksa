@@ -89,14 +89,17 @@ export function mistakesThisWeek(newestFirst: StatAttempt[], now: Date) {
     .map((a) => a.taskId);
 }
 
+const dayBefore = (day: string) =>
+  new Date(Date.parse(`${day}T12:00:00Z`) - DAY).toISOString().slice(0, 10);
+
 export function streak(newestFirst: StatAttempt[], now: Date) {
   const days = new Set(newestFirst.map((a) => belgradeDay(a.createdAt)));
+  let day = belgradeDay(now);
+  if (!days.has(day)) day = dayBefore(day);
   let count = 0;
-  let at = now.getTime();
-  if (!days.has(belgradeDay(now))) at -= DAY;
-  while (days.has(belgradeDay(new Date(at)))) {
+  while (days.has(day)) {
     count++;
-    at -= DAY;
+    day = dayBefore(day);
   }
   return count;
 }

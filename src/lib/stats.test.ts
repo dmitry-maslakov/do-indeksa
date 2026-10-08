@@ -70,6 +70,21 @@ describe("home folds", () => {
     expect(streak([day(3)], now)).toBe(0);
   });
 
+  it("counts each day once across a clock change", () => {
+    const on = (iso: string) => ({
+      ...at("a", 1, false, 1),
+      createdAt: new Date(iso),
+    });
+    const late = new Date("2026-10-26T22:30:00Z");
+    expect(
+      streak([on("2026-10-26T10:00:00Z"), on("2026-10-25T10:00:00Z")], late),
+    ).toBe(2);
+    const early = new Date("2026-03-30T22:30:00Z");
+    expect(
+      streak([on("2026-03-30T10:00:00Z"), on("2026-03-29T10:00:00Z")], early),
+    ).toBe(2);
+  });
+
   it("lists tasks whose latest attempt this week is wrong", () => {
     const rows = [
       day(1, { taskId: "a", correct: true }),
