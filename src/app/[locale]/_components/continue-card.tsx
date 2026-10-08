@@ -16,11 +16,10 @@ import {
 import type { Segment } from "@/lib/strip";
 
 interface ContinueCardProps {
-  titles: Record<string, string>;
   start: { id: string; title: string; tasks: number; minutes: number };
 }
 
-export function ContinueCard({ titles, start }: ContinueCardProps) {
+export function ContinueCard({ start }: ContinueCardProps) {
   const t = useTranslations("Home");
   const variants = useTranslations("Variants");
   const hydrated = useExamHydrated();
@@ -51,7 +50,7 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
   const total = run.answers.length;
   const left = minutesLeft(run, Date.now());
   const index = nextIndex(run);
-  const next = index === undefined ? undefined : run.tasks?.[index];
+  const next = index === undefined ? undefined : run.tasks[index];
 
   return (
     <Shell
@@ -61,7 +60,7 @@ export function ContinueCard({ titles, start }: ContinueCardProps) {
           ? t("progress", { done, total })
           : t("progressLeft", { done, total, minutes: left })
       }
-      title={run.title ?? titles[variantId] ?? variants("daily")}
+      title={run.title}
       segments={runSegments(run)}
       hint={next && t("next", { number: next.number, topic: next.topic })}
       href={`/variants/${variantId}`}

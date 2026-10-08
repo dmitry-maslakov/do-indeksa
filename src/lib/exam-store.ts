@@ -9,10 +9,9 @@ interface RunMeta {
   tasks: { number: number; topic: string; parts: number }[];
 }
 
-export interface ExamRun extends Partial<Omit<RunMeta, "tasks" | "timed">> {
+export interface ExamRun extends Omit<RunMeta, "tasks"> {
   runId: string;
-  timed: boolean;
-  tasks?: { number: number; topic: string }[];
+  tasks: { number: number; topic: string }[];
   startedAt: number;
   enteredAt: number;
   current: number;
@@ -87,6 +86,8 @@ export const useExamStore = create<ExamState>()(
     },
     {
       name: "do-indeksa-exam",
+      version: 1,
+      migrate: () => ({ runs: {} }),
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
     },
