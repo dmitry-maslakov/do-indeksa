@@ -13,6 +13,8 @@ describe("parseVariantId", () => {
 
   it.each([
     "daily-2026-10",
+    "daily-2026-02-30",
+    "daily-2026-13-45",
     "random-XYZ",
     "set-",
     "set-a.b.c.d.e.f.g.h.i.j.k",
