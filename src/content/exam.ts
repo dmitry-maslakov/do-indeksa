@@ -8,6 +8,11 @@ export const positions = exam.positions;
 
 export const dailySize = exam.daily.size;
 
-const numbers = new Map(positions.map((p) => [p.topic, p.number]));
+const byTopic = new Map(positions.map((p) => [p.topic, p]));
 
-export const numberOf = (topic: string) => numbers.get(topic) ?? 0;
+export const positionOf = (topic: string) => byTopic.get(topic);
+
+export const numberOf = (topic: string) => positionOf(topic)?.number ?? 0;
+
+export const minutesAt = (number: number) =>
+  positions.find((p) => p.number === number)?.minutes ?? 0;

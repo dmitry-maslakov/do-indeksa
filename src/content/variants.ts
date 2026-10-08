@@ -3,7 +3,7 @@ import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
 import { pick } from "@/lib/pick";
 import { parseVariantId } from "@/lib/variant-id";
-import { dailySize, numberOf, positions } from "./exam";
+import { dailySize, numberOf, positionOf, positions } from "./exam";
 import { getTask, tasks } from "./tasks";
 import { topicName } from "./topics";
 
@@ -49,15 +49,13 @@ export const byNumber = (ids: string[]) =>
 export function minutesOf(variant: ExamVariant) {
   return variant.taskIds.reduce((sum, id) => {
     const task = getTask(id);
-    return (
-      sum + (task ? (positions[numberOf(task.topic) - 1]?.minutes ?? 0) : 0)
-    );
+    return sum + (task ? (positionOf(task.topic)?.minutes ?? 0) : 0);
   }, 0);
 }
 
 export function pointsOf(taskId: string) {
   const task = getTask(taskId);
-  return task ? (positions[numberOf(task.topic) - 1]?.points ?? 0) : 0;
+  return task ? (positionOf(task.topic)?.points ?? 0) : 0;
 }
 
 export interface ExamTask {
@@ -82,7 +80,7 @@ export function tasksFor(taskIds: string[], locale: Locale): ExamTask[] {
       topic: task.topic,
       topicName: topicName(task.topic, locale),
       points: pointsOf(id),
-      minutes: positions[number - 1]?.minutes ?? 0,
+      minutes: positionOf(task.topic)?.minutes ?? 0,
       statement: task.statement,
       labels: task.check.map((c) => c.label),
     };
