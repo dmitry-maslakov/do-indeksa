@@ -17,7 +17,7 @@ export function VariantList({
           <VariantRow
             key={v.id}
             id={v.id}
-            title={v.title ?? String(v.year)}
+            title={v.title}
             tasks={v.taskIds.length}
             latest={runs.find((r) => r.variantId === v.id)}
           />
