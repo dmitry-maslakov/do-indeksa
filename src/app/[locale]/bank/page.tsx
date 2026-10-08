@@ -24,7 +24,11 @@ export default async function BankPage({
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
       <div className="grid items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
-        <BankFilters filters={filters} signedIn={Boolean(session)} />
+        <BankFilters
+          filters={filters}
+          signedIn={Boolean(session)}
+          solveHref={tasks[0] ? `/bank/${tasks[0].id}` : "/bank"}
+        />
         <section className="flex flex-col gap-3.5">
           <div className="flex items-center justify-between gap-4 px-1 text-sm">
             <span className="font-semibold">
