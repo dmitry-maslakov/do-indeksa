@@ -1,17 +1,12 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { finishRun, type RunResult } from "@/server/runs";
+import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
 import { ExamTask } from "./exam-task";
@@ -20,7 +15,6 @@ interface ExamRunnerProps {
   variantId: string;
   tasks: Task[];
   minutes: number;
-  timed: boolean;
   title: string;
 }
 
@@ -28,7 +22,6 @@ export function ExamRunner({
   variantId,
   tasks,
   minutes,
-  timed,
   title,
 }: ExamRunnerProps) {
   const hydrated = useExamHydrated();
@@ -41,33 +34,35 @@ export function ExamRunner({
     () => ({
       title,
       minutes,
-      timed,
       tasks: tasks.map((task) => ({
         number: task.number,
         topic: task.topicName,
         parts: task.labels.length,
       })),
     }),
-    [title, minutes, timed, tasks],
+    [title, minutes, tasks],
   );
   const onAnswer = useCallback(
     (part: number, value: string) => answer(variantId, part, value),
     [answer, variantId],
   );
 
-  useEffect(() => {
-    if (hydrated) start(variantId, meta);
-  }, [hydrated, start, variantId, meta]);
-
   if (result) {
     return (
       <ExamResult
         tasks={tasks}
         result={result}
-        onRetry={() => {
-          setResult(undefined);
-          start(variantId, meta);
-        }}
+        onRetry={() => setResult(undefined)}
+      />
+    );
+  }
+
+  if (hydrated && !run) {
+    return (
+      <ExamIntro
+        tasks={tasks}
+        minutes={minutes}
+        onStart={(timed) => start(variantId, { ...meta, timed })}
       />
     );
   }

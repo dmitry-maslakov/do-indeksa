@@ -3,31 +3,26 @@
 import { cn } from "cn";
 import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
 import { useRouter } from "@/i18n/navigation";
 import { composeModes } from "@/lib/compose";
 
-interface ComposeCardProps {
+export function ComposeCard({
+  topics,
+}: {
   topics: { id: string; name: string }[];
-  minutes: number;
-}
-
-export function ComposeCard({ topics, minutes }: ComposeCardProps) {
+}) {
   const t = useTranslations("Compose");
   const router = useRouter();
   const [mode, setMode] = useState<(typeof composeModes)[number]>("exam");
   const [chosen, setChosen] = useState<string[]>([]);
-  const [timer, setTimer] = useState(true);
-  const timerId = useId();
 
   function compose() {
     const query = new URLSearchParams({ mode });
     if (mode === "topics") for (const id of chosen) query.append("topic", id);
-    if (!timer) query.set("timer", "off");
     router.push(`/variants/compose?${query}`);
   }
 
@@ -74,10 +69,6 @@ export function ComposeCard({ topics, minutes }: ComposeCardProps) {
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between gap-3 text-sm">
-        <label htmlFor={timerId}>{t("timer", { minutes })}</label>
-        <Switch id={timerId} checked={timer} onCheckedChange={setTimer} />
-      </div>
       <Button
         variant="secondary"
         className="w-full"
