@@ -1,5 +1,6 @@
 import Form from "next/form";
 import { useLocale, useTranslations } from "next-intl";
+import { LinkTabs } from "@/components/link-tabs";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { NativeSelectOption } from "@/components/ui/native-select";
@@ -15,14 +16,27 @@ export const BANK_FORM = "bank-filters";
 interface BankFiltersProps {
   filters: Filters;
   signedIn: boolean;
+  solveHref: string;
 }
 
-export function BankFilters({ filters, signedIn }: BankFiltersProps) {
+export function BankFilters({
+  filters,
+  signedIn,
+  solveHref,
+}: BankFiltersProps) {
   const t = useTranslations("Bank");
+  const solve = useTranslations("Solve");
   const locale = useLocale();
 
   return (
     <Card size="sm" className="md:sticky md:top-4">
+      <LinkTabs
+        variant="underline"
+        items={[
+          { href: "/bank", label: solve("list"), active: true },
+          { href: solveHref, label: solve("solve"), active: false },
+        ]}
+      />
       <Form
         id={BANK_FORM}
         action=""
@@ -52,7 +66,7 @@ export function BankFilters({ filters, signedIn }: BankFiltersProps) {
             ))}
           </FilterSelect>
         </label>
-        <label>
+        <label className="md:order-1">
           <span className="mb-1 block text-subtle text-xs">{t("level")}</span>
           <FilterSelect
             name="level"
@@ -83,7 +97,7 @@ export function BankFilters({ filters, signedIn }: BankFiltersProps) {
           </FilterSelect>
         </label>
         {signedIn && (
-          <label className="col-span-2 md:col-span-1">
+          <label className="col-span-2 md:order-1 md:col-span-1">
             <span className="mb-1 block text-subtle text-xs">
               {t("status")}
             </span>
