@@ -1,5 +1,4 @@
 import { DailyBanner } from "@/components/daily-banner";
-import { statAttempts } from "@/content/attempts";
 import { minutesAt, positions } from "@/content/exam";
 import {
   curatedVariants,
@@ -8,7 +7,7 @@ import {
 } from "@/content/variants";
 import { meanTimeByNumber, mistakesThisWeek, weakest } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getAttempts } from "@/server/history";
+import { getStatAttempts } from "@/server/history";
 import { ContinueCard } from "./_components/continue-card";
 import { EntryCards } from "./_components/entry-cards";
 import { MistakesCard } from "./_components/mistakes-card";
@@ -17,9 +16,7 @@ import { WeakTopics } from "./_components/weak-topics";
 
 export default async function HomePage() {
   const session = await getSession();
-  const attempts = session
-    ? statAttempts(await getAttempts(session.user.id))
-    : [];
+  const attempts = session ? await getStatAttempts(session.user.id) : [];
   const now = new Date();
   const signedIn = Boolean(session);
   const [first] = [...officialVariants, ...curatedVariants];

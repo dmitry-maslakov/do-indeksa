@@ -2,6 +2,7 @@ import "server-only";
 import { and, desc, eq } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
+import { statAttempts } from "@/content/attempts";
 import { attempts, runs } from "@/db/schema";
 import { db } from "./db";
 
@@ -58,3 +59,6 @@ export const getRuns = cache(async (userId: string) =>
     .where(eq(runs.userId, userId))
     .orderBy(desc(runs.finishedAt)),
 );
+
+export const getStatAttempts = async (userId: string) =>
+  statAttempts(await getAttempts(userId));
