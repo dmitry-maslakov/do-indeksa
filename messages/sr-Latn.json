@@ -89,7 +89,6 @@
     "dailyOn": "Test dana · {date}",
     "dailyMeta": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {minutes, number} min",
     "play": "Igraj",
-    "random": "Nasumični test",
     "history": "Istorija",
     "historyGuest": "Prijavi se da vidiš istoriju svojih testova.",
     "historyEmpty": "Još nema završenih testova.",

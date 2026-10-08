@@ -89,7 +89,6 @@
     "dailyOn": "Вариант дня · {date}",
     "dailyMeta": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {minutes, number} мин",
     "play": "Играть",
-    "random": "Случайный вариант",
     "history": "История",
     "historyGuest": "Войди, чтобы видеть историю своих вариантов.",
     "historyEmpty": "Пока нет завершённых вариантов.",
