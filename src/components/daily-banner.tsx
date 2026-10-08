@@ -14,7 +14,7 @@ export function DailyBanner({
   return (
     <div className="flex items-center justify-between gap-4 rounded-2xl bg-daily px-[18px] py-3.5 text-white">
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="font-semibold text-[15px]">{t("daily")}</span>
+        <span className="font-semibold text-sm">{t("daily")}</span>
         <span className="text-daily-muted text-xs">
           {t("dailyMeta", { tasks, minutes })}
         </span>

@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { statAttempts } from "@/content/attempts";
 import { positions } from "@/content/exam";
@@ -22,7 +23,7 @@ export default async function StatsPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className="py-6 font-bold text-3xl">{t("title")}</h1>
+      <PageTitle>{t("title")}</PageTitle>
       {session ? (
         <Stats
           userId={session.user.id}

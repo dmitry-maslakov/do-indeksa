@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,9 +31,9 @@ export default async function ReviewPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className={found ? "sr-only" : "py-6 font-bold text-3xl"}>
+      <PageTitle className={found ? "sr-only" : undefined}>
         {t("title")}
-      </h1>
+      </PageTitle>
       {!session ? (
         <SignInCard text={t("guest")} />
       ) : !found ? (

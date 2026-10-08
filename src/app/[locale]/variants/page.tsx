@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { DailyBanner } from "@/components/daily-banner";
 import { LinkTabs } from "@/components/link-tabs";
+import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { positions } from "@/content/exam";
 import { summarizeRuns } from "@/content/runs";
@@ -43,7 +44,7 @@ export default async function VariantsPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className="py-6 font-bold text-3xl">{t("title")}</h1>
+      <PageTitle>{t("title")}</PageTitle>
       <div className="grid items-start gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr]">
         <DailyBanner tasks={daily.taskIds.length} minutes={minutesOf(daily)} />
         <div className="flex flex-col gap-3.5 md:col-start-1 md:row-span-2 md:row-start-1">
@@ -56,7 +57,7 @@ export default async function VariantsPage({
                 active: x === tab,
               }))}
             />
-            <span className="text-sm text-subtle">
+            <span className="text-[13px] text-subtle">
               {t("format", { tasks: positions.length, minutes })}
             </span>
           </div>

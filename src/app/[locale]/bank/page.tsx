@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { BANK_FORM, BankFilters } from "@/components/bank-filters";
 import { FilterSelect } from "@/components/filter-select";
+import { PageTitle } from "@/components/page-title";
 import { TaskCard } from "@/components/task-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,7 +22,7 @@ export default async function BankPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <h1 className="py-6 font-bold text-3xl">{t("title")}</h1>
+      <PageTitle>{t("title")}</PageTitle>
       <div className="grid items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
         <BankFilters filters={filters} signedIn={Boolean(session)} />
         <section className="flex flex-col gap-3.5">
