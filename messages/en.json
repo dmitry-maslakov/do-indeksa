@@ -98,7 +98,7 @@
     "notSolved": "not solved",
     "continue": "Continue",
     "review": "Review",
-    "custom": "My test"
+    "custom": "Custom test"
   },
   "Exam": {
     "timeLeft": "Time left",
@@ -219,5 +219,9 @@
     "unsolved": "Unsolved only",
     "topics": "Pick topics",
     "compose": "Compose"
+  },
+  "Share": {
+    "share": "Share",
+    "copied": "Link copied"
   }
 }
