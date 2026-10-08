@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { belgradeDate, getVariant, minutesOf } from "@/content/variants";
+import { getVariant, minutesOf } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
+import { belgradeDate } from "@/lib/dates";
 
 export function DailyBanner() {
   const t = useTranslations("Variants");

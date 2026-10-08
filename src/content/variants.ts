@@ -22,9 +22,6 @@ export const byPosition = positions.map((p) =>
   tasks.filter((t) => t.topic === p.topic).map((t) => t.id),
 );
 
-export const belgradeDate = (at = new Date()) =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Belgrade" }).format(at);
-
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;

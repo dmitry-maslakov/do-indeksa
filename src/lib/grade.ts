@@ -1,8 +1,7 @@
+import { DAY } from "./dates";
 import { gradeParts } from "./math";
 import { creditOf } from "./review";
 import { isAnswered } from "./run";
-
-export const DAY = 24 * 60 * 60 * 1000;
 
 interface GradedTask {
   taskId: string;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DAY, gradeRun } from "./grade";
+import { DAY } from "./dates";
+import { gradeRun } from "./grade";
 
 const tasks = [
   { taskId: "a", expected: ["2"], points: 6 },

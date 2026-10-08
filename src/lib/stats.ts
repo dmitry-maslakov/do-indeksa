@@ -1,3 +1,4 @@
+import { belgradeDate, DAY } from "./dates";
 import { latestStatuses } from "./progress";
 
 export interface StatAttempt {
@@ -63,11 +64,6 @@ export function totals(newestFirst: StatAttempt[]) {
   };
 }
 
-const DAY = 24 * 60 * 60 * 1000;
-
-const belgradeDay = (at: Date) =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Belgrade" }).format(at);
-
 export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
   const recent = attempts.filter(
     (a) => now.getTime() - a.createdAt.getTime() <= 30 * DAY,
@@ -93,8 +89,8 @@ const dayBefore = (day: string) =>
   new Date(Date.parse(`${day}T12:00:00Z`) - DAY).toISOString().slice(0, 10);
 
 export function streak(newestFirst: StatAttempt[], now: Date) {
-  const days = new Set(newestFirst.map((a) => belgradeDay(a.createdAt)));
-  let day = belgradeDay(now);
+  const days = new Set(newestFirst.map((a) => belgradeDate(a.createdAt)));
+  let day = belgradeDate(now);
   if (!days.has(day)) day = dayBefore(day);
   let count = 0;
   while (days.has(day)) {

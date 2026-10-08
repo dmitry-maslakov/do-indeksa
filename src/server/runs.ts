@@ -4,7 +4,8 @@ import { z } from "zod";
 import { getTask } from "@/content/tasks";
 import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, runs } from "@/db/schema";
-import { DAY, gradeRun } from "@/lib/grade";
+import { DAY } from "@/lib/dates";
+import { gradeRun } from "@/lib/grade";
 import { getSession } from "./auth";
 import { db } from "./db";
 
