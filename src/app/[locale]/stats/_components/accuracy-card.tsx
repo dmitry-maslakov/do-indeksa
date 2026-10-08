@@ -24,7 +24,7 @@ export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
           ]}
         />
       </CardHeader>
-      <ul className="flex flex-col gap-3.5 text-sm md:grid md:grid-cols-[170px_minmax(0,1fr)_44px_92px] md:gap-x-4 md:gap-y-2.5">
+      <ul className="flex flex-col gap-3.5 text-sm md:grid md:grid-cols-[170px_minmax(0,1fr)_56px_74px] md:gap-x-4 md:gap-y-1.5">
         {rows.map((row) => (
           <li
             key={row.key}
@@ -41,7 +41,7 @@ export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
             >
               {row.pct === null ? "—" : `${row.pct}%`}
             </b>
-            <span className="hidden text-subtle md:block">
+            <span className="hidden text-[13px] text-subtle md:block">
               {t("attempts", { count: row.total })}
             </span>
           </li>
