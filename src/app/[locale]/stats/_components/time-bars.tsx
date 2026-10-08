@@ -21,7 +21,7 @@ export function TimeBars({ bars }: { bars: Bar[] }) {
   const over = bars.filter((b) => (b.meanMs ?? 0) > b.normMs);
 
   return (
-    <Card className="gap-4 md:p-8">
+    <Card size="lg" className="gap-4">
       <CardHeader>
         <CardTitle>{t("time")}</CardTitle>
         <CardDescription>{t("timeNote", { norm })}</CardDescription>

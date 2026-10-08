@@ -51,7 +51,7 @@ export default async function HomePage() {
     .slice(0, 3);
 
   return (
-    <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
+    <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
       <div className="contents md:flex md:flex-col md:gap-6">
         <ContinueCard
           titles={titles}

@@ -28,7 +28,7 @@ export function ReviewSummary({
   ];
 
   return (
-    <Card className="gap-5 md:p-8">
+    <Card size="lg" className="gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <Link

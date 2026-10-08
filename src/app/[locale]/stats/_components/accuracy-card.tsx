@@ -13,7 +13,7 @@ interface AccuracyCardProps {
 export function AccuracyCard({ rows, byNumber }: AccuracyCardProps) {
   const t = useTranslations("Stats");
   return (
-    <Card className="gap-5 md:p-8">
+    <Card size="lg" className="gap-5">
       <CardHeader>
         <CardTitle>{t("weaker")}</CardTitle>
         <LinkTabs

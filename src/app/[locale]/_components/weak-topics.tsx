@@ -36,7 +36,7 @@ export function WeakTopics({
           action={t("playDaily")}
         />
       )}
-      <ul className="flex flex-col gap-3.5 text-sm empty:hidden">
+      <ul className="flex flex-col gap-3 text-[13px] empty:hidden">
         {topics.map((topic) => (
           <li key={topic.key} className="flex flex-col gap-1.5">
             <div className="flex justify-between gap-3">
