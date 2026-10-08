@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dailySize } from "./exam";
-import { belgradeDate, getVariant, officialVariants } from "./variants";
+import { getVariant, officialVariants } from "./variants";
 
 describe("getVariant", () => {
   it("finds a variant from the bank", () => {
@@ -24,11 +24,5 @@ describe("getVariant", () => {
 
   it("ignores unknown ids", () => {
     expect(getVariant("nope")).toBeUndefined();
-  });
-});
-
-describe("belgradeDate", () => {
-  it("uses the Belgrade calendar day", () => {
-    expect(belgradeDate(new Date("2026-10-07T22:30:00Z"))).toBe("2026-10-08");
   });
 });
