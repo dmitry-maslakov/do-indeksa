@@ -2,9 +2,7 @@ import { DailyBanner } from "@/components/daily-banner";
 import { statAttempts } from "@/content/attempts";
 import { positions } from "@/content/exam";
 import {
-  belgradeDate,
   curatedVariants,
-  getVariant,
   minutesOf,
   officialVariants,
 } from "@/content/variants";
@@ -18,8 +16,6 @@ import { TimeCard } from "./_components/time-card";
 import { WeakTopics } from "./_components/weak-topics";
 
 export default async function HomePage() {
-  const daily = getVariant(`daily-${belgradeDate()}`);
-  if (!daily) throw new Error("no daily test");
   const session = await getSession();
   const attempts = session
     ? statAttempts(await getAttempts(session.user.id))
@@ -63,7 +59,7 @@ export default async function HomePage() {
         </div>
       </div>
       <div className="contents md:flex md:flex-col md:gap-6">
-        <DailyBanner tasks={daily.taskIds.length} minutes={minutesOf(daily)} />
+        <DailyBanner />
         <WeakTopics
           topics={weakest(
             attempts,
