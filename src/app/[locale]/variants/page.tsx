@@ -33,13 +33,13 @@ export default async function VariantsPage({
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
   const session = await getSession();
   const locale = await getLocale();
-  const runs = session
-    ? await summarizeRuns(
-        await getRuns(session.user.id),
-        await getAttempts(session.user.id),
-        locale,
-      )
-    : [];
+  const [runRows, attempts] = session
+    ? await Promise.all([
+        getRuns(session.user.id),
+        getAttempts(session.user.id),
+      ])
+    : [[], []];
+  const runs = await summarizeRuns(runRows, attempts, locale);
   const minutes = positions.reduce((sum, p) => sum + p.minutes, 0);
 
   return (
