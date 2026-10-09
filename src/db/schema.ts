@@ -11,6 +11,7 @@ import {
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
+import { reportKinds } from "@/lib/report";
 import { user } from "./auth-schema";
 
 export * from "./auth-schema";
@@ -76,5 +77,16 @@ export const favorites = pgTable(
 export const sets = pgTable("sets", {
   code: text().primaryKey(),
   taskIds: text().array().notNull(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
+export const reportKind = pgEnum("report_kind", reportKinds);
+
+export const reports = pgTable("reports", {
+  id: uuid().primaryKey().defaultRandom(),
+  taskId: text().notNull(),
+  kind: reportKind().notNull(),
+  message: text().notNull(),
+  userId: text().references(() => user.id, { onDelete: "set null" }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
