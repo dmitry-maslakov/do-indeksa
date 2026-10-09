@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
@@ -14,29 +15,32 @@ import { Link } from "@/i18n/navigation";
 import { review } from "@/lib/review";
 import { getSession } from "@/server/auth";
 import { getRun } from "@/server/history";
-import { LostPoints } from "./_components/lost-points";
-import { ReviewRows } from "./_components/review-rows";
-import { ReviewSummary } from "./_components/review-summary";
-import { TimeSpent } from "./_components/time-spent";
+import { LostPoints } from "../_components/lost-points";
+import { ReviewRows } from "../_components/review-rows";
+import { ReviewSummary } from "../_components/review-summary";
+import { TimeSpent } from "../_components/time-spent";
 
-async function loadRun(runId?: string) {
+async function loadRun(key?: string) {
   const session = await getSession();
   return {
     signedIn: Boolean(session),
-    found: session && (await getRun(session.user.id, runId)),
+    found: session && (await getRun(session.user.id, key)),
   };
 }
 
 export default async function ReviewPage({
+  params,
   searchParams,
-}: PageProps<"/[locale]/review">) {
+}: PageProps<"/[locale]/review/[[...code]]">) {
   const t = await getTranslations("Review");
-  const { run: runId } = await searchParams;
+  const [{ code }, { run }] = await Promise.all([params, searchParams]);
+  if (code && code.length > 1) notFound();
+  const key = code?.[0] ?? (typeof run === "string" ? run : undefined);
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <Suspense fallback={<ReviewGhost />}>
-        <Await promise={loadRun(typeof runId === "string" ? runId : undefined)}>
+        <Await promise={loadRun(key)}>
           {({ signedIn, found }) => (
             <>
               <PageTitle className={found ? "sr-only" : undefined}>

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
 import type { RunSummary } from "@/content/runs";
 import { Link } from "@/i18n/navigation";
+import { reviewHref } from "@/lib/review-href";
 
 const row =
   "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-5 py-4 text-sm md:grid-cols-[150px_minmax(0,1fr)_72px] md:px-6";
@@ -53,7 +54,7 @@ export function RunHistory({ runs }: { runs?: RunSummary[] }) {
         {runs.map((run) => (
           <li key={run.id}>
             <Link
-              href={`/review?run=${run.id}`}
+              href={reviewHref(run.id)}
               className={cn(row, "hover:bg-muted/50")}
             >
               <span className="flex flex-col">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { reviewHref } from "@/lib/review-href";
 import { answeredCount, blankSegments, runSegments } from "@/lib/run";
 import type { Segment } from "@/lib/strip";
 import { Score } from "./score";
@@ -74,7 +75,7 @@ export function VariantRow({
         <Button
           size="sm"
           variant="ghost"
-          render={<Link href={`/review?run=${latest.id}`} />}
+          render={<Link href={reviewHref(latest.id)} />}
           nativeButton={false}
         >
           {t("review")}
