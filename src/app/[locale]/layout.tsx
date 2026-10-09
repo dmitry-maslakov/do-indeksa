@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Golos_Text } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { BottomNav } from "@/components/bottom-nav";
 import { TopNav } from "@/components/top-nav";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
@@ -11,6 +12,8 @@ const golos = Golos_Text({
   subsets: ["latin", "latin-ext", "cyrillic"],
   variable: "--font-sans",
 });
+
+export const viewport: Viewport = { viewportFit: "cover" };
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -33,10 +36,11 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={golos.variable}>
-      <body>
+      <body className="pb-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))] md:pb-0">
         <NextIntlClientProvider>
           <TopNav />
           {children}
+          <BottomNav />
         </NextIntlClientProvider>
       </body>
     </html>

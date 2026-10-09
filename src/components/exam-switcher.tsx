@@ -36,11 +36,16 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="sm" className="bg-card shadow-raised" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="min-w-0 shrink bg-card shadow-raised"
+          />
         }
       >
-        {selected?.title}
-        <ChevronDownIcon className="text-subtle" />
+        <span className="truncate sm:hidden">{selected?.faculty}</span>
+        <span className="hidden truncate sm:inline">{selected?.title}</span>
+        <ChevronDownIcon className="shrink-0 text-subtle" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72 p-2">
         <DropdownMenuRadioGroup value={current}>

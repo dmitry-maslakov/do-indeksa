@@ -14,6 +14,13 @@
     "variants": "Testovi",
     "stats": "Statistika"
   },
+  "NavTab": {
+    "home": "Početna",
+    "bank": "Banka",
+    "variants": "Probni",
+    "stats": "Statistika",
+    "label": "Glavna navigacija"
+  },
   "LocaleSwitcher": {
     "label": "Jezik"
   },
