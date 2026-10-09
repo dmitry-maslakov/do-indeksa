@@ -8,5 +8,7 @@ export const env = z
     BETTER_AUTH_URL: z.url(),
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
+    OAUTH_PROXY_URL: z.url().optional(),
+    OAUTH_PROXY_SECRET: z.string().min(32).optional(),
   })
   .parse(process.env);
