@@ -54,7 +54,7 @@ export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
         <EmptyNote
           text={t("noRuns")}
           signedIn
-          href="/variants/daily"
+          href="/daily"
           action={home("playDaily")}
         />
       ) : (

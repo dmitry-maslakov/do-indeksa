@@ -40,7 +40,7 @@ export function RunHistory({ runs }: { runs?: RunSummary[] }) {
         <EmptyNote
           text={t("historyEmpty")}
           signedIn
-          href="/variants/daily"
+          href="/daily"
           action={home("playDaily")}
         />
       </Card>
