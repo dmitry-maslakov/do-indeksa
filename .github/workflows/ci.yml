@@ -94,14 +94,21 @@ jobs:
     needs: [bank, check]
     if: ${{ !cancelled() && needs.check.result == 'success' }}
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
     env:
-      TAG: ${{ needs.bank.outputs.tag || github.sha }}
-      WEB: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/app:${{ needs.bank.outputs.tag || github.sha }}
-      MIGRATE: ${{ secrets.ZOT_REGISTRY }}/do-indeksa/migrate:${{ needs.bank.outputs.tag || github.sha }}
-      PUSH: ${{ github.event_name != 'pull_request' }}
+      TAG: ${{ needs.bank.outputs.tag || format('pr-{0}-{1}', github.event.pull_request.number, github.event.pull_request.head.sha) }}
+      BANK: ${{ github.event_name != 'pull_request' }}
+      PUSH: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
+      - run: |
+          echo "WEB=$REGISTRY/do-indeksa/app:$TAG" >> "$GITHUB_ENV"
+          echo "MIGRATE=$REGISTRY/do-indeksa/migrate:$TAG" >> "$GITHUB_ENV"
+        env:
+          REGISTRY: ${{ secrets.ZOT_REGISTRY }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - if: env.PUSH == 'true'
+      - if: env.BANK == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ secrets.CONTENT_REPO }}
@@ -120,7 +127,7 @@ jobs:
           target: runner
           build-args: |
             GIT_SHA=${{ env.TAG }}
-            CONTENT_DIR=${{ env.PUSH == 'true' && 'bank' || 'content' }}
+            CONTENT_DIR=${{ env.BANK == 'true' && 'bank' || 'content' }}
           load: true
           tags: ${{ env.WEB }}
       - name: Smoke test
@@ -158,3 +165,13 @@ jobs:
           target: migrate
           push: true
           tags: ${{ env.MIGRATE }}
+      - if: env.PUSH == 'true' && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          if ! gh pr view "$PR" --json labels --jq '.labels[].name' | grep -qx preview; then
+            gh pr edit "$PR" --add-label preview
+            gh pr comment "$PR" --body "Preview: https://pr-$PR.doindeksa.rs (ready a few minutes after each push)"
+          fi
