@@ -36,10 +36,8 @@ export function RunHistory({ runs }: { runs?: RunSummary[] }) {
 
   if (runs.length === 0) {
     return (
-      <Card className="p-0 pb-6 md:p-0 md:pb-7">
+      <Card>
         <EmptyNote
-          className="*:last:px-5 md:*:last:px-6"
-          ghost={ghost}
           text={t("historyEmpty")}
           signedIn
           href="/variants/daily"

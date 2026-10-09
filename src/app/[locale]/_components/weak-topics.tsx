@@ -45,7 +45,6 @@ export function WeakTopics({
         ghost
       ) : topics.length === 0 ? (
         <EmptyNote
-          ghost={ghost}
           text={t("weakEmpty")}
           signedIn={Boolean(signedIn)}
           href="/variants/daily"

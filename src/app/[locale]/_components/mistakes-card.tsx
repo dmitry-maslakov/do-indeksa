@@ -36,7 +36,7 @@ export function MistakesCard({ taskIds, signedIn }: MistakesCardProps) {
     return (
       <Card className="gap-3">
         <span className="font-semibold">{t("mistakes")}</span>
-        <EmptyNote ghost={squares} text={t("mistakesGuest")} signedIn={false} />
+        <EmptyNote text={t("mistakesGuest")} signedIn={false} />
       </Card>
     );
   }
