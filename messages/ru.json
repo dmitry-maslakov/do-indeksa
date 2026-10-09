@@ -14,6 +14,13 @@
     "variants": "Тесты",
     "stats": "Статистика"
   },
+  "NavTab": {
+    "home": "Главная",
+    "bank": "Банк",
+    "variants": "Пробные",
+    "stats": "Статистика",
+    "label": "Основная навигация"
+  },
   "LocaleSwitcher": {
     "label": "Язык"
   },

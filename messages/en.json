@@ -14,6 +14,13 @@
     "variants": "Tests",
     "stats": "Statistics"
   },
+  "NavTab": {
+    "home": "Home",
+    "bank": "Bank",
+    "variants": "Tests",
+    "stats": "Stats",
+    "label": "Main navigation"
+  },
   "LocaleSwitcher": {
     "label": "Language"
   },

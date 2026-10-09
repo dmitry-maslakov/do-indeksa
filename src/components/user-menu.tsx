@@ -25,7 +25,11 @@ export function UserMenu() {
   if (isPending) return <Skeleton className="size-9" />;
 
   if (!data) {
-    return <SignInButton size="sm">{t("signIn")}</SignInButton>;
+    return (
+      <SignInButton size="sm" className="px-3 sm:px-4">
+        {t("signIn")}
+      </SignInButton>
+    );
   }
 
   const { user } = data;

@@ -36,7 +36,7 @@ export function LocaleSwitcher() {
             variant="ghost"
             size="sm"
             disabled={pending}
-            className="bg-card shadow-raised"
+            className="bg-card px-2.5 shadow-raised sm:px-4"
           />
         }
         aria-label={t("label")}

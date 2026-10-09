@@ -3,36 +3,20 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-
-const sections = [
-  { href: "/", key: "home" },
-  { href: "/bank", key: "bank" },
-  { href: "/variants", key: "variants" },
-  { href: "/stats", key: "stats" },
-] as const;
-
-const reveal = (link: HTMLAnchorElement | null) =>
-  link?.scrollIntoView({ block: "nearest", inline: "nearest" });
-
-function isActive(pathname: string, href: string) {
-  return href === "/"
-    ? pathname === "/"
-    : pathname === href || pathname.startsWith(`${href}/`);
-}
+import { isActive, sections } from "./sections";
 
 export function NavLinks() {
   const t = useTranslations("Nav");
   const pathname = usePathname();
 
   return (
-    <nav className="order-last -mx-4 flex w-full gap-5 overflow-x-auto px-4 [scrollbar-width:none] pb-3 md:order-none md:mx-0 md:gap-7 md:w-auto md:overflow-visible md:p-0">
+    <nav className="hidden gap-7 md:flex">
       {sections.map(({ href, key }) => {
         const active = isActive(pathname, href);
         return (
           <Link
             key={key}
             href={href}
-            ref={active ? reveal : undefined}
             aria-current={active ? "page" : undefined}
             className={cn(
               "whitespace-nowrap font-medium text-subtle transition-colors hover:text-foreground",

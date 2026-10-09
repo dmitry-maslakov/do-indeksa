@@ -107,6 +107,7 @@
   --success-tint: #e3f5ec;
   --daily: #2b2560;
   --daily-muted: #b4b3ba;
+  --nav-bottom: 3.5rem;
 }
 
 @layer base {
@@ -115,6 +116,14 @@
   }
   html {
     @apply font-sans;
+  }
+  @media (width < 48rem) {
+    html {
+      scroll-padding-bottom: calc(
+        var(--nav-bottom) +
+        env(safe-area-inset-bottom)
+      );
+    }
   }
   body {
     @apply bg-background text-foreground antialiased;
