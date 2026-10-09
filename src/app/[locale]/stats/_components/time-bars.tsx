@@ -48,7 +48,6 @@ export function TimeBars({
       </CardHeader>
       {!pending && bars.every((b) => b.meanMs === null) ? (
         <EmptyNote
-          ghost={ghost}
           text={home("timeEmpty")}
           signedIn
           href="/variants"

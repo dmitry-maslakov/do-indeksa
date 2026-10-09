@@ -1,53 +1,37 @@
-import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
 interface EmptyNoteProps {
-  ghost: ReactNode;
   text: string;
   signedIn: boolean;
   href?: string;
   action?: string;
-  className?: string;
 }
 
-export function EmptyNote({
-  ghost,
-  text,
-  signedIn,
-  href,
-  action,
-  className,
-}: EmptyNoteProps) {
+export function EmptyNote({ text, signedIn, href, action }: EmptyNoteProps) {
   const t = useTranslations("UserMenu");
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
-      <div className="mask-b-from-30% **:data-[slot=skeleton]:animate-none **:data-[slot=skeleton]:bg-none">
-        {ghost}
-      </div>
-      <div className="flex flex-col items-start gap-3 text-sm text-subtle">
-        <p>{text}</p>
-        {signedIn ? (
-          href && (
-            <Button
-              size="sm"
-              variant="tint"
-              render={<Link href={href} />}
-              nativeButton={false}
-            >
-              {action}
-            </Button>
-          )
-        ) : (
-          <SignInButton size="sm" variant="tint">
-            {t("signIn")}
-          </SignInButton>
-        )}
-      </div>
+    <div className="flex flex-col items-start gap-3 rounded-2xl bg-muted px-5 py-4 text-sm text-subtle">
+      <p>{text}</p>
+      {signedIn ? (
+        href && (
+          <Button
+            size="sm"
+            variant="tint"
+            render={<Link href={href} />}
+            nativeButton={false}
+          >
+            {action}
+          </Button>
+        )
+      ) : (
+        <SignInButton size="sm" variant="tint">
+          {t("signIn")}
+        </SignInButton>
+      )}
     </div>
   );
 }

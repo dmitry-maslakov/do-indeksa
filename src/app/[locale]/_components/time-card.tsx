@@ -52,7 +52,6 @@ export function TimeCard({
         ghost
       ) : rows.length === 0 ? (
         <EmptyNote
-          ghost={ghost}
           text={t("timeEmpty")}
           signedIn={Boolean(signedIn)}
           href="/variants"
