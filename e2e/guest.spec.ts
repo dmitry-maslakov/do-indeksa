@@ -35,7 +35,7 @@ test("a guest composes an untimed test from a topic", async ({
   await page.getByText("Izaberi teme").click();
   await page.getByRole("button", { name: "Logaritmi" }).click();
   await page.getByRole("button", { name: "Sastavi", exact: true }).click();
-  await expect(page).toHaveURL(/\/variants\/set-[a-z0-9.-]+$/);
+  await expect(page).toHaveURL(/\/v\/[\w-]{7}$/);
   await page.getByRole("button", { name: "Podeli" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     page.url(),

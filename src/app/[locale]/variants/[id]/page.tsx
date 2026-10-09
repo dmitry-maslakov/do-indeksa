@@ -1,56 +1,30 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
-import { PageTitle } from "@/components/page-title";
-import { swapHrefs } from "@/content/compose";
-import { variantTitle } from "@/content/variant-title";
-import { getVariant, minutesOf, tasksFor } from "@/content/variants";
-import { ExamRunner } from "./_components/exam-runner";
+import { getLocale } from "next-intl/server";
+import {
+  VariantScreen,
+  variantMetadata,
+} from "@/components/exam/variant-screen";
+import { getVariant } from "@/content/variants";
+import { redirect } from "@/i18n/navigation";
+import { saveSet } from "@/server/sets";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/variants/[id]">): Promise<Metadata> {
+}: PageProps<"/[locale]/variants/[id]">) {
   const variant = getVariant((await params).id);
-  if (!variant) return {};
-  const t = await getTranslations("Variants");
-  return {
-    title: await variantTitle(variant),
-    description: t("format", {
-      tasks: variant.taskIds.length,
-      minutes: minutesOf(variant),
-    }),
-  };
+  return variant ? variantMetadata(variant) : {};
 }
 
 export default async function VariantPage({
   params,
 }: PageProps<"/[locale]/variants/[id]">) {
-  const { id } = await params;
-  const variant = getVariant(id);
+  const variant = getVariant((await params).id);
   if (!variant) notFound();
-
-  const t = await getTranslations("Variants");
-  const tasks = tasksFor(variant.taskIds, await getLocale());
-  const minutes = minutesOf(variant);
-  const title = await variantTitle(variant);
-
-  return (
-    <main className="px-4 pb-9 md:px-9">
-      <div className="flex flex-wrap items-baseline justify-between gap-2 py-6">
-        <PageTitle className="p-0">{title}</PageTitle>
-        <span className="text-sm text-subtle">
-          {t("format", { tasks: tasks.length, minutes })}
-        </span>
-      </div>
-      <ExamRunner
-        variantId={variant.id}
-        tasks={tasks}
-        minutes={minutes}
-        title={title}
-        swaps={
-          variant.kind === "custom" ? swapHrefs(variant.taskIds) : undefined
-        }
-      />
-    </main>
-  );
+  if (variant.kind === "custom") {
+    redirect({
+      href: `/v/${await saveSet(variant.taskIds)}`,
+      locale: await getLocale(),
+    });
+  }
+  return <VariantScreen variant={variant} />;
 }
