@@ -106,6 +106,7 @@ jobs:
         options: --health-cmd "pg_isready -U ci" --health-interval 2s --health-retries 15
     permissions:
       contents: read
+      deployments: write
       pull-requests: write
     env:
       TAG: ${{ needs.bank.outputs.tag || format('pr-{0}-{1}', github.event.pull_request.number, github.event.pull_request.head.sha) }}
@@ -186,8 +187,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if ! gh pr view "$PR" --json labels --jq '.labels[].name' | grep -qx preview; then
-            gh pr edit "$PR" --add-label preview
-            gh pr comment "$PR" --body "Preview: https://pr-$PR.doindeksa.rs (ready a few minutes after each push)"
-          fi
+          gh pr edit "$PR" --add-label preview
+          id=$(jq -n --arg ref "$SHA" '{ref: $ref, environment: "preview", auto_merge: false, required_contexts: [], transient_environment: true}' \
+            | gh api "repos/$GH_REPO/deployments" --input - --jq .id)
+          gh api "repos/$GH_REPO/deployments/$id/statuses" -f state=success \
+            -f environment_url="https://pr-$PR.doindeksa.rs" -F auto_inactive=false >/dev/null
