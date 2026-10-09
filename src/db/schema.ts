@@ -72,3 +72,9 @@ export const favorites = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.taskId] })],
 );
+
+export const sets = pgTable("sets", {
+  code: text().primaryKey(),
+  taskIds: text().array().notNull(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});

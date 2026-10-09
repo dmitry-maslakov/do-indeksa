@@ -5,9 +5,9 @@ import { positions } from "@/content/exam";
 import { redirect } from "@/i18n/navigation";
 import { latestStatuses } from "@/lib/progress";
 import { weakest } from "@/lib/stats";
-import { setId } from "@/lib/variant-id";
 import { getSession } from "@/server/auth";
 import { getStatAttempts } from "@/server/history";
+import { saveSet } from "@/server/sets";
 
 export default async function ComposePage({
   searchParams,
@@ -35,7 +35,7 @@ export default async function ComposePage({
     crypto.randomUUID(),
   );
   redirect({
-    href: `/variants/${setId(ids)}`,
+    href: `/v/${await saveSet(ids)}`,
     locale: await getLocale(),
   });
 }
