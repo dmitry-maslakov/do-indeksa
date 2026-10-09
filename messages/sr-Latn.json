@@ -223,5 +223,18 @@
   "Share": {
     "share": "Podeli",
     "copied": "Link je kopiran"
+  },
+  "Report": {
+    "open": "Prijavi grešku u zadatku",
+    "guest": "Prijavi se da pošalješ grešku.",
+    "kind": "Šta nije u redu",
+    "statement": "Greška u postavci",
+    "answer": "Pogrešan rezultat",
+    "solution": "Rešenje nije jasno ili je pogrešno",
+    "other": "Nešto drugo",
+    "message": "Opiši ukratko (nije obavezno)",
+    "send": "Pošalji",
+    "thanks": "Hvala! Pogledaćemo zadatak.",
+    "error": "Slanje nije uspelo. Pokušaj ponovo."
   }
 }

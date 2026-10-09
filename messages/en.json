@@ -223,5 +223,18 @@
   "Share": {
     "share": "Share",
     "copied": "Link copied"
+  },
+  "Report": {
+    "open": "Report a problem with this task",
+    "guest": "Sign in to send a report.",
+    "kind": "What's wrong",
+    "statement": "Mistake in the statement",
+    "answer": "Wrong answer",
+    "solution": "Solution is unclear or wrong",
+    "other": "Something else",
+    "message": "Describe it briefly (optional)",
+    "send": "Send",
+    "thanks": "Thanks! We'll take a look.",
+    "error": "Couldn't send. Please try again."
   }
 }

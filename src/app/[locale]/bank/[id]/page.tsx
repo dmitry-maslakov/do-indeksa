@@ -5,6 +5,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { HintsProvider } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
 import { PageTitle } from "@/components/page-title";
+import { ReportTask } from "@/components/report-task";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -92,6 +93,7 @@ export default async function SolvePage({
               <Reveal label={t("answer")} taskId={task.id} part="answer" />
               <Reveal label={t("solution")} taskId={task.id} part="solution" />
             </div>
+            <ReportTask taskId={task.id} />
           </Card>
         </HintsProvider>
       </div>
