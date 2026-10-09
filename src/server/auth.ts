@@ -2,6 +2,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { oAuthProxy } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { cache } from "react";
 import { db } from "./db";
@@ -24,7 +25,18 @@ export const auth = betterAuth({
   },
   advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
   telemetry: { enabled: false },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    ...(env.OAUTH_PROXY_SECRET
+      ? [
+          oAuthProxy({
+            productionURL: env.OAUTH_PROXY_URL,
+            currentURL: env.BETTER_AUTH_URL,
+            secret: env.OAUTH_PROXY_SECRET,
+          }),
+        ]
+      : []),
+  ],
 });
 
 export const getSession = cache(async () =>
