@@ -1,20 +1,27 @@
 import "server-only";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, like, sql } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
 import { statAttempts } from "@/content/attempts";
 import { attempts, runs } from "@/db/schema";
 import { db } from "./db";
 
-export const getRun = cache(async (userId: string, runId?: string) => {
-  const id = z.uuid().safeParse(runId);
+export const getRun = cache(async (userId: string, key?: string) => {
+  const id = z.uuid().safeParse(key);
+  const code = z
+    .string()
+    .regex(/^[0-9a-f]{8}$/)
+    .safeParse(key);
+  if (key !== undefined && !id.success && !code.success) return undefined;
   const [run] = await db
     .select()
     .from(runs)
     .where(
-      id.success
-        ? and(eq(runs.userId, userId), eq(runs.id, id.data))
-        : eq(runs.userId, userId),
+      and(
+        eq(runs.userId, userId),
+        id.success ? eq(runs.id, id.data) : undefined,
+        code.success ? like(sql`${runs.id}::text`, `${code.data}%`) : undefined,
+      ),
     )
     .orderBy(desc(runs.finishedAt))
     .limit(1);

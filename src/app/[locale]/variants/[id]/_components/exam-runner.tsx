@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { reviewHref } from "@/lib/review-href";
 import { finishRun, type RunResult } from "@/server/runs";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
@@ -106,7 +107,7 @@ export function ExamRunner({
         ),
       });
       clear(variantId);
-      if (saved.saved) router.push(`/review?run=${run.runId}`);
+      if (saved.saved) router.push(reviewHref(run.runId));
       else setResult(saved);
     });
 

@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import type { RunSummary } from "@/content/runs";
 import { Link } from "@/i18n/navigation";
+import { reviewHref } from "@/lib/review-href";
 
 export function RecentCard({ runs }: { runs: RunSummary[] }) {
   const t = useTranslations("Variants");
@@ -13,7 +14,7 @@ export function RecentCard({ runs }: { runs: RunSummary[] }) {
         {runs.map((run) => (
           <li key={run.id}>
             <Link
-              href={`/review?run=${run.id}`}
+              href={reviewHref(run.id)}
               className="flex justify-between gap-3 hover:text-data"
             >
               <span className="truncate">{run.title}</span>

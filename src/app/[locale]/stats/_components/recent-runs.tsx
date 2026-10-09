@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
 import { Link } from "@/i18n/navigation";
+import { reviewHref } from "@/lib/review-href";
 import type { Segment } from "@/lib/strip";
 
 interface RecentRun {
@@ -62,7 +63,7 @@ export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
           {runs.map((run) => (
             <li key={run.id}>
               <Link
-                href={`/review?run=${run.id}`}
+                href={reviewHref(run.id)}
                 className={cn(row, "rounded-lg py-1.5 hover:bg-muted/50")}
               >
                 <span className="truncate font-semibold">{run.title}</span>
