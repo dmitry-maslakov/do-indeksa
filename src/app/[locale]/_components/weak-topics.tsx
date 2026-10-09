@@ -47,7 +47,7 @@ export function WeakTopics({
         <EmptyNote
           text={t("weakEmpty")}
           signedIn={Boolean(signedIn)}
-          href="/variants/daily"
+          href="/daily"
           action={t("playDaily")}
         />
       ) : (

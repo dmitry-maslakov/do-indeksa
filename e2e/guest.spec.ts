@@ -11,7 +11,7 @@ test("a guest checks an answer", async ({ page }) => {
 });
 
 test("a guest finishes the daily test", async ({ page }) => {
-  await page.goto("/variants/daily");
+  await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
   await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();

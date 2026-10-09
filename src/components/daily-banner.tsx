@@ -23,7 +23,7 @@ export function DailyBanner() {
       <Button
         size="sm"
         variant="inverse"
-        render={<Link href="/variants/daily" prefetch={false} />}
+        render={<Link href="/daily" prefetch={false} />}
         nativeButton={false}
       >
         {t("play")}
