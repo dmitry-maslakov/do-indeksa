@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
 import { Link } from "@/i18n/navigation";
-import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { type ExamRun, useExamHydrated, useExamStore } from "@/lib/exam-store";
 import {
   answeredCount,
   blankSegments,
@@ -14,21 +14,22 @@ import {
   runSegments,
 } from "@/lib/run";
 import type { Segment } from "@/lib/strip";
+import type { CurrentRun } from "@/server/current-run";
 
 interface ContinueCardProps {
   start: { id: string; title: string; tasks: number; minutes: number };
+  account?: CurrentRun;
 }
 
-export function ContinueCard({ start }: ContinueCardProps) {
+export function ContinueCard({ start, account }: ContinueCardProps) {
   const t = useTranslations("Home");
   const variants = useTranslations("Variants");
   const hydrated = useExamHydrated();
   const runs = useExamStore((s) => s.runs);
-  const [variantId, run] = hydrated
-    ? (Object.entries(runs).sort(
-        ([, a], [, b]) => b.startedAt - a.startedAt,
-      )[0] ?? [])
-    : [];
+  const candidates: [string, ExamRun][] = hydrated ? Object.entries(runs) : [];
+  if (account) candidates.push([account.variantId, account.run]);
+  const [variantId, run] =
+    candidates.sort(([, a], [, b]) => b.updatedAt - a.updatedAt)[0] ?? [];
 
   if (!variantId || !run) {
     return (

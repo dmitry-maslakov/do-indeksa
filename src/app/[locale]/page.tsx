@@ -17,6 +17,7 @@ import {
   weakest,
 } from "@/lib/stats";
 import { getSession } from "@/server/auth";
+import { getCurrentRun } from "@/server/current-run";
 import { getStatAttempts } from "@/server/history";
 import { AccountNote } from "./_components/account-note";
 import { ContinueCard } from "./_components/continue-card";
@@ -37,6 +38,11 @@ async function loadStats() {
     signedIn: Boolean(session),
     attempts: session ? await getStatAttempts(session.user.id) : [],
   };
+}
+
+async function loadCurrentRun() {
+  const session = await getSession();
+  return session ? getCurrentRun(session.user.id) : undefined;
 }
 
 const topics = positions.map((p) => p.topic);
@@ -60,22 +66,26 @@ const slowest = (attempts: StatAttempt[]) =>
 
 export default function HomePage() {
   const stats = loadStats();
+  const current = loadCurrentRun();
   const [first] = [...officialVariants, ...curatedVariants];
   if (!first) throw new Error("no tests in the bank");
+  const start = {
+    id: first.id,
+    title: first.title,
+    tasks: first.taskIds.length,
+    minutes: minutesOf(first),
+  };
 
   return (
     <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
       <Intro />
       <div className="contents md:flex md:flex-col md:gap-6">
         <div className="max-md:order-2">
-          <ContinueCard
-            start={{
-              id: first.id,
-              title: first.title,
-              tasks: first.taskIds.length,
-              minutes: minutesOf(first),
-            }}
-          />
+          <Suspense fallback={<ContinueCard start={start} />}>
+            <Await promise={current}>
+              {(account) => <ContinueCard start={start} account={account} />}
+            </Await>
+          </Suspense>
         </div>
         <div className="max-md:order-3">
           <EntryCards />
