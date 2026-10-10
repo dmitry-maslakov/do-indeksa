@@ -152,7 +152,7 @@
     "overNorm": "Дольше нормы: №{numbers}.",
     "inNorm": "Все задачи уложились в норму.",
     "similar": "Похожие на ошибки · {count, number}",
-    "gave": "ответил",
+    "gave": "твой ответ",
     "key": "верно",
     "partsRight": "верно {right, number} из {total, number} пунктов",
     "toTask": "Открыть задачу"
