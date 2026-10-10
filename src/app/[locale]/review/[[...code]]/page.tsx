@@ -82,7 +82,7 @@ function ReviewGhost() {
         </div>
         <Skeleton className="mb-5 h-3.5" />
       </Card>
-      <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <Card className="gap-5">
           {[1, 2, 3, 4, 5].map((n) => (
             <Skeleton key={n} className="h-3.5" />
@@ -118,7 +118,7 @@ async function RunReview({
         title={variant ? await variantTitle(variant) : found.run.variantId}
         finishedAt={found.run.finishedAt}
       />
-      <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <ReviewRows
           review={result}
           tasks={tasks}

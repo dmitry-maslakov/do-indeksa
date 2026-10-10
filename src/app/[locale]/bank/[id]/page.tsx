@@ -38,7 +38,7 @@ export default async function SolvePage({
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{bank("title")}</PageTitle>
-      <div className="grid items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:has-data-[rail=collapsed]:grid-cols-[56px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:has-data-[rail=collapsed]:grid-cols-[56px_minmax(0,1fr)]">
         <SolveRail
           current={id}
           topic={task.topic}

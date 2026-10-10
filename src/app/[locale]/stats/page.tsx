@@ -75,7 +75,7 @@ function StatsCards({ byNumber, stats }: { byNumber: boolean; stats?: Stats }) {
   const summary = stats && totals(attempts);
 
   return (
-    <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
         <AccuracyCard rows={accuracy} byNumber={byNumber} pending={!stats} />
         <TimeBars

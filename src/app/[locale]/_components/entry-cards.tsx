@@ -10,7 +10,7 @@ export function EntryCards() {
   const locale = useLocale();
 
   return (
-    <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,0.7fr)]">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,0.7fr)]">
       <Card size="sm" className="gap-3.5">
         <CardTitle>{t("byNumber")}</CardTitle>
         <div className="grid grid-cols-5 gap-1.5">

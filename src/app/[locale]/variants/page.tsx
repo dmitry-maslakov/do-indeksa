@@ -46,7 +46,7 @@ export default async function VariantsPage({
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
-      <div className="grid items-start gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr]">
+      <div className="grid grid-cols-1 items-start gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr]">
         <DailyBanner />
         <div className="flex flex-col gap-3.5 md:col-start-1 md:row-span-2 md:row-start-1">
           <div className="flex flex-wrap items-center justify-between gap-3 px-1">
