@@ -143,6 +143,7 @@
     "points": "Points",
     "time": "Time",
     "rest": "{count, plural, one {The other # task is correct} other {The other # tasks are correct}}",
+    "all": "{count, plural, =1 {The task is correct} other {All tasks are correct}}",
     "skipped": "no answer",
     "minutes": "{minutes, number} min",
     "lost": "Where points were lost",
