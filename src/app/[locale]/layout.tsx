@@ -36,7 +36,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={golos.variable}>
-      <body className="pb-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))] md:pb-0">
+      <body>
         <NextIntlClientProvider>
           <TopNav />
           {children}
