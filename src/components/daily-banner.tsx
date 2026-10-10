@@ -26,7 +26,7 @@ export function DailyBanner() {
         render={<Link href="/daily" prefetch={false} />}
         nativeButton={false}
       >
-        {t("play")}
+        {t("start")}
       </Button>
     </div>
   );

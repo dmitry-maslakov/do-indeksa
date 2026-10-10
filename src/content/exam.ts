@@ -18,7 +18,9 @@ export const positions = exam.positions;
 
 export const maxPoints = positions.reduce((sum, p) => sum + p.points, 0);
 
-export const durationHours = exam.durationMinutes / 60;
+export const durationMinutes = exam.durationMinutes;
+
+export const durationHours = durationMinutes / 60;
 
 export const dailySize = exam.daily.size;
 
