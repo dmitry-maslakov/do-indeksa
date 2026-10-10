@@ -10,8 +10,8 @@
   },
   "Nav": {
     "home": "Home",
-    "bank": "Task bank",
-    "variants": "Practice exams",
+    "bank": "Tasks",
+    "variants": "Tests",
     "stats": "Statistics"
   },
   "LocaleSwitcher": {

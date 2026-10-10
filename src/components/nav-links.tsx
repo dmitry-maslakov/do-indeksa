@@ -25,7 +25,7 @@ export function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <nav className="order-last -mx-4 flex w-full gap-7 overflow-x-auto px-4 [scrollbar-width:none] pb-3 md:order-none md:mx-0 md:w-auto md:overflow-visible md:p-0">
+    <nav className="order-last -mx-4 flex w-full gap-5 overflow-x-auto px-4 [scrollbar-width:none] pb-3 md:order-none md:mx-0 md:gap-7 md:w-auto md:overflow-visible md:p-0">
       {sections.map(({ href, key }) => {
         const active = isActive(pathname, href);
         return (
