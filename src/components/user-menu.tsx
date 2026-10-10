@@ -16,6 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useExamStore } from "@/lib/exam-store";
 
 export function UserMenu() {
   const t = useTranslations("UserMenu");
@@ -56,7 +57,12 @@ export function UserMenu() {
         <DropdownMenuItem
           onClick={() =>
             authClient.signOut({
-              fetchOptions: { onSuccess: () => router.refresh() },
+              fetchOptions: {
+                onSuccess: () => {
+                  useExamStore.setState({ runs: {} });
+                  router.refresh();
+                },
+              },
             })
           }
         >
