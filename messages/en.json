@@ -154,7 +154,8 @@
     "similar": "Like the mistakes · {count, number}",
     "gave": "answered",
     "key": "correct",
-    "partsRight": "{right, number} of {total, number} parts right"
+    "partsRight": "{right, number} of {total, number} parts right",
+    "toTask": "Open the task"
   },
   "Stats": {
     "title": "Stats",

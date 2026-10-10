@@ -2,8 +2,10 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Reveal } from "@/components/reveal";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
+import { Link } from "@/i18n/navigation";
 import type {
   AnswerOutcome,
   Outcomes,
@@ -122,6 +124,15 @@ function Row({ row, task, outcome }: RowProps) {
         <div className="flex flex-col gap-2 px-5 pb-4 md:px-6">
           <Reveal label={solve("answer")} taskId={task.id} part="answer" />
           <Reveal label={solve("solution")} taskId={task.id} part="solution" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="self-start"
+            render={<Link href={`/bank/${task.id}`} />}
+            nativeButton={false}
+          >
+            {t("toTask")}
+          </Button>
         </div>
       </details>
     </li>

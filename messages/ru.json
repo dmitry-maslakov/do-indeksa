@@ -154,7 +154,8 @@
     "similar": "Похожие на ошибки · {count, number}",
     "gave": "ответил",
     "key": "верно",
-    "partsRight": "верно {right, number} из {total, number} пунктов"
+    "partsRight": "верно {right, number} из {total, number} пунктов",
+    "toTask": "Открыть задачу"
   },
   "Stats": {
     "title": "Статистика",

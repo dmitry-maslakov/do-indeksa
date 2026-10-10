@@ -154,7 +154,8 @@
     "similar": "Slični greškama · {count, number}",
     "gave": "odgovor",
     "key": "tačno",
-    "partsRight": "tačno {right, number} od {total, number} delova"
+    "partsRight": "tačno {right, number} od {total, number} delova",
+    "toTask": "Otvori zadatak"
   },
   "Stats": {
     "title": "Statistika",
