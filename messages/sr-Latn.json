@@ -123,8 +123,11 @@
     "back": "Na testove",
     "retry": "Ponovo",
     "elapsed": "Proteklo vreme",
-    "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se računa.",
+    "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se beleži.",
     "timer": "Tajmer {minutes, number} min",
+    "introAnswer": "Kucaj / za razlomak, sqrt za koren, pi za π, ^ za stepen. Ekvivalentni oblici se priznaju, npr. 1/2 i 0,5.",
+    "introTime": "Kad vreme istekne, test se ne prekida: možeš da ga završiš, a prekoračenje se beleži.",
+    "introSaved": "Nedovršen test ostaje u ovom pregledaču, a rezultat se čuva u istoriji samo uz prijavu.",
     "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}",
     "swap": "Zameni zadatak {number, number}"
   },
