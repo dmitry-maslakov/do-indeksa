@@ -22,7 +22,7 @@ export function BottomNav() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex h-[var(--nav-bottom)] flex-1 flex-col items-center justify-center gap-1 text-subtle text-xs outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+              "flex h-(--nav-bottom) flex-1 flex-col items-center justify-center gap-1 text-subtle text-xs outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
               active && "font-semibold text-data",
             )}
           >
