@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   accuracyBy,
   meanTimeByNumber,
-  mistakesThisWeek,
+  mistakes,
   type StatAttempt,
   streak,
   totals,
@@ -85,14 +85,14 @@ describe("home folds", () => {
     ).toBe(2);
   });
 
-  it("lists tasks whose latest attempt this week is wrong", () => {
+  it("lists tasks whose latest attempt is wrong", () => {
     const rows = [
       day(1, { taskId: "a", correct: true }),
       day(2, { taskId: "a" }),
       day(3, { taskId: "b" }),
       day(9, { taskId: "c" }),
     ];
-    expect(mistakesThisWeek(rows, now)).toEqual(["b"]);
+    expect(mistakes(rows)).toEqual(["b", "c"]);
   });
 
   it("ranks the weakest topics with enough attempts", () => {

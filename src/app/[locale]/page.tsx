@@ -11,7 +11,7 @@ import {
 } from "@/content/variants";
 import {
   meanTimeByNumber,
-  mistakesThisWeek,
+  mistakes,
   type StatAttempt,
   weakest,
 } from "@/lib/stats";
@@ -109,9 +109,7 @@ export default function HomePage() {
                         new Date(),
                       )}
                     />
-                    <MistakesCard
-                      taskIds={mistakesThisWeek(s.attempts, new Date())}
-                    />
+                    <MistakesCard taskIds={mistakes(s.attempts)} />
                   </>
                 ) : (
                   <AccountNote />
