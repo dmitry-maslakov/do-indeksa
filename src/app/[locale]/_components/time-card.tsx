@@ -1,6 +1,5 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { EmptyNote } from "@/components/empty-note";
 import {
   Card,
   CardDescription,
@@ -42,18 +41,7 @@ export function TimeCard({ rows }: { rows?: TimeRow[] }) {
           {t("norm", { minutes: positions[0]?.minutes ?? 0 })}
         </CardDescription>
       </CardHeader>
-      {!rows ? (
-        ghost
-      ) : rows.length === 0 ? (
-        <EmptyNote
-          text={t("timeEmpty")}
-          signedIn
-          href="/variants"
-          action={t("startTest")}
-        />
-      ) : (
-        <TimeRows rows={rows} />
-      )}
+      {rows ? <TimeRows rows={rows} /> : ghost}
     </Card>
   );
 }

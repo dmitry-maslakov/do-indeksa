@@ -83,7 +83,9 @@ export default function HomePage() {
         <div className="empty:hidden max-md:order-5">
           <Suspense fallback={<TimeCard />}>
             <Await promise={stats}>
-              {(s) => s.signedIn && <TimeCard rows={slowest(s.attempts)} />}
+              {(s) =>
+                s.attempts.length > 0 && <TimeCard rows={slowest(s.attempts)} />
+              }
             </Await>
           </Suspense>
         </div>
@@ -111,7 +113,9 @@ export default function HomePage() {
                       topics={weakest(s.attempts, topics, now)}
                       warming={warming(s.attempts, topics, now)}
                     />
-                    <MistakesCard taskIds={mistakes(s.attempts)} />
+                    {s.attempts.length > 0 && (
+                      <MistakesCard taskIds={mistakes(s.attempts)} />
+                    )}
                   </>
                 );
               }}
