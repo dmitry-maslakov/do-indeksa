@@ -1,7 +1,8 @@
 {
   "Metadata": {
     "title": "Do indeksa",
-    "description": "Free entrance exam preparation: tasks with solutions, practice exams and statistics."
+    "homeTitle": "Do indeksa — FTN maths entrance exam prep",
+    "description": "Free prep for the FTN Novi Sad maths entrance exam: tasks with solutions and practice tests, no account needed."
   },
   "NotFound": {
     "title": "Page not found",
@@ -183,6 +184,10 @@
     "repeated": "Mistakes repeat on #{numbers}."
   },
   "Home": {
+    "title": "FTN maths entrance exam",
+    "lead": "Tasks with solutions and practice tests for FTN Novi Sad (P1): {tasks, plural, one {# task} other {# tasks}}, {hours, plural, one {# hour} other {# hours}}, up to {points, plural, one {# point} other {# points}}. Free, no account needed.",
+    "firstTask": "Try the first task",
+    "firstTaskHint": "Instant answer check, with hints and the solution.",
     "continue": "Continue",
     "progress": "{done, number} of {total, number}",
     "byNumber": "By number",

@@ -1,7 +1,8 @@
 {
   "Metadata": {
     "title": "Do indeksa",
-    "description": "Besplatna priprema za prijemni ispit: zadaci sa rešenjima, probni testovi i statistika."
+    "homeTitle": "Do indeksa — prijemni iz matematike za FTN",
+    "description": "Besplatna priprema za prijemni iz matematike na FTN-u u Novom Sadu: zadaci sa rešenjima i probni testovi, bez naloga."
   },
   "NotFound": {
     "title": "Stranica nije pronađena",
@@ -183,6 +184,10 @@
     "repeated": "Greške se ponavljaju na №{numbers}."
   },
   "Home": {
+    "title": "Prijemni iz matematike na FTN-u",
+    "lead": "Zadaci sa rešenjima i probni testovi za FTN u Novom Sadu (P1): {tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}}, {hours, plural, one {# sat} few {# sata} other {# sati}}, najviše {points, plural, one {# bod} few {# boda} other {# bodova}}. Besplatno i bez naloga.",
+    "firstTask": "Reši prvi zadatak",
+    "firstTaskHint": "Odmah proveriš odgovor, uz nagoveštaje i rešenje.",
     "continue": "Nastavi",
     "progress": "{done, number} od {total, number}",
     "byNumber": "Po broju",
