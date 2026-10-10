@@ -125,6 +125,9 @@
     "elapsed": "Elapsed",
     "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded.",
     "timer": "Timer {minutes, number} min",
+    "introAnswer": "Type / for a fraction, sqrt for a root, pi for π, ^ for a power. Equivalent forms like 1/2 and 0.5 count.",
+    "introTime": "When time runs out, the test doesn't stop: you can still finish it, and the overtime is recorded.",
+    "introSaved": "An unfinished test stays in this browser; results are saved to your history only when you're signed in.",
     "points": "{points, plural, one {# point} other {# points}}",
     "swap": "Swap task {number, number}"
   },

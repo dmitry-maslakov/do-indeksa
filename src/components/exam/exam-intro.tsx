@@ -43,6 +43,11 @@ export function ExamIntro({
           {variants("start")}
         </Button>
         <ShareButton title={title} />
+        <ul className="flex flex-col gap-1.5 px-1 text-[13px] text-subtle">
+          <li>{t("introAnswer")}</li>
+          <li>{t("introTime")}</li>
+          <li>{t("introSaved")}</li>
+        </ul>
       </Card>
       <Card className="py-3 md:py-4">
         <TaskLines
