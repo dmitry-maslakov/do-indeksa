@@ -10,7 +10,7 @@ export function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden gap-7 lg:flex">
+    <nav aria-label={t("label")} className="hidden gap-7 lg:flex">
       {sections.map(({ href, key }) => {
         const active = isActive(pathname, href);
         return (
