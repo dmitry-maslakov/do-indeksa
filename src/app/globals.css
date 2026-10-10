@@ -117,7 +117,7 @@
   html {
     @apply font-sans;
   }
-  @media (width < 48rem) {
+  @media (width < 64rem) {
     html {
       scroll-padding-bottom: calc(
         var(--nav-bottom) +
