@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { DailyBanner } from "@/components/daily-banner";
@@ -17,9 +19,15 @@ import { getSession } from "@/server/auth";
 import { getStatAttempts } from "@/server/history";
 import { ContinueCard } from "./_components/continue-card";
 import { EntryCards } from "./_components/entry-cards";
+import { Intro } from "./_components/intro";
 import { MistakesCard } from "./_components/mistakes-card";
 import { TimeCard } from "./_components/time-card";
 import { WeakTopics } from "./_components/weak-topics";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Metadata");
+  return { title: { absolute: t("homeTitle") }, description: t("description") };
+}
 
 async function loadStats() {
   const session = await getSession();
@@ -53,6 +61,7 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
+      <Intro />
       <div className="contents md:flex md:flex-col md:gap-6">
         <ContinueCard
           start={{

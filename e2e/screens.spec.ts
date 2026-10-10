@@ -7,7 +7,7 @@ test("healthz answers without a redirect", async ({ request }) => {
 });
 
 const screens = [
-  ["/", "Test dana"],
+  ["/", "Prijemni iz matematike na FTN-u"],
   ["/bank", "Banka zadataka"],
   ["/bank/eks-001", "Proveri"],
   ["/variants", "Probni testovi"],
