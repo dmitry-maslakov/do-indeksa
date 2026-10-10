@@ -1,12 +1,12 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Card, CardTitle } from "@/components/ui/card";
-import { positions } from "@/content/exam";
+import { durationMinutes, positions } from "@/content/exam";
 import { topicName } from "@/content/topics";
-import { curatedVariants, officialVariants } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 
 export function EntryCards() {
   const t = useTranslations("Home");
+  const variants = useTranslations("Variants");
   const locale = useLocale();
 
   return (
@@ -52,9 +52,10 @@ export function EntryCards() {
         >
           <CardTitle>{t("variants")}</CardTitle>
           <span className="text-sm text-subtle leading-relaxed">
-            {t("official", { count: officialVariants.length })}
-            <br />
-            {t("curated", { count: curatedVariants.length })}
+            {variants("format", {
+              tasks: positions.length,
+              minutes: durationMinutes,
+            })}
           </span>
           <span className="mt-auto font-semibold text-sm">{t("open")}</span>
         </Card>
