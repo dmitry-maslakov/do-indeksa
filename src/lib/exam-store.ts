@@ -14,16 +14,21 @@ export interface ExamRun extends Omit<RunMeta, "tasks"> {
   tasks: { number: number; topic: string }[];
   startedAt: number;
   enteredAt: number;
+  updatedAt: number;
   current: number;
   answers: string[][];
   spent: number[];
 }
+
+export const spentAt = (run: ExamRun, now: number) =>
+  run.spent.map((ms, i) => (i === run.current ? ms + now - run.enteredAt : ms));
 
 interface ExamState {
   runs: Record<string, ExamRun>;
   start: (variantId: string, meta: RunMeta) => void;
   answer: (variantId: string, part: number, value: string) => void;
   go: (variantId: string, index: number) => void;
+  restore: (variantId: string, run: ExamRun) => void;
   clear: (variantId: string) => void;
 }
 
@@ -50,6 +55,7 @@ export const useExamStore = create<ExamState>()(
               tasks: tasks.map(({ number, topic }) => ({ number, topic })),
               startedAt: now,
               enteredAt: now,
+              updatedAt: now,
               current: 0,
               answers: tasks.map((t) =>
                 Array.from({ length: t.parts }, () => ""),
@@ -61,6 +67,7 @@ export const useExamStore = create<ExamState>()(
         answer: (variantId, part, value) =>
           update(variantId, (run) => ({
             ...run,
+            updatedAt: Date.now(),
             answers: run.answers.map((a, i) =>
               i === run.current ? a.map((v, j) => (j === part ? value : v)) : a,
             ),
@@ -72,10 +79,16 @@ export const useExamStore = create<ExamState>()(
               ...run,
               current: index,
               enteredAt: now,
-              spent: run.spent.map((ms, i) =>
-                i === run.current ? ms + now - run.enteredAt : ms,
-              ),
+              updatedAt: now,
+              spent: spentAt(run, now),
             };
+          }),
+        restore: (variantId, run) =>
+          set((s) => {
+            const local = s.runs[variantId];
+            return local && local.updatedAt >= run.updatedAt
+              ? s
+              : { runs: { ...s.runs, [variantId]: run } };
           }),
         clear: (variantId) =>
           set((s) => {
@@ -86,8 +99,19 @@ export const useExamStore = create<ExamState>()(
     },
     {
       name: "do-indeksa-exam",
-      version: 1,
-      migrate: () => ({ runs: {} }),
+      version: 2,
+      migrate: (persisted, version) => {
+        if (version !== 1) return { runs: {} };
+        const { runs } = persisted as Pick<ExamState, "runs">;
+        return {
+          runs: Object.fromEntries(
+            Object.entries(runs).map(([id, run]) => [
+              id,
+              { ...run, updatedAt: run.enteredAt },
+            ]),
+          ),
+        };
+      },
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
     },
