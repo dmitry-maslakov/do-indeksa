@@ -17,6 +17,7 @@ import {
 } from "@/lib/stats";
 import { getSession } from "@/server/auth";
 import { getStatAttempts } from "@/server/history";
+import { AccountNote } from "./_components/account-note";
 import { ContinueCard } from "./_components/continue-card";
 import { EntryCards } from "./_components/entry-cards";
 import { Intro } from "./_components/intro";
@@ -74,42 +75,47 @@ export default function HomePage() {
         <div className="max-md:order-1">
           <EntryCards />
         </div>
-        <div className="max-md:order-1">
+        <div className="empty:hidden max-md:order-1">
           <Suspense fallback={<TimeCard />}>
             <Await promise={stats}>
-              {(s) => (
-                <TimeCard rows={slowest(s.attempts)} signedIn={s.signedIn} />
-              )}
+              {(s) => s.signedIn && <TimeCard rows={slowest(s.attempts)} />}
             </Await>
           </Suspense>
         </div>
       </div>
       <div className="contents md:flex md:flex-col md:gap-6">
         <DailyBanner />
-        <Suspense fallback={<WeakTopics />}>
-          <Await promise={stats}>
-            {(s) => (
-              <WeakTopics
-                topics={weakest(
-                  s.attempts,
-                  positions.map((p) => p.topic),
-                  new Date(),
-                )}
-                signedIn={s.signedIn}
-              />
-            )}
-          </Await>
-        </Suspense>
-        <Suspense fallback={<MistakesCard />}>
-          <Await promise={stats}>
-            {(s) => (
-              <MistakesCard
-                taskIds={mistakesThisWeek(s.attempts, new Date())}
-                signedIn={s.signedIn}
-              />
-            )}
-          </Await>
-        </Suspense>
+        <div className="flex flex-col gap-6">
+          <Suspense
+            fallback={
+              <>
+                <WeakTopics />
+                <MistakesCard />
+              </>
+            }
+          >
+            <Await promise={stats}>
+              {(s) =>
+                s.signedIn ? (
+                  <>
+                    <WeakTopics
+                      topics={weakest(
+                        s.attempts,
+                        positions.map((p) => p.topic),
+                        new Date(),
+                      )}
+                    />
+                    <MistakesCard
+                      taskIds={mistakesThisWeek(s.attempts, new Date())}
+                    />
+                  </>
+                ) : (
+                  <AccountNote />
+                )
+              }
+            </Await>
+          </Suspense>
+        </div>
       </div>
     </main>
   );

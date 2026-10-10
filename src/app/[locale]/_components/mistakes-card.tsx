@@ -1,12 +1,10 @@
 import { useTranslations } from "next-intl";
-import { EmptyNote } from "@/components/empty-note";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 
 interface MistakesCardProps {
   taskIds?: string[];
-  signedIn?: boolean;
 }
 
 const squares = (
@@ -17,7 +15,7 @@ const squares = (
   </span>
 );
 
-export function MistakesCard({ taskIds, signedIn }: MistakesCardProps) {
+export function MistakesCard({ taskIds }: MistakesCardProps) {
   const t = useTranslations("Home");
 
   if (!taskIds) {
@@ -28,15 +26,6 @@ export function MistakesCard({ taskIds, signedIn }: MistakesCardProps) {
           <Skeleton className="h-3 w-40" />
         </div>
         {squares}
-      </Card>
-    );
-  }
-
-  if (!signedIn) {
-    return (
-      <Card className="gap-3">
-        <span className="font-semibold">{t("mistakes")}</span>
-        <EmptyNote text={t("mistakesGuest")} signedIn={false} />
       </Card>
     );
   }

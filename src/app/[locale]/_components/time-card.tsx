@@ -31,13 +31,7 @@ const ghost = (
   </ul>
 );
 
-export function TimeCard({
-  rows,
-  signedIn,
-}: {
-  rows?: TimeRow[];
-  signedIn?: boolean;
-}) {
+export function TimeCard({ rows }: { rows?: TimeRow[] }) {
   const t = useTranslations("Home");
 
   return (
@@ -53,7 +47,7 @@ export function TimeCard({
       ) : rows.length === 0 ? (
         <EmptyNote
           text={t("timeEmpty")}
-          signedIn={Boolean(signedIn)}
+          signedIn
           href="/variants"
           action={t("startTest")}
         />

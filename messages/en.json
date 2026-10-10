@@ -210,12 +210,17 @@
     "playDaily": "Play the daily test",
     "timeEmpty": "Finish your first test to see which numbers take the most time.",
     "startTest": "Pick a test",
-    "mistakesGuest": "Sign in to keep your mistakes and come back to them.",
     "byNumberHint": "Click for every task of that number",
     "progressLeft": "{done, number} of {total, number} · {minutes, number} min left",
     "next": "Next — #{number, number}, {topic}",
     "attemptsShort": "{count, plural, one {# attempt} other {# attempts}}",
     "moreTopics": "{count, number} more →"
+  },
+  "Account": {
+    "title": "An account is optional",
+    "text": "Tasks, solutions and tests work without an account; progress stays in this browser. With an account, history, mistakes and stats are kept on every device.",
+    "stores": "Sign-in is Google only. We keep your name, email and profile photo, your answers and results, and for the session your IP address and browser.",
+    "signIn": "Sign in with Google"
   },
   "Compose": {
     "title": "Compose your own",
