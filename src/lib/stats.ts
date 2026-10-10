@@ -64,14 +64,23 @@ export function totals(newestFirst: StatAttempt[]) {
   };
 }
 
-export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
-  const recent = attempts.filter(
-    (a) => now.getTime() - a.createdAt.getTime() <= 30 * DAY,
+const recentBy = (attempts: StatAttempt[], topics: string[], now: Date) =>
+  accuracyBy(
+    attempts.filter((a) => now.getTime() - a.createdAt.getTime() <= 30 * DAY),
+    topics,
+    (a) => a.topic,
   );
-  return accuracyBy(recent, topics, (a) => a.topic)
+
+export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
+  return recentBy(attempts, topics, now)
     .filter((a): a is Accuracy & { pct: number } => a.pct !== null)
-    .sort((a, b) => a.pct - b.pct)
-    .slice(0, 4);
+    .sort((a, b) => a.pct - b.pct);
+}
+
+export function warming(attempts: StatAttempt[], topics: string[], now: Date) {
+  return recentBy(attempts, topics, now)
+    .filter((a) => a.pct === null && a.total > 0)
+    .sort((a, b) => b.total - a.total);
 }
 
 export function mistakes(newestFirst: StatAttempt[]) {

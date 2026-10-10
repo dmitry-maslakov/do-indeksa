@@ -203,6 +203,7 @@
     "open": "Открыть →",
     "weaker": "Слабые темы",
     "days30": "за 30 дней",
+    "days30Gathering": "за 30 дней · пока мало данных",
     "mistakes": "Вернуться к ошибкам",
     "mistakesTitle": "Ошибки",
     "mistakesCount": "{count, plural, one {# задача} few {# задачи} other {# задач}} с ошибкой",
@@ -220,6 +221,7 @@
     "progressLeft": "{done, number} из {total, number} · осталось {minutes, number} мин",
     "next": "Дальше — №{number, number}, {topic}",
     "attemptsShort": "{count, plural, one {# попытка} few {# попытки} other {# попыток}}",
+    "attemptsLeft": "Процент — после ещё {count, plural, one {# попытки} few {# попыток} other {# попыток}}",
     "moreTopics": "ещё {count, number} →"
   },
   "Account": {

@@ -203,6 +203,7 @@
     "open": "Open →",
     "weaker": "Weaker topics",
     "days30": "last 30 days",
+    "days30Gathering": "last 30 days · not enough data yet",
     "mistakes": "Back to mistakes",
     "mistakesTitle": "Mistakes",
     "mistakesCount": "{count, plural, one {# task} other {# tasks}} with a mistake",
@@ -220,6 +221,7 @@
     "progressLeft": "{done, number} of {total, number} · {minutes, number} min left",
     "next": "Next — #{number, number}, {topic}",
     "attemptsShort": "{count, plural, one {# attempt} other {# attempts}}",
+    "attemptsLeft": "Percentage after {count, plural, one {# more attempt} other {# more attempts}}",
     "moreTopics": "{count, number} more →"
   },
   "Account": {

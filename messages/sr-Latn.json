@@ -203,6 +203,7 @@
     "open": "Otvori →",
     "weaker": "Slabije teme",
     "days30": "za 30 dana",
+    "days30Gathering": "za 30 dana · još nema dovoljno podataka",
     "mistakes": "Vrati se na greške",
     "mistakesTitle": "Greške",
     "mistakesCount": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} sa greškom",
@@ -220,6 +221,7 @@
     "progressLeft": "{done, number} od {total, number} · ostalo {minutes, number} min",
     "next": "Dalje — №{number, number}, {topic}",
     "attemptsShort": "{count, plural, one {# pokušaj} few {# pokušaja} other {# pokušaja}}",
+    "attemptsLeft": "Procenat posle još {count, plural, one {# pokušaja} few {# pokušaja} other {# pokušaja}}",
     "moreTopics": "još {count, number} →"
   },
   "Account": {

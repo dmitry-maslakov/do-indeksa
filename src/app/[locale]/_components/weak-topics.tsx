@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { useLocale, useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { PracticeLinks } from "@/components/practice-links";
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { topicName } from "@/content/topics";
-import type { Accuracy } from "@/lib/stats";
+import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
 
 const list = "flex flex-col gap-3 text-[13px]";
 
@@ -27,21 +28,28 @@ const ghost = (
 
 export function WeakTopics({
   topics,
+  warming,
 }: {
   topics?: (Accuracy & { pct: number })[];
+  warming?: Accuracy[];
 }) {
   const t = useTranslations("Home");
   const locale = useLocale();
+  const rows = topics && [...topics, ...(warming ?? [])].slice(0, 4);
 
   return (
     <Card className="gap-4">
       <CardHeader>
         <CardTitle>{t("weaker")}</CardTitle>
-        <CardDescription>{t("days30")}</CardDescription>
+        <CardDescription>
+          {topics?.length === 0 && rows?.length
+            ? t("days30Gathering")
+            : t("days30")}
+        </CardDescription>
       </CardHeader>
-      {!topics ? (
+      {!rows ? (
         ghost
-      ) : topics.length === 0 ? (
+      ) : rows.length === 0 ? (
         <EmptyNote
           text={t("weakEmpty")}
           signedIn
@@ -51,27 +59,45 @@ export function WeakTopics({
       ) : (
         <>
           <ul className={list}>
-            {topics.map((topic) => (
-              <li key={topic.key} className="flex flex-col gap-1.5">
+            {rows.map((row) => (
+              <li key={row.key} className="flex flex-col gap-1.5">
                 <div className="flex justify-between gap-3">
-                  <span className="truncate">
-                    {topicName(String(topic.key), locale)}
+                  <span
+                    className={cn(
+                      "truncate",
+                      row.pct === null && "text-subtle",
+                    )}
+                  >
+                    {topicName(String(row.key), locale)}
                   </span>
                   <span className="shrink-0">
-                    <b className="font-semibold">{topic.pct}%</b>{" "}
+                    <b
+                      className={cn(
+                        "font-semibold",
+                        row.pct === null && "text-subtle",
+                      )}
+                    >
+                      {row.pct === null ? "—" : `${row.pct}%`}
+                    </b>{" "}
                     <span className="text-subtle">
-                      · {t("attemptsShort", { count: topic.total })}
+                      · {t("attemptsShort", { count: row.total })}
                     </span>
                   </span>
                 </div>
-                <ProgressBar value={topic.pct / 100} />
+                {row.pct === null ? (
+                  <span className="text-subtle">
+                    {t("attemptsLeft", { count: SAMPLE_MIN - row.total })}
+                  </span>
+                ) : (
+                  <ProgressBar value={row.pct / 100} />
+                )}
               </li>
             ))}
           </ul>
           <PracticeLinks
-            topics={topics.map((topic) => ({
-              id: String(topic.key),
-              name: topicName(String(topic.key), locale),
+            topics={topics.map((row) => ({
+              id: String(row.key),
+              name: topicName(String(row.key), locale),
             }))}
           />
         </>
