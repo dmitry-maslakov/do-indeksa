@@ -210,12 +210,17 @@
     "playDaily": "Reši test dana",
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim brojevima trošiš najviše vremena.",
     "startTest": "Izaberi test",
-    "mistakesGuest": "Prijavi se i greške će se čuvati, da im se vratiš kasnije.",
     "byNumberHint": "Klik — svi zadaci tog broja",
     "progressLeft": "{done, number} od {total, number} · ostalo {minutes, number} min",
     "next": "Dalje — №{number, number}, {topic}",
     "attemptsShort": "{count, plural, one {# pokušaj} few {# pokušaja} other {# pokušaja}}",
     "moreTopics": "još {count, number} →"
+  },
+  "Account": {
+    "title": "Nalog nije obavezan",
+    "text": "Zadaci, rešenja i testovi rade i bez naloga; napredak ostaje u ovom pregledaču. Uz nalog se istorija, greške i statistika čuvaju na svakom uređaju.",
+    "stores": "Prijava je samo preko Google-a. Čuvamo ime, e-adresu i sliku sa naloga, tvoje odgovore i rezultate, a za sesiju IP adresu i pregledač.",
+    "signIn": "Prijavi se preko Google-a"
   },
   "Compose": {
     "title": "Sastavi svoj",

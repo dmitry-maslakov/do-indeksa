@@ -27,10 +27,8 @@ const ghost = (
 
 export function WeakTopics({
   topics,
-  signedIn,
 }: {
   topics?: (Accuracy & { pct: number })[];
-  signedIn?: boolean;
 }) {
   const t = useTranslations("Home");
   const locale = useLocale();
@@ -46,7 +44,7 @@ export function WeakTopics({
       ) : topics.length === 0 ? (
         <EmptyNote
           text={t("weakEmpty")}
-          signedIn={Boolean(signedIn)}
+          signedIn
           href="/daily"
           action={t("playDaily")}
         />
