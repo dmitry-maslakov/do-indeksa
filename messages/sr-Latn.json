@@ -143,6 +143,7 @@
     "points": "Bodovi",
     "time": "Vreme",
     "rest": "{count, plural, one {Ostali # zadatak je rešen tačno} few {Ostala # zadatka su rešena tačno} other {Ostalih # zadataka je rešeno tačno}}",
+    "all": "{count, plural, =1 {Zadatak je rešen tačno} other {Svi zadaci su rešeni tačno}}",
     "skipped": "bez odgovora",
     "minutes": "{minutes, number} min",
     "lost": "Gde su izgubljeni bodovi",

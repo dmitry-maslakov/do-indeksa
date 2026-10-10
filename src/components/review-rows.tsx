@@ -28,6 +28,14 @@ export function ReviewRows({ review, tasks, outcomes }: ReviewRowsProps) {
   const missed = review.rows.filter((r) => r.earned < r.points);
   const rest = review.rows.length - missed.length;
 
+  if (missed.length === 0) {
+    return (
+      <Card className="px-5 py-4 text-[13px] text-subtle md:px-6">
+        {t("all", { count: rest })}
+      </Card>
+    );
+  }
+
   return (
     <Card className="gap-0 p-0 py-2 md:p-0 md:py-2">
       <div className={cn(columns, "py-2.5 text-subtle text-xs")}>
