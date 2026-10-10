@@ -64,18 +64,20 @@ export default function HomePage() {
     <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
       <Intro />
       <div className="contents md:flex md:flex-col md:gap-6">
-        <ContinueCard
-          start={{
-            id: first.id,
-            title: first.title,
-            tasks: first.taskIds.length,
-            minutes: minutesOf(first),
-          }}
-        />
-        <div className="max-md:order-1">
+        <div className="max-md:order-2">
+          <ContinueCard
+            start={{
+              id: first.id,
+              title: first.title,
+              tasks: first.taskIds.length,
+              minutes: minutesOf(first),
+            }}
+          />
+        </div>
+        <div className="max-md:order-3">
           <EntryCards />
         </div>
-        <div className="empty:hidden max-md:order-1">
+        <div className="empty:hidden max-md:order-5">
           <Suspense fallback={<TimeCard />}>
             <Await promise={stats}>
               {(s) => s.signedIn && <TimeCard rows={slowest(s.attempts)} />}
@@ -84,8 +86,10 @@ export default function HomePage() {
         </div>
       </div>
       <div className="contents md:flex md:flex-col md:gap-6">
-        <DailyBanner />
-        <div className="flex flex-col gap-6">
+        <div className="max-md:order-1">
+          <DailyBanner />
+        </div>
+        <div className="flex flex-col gap-6 max-md:order-4">
           <Suspense
             fallback={
               <>
