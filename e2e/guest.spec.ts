@@ -22,6 +22,9 @@ test("a guest finishes the daily test", async ({ page }) => {
     .click();
   await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
   await expect(
+    page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
+  ).toBeVisible();
+  await expect(
     page.getByRole("button", { name: "Prijavi se" }).last(),
   ).toBeVisible();
 });

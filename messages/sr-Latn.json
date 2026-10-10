@@ -117,6 +117,7 @@
     "cancel": "Nastavi",
     "result": "Rezultat",
     "strip": "{score, number} od {max, number} bodova",
+    "estimate": "Ovo je procena, a ne zvaničan rezultat: proveravamo samo konačan odgovor, a FTN na prijemnom boduje i postupak i može dati delimične bodove.",
     "guest": "Prijavi se da se rezultati čuvaju u istoriji i statistici.",
     "signIn": "Prijavi se",
     "back": "Na testove",

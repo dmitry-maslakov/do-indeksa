@@ -117,6 +117,7 @@
     "cancel": "Keep going",
     "result": "Result",
     "strip": "{score, number} of {max, number} points",
+    "estimate": "This is an estimate, not an official result: we only check the final answer, while FTN grades the method at the exam and can give partial credit.",
     "guest": "Sign in to keep results in your history and stats.",
     "signIn": "Sign in",
     "back": "To tests",

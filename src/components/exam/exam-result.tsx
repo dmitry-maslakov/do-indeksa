@@ -40,6 +40,7 @@ export function ExamResult({ tasks, result, onRetry }: ExamResultProps) {
         segments={segments}
         label={t("strip", { score, max })}
       />
+      <p className="text-[13px] text-subtle">{t("estimate")}</p>
       <TaskLines
         tasks={tasks}
         end={(_, i) =>
