@@ -15,6 +15,7 @@ interface ExamIntroProps {
   title: string;
   tasks: ExamTask[];
   minutes: number;
+  signedIn: boolean;
   swaps?: (string | undefined)[];
   onStart: (timed: boolean) => void;
 }
@@ -23,6 +24,7 @@ export function ExamIntro({
   title,
   tasks,
   minutes,
+  signedIn,
   swaps,
   onStart,
 }: ExamIntroProps) {
@@ -46,7 +48,7 @@ export function ExamIntro({
         <ul className="flex flex-col gap-1.5 px-1 text-[13px] text-subtle">
           <li>{t("introAnswer")}</li>
           <li>{t("introTime")}</li>
-          <li>{t("introSaved")}</li>
+          <li>{signedIn ? t("introSynced") : t("introSaved")}</li>
         </ul>
       </Card>
       <Card className="py-3 md:py-4">

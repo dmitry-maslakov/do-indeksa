@@ -4,6 +4,8 @@ import { PageTitle } from "@/components/page-title";
 import { swapHrefs } from "@/content/compose";
 import { variantTitle } from "@/content/variant-title";
 import { type ExamVariant, minutesOf, tasksFor } from "@/content/variants";
+import { getSession } from "@/server/auth";
+import { getCurrentRun } from "@/server/current-run";
 import { ExamRunner } from "./exam-runner";
 
 export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
@@ -22,6 +24,8 @@ export async function VariantScreen({ variant }: { variant: ExamVariant }) {
   const tasks = tasksFor(variant.taskIds, await getLocale());
   const minutes = minutesOf(variant);
   const title = await variantTitle(variant);
+  const session = await getSession();
+  const account = session ? await getCurrentRun(session.user.id) : undefined;
 
   return (
     <main className="px-4 pb-9 md:px-9">
@@ -36,6 +40,8 @@ export async function VariantScreen({ variant }: { variant: ExamVariant }) {
         tasks={tasks}
         minutes={minutes}
         title={title}
+        signedIn={Boolean(session)}
+        account={account}
         swaps={
           variant.kind === "custom" ? swapHrefs(variant.taskIds) : undefined
         }
