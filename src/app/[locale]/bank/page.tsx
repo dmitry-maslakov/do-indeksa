@@ -57,7 +57,7 @@ function BankResults({ filters, signedIn, progress }: BankResultsProps) {
   const tasks = searchBank(filters, progress);
 
   return (
-    <div className="grid items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
       <BankFilters
         filters={filters}
         signedIn={signedIn}
