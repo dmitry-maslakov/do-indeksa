@@ -9,7 +9,7 @@ import { SignInCard } from "@/components/sign-in-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTask } from "@/content/tasks";
+import { outcomesOf } from "@/content/outcomes";
 import { variantTitle } from "@/content/variant-title";
 import { getVariant, tasksFor } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
@@ -122,12 +122,7 @@ async function RunReview({
         <ReviewRows
           review={result}
           tasks={tasks}
-          keys={Object.fromEntries(
-            found.run.taskIds.map((id) => [
-              id,
-              getTask(id)?.check.map((c) => c.expected) ?? [],
-            ]),
-          )}
+          outcomes={outcomesOf(found.attempts)}
         />
         <div className="flex flex-col gap-5">
           <LostPoints
