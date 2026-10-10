@@ -1,13 +1,20 @@
 "use client";
 
-import { useCallback, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
-import { useExamHydrated, useExamStore } from "@/lib/exam-store";
+import { spentAt, useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
-import { finishRun, type GuestResult } from "@/server/runs";
+import type { CurrentRun } from "@/server/current-run";
+import { finishRun, type GuestResult, saveRun } from "@/server/runs";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
@@ -18,6 +25,8 @@ interface ExamRunnerProps {
   tasks: Task[];
   minutes: number;
   title: string;
+  signedIn: boolean;
+  account?: CurrentRun;
   swaps?: (string | undefined)[];
 }
 
@@ -26,12 +35,14 @@ export function ExamRunner({
   tasks,
   minutes,
   title,
+  signedIn,
+  account,
   swaps,
 }: ExamRunnerProps) {
   const hydrated = useExamHydrated();
   const router = useRouter();
   const run = useExamStore((s) => s.runs[variantId]);
-  const { start, answer, go, clear } = useExamStore.getState();
+  const { start, answer, go, restore, clear } = useExamStore.getState();
   const [result, setResult] = useState<GuestResult>();
   const [pending, startTransition] = useTransition();
   const meta = useMemo(
@@ -46,6 +57,19 @@ export function ExamRunner({
     }),
     [title, minutes, tasks],
   );
+  const resumed = account?.variantId === variantId ? account.run : undefined;
+  const synced = account?.run.updatedAt ?? 0;
+  useEffect(() => {
+    if (hydrated && resumed) restore(variantId, resumed);
+  }, [hydrated, resumed, restore, variantId]);
+  useEffect(() => {
+    if (!signedIn || !run || run.updatedAt <= synced) return;
+    const id = setTimeout(() => {
+      const spent = spentAt(run, Date.now());
+      saveRun(variantId, { ...run, spent }).catch(() => undefined);
+    }, 1500);
+    return () => clearTimeout(id);
+  }, [signedIn, run, synced, variantId]);
   const onAnswer = useCallback(
     (part: number, value: string) => answer(variantId, part, value),
     [answer, variantId],
@@ -61,10 +85,11 @@ export function ExamRunner({
     );
   }
 
-  if (hydrated && !run) {
+  if (hydrated && !run && !resumed) {
     return (
       <ExamIntro
         title={title}
+        signedIn={signedIn}
         tasks={tasks}
         minutes={minutes}
         swaps={swaps}
@@ -96,15 +121,12 @@ export function ExamRunner({
 
   const finish = () =>
     startTransition(async () => {
-      const spent = Date.now() - run.enteredAt;
       const saved = await finishRun({
         runId: run.runId,
         variantId,
         startedAt: run.startedAt,
         answers: run.answers,
-        durations: run.spent.map((ms, i) =>
-          i === run.current ? ms + spent : ms,
-        ),
+        durations: spentAt(run, Date.now()),
       });
       clear(variantId);
       if (saved.saved) router.push(reviewHref(run.runId));
