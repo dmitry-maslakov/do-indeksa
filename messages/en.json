@@ -142,7 +142,7 @@
     "rest": "{count, plural, one {The other # task is correct} other {The other # tasks are correct}}",
     "skipped": "no answer",
     "minutes": "{minutes, number} min",
-    "lost": "Where you lost points",
+    "lost": "Where points were lost",
     "skippedTopic": "No answer",
     "timeTitle": "Where the time went",
     "timeOf": "{spent, number} of {norm, number} min",
@@ -156,7 +156,7 @@
   "Stats": {
     "title": "Stats",
     "guest": "Sign in to see your stats: accuracy by topic and number, time and progress.",
-    "weaker": "Where you are weaker",
+    "weaker": "Weaker topics",
     "topics": "Topics",
     "numbers": "Numbers",
     "attempts": "{count, plural, one {# attempt} other {# attempts}}",
@@ -193,7 +193,7 @@
     "byTopic": "By topic",
     "variants": "Tests",
     "open": "Open →",
-    "weaker": "Where you are weaker",
+    "weaker": "Weaker topics",
     "days30": "last 30 days",
     "mistakes": "Back to mistakes",
     "mistakesCount": "{count, plural, one {# task} other {# tasks}} with a mistake this week",
@@ -222,7 +222,7 @@
   "Compose": {
     "title": "Compose your own",
     "exam": "Like the exam",
-    "weak": "From my weak topics",
+    "weak": "From my weaker topics",
     "unsolved": "Unsolved only",
     "topics": "Pick topics",
     "compose": "Compose"
