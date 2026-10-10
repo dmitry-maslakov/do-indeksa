@@ -17,10 +17,13 @@ export function PracticeLinks({
           key={topic.id}
           size="sm"
           variant="tint"
+          className="max-w-full"
           render={<Link href={`/bank?topic=${topic.id}`} />}
           nativeButton={false}
         >
-          {t("practice", { topic: topic.name })}
+          <span className="truncate">
+            {t("practice", { topic: topic.name })}
+          </span>
         </Button>
       ))}
     </div>
