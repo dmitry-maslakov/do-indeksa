@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   primaryKey,
@@ -11,6 +12,7 @@ import {
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { ExamRun } from "@/lib/exam-store";
 import { reportKinds } from "@/lib/report";
 import { user } from "./auth-schema";
 
@@ -61,6 +63,19 @@ export const attempts = pgTable(
     unique().on(t.runId, t.taskId),
   ],
 );
+
+export const currentRuns = pgTable("current_runs", {
+  userId: text()
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+  runId: uuid().notNull(),
+  variantId: text().notNull(),
+  startedAt: timestamp({ withTimezone: true }).notNull(),
+  run: jsonb()
+    .$type<Omit<ExamRun, "runId" | "startedAt" | "enteredAt">>()
+    .notNull(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
 
 export const favorites = pgTable(
   "favorites",
