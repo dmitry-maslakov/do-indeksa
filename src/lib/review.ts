@@ -15,6 +15,13 @@ export interface ReviewAttempt {
   durationMs: number;
 }
 
+export interface AnswerOutcome {
+  given: string;
+  key: string;
+}
+
+export type Outcomes = Record<string, AnswerOutcome>;
+
 export interface ReviewRow<A extends ReviewAttempt = ReviewAttempt>
   extends ReviewTask {
   attempt?: A;
