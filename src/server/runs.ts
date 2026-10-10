@@ -1,20 +1,23 @@
 "use server";
 
 import { z } from "zod";
+import { outcomesOf } from "@/content/outcomes";
 import { getTask } from "@/content/tasks";
 import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, runs } from "@/db/schema";
 import { DAY } from "@/lib/dates";
 import { gradeRun } from "@/lib/grade";
+import type { Outcomes, ReviewAttempt } from "@/lib/review";
 import { getSession } from "./auth";
 import { db } from "./db";
 
-export interface RunResult {
-  saved: boolean;
-  answered: boolean[];
-  parts: boolean[][];
-  points: number[];
+export interface GuestResult {
+  saved: false;
+  attempts: ReviewAttempt[];
+  outcomes: Outcomes;
 }
+
+export type RunResult = { saved: true } | GuestResult;
 
 const input = z.object({
   runId: z.uuid(),
@@ -44,14 +47,12 @@ export async function finishRun(
     run.answers,
     run.durations,
   );
-  const result = {
-    answered: graded.map((g) => g.answered),
-    parts: graded.map((g) => g.parts),
-    points: graded.map((g) => g.points),
-  };
+  const answered = graded.filter((g) => g.answered);
 
   const session = await getSession();
-  if (!session) return { saved: false, ...result };
+  if (!session) {
+    return { saved: false, attempts: answered, outcomes: outcomesOf(answered) };
+  }
 
   const userId = session.user.id;
   await db.transaction(async (tx) => {
@@ -67,11 +68,10 @@ export async function finishRun(
       })
       .onConflictDoNothing()
       .returning({ id: runs.id });
-    const answered = graded.filter((g) => g.answered);
     if (!inserted || answered.length === 0) return;
     await tx
       .insert(attempts)
       .values(answered.map((g) => ({ ...g, userId, runId: run.runId })));
   });
-  return { saved: true, ...result };
+  return { saved: true };
 }

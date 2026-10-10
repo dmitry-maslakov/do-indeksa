@@ -7,7 +7,7 @@ import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
 import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
-import { finishRun, type RunResult } from "@/server/runs";
+import { finishRun, type GuestResult } from "@/server/runs";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
@@ -32,7 +32,7 @@ export function ExamRunner({
   const router = useRouter();
   const run = useExamStore((s) => s.runs[variantId]);
   const { start, answer, go, clear } = useExamStore.getState();
-  const [result, setResult] = useState<RunResult>();
+  const [result, setResult] = useState<GuestResult>();
   const [pending, startTransition] = useTransition();
   const meta = useMemo(
     () => ({
