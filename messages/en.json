@@ -225,7 +225,8 @@
     "title": "An account is optional",
     "text": "Tasks, solutions and tests work without an account; progress stays in this browser. With an account, history, mistakes and stats are kept on every device.",
     "stores": "Sign-in is Google only. We keep your name, email and profile photo, your answers and results, and for the session your IP address and browser.",
-    "signIn": "Sign in with Google"
+    "signIn": "Sign in with Google",
+    "later": "Not now"
   },
   "Compose": {
     "title": "Compose your own",

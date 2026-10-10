@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { SignInButton } from "@/components/sign-in-button";
+import { GoogleSignInButton } from "@/components/sign-in-button";
 import { Card, CardTitle } from "@/components/ui/card";
 
 export function AccountNote() {
@@ -10,9 +10,9 @@ export function AccountNote() {
       <CardTitle>{t("title")}</CardTitle>
       <p className="text-sm text-subtle">{t("text")}</p>
       <p className="text-[13px] text-subtle">{t("stores")}</p>
-      <SignInButton size="sm" variant="tint">
+      <GoogleSignInButton size="sm" variant="tint">
         {t("signIn")}
-      </SignInButton>
+      </GoogleSignInButton>
     </Card>
   );
 }
