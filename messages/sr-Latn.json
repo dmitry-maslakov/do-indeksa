@@ -10,8 +10,8 @@
   },
   "Nav": {
     "home": "Početna",
-    "bank": "Banka zadataka",
-    "variants": "Probni testovi",
+    "bank": "Zadaci",
+    "variants": "Testovi",
     "stats": "Statistika"
   },
   "LocaleSwitcher": {

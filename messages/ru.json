@@ -10,8 +10,8 @@
   },
   "Nav": {
     "home": "Главная",
-    "bank": "Банк задач",
-    "variants": "Варианты",
+    "bank": "Задачи",
+    "variants": "Тесты",
     "stats": "Статистика"
   },
   "LocaleSwitcher": {
