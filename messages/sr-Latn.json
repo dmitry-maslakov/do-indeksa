@@ -138,6 +138,7 @@
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Reši ponovo",
     "strip": "{score, number} od {max, number} bodova",
+    "estimate": "Ovo je procena, a ne zvaničan rezultat: proveravamo samo konačan odgovor, a FTN na prijemnom boduje i postupak i može dati delimične bodove.",
     "task": "Zadatak",
     "points": "Bodovi",
     "time": "Vreme",
