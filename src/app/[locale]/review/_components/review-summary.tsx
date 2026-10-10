@@ -97,6 +97,7 @@ export function ReviewSummary({
           ))}
         </div>
       </div>
+      <p className="text-[13px] text-subtle">{t("estimate")}</p>
     </Card>
   );
 }
