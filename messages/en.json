@@ -204,6 +204,7 @@
     "weaker": "Weaker topics",
     "days30": "last 30 days",
     "mistakes": "Back to mistakes",
+    "mistakesTitle": "Mistakes",
     "mistakesCount": "{count, plural, one {# task} other {# tasks}} with a mistake",
     "noMistakes": "No tasks with a mistake",
     "streak": "{count, plural, =0 {No streak yet} one {Streak: # day} other {Streak: # days}}",
