@@ -74,15 +74,10 @@ export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
     .slice(0, 4);
 }
 
-export function mistakesThisWeek(newestFirst: StatAttempt[], now: Date) {
-  const latest = new Map<string, StatAttempt>();
-  for (const a of newestFirst)
-    if (!latest.has(a.taskId)) latest.set(a.taskId, a);
-  return [...latest.values()]
-    .filter(
-      (a) => !a.correct && now.getTime() - a.createdAt.getTime() <= 7 * DAY,
-    )
-    .map((a) => a.taskId);
+export function mistakes(newestFirst: StatAttempt[]) {
+  return [...latestStatuses(newestFirst)]
+    .filter(([, status]) => status === "wrong")
+    .map(([taskId]) => taskId);
 }
 
 const dayBefore = (day: string) =>
