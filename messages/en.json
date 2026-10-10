@@ -12,13 +12,7 @@
     "home": "Home",
     "bank": "Tasks",
     "variants": "Tests",
-    "stats": "Statistics"
-  },
-  "NavTab": {
-    "home": "Home",
-    "bank": "Bank",
-    "variants": "Tests",
-    "stats": "Stats",
+    "stats": "Statistics",
     "label": "Main navigation"
   },
   "LocaleSwitcher": {

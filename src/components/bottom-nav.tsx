@@ -6,7 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { isActive, sections } from "./sections";
 
 export function BottomNav() {
-  const t = useTranslations("NavTab");
+  const t = useTranslations("Nav");
   const pathname = usePathname();
 
   return (
