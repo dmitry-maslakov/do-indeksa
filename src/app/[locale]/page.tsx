@@ -13,6 +13,7 @@ import {
   meanTimeByNumber,
   mistakes,
   type StatAttempt,
+  warming,
   weakest,
 } from "@/lib/stats";
 import { getSession } from "@/server/auth";
@@ -37,6 +38,8 @@ async function loadStats() {
     attempts: session ? await getStatAttempts(session.user.id) : [],
   };
 }
+
+const topics = positions.map((p) => p.topic);
 
 const slowest = (attempts: StatAttempt[]) =>
   meanTimeByNumber(
@@ -99,22 +102,19 @@ export default function HomePage() {
             }
           >
             <Await promise={stats}>
-              {(s) =>
-                s.signedIn ? (
+              {(s) => {
+                if (!s.signedIn) return <AccountNote />;
+                const now = new Date();
+                return (
                   <>
                     <WeakTopics
-                      topics={weakest(
-                        s.attempts,
-                        positions.map((p) => p.topic),
-                        new Date(),
-                      )}
+                      topics={weakest(s.attempts, topics, now)}
+                      warming={warming(s.attempts, topics, now)}
                     />
                     <MistakesCard taskIds={mistakes(s.attempts)} />
                   </>
-                ) : (
-                  <AccountNote />
-                )
-              }
+                );
+              }}
             </Await>
           </Suspense>
         </div>

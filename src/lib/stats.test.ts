@@ -6,6 +6,7 @@ import {
   type StatAttempt,
   streak,
   totals,
+  warming,
   weakest,
 } from "./stats";
 
@@ -95,16 +96,24 @@ describe("home folds", () => {
     expect(mistakes(rows)).toEqual(["b", "c"]);
   });
 
+  const topicRows = [
+    ...[1, 2, 3].map((n) => day(n, { topic: "x", correct: n === 1 })),
+    ...[1, 2, 3].map((n) => day(n, { topic: "y", correct: true })),
+    day(1, { topic: "z" }),
+    ...[40, 41, 42].map((n) => day(n, { topic: "w" })),
+  ];
+
   it("ranks the weakest topics with enough attempts", () => {
-    const rows = [
-      ...[1, 2, 3].map((n) => day(n, { topic: "x", correct: n === 1 })),
-      ...[1, 2, 3].map((n) => day(n, { topic: "y", correct: true })),
-      day(1, { topic: "z" }),
-      ...[40, 41, 42].map((n) => day(n, { topic: "w" })),
-    ];
-    expect(weakest(rows, ["w", "x", "y", "z"], now).map((a) => a.key)).toEqual([
-      "x",
-      "y",
+    expect(
+      weakest(topicRows, ["w", "x", "y", "z"], now).map((a) => a.key),
+    ).toEqual(["x", "y"]);
+  });
+
+  it("lists recent topics below the sample minimum", () => {
+    const rows = [...topicRows, day(2, { topic: "v" }), day(5, { topic: "v" })];
+    expect(warming(rows, ["u", "v", "w", "x", "y", "z"], now)).toEqual([
+      { key: "v", total: 2, pct: null },
+      { key: "z", total: 1, pct: null },
     ]);
   });
 });
