@@ -13,6 +13,9 @@ test("a guest checks an answer", async ({ page }) => {
 test("a guest finishes the daily test", async ({ page }) => {
   await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
+  await expect(
+    page.getByText("Nedovršen test ostaje u ovom pregledaču", { exact: false }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
   await page.getByRole("button", { name: "Završi test" }).click();
