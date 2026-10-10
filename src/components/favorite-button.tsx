@@ -3,15 +3,20 @@
 import { cn } from "cn";
 import { StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useOptimistic, useState, useTransition } from "react";
+import {
+  type ComponentProps,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
+import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "@/i18n/navigation";
-import { authClient, signIn } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { isFavorite, setFavorite } from "@/server/favorites";
 
 export function FavoriteButton({ taskId }: { taskId: string }) {
   const t = useTranslations("Solve");
-  const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
   const [saved, setSaved] = useState(false);
   const [shown, setShown] = useOptimistic(saved);
@@ -25,30 +30,34 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
   }, [userId, taskId]);
 
   function toggle() {
-    if (!session) {
-      signIn(pathname);
-      return;
-    }
     startTransition(async () => {
       setShown(!saved);
       setSaved(await setFavorite(taskId, !saved));
     });
   }
 
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={toggle}
-      disabled={isPending}
-      aria-pressed={shown}
-      aria-label={shown ? t("saved") : t("save")}
-      className="-mr-2 bg-transparent px-2 sm:px-4"
-    >
+  const label = shown ? t("saved") : t("save");
+  const props = {
+    variant: "ghost",
+    size: "sm",
+    disabled: isPending,
+    "aria-label": label,
+    className: "-mr-2 bg-transparent px-2 sm:px-4",
+  } satisfies ComponentProps<typeof Button>;
+  const star = (
+    <>
       <StarIcon
         className={cn("text-subtle", shown && "fill-overtime text-overtime")}
       />
-      <span className="hidden sm:inline">{shown ? t("saved") : t("save")}</span>
+      <span className="hidden sm:inline">{label}</span>
+    </>
+  );
+
+  if (!session) return <SignInButton {...props}>{star}</SignInButton>;
+
+  return (
+    <Button {...props} onClick={toggle} aria-pressed={shown}>
+      {star}
     </Button>
   );
 }
