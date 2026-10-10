@@ -75,3 +75,45 @@ test("a guest composes an untimed test from a topic", async ({
   await page.getByRole("button", { name: "Počni" }).click();
   await expect(page.getByText("Proteklo vreme")).toBeVisible();
 });
+
+test("a guest sees why to sign in before google", async ({ page }) => {
+  await page.route("**/api/auth/sign-in/social", (route) => route.abort());
+  await page.goto("/bank/eks-001");
+  const dialog = page.getByRole("alertdialog");
+  const header = page
+    .getByRole("banner")
+    .getByRole("button", { name: "Prijavi se" });
+
+  await header.click();
+  await expect(dialog).toContainText("Nalog nije obavezan");
+  await expect(
+    dialog.getByText("Prijava je samo preko Google-a", { exact: false }),
+  ).toBeVisible();
+  await dialog.getByRole("button", { name: "Ne sada" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(header).toBeFocused();
+
+  await header.click();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(header).toBeFocused();
+
+  await page.getByRole("button", { name: "Sačuvaj" }).click();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Ne sada" }).click();
+  await expect(dialog).toBeHidden();
+
+  await header.click();
+  const fromDialog = page.waitForRequest("**/api/auth/sign-in/social");
+  await dialog
+    .getByRole("button", { name: "Prijavi se preko Google-a" })
+    .click();
+  await fromDialog;
+
+  await page.goto("/");
+  const direct = page.waitForRequest("**/api/auth/sign-in/social");
+  await page.getByRole("button", { name: "Prijavi se preko Google-a" }).click();
+  await direct;
+  await expect(dialog).toHaveCount(0);
+});
