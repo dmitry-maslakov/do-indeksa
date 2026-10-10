@@ -39,7 +39,7 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="min-w-0 shrink bg-card shadow-raised"
+            className="min-w-0 shrink bg-card px-2.5 shadow-raised sm:px-4"
           />
         }
       >
