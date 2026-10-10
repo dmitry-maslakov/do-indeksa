@@ -30,8 +30,10 @@ export function TaskCard({
     >
       <Card size="sm" className="transition-shadow hover:shadow-raised">
         <div className="flex items-start justify-between gap-3 text-[13px]">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="tint">{topicName(task.topic, locale)}</Badge>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <Badge variant="tint" className="max-w-full whitespace-normal">
+              {topicName(task.topic, locale)}
+            </Badge>
             <span className="text-subtle">
               {t("meta", { number: task.number, level: task.level })}
             </span>
