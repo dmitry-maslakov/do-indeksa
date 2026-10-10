@@ -61,7 +61,9 @@ export default async function SolvePage({
           <Card className="gap-6 md:p-9">
             <div className="flex items-start justify-between gap-2 text-sm text-subtle">
               <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <Badge variant="tint">{topicName(task.topic, locale)}</Badge>
+                <Badge variant="tint" className="max-w-full whitespace-normal">
+                  {topicName(task.topic, locale)}
+                </Badge>
                 <span>
                   {bank("meta", {
                     number: summary.number,
