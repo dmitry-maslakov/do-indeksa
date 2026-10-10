@@ -204,6 +204,7 @@
     "weaker": "Слабые темы",
     "days30": "за 30 дней",
     "mistakes": "Вернуться к ошибкам",
+    "mistakesTitle": "Ошибки",
     "mistakesCount": "{count, plural, one {# задача} few {# задачи} other {# задач}} с ошибкой",
     "noMistakes": "Задач с ошибкой нет",
     "streak": "{count, plural, =0 {Серия ещё не началась} one {Серия: # день} few {Серия: # дня} other {Серия: # дней}}",

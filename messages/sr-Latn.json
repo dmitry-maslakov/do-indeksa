@@ -204,6 +204,7 @@
     "weaker": "Slabije teme",
     "days30": "za 30 dana",
     "mistakes": "Vrati se na greške",
+    "mistakesTitle": "Greške",
     "mistakesCount": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} sa greškom",
     "noMistakes": "Nema zadataka sa greškom",
     "streak": "{count, plural, =0 {Serija još nije počela} one {Serija: # dan} few {Serija: # dana} other {Serija: # dana}}",
