@@ -25,6 +25,8 @@ pnpm lint && pnpm typecheck && pnpm knip && pnpm i18n && pnpm test
 pnpm e2e  # against a running app, BASE_URL defaults to http://localhost:3000
 ```
 
+e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both or `@mobile` for mobile only. Signed-in specs use the `auth` fixture from `e2e/fixtures.ts` and skip unless `DATABASE_URL` and `BETTER_AUTH_SECRET` are exported.
+
 ## Layout
 
 - `content/` sample topics, exam, tasks and tests. Production content is built in from a separate bank via `CONTENT_DIR`.
