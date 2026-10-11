@@ -46,7 +46,10 @@
   },
   "overrides": [
     {
-      "includes": ["src/components/math-html.tsx"],
+      "includes": [
+        "src/components/math-html.tsx",
+        "src/components/json-ld.tsx"
+      ],
       "linter": {
         "rules": {
           "security": {
