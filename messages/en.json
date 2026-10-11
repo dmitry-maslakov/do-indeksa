@@ -7,7 +7,9 @@
     "bankDescription": "FTN maths entrance exam tasks by topic: complex numbers, logarithms, trigonometry, integrals and more, with hints and solutions.",
     "variantsTitle": "FTN maths practice entrance exams",
     "variantsDescription": "Practice maths entrance exams for FTN Novi Sad: tests in the exam format and our own tests, timed like the real exam.",
-    "task": "{topic}: {headline}"
+    "task": "{topic}: {headline}",
+    "launchTitle": "Do indeksa — maths entrance exam prep for FTN Novi Sad",
+    "launchDescription": "Free entrance exam prep for students applying to universities in Serbia. We start with mathematics at FTN Novi Sad: real entrance exams with our own solutions, practice tests and tasks with hints."
   },
   "NotFound": {
     "title": "Page not found",
@@ -291,5 +293,15 @@
     "stale": "For safety, sign in with Google again first, then delete your account.",
     "error": "Deletion failed. Try again.",
     "deleted": "Your account and progress are deleted."
+  },
+  "Launch": {
+    "eyebrow": "For final-year students applying to universities in Serbia",
+    "title": "FTN maths entrance exam prep",
+    "lead": "Do indeksa is a free platform for entrance exam prep. We start with mathematics at FTN Novi Sad.",
+    "soon": "Opening soon",
+    "exams": "{count, plural, one {real FTN entrance exam} other {real FTN entrance exams}} ({from}–{to}) with our own solutions",
+    "tests": "{count, plural, one {practice test of our own} other {practice tests of our own}} in the exam format",
+    "tasks": "{count, plural, one {task} other {tasks}} with hints and solutions",
+    "open": "Built in the open on <link>GitHub</link>."
   }
 }
