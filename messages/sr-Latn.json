@@ -7,7 +7,9 @@
     "bankDescription": "Zadaci za prijemni ispit iz matematike na FTN-u po temama: kompleksni brojevi, logaritmi, trigonometrija, integrali i ostalo, sa nagoveštajima i rešenjima.",
     "variantsTitle": "Probni prijemni iz matematike za FTN",
     "variantsDescription": "Probni prijemni iz matematike za FTN u Novom Sadu: testovi po formatu prijemnog i naši testovi, sa merenjem vremena kao na ispitu.",
-    "task": "{topic}: {headline}"
+    "task": "{topic}: {headline}",
+    "launchTitle": "Do indeksa — priprema za prijemni iz matematike za FTN",
+    "launchDescription": "Besplatna priprema za prijemni ispit za maturante koji planiraju upis na fakultete u Srbiji. Počinjemo matematikom za FTN u Novom Sadu: pravi prijemni sa našim rešenjima, probni testovi i zadaci sa nagoveštajima."
   },
   "NotFound": {
     "title": "Stranica nije pronađena",
@@ -291,5 +293,15 @@
     "stale": "Radi zaštite prvo se ponovo prijavi preko Google-a, pa obriši nalog.",
     "error": "Brisanje nije uspelo. Pokušaj ponovo.",
     "deleted": "Nalog i napredak su obrisani."
+  },
+  "Launch": {
+    "eyebrow": "Za maturante koji planiraju upis na fakultete u Srbiji",
+    "title": "Priprema za prijemni iz matematike na FTN-u",
+    "lead": "Do indeksa je besplatna platforma za pripremu za prijemne ispite. Počinjemo matematikom za FTN u Novom Sadu.",
+    "soon": "Uskoro otvaramo",
+    "exams": "{count, plural, one {pravi prijemni} few {prava prijemna} other {pravih prijemnih}} FTN-a ({from}–{to}) sa našim rešenjima",
+    "tests": "{count, plural, one {naš probni test} few {naša probna testa} other {naših probnih testova}} po formatu ispita",
+    "tasks": "{count, plural, one {zadatak} few {zadatka} other {zadataka}} sa nagoveštajima i rešenjima",
+    "open": "Projekat se razvija javno na <link>GitHub-u</link>."
   }
 }
