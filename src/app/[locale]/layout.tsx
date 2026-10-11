@@ -3,8 +3,6 @@ import { Golos_Text } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { BottomNav } from "@/components/bottom-nav";
-import { TopNav } from "@/components/top-nav";
 import { routing } from "@/i18n/routing";
 import { siteUrl } from "@/lib/site";
 import "../globals.css";
@@ -41,11 +39,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={golos.variable}>
       <body>
-        <NextIntlClientProvider>
-          <TopNav />
-          {children}
-          <BottomNav />
-        </NextIntlClientProvider>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
   );
