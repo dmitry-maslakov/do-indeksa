@@ -1,3 +1,4 @@
+import { toString as plainText } from "mdast-util-to-string";
 import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import remarkMath from "remark-math";
@@ -17,4 +18,17 @@ export async function renderMarkdown(source: string, origin: string) {
   const [problem] = file.messages;
   if (problem) throw new Error(`${origin}: ${problem.reason}`);
   return String(file);
+}
+
+export function excerpt(source: string, length = 160) {
+  const text = processor
+    .parse(source)
+    .children.map((node) => plainText(node))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length <= length) return text;
+  const cut = text.slice(0, length - 1);
+  const end = cut.lastIndexOf(" ");
+  return `${end > 0 ? cut.slice(0, end) : cut}…`;
 }
