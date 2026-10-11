@@ -11,7 +11,13 @@ interface Auth {
   signIn: (age?: number) => Promise<string>;
 }
 
-export const test = base.extend<{ auth: Auth }>({
+export const test = base.extend<{ auth: Auth; errors: string[] }>({
+  errors: async ({ page }, use) => {
+    const errors: string[] = [];
+    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+    page.on("pageerror", (e) => errors.push(e.message));
+    await use(errors);
+  },
   auth: async ({ context }, use) => {
     test.skip(!DATABASE_URL || !BETTER_AUTH_SECRET, "needs the database");
     const db = new Client({ connectionString: DATABASE_URL });
