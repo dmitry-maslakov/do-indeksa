@@ -54,6 +54,7 @@ const tasks = defineCollection({
       ...task,
       text: content,
       excerpt: excerpt(content),
+      headline: excerpt(content, 50),
       statement: await render(content),
       answer: await render(answer),
       hints: await Promise.all(hints.map(render)),

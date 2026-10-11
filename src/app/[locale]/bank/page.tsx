@@ -23,9 +23,10 @@ import { getSession } from "@/server/auth";
 import { getProgress } from "@/server/progress";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Bank");
+  const t = await getTranslations("Metadata");
   return {
-    title: t("title"),
+    title: t("bankTitle"),
+    description: t("bankDescription"),
     alternates: alternates("/bank", await getLocale()),
   };
 }

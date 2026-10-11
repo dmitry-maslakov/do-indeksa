@@ -2,7 +2,12 @@
   "Metadata": {
     "title": "Do indeksa",
     "homeTitle": "Do indeksa — FTN maths entrance exam prep",
-    "description": "Free prep for the FTN Novi Sad maths entrance exam: tasks with solutions and practice tests, no account needed."
+    "description": "Free prep for the FTN Novi Sad maths entrance exam: tasks with solutions and practice tests in the real exam format, no account needed.",
+    "bankTitle": "FTN maths entrance exam tasks",
+    "bankDescription": "FTN maths entrance exam tasks by topic: complex numbers, logarithms, trigonometry, integrals and more, with hints and solutions.",
+    "variantsTitle": "FTN maths practice entrance exams",
+    "variantsDescription": "Practice maths entrance exams for FTN Novi Sad: tests in the exam format and our own tests, timed like the real exam.",
+    "task": "{topic}: {headline}"
   },
   "NotFound": {
     "title": "Page not found",

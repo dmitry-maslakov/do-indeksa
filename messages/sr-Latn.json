@@ -2,7 +2,12 @@
   "Metadata": {
     "title": "Do indeksa",
     "homeTitle": "Do indeksa — prijemni iz matematike za FTN",
-    "description": "Besplatna priprema za prijemni iz matematike na FTN-u u Novom Sadu: zadaci sa rešenjima i probni testovi, bez naloga."
+    "description": "Besplatna priprema za prijemni ispit iz matematike na FTN-u u Novom Sadu: zadaci sa rešenjima i probni prijemni po formatu ispita, bez naloga.",
+    "bankTitle": "Zadaci za prijemni iz matematike na FTN-u",
+    "bankDescription": "Zadaci za prijemni ispit iz matematike na FTN-u po temama: kompleksni brojevi, logaritmi, trigonometrija, integrali i ostalo, sa nagoveštajima i rešenjima.",
+    "variantsTitle": "Probni prijemni iz matematike za FTN",
+    "variantsDescription": "Probni prijemni iz matematike za FTN u Novom Sadu: testovi po formatu prijemnog i naši testovi, sa merenjem vremena kao na ispitu.",
+    "task": "{topic}: {headline}"
   },
   "NotFound": {
     "title": "Stranica nije pronađena",
