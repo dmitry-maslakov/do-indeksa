@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
@@ -66,12 +66,13 @@ export default async function StatsPage({
 
 function StatsCards({ byNumber, stats }: { byNumber: boolean; stats?: Stats }) {
   const locale = useLocale();
+  const exam = useTranslations("Exam");
   const attempts = stats?.attempts ?? [];
   const numbers = positions.map((p) => p.number);
   const accuracy = byNumber
     ? accuracyBy(attempts, numbers, (a) => a.number).map((a) => ({
         ...a,
-        label: `№${a.key}`,
+        label: exam("task", { number: Number(a.key) }),
       }))
     : accuracyBy(
         attempts,

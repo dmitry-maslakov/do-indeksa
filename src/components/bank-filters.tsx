@@ -61,7 +61,7 @@ export function BankFilters({
             <NativeSelectOption value="">{t("any")}</NativeSelectOption>
             {positions.map((p) => (
               <NativeSelectOption key={p.number} value={p.number}>
-                №{p.number}
+                {p.number}
               </NativeSelectOption>
             ))}
           </FilterSelect>

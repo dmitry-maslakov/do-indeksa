@@ -22,7 +22,7 @@ const ghost = (
   <ul className={list}>
     {[70, 52, 38].map((width) => (
       <li key={width} className="contents">
-        <Skeleton className="h-3 w-7" />
+        <Skeleton className="h-3 w-16" />
         <Skeleton className="h-2" style={{ width: `${width}%` }} />
         <Skeleton className="h-3 w-12" />
       </li>
@@ -48,6 +48,7 @@ export function TimeCard({ rows }: { rows?: TimeRow[] }) {
 
 function TimeRows({ rows }: { rows: TimeRow[] }) {
   const t = useTranslations("Home");
+  const exam = useTranslations("Exam");
   const top =
     Math.max(...rows.map((r) => Math.max(r.meanMs, r.normMs)), 1) * 1.1;
 
@@ -57,7 +58,7 @@ function TimeRows({ rows }: { rows: TimeRow[] }) {
         const over = row.meanMs > row.normMs;
         return (
           <li key={row.number} className="contents">
-            <span>№{row.number}</span>
+            <span>{exam("task", { number: row.number })}</span>
             <span className="relative h-2 rounded-full bg-untouched">
               <span
                 className={cn(
