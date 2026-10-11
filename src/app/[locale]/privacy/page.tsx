@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Card, CardTitle } from "@/components/ui/card";
+import { DeleteAccount } from "./_components/delete-account";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Privacy");
@@ -30,7 +31,9 @@ export default function PrivacyPage() {
         />
         <Section title={t("guestTitle")} lines={[t("guest")]} />
         <Section title={t("trackingTitle")} lines={[t("tracking")]} />
-        <Section title={t("deleteTitle")} lines={[t("delete")]} />
+        <Section title={t("deleteTitle")} lines={[t("delete")]}>
+          <DeleteAccount />
+        </Section>
         <Section title={t("contactTitle")}>
           <p className="text-sm text-subtle">
             {t.rich("contact", {
