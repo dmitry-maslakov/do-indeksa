@@ -5,6 +5,7 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { clip } from "./clip";
 
 const processor = unified()
   .use(remarkParse)
@@ -27,8 +28,5 @@ export function excerpt(source: string, length = 160) {
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
-  if (text.length <= length) return text;
-  const cut = text.slice(0, length - 1);
-  const end = cut.lastIndexOf(" ");
-  return `${end > 0 ? cut.slice(0, end) : cut}…`;
+  return clip(text, length);
 }
