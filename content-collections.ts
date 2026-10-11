@@ -67,6 +67,14 @@ const tasks = defineCollection({
   },
 });
 
+const taskIds = defineCollection({
+  name: "taskIds",
+  directory: `${root}/tasks`,
+  include: "*.md",
+  schema: z.object({ content: z.string() }),
+  transform: (task) => ({ id: task._meta.path }),
+});
+
 const exams = defineCollection({
   name: "exams",
   directory: `${root}/exams`,
@@ -140,4 +148,6 @@ const variants = defineCollection({
   },
 });
 
-export default defineConfig({ content: [topics, tasks, exams, variants] });
+export default defineConfig({
+  content: [topics, tasks, taskIds, exams, variants],
+});

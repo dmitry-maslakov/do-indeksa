@@ -33,11 +33,13 @@ for (const [path, text, title] of screens) {
   });
 }
 
-test("titles the not found page", async ({ page }) => {
-  const res = await page.goto("/bank/unknown");
-  expect(res?.status()).toBe(404);
-  await expect(page).toHaveTitle("Stranica nije pronađena · Do indeksa");
-});
+for (const path of ["/bank/unknown", "/review/a/b"]) {
+  test(`titles the not found page at ${path}`, async ({ page }) => {
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(404);
+    await expect(page).toHaveTitle("Stranica nije pronađena · Do indeksa");
+  });
+}
 
 test("switches the locale", async ({ page }) => {
   await page.goto("/bank");

@@ -15,7 +15,7 @@ import { getTask, siblings, summarize, tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { SolveRail } from "./_components/solve-rail";
 
-export const dynamicParams = false;
+export const instant = false;
 
 export function generateStaticParams() {
   return tasks.map((t) => ({ id: t.id }));

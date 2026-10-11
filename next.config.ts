@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   output: "standalone",
   deploymentId: process.env.GIT_SHA,
   agentRules: false,
+  cacheComponents: true,
+  partialPrefetching: true,
   serverExternalPackages: ["@cortex-js/compute-engine"],
 };
 

@@ -8,6 +8,8 @@ import { composeModes } from "@/lib/compose";
 import { setId } from "@/lib/variant-id";
 import { findSet } from "@/server/sets";
 
+export const instant = false;
+
 async function load(code: string) {
   const taskIds = await findSet(code);
   return taskIds && getVariant(setId(taskIds));
