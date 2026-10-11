@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Card, CardTitle } from "@/components/ui/card";
 import { alternates } from "@/i18n/alternates";
+import { repoUrl } from "@/lib/site";
 import { DeleteAccount } from "./_components/delete-account";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,7 +44,7 @@ export default function PrivacyPage() {
             {t.rich("contact", {
               link: (chunks) => (
                 <a
-                  href="https://github.com/dmitry-maslakov/do-indeksa/issues"
+                  href={`${repoUrl}/issues`}
                   className="text-primary underline-offset-4 hover:underline"
                 >
                   {chunks}
