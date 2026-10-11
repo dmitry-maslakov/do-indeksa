@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Card, CardTitle } from "@/components/ui/card";
+import { alternates } from "@/i18n/alternates";
 import { DeleteAccount } from "./_components/delete-account";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Privacy");
-  return { title: t("title") };
+  return {
+    title: t("title"),
+    alternates: alternates("/privacy", await getLocale()),
+  };
 }
 
 export default function PrivacyPage() {

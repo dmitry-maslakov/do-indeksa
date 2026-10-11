@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { BottomNav } from "@/components/bottom-nav";
 import { TopNav } from "@/components/top-nav";
 import { routing } from "@/i18n/routing";
+import { siteUrl } from "@/lib/site";
 import "../globals.css";
 
 const golos = Golos_Text({
@@ -24,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
+    metadataBase: siteUrl,
   };
 }
 

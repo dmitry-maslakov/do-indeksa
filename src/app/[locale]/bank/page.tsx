@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { BANK_FORM, BankFilters } from "@/components/bank-filters";
@@ -16,6 +16,7 @@ import {
   type BankFilters as Filters,
   searchBank,
 } from "@/content/bank";
+import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import type { Progress } from "@/lib/progress";
 import { getSession } from "@/server/auth";
@@ -23,7 +24,10 @@ import { getProgress } from "@/server/progress";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Bank");
-  return { title: t("title") };
+  return {
+    title: t("title"),
+    alternates: alternates("/bank", await getLocale()),
+  };
 }
 
 export default async function BankPage({

@@ -4,25 +4,30 @@ import {
   VariantScreen,
   variantMetadata,
 } from "@/components/exam/variant-screen";
-import {
-  curatedVariants,
-  getVariant,
-  officialVariants,
-} from "@/content/variants";
+import { contentVariants, getVariant } from "@/content/variants";
+import { alternates } from "@/i18n/alternates";
 import { redirect } from "@/i18n/navigation";
 import { saveSet } from "@/server/sets";
 
 export const instant = false;
 
 export function generateStaticParams() {
-  return [...officialVariants, ...curatedVariants].map((v) => ({ id: v.id }));
+  return contentVariants.map((v) => ({ id: v.id }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/variants/[id]">) {
-  const variant = getVariant((await params).id);
-  return variant ? variantMetadata(variant) : {};
+  const { id } = await params;
+  const variant = getVariant(id);
+  if (!variant) return {};
+  const metadata = await variantMetadata(variant);
+  return contentVariants.some((v) => v.id === id)
+    ? {
+        ...metadata,
+        alternates: alternates(`/variants/${id}`, await getLocale()),
+      }
+    : metadata;
 }
 
 export default async function VariantPage({

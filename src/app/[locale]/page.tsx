@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { DailyBanner } from "@/components/daily-banner";
 import { minutesAt, positions } from "@/content/exam";
-import {
-  curatedVariants,
-  minutesOf,
-  officialVariants,
-} from "@/content/variants";
+import { contentVariants, minutesOf } from "@/content/variants";
+import { alternates } from "@/i18n/alternates";
 import {
   meanTimeByNumber,
   mistakes,
@@ -29,7 +26,11 @@ import { WeakTopics } from "./_components/weak-topics";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
-  return { title: { absolute: t("homeTitle") }, description: t("description") };
+  return {
+    title: { absolute: t("homeTitle") },
+    description: t("description"),
+    alternates: alternates("/", await getLocale()),
+  };
 }
 
 async function loadStats() {
@@ -67,7 +68,7 @@ const slowest = (attempts: StatAttempt[]) =>
 export default function HomePage() {
   const stats = loadStats();
   const current = loadCurrentRun();
-  const [first] = [...officialVariants, ...curatedVariants];
+  const [first] = contentVariants;
   if (!first) throw new Error("no tests in the bank");
   const start = {
     id: first.id,
