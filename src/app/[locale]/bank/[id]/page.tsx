@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AnswerForm } from "@/components/answer-form";
@@ -9,7 +10,7 @@ import { ReportTask } from "@/components/report-task";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { positions } from "@/content/exam";
+import { numberOf, positions } from "@/content/exam";
 import { getTask, siblings, summarize, tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { SolveRail } from "./_components/solve-rail";
@@ -18,6 +19,18 @@ export const dynamicParams = false;
 
 export function generateStaticParams() {
   return tasks.map((t) => ({ id: t.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/bank/[id]">): Promise<Metadata> {
+  const task = getTask((await params).id);
+  if (!task) return {};
+  const exam = await getTranslations("Exam");
+  const locale = await getLocale();
+  return {
+    title: `${exam("task", { number: numberOf(task.topic) })} · ${topicName(task.topic, locale)}`,
+  };
 }
 
 export default async function SolvePage({
