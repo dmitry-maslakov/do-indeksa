@@ -10,8 +10,9 @@ test("a guest checks an answer", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
-test("a guest finishes the daily test", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test("a guest finishes the daily test", { tag: "@mobile" }, async ({
+  page,
+}) => {
   const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
   await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
