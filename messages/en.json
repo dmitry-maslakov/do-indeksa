@@ -238,7 +238,8 @@
     "weak": "From my weaker topics",
     "unsolved": "Unsolved only",
     "topics": "Pick topics",
-    "compose": "Compose"
+    "compose": "Compose",
+    "guest": "Weaker topics and unsolved tasks come from your solving history, so they're available once you sign in."
   },
   "Share": {
     "share": "Share",

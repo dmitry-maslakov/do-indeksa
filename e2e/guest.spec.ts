@@ -76,6 +76,21 @@ test("a guest composes an untimed test from a topic", async ({
   await expect(page.getByText("Proteklo vreme")).toBeVisible();
 });
 
+test("a guest sees personal compose modes need sign-in", async ({ page }) => {
+  await page.goto("/variants");
+  await expect(
+    page.getByRole("radio", { name: "Iz mojih slabijih tema" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("radio", { name: "Samo nerešeni" }),
+  ).toBeDisabled();
+  const aside = page.locator("aside");
+  await expect(
+    aside.getByText("Slabije teme i nerešeni zadaci", { exact: false }),
+  ).toBeVisible();
+  await expect(aside.getByRole("button", { name: "Prijavi se" })).toBeVisible();
+});
+
 test("a guest sees why to sign in before google", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
   await page.goto("/bank/eks-001");

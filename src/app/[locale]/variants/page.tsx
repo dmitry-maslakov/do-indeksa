@@ -39,6 +39,7 @@ export default async function VariantsPage({
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
   const locale = await getLocale();
+  const session = await getSession();
   const runs = loadRuns();
   const variants = tab === "official" ? officialVariants : curatedVariants;
   const minutes = positions.reduce((sum, p) => sum + p.minutes, 0);
@@ -88,6 +89,7 @@ export default async function VariantsPage({
               id: p.topic,
               name: topicName(p.topic, locale),
             }))}
+            signedIn={Boolean(session)}
           />
           <Suspense>
             <Await promise={runs}>

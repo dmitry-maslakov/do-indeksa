@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { EmptyNote } from "@/components/empty-note";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
@@ -12,8 +13,10 @@ import { composeModes } from "@/lib/compose";
 
 export function ComposeCard({
   topics,
+  signedIn,
 }: {
   topics: { id: string; name: string }[];
+  signedIn: boolean;
 }) {
   const t = useTranslations("Compose");
   const router = useRouter();
@@ -34,16 +37,17 @@ export function ComposeCard({
           <label
             key={m}
             className={cn(
-              "flex cursor-pointer items-center justify-between rounded-xl px-3.5 py-2.5 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring",
+              "flex cursor-pointer items-center justify-between rounded-xl px-3.5 py-2.5 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring has-disabled:cursor-not-allowed has-disabled:opacity-50",
               mode === m
                 ? "bg-muted font-medium"
-                : "text-subtle hover:text-foreground",
+                : "text-subtle has-enabled:hover:text-foreground",
             )}
           >
             <input
               type="radio"
               name="mode"
               checked={mode === m}
+              disabled={!signedIn && (m === "weak" || m === "unsolved")}
               onChange={() => setMode(m)}
               className="sr-only"
             />
@@ -69,6 +73,7 @@ export function ComposeCard({
           ))}
         </div>
       )}
+      {!signedIn && <EmptyNote text={t("guest")} signedIn={false} />}
       <Button
         variant="secondary"
         className="w-full"
