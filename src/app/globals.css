@@ -110,6 +110,12 @@
   --nav-bottom: 3.5rem;
 }
 
+@custom-variant exam-running (&:where(:root:has([data-exam="running"]) *));
+
+:root:has([data-exam="running"]) {
+  --nav-bottom: 0rem;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
