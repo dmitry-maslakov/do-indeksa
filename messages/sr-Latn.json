@@ -127,6 +127,7 @@
     "timer": "Tajmer {minutes, number} min",
     "introAnswer": "Kucaj / za razlomak, sqrt za koren, pi za π, ^ za stepen. Ekvivalentni oblici se priznaju, npr. 1/2 i 0,5.",
     "introTime": "Kad vreme istekne, test se ne prekida: možeš da ga završiš, a prekoračenje se beleži.",
+    "introFallback": "{mode, select, weak {Još nema dovoljno pokušaja po temama u poslednjih 30 dana, pa je sastavljen test kao na ispitu.} unsolved {U banci nema nerešenih zadataka, pa je sastavljen test kao na ispitu.} other {Nijedan zadatak ne odgovara izboru, pa je sastavljen test kao na ispitu.}}",
     "introSaved": "Nedovršen test ostaje u ovom pregledaču, a rezultat se čuva u istoriji samo uz prijavu.",
     "introSynced": "Poslednji nedovršen test se čuva na tvom nalogu, pa možeš da ga nastaviš i na drugom uređaju.",
     "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}",

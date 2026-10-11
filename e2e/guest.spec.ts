@@ -91,6 +91,14 @@ test("a guest sees personal compose modes need sign-in", async ({ page }) => {
   await expect(aside.getByRole("button", { name: "Prijavi se" })).toBeVisible();
 });
 
+test("a guest is told when a personal mode falls back", async ({ page }) => {
+  await page.goto("/variants/compose?mode=weak");
+  await expect(page).toHaveURL(/\/v\/[\w-]{7}\?fallback=weak$/);
+  await expect(
+    page.getByText("Slabije teme i nerešeni zadaci", { exact: false }),
+  ).toBeVisible();
+});
+
 test("a guest sees why to sign in before google", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
   await page.goto("/bank/eks-001");

@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
+import type { ComposeMode } from "@/lib/compose";
 import { spentAt, useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
 import type { CurrentRun } from "@/server/current-run";
@@ -28,6 +29,7 @@ interface ExamRunnerProps {
   signedIn: boolean;
   account?: CurrentRun;
   swaps?: (string | undefined)[];
+  fallback?: ComposeMode;
 }
 
 export function ExamRunner({
@@ -38,6 +40,7 @@ export function ExamRunner({
   signedIn,
   account,
   swaps,
+  fallback,
 }: ExamRunnerProps) {
   const hydrated = useExamHydrated();
   const router = useRouter();
@@ -93,6 +96,7 @@ export function ExamRunner({
         tasks={tasks}
         minutes={minutes}
         swaps={swaps}
+        fallback={fallback}
         onStart={(timed) => start(variantId, { ...meta, timed })}
       />
     );
