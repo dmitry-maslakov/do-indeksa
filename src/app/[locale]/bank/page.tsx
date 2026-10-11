@@ -29,43 +29,56 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BankPage({
   searchParams,
 }: PageProps<"/[locale]/bank">) {
-  const filters = bankFiltersSchema.parse(await searchParams);
-  const session = await getSession();
   const t = await getTranslations("Bank");
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
-      {session ? (
-        <Suspense fallback={<BankResults filters={filters} signedIn />}>
-          <Await promise={getProgress(session.user.id)}>
-            {(progress) => (
-              <BankResults filters={filters} signedIn progress={progress} />
-            )}
-          </Await>
-        </Suspense>
-      ) : (
-        <BankResults filters={filters} signedIn={false} />
-      )}
+      <Suspense fallback={<BankResults filters={{}} pending />}>
+        <Bank searchParams={searchParams} />
+      </Suspense>
     </main>
+  );
+}
+
+async function Bank({
+  searchParams,
+}: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
+  const filters = bankFiltersSchema.parse(await searchParams);
+  const session = await getSession();
+
+  return session ? (
+    <Suspense fallback={<BankResults filters={filters} signedIn />}>
+      <Await promise={getProgress(session.user.id)}>
+        {(progress) => (
+          <BankResults filters={filters} signedIn progress={progress} />
+        )}
+      </Await>
+    </Suspense>
+  ) : (
+    <BankResults filters={filters} signedIn={false} />
   );
 }
 
 interface BankResultsProps {
   filters: Filters;
-  signedIn: boolean;
+  signedIn?: boolean;
   progress?: Progress;
+  pending?: boolean;
 }
 
-function BankResults({ filters, signedIn, progress }: BankResultsProps) {
+function BankResults({
+  filters,
+  signedIn,
+  progress,
+  pending = signedIn && !progress && Boolean(filters.status),
+}: BankResultsProps) {
   const t = useTranslations("Bank");
-  const pending = signedIn && !progress && Boolean(filters.status);
   const tasks = searchBank(filters, progress);
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
       <BankFilters
-        filters={filters}
         signedIn={signedIn}
         solveHref={tasks[0] ? `/bank/${tasks[0].id}` : "/bank"}
       />
@@ -81,7 +94,6 @@ function BankResults({ filters, signedIn, progress }: BankResultsProps) {
           <FilterSelect
             form={BANK_FORM}
             name="sort"
-            defaultValue={filters.sort ?? ""}
             size="sm"
             aria-label={t("sort")}
           >

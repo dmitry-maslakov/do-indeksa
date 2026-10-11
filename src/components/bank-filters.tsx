@@ -2,28 +2,24 @@ import Form from "next/form";
 import { useLocale, useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { NativeSelectOption } from "@/components/ui/native-select";
-import { type BankFilters as Filters, statusFilters } from "@/content/bank";
+import { statusFilters } from "@/content/bank";
 import { positions } from "@/content/exam";
 import { levels } from "@/content/tasks";
 import { topics } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
+import { FilterSearch } from "./filter-search";
 import { FilterSelect } from "./filter-select";
+import { SignedIn } from "./signed-in";
 
 export const BANK_FORM = "bank-filters";
 
 interface BankFiltersProps {
-  filters: Filters;
-  signedIn: boolean;
+  signedIn?: boolean;
   solveHref: string;
 }
 
-export function BankFilters({
-  filters,
-  signedIn,
-  solveHref,
-}: BankFiltersProps) {
+export function BankFilters({ signedIn, solveHref }: BankFiltersProps) {
   const t = useTranslations("Bank");
   const solve = useTranslations("Solve");
   const locale = useLocale();
@@ -44,20 +40,11 @@ export function BankFilters({
       >
         <label className="col-span-2 md:col-span-1">
           <span className="sr-only">{t("search")}</span>
-          <Input
-            type="search"
-            name="q"
-            defaultValue={filters.q}
-            placeholder={t("search")}
-          />
+          <FilterSearch name="q" placeholder={t("search")} />
         </label>
         <label>
           <span className="mb-1 block text-subtle text-xs">{t("number")}</span>
-          <FilterSelect
-            name="number"
-            defaultValue={filters.number ?? ""}
-            className="w-full"
-          >
+          <FilterSelect name="number" className="w-full">
             <NativeSelectOption value="">{t("any")}</NativeSelectOption>
             {positions.map((p) => (
               <NativeSelectOption key={p.number} value={p.number}>
@@ -68,11 +55,7 @@ export function BankFilters({
         </label>
         <label className="md:order-1">
           <span className="mb-1 block text-subtle text-xs">{t("level")}</span>
-          <FilterSelect
-            name="level"
-            defaultValue={filters.level ?? ""}
-            className="w-full"
-          >
+          <FilterSelect name="level" className="w-full">
             <NativeSelectOption value="">{t("any")}</NativeSelectOption>
             {levels.map((l) => (
               <NativeSelectOption key={l} value={l}>
@@ -83,11 +66,7 @@ export function BankFilters({
         </label>
         <label className="col-span-2 md:col-span-1">
           <span className="mb-1 block text-subtle text-xs">{t("topic")}</span>
-          <FilterSelect
-            name="topic"
-            defaultValue={filters.topic ?? ""}
-            className="w-full"
-          >
+          <FilterSelect name="topic" className="w-full">
             <NativeSelectOption value="">{t("allTopics")}</NativeSelectOption>
             {topics.map((topic) => (
               <NativeSelectOption key={topic.id} value={topic.id}>
@@ -96,16 +75,12 @@ export function BankFilters({
             ))}
           </FilterSelect>
         </label>
-        {signedIn && (
+        <SignedIn signedIn={signedIn}>
           <label className="col-span-2 md:order-1 md:col-span-1">
             <span className="mb-1 block text-subtle text-xs">
               {t("status")}
             </span>
-            <FilterSelect
-              name="status"
-              defaultValue={filters.status ?? ""}
-              className="w-full"
-            >
+            <FilterSelect name="status" className="w-full">
               <NativeSelectOption value="">{t("any")}</NativeSelectOption>
               {statusFilters.map((s) => (
                 <NativeSelectOption key={s} value={s}>
@@ -114,7 +89,7 @@ export function BankFilters({
               ))}
             </FilterSelect>
           </label>
-        )}
+        </SignedIn>
       </Form>
       <Link
         href="/bank"
