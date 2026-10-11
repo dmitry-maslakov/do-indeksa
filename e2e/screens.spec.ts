@@ -60,7 +60,7 @@ const screens = [
   ["/privacy", "Šta čuvamo", "Privatnost · Do indeksa"],
   [
     "/launch",
-    "Priprema za prijemni iz matematike na FTN-u",
+    "Priprema za prijemni iz matematike",
     "Do indeksa — priprema za prijemni iz matematike za FTN",
   ],
 ] as const;
@@ -124,6 +124,6 @@ test("switches the locale on the launch page", async ({ page }) => {
   await page.getByRole("menuitemradio", { name: "Русский" }).click();
   await expect(page).toHaveURL(/\/ru\/launch$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Подготовка к вступительному по математике в FTN",
+    "Подготовка к вступительному по математике",
   );
 });

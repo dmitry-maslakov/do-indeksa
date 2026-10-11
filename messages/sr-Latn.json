@@ -296,13 +296,9 @@
   },
   "Launch": {
     "eyebrow": "Za maturante koji planiraju upis na fakultete u Srbiji",
-    "title": "Priprema za prijemni iz matematike na FTN-u",
-    "lead": "Do indeksa je besplatna platforma za pripremu za prijemne ispite. Počinjemo matematikom za FTN u Novom Sadu.",
-    "soon": "Uskoro otvaramo",
-    "exams": "{count, plural, one {pravi prijemni} few {prava prijemna} other {pravih prijemnih}} FTN-a ({from}–{to}) sa našim rešenjima",
-    "tests": "{count, plural, one {naš probni test} few {naša probna testa} other {naših probnih testova}} po formatu ispita",
-    "tasks": "{count, plural, one {zadatak} few {zadatka} other {zadataka}} sa nagoveštajima i rešenjima",
-    "open": "Projekat se razvija javno na <link>GitHub-u</link>.",
-    "sheet": "{count, plural, one {# tema} few {# teme} other {# tema}} prijemnog ispita"
+    "title": "Priprema za prijemni iz matematike",
+    "lead": "Besplatno, za maturante koji upisuju fakultete u Srbiji.",
+    "date": "Novembar 2026",
+    "soon": "Uskoro otvaramo"
   }
 }
