@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { PracticeLinks } from "@/components/practice-links";
 import { ReviewRows } from "@/components/review-rows";
@@ -17,9 +15,9 @@ import { Link } from "@/i18n/navigation";
 import { review } from "@/lib/review";
 import { getSession } from "@/server/auth";
 import { getRun } from "@/server/history";
-import { LostPoints } from "../_components/lost-points";
-import { ReviewSummary } from "../_components/review-summary";
-import { TimeSpent } from "../_components/time-spent";
+import { LostPoints } from "./_components/lost-points";
+import { ReviewSummary } from "./_components/review-summary";
+import { TimeSpent } from "./_components/time-spent";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Review");
@@ -34,44 +32,45 @@ async function loadRun(key?: string) {
   };
 }
 
-export default async function ReviewPage({
-  params,
-  searchParams,
-}: PageProps<"/[locale]/review/[[...code]]">) {
-  const t = await getTranslations("Review");
-  const [{ code }, { run }] = await Promise.all([params, searchParams]);
-  if (code && code.length > 1) notFound();
-  const key = code?.[0] ?? (typeof run === "string" ? run : undefined);
+interface ReviewProps {
+  params: Promise<{ code?: string }>;
+  searchParams: PageProps<"/[locale]/review">["searchParams"];
+}
 
+export default function ReviewPage({ params, searchParams }: ReviewProps) {
   return (
     <main className="px-4 pb-9 md:px-9">
       <Suspense fallback={<ReviewGhost />}>
-        <Await promise={loadRun(key)}>
-          {({ signedIn, found }) => (
-            <>
-              <PageTitle className={found ? "sr-only" : undefined}>
-                {t("title")}
-              </PageTitle>
-              {!signedIn ? (
-                <SignInCard text={t("guest")} />
-              ) : !found ? (
-                <Card className="max-w-xl items-start gap-4">
-                  <p className="text-subtle">{t("empty")}</p>
-                  <Button
-                    render={<Link href="/variants" />}
-                    nativeButton={false}
-                  >
-                    {t("toVariants")}
-                  </Button>
-                </Card>
-              ) : (
-                <RunReview found={found} />
-              )}
-            </>
-          )}
-        </Await>
+        <ReviewView params={params} searchParams={searchParams} />
       </Suspense>
     </main>
+  );
+}
+
+async function ReviewView({ params, searchParams }: ReviewProps) {
+  const t = await getTranslations("Review");
+  const [{ code }, { run }] = await Promise.all([params, searchParams]);
+  const key = code ?? (typeof run === "string" ? run : undefined);
+  const { signedIn, found } = await loadRun(key);
+
+  return (
+    <>
+      <PageTitle className={found ? "sr-only" : undefined}>
+        {t("title")}
+      </PageTitle>
+      {!signedIn ? (
+        <SignInCard text={t("guest")} />
+      ) : !found ? (
+        <Card className="max-w-xl items-start gap-4">
+          <p className="text-subtle">{t("empty")}</p>
+          <Button render={<Link href="/variants" />} nativeButton={false}>
+            {t("toVariants")}
+          </Button>
+        </Card>
+      ) : (
+        <RunReview found={found} />
+      )}
+    </>
   );
 }
 
