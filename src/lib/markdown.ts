@@ -21,12 +21,26 @@ export async function renderMarkdown(source: string, origin: string) {
   return String(file);
 }
 
+type Node = ReturnType<typeof processor.parse>["children"][number];
+
+const formula = "\0";
+
+function readable(node: Node): string {
+  if (node.type === "math" || node.type === "inlineMath") {
+    return /[\\^_{}]/.test(node.value) ? formula : node.value;
+  }
+  if ("children" in node) return node.children.map(readable).join("");
+  return plainText(node);
+}
+
+function prose(nodes: Node[]) {
+  const [words = "", ...rest] = nodes.map(readable).join(" ").split(formula);
+  const text = words.replace(/\s+/g, " ").trim();
+  if (!rest.length) return text;
+  const kept = text.replace(/[.,:;]+$/, "");
+  return kept && `${kept}…`;
+}
+
 export function excerpt(source: string, length = 160) {
-  const text = processor
-    .parse(source)
-    .children.map((node) => plainText(node))
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return clip(text, length);
+  return clip(prose(processor.parse(source).children), length);
 }
