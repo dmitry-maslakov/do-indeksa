@@ -52,9 +52,9 @@
     "showAll": "Показать все задачи",
     "meta": "Задача {number, number} на экзамене · {level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}",
     "status": "Статус",
-    "statuses": "{status, select, new {Не решал} solved {Решил} wrong {Ошибся} favorite {Избранное} other {}}",
-    "solved": "решил",
-    "wrong": "ошибся",
+    "statuses": "{status, select, new {Нерешённые} solved {Решённые} wrong {С ошибкой} favorite {Избранное} other {}}",
+    "solved": "решено",
+    "wrong": "ошибка",
     "favorite": "В избранном",
     "practice": "Порешать: {topic}"
   },
@@ -77,8 +77,8 @@
     "list": "Список",
     "solve": "Решать",
     "doneOf": "{done, number} из {total, number}",
-    "solvedMark": "решил",
-    "wrongMark": "ошибся",
+    "solvedMark": "решено",
+    "wrongMark": "ошибка",
     "skip": "Пропустить →"
   },
   "Variants": {
@@ -96,7 +96,7 @@
     "historyEmpty": "Пока нет завершённых вариантов.",
     "recent": "Недавно",
     "inProgress": "{done, number} из {total, number}",
-    "notSolved": "не решал",
+    "notSolved": "не решён",
     "continue": "Продолжить",
     "review": "Разбор",
     "custom": "Собранный вариант"
