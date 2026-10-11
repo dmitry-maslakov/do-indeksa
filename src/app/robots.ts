@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
+import { env } from "@/server/env";
 
 const personal = [
   "/review",
@@ -13,18 +16,31 @@ const personal = [
   "/variants/set-",
 ];
 
-export default function robots(): MetadataRoute.Robots {
+const open = {
+  allow: "/",
+  disallow: [
+    "/api/",
+    ...routing.locales.flatMap((locale) =>
+      personal.map((href) => getPathname({ href, locale })),
+    ),
+  ],
+};
+
+const closed = {
+  allow: [
+    ...routing.locales.flatMap((locale) =>
+      launchPages.map((href) => `${getPathname({ href, locale })}$`),
+    ),
+    "/_next/static/",
+    "/sitemap.xml",
+  ],
+  disallow: "/",
+};
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  await connection();
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: [
-        "/api/",
-        ...routing.locales.flatMap((locale) =>
-          personal.map((href) => getPathname({ href, locale })),
-        ),
-      ],
-    },
+    rules: { userAgent: "*", ...(env.LAUNCH_ACCESS ? closed : open) },
     sitemap: new URL("/sitemap.xml", siteUrl).href,
   };
 }

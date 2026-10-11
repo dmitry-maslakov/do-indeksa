@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { tasks } from "@/content/tasks";
 import { contentVariants } from "@/content/variants";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
+import { env } from "@/server/env";
 
 const pages = [
   "/",
@@ -17,8 +20,9 @@ const pages = [
 
 const url = (path: string) => new URL(path, siteUrl).href;
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return pages.flatMap((href) =>
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection();
+  return (env.LAUNCH_ACCESS ? launchPages : pages).flatMap((href) =>
     routing.locales.map((locale) => ({
       url: url(getPathname({ href, locale })),
       alternates: {
