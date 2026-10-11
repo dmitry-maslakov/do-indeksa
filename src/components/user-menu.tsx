@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOutIcon } from "lucide-react";
+import { LogOutIcon, ShieldIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SignInButton } from "@/components/sign-in-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useSignedOut } from "@/lib/use-signed-out";
 
@@ -53,6 +54,10 @@ export function UserMenu() {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href="/privacy" />}>
+          <ShieldIcon />
+          {t("privacy")}
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() =>
             authClient.signOut({ fetchOptions: { onSuccess: signedOut } })

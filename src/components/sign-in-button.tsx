@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { ComponentProps } from "react";
+import { type ComponentProps, useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -13,7 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { signIn } from "@/lib/auth-client";
 
 export function GoogleSignInButton(props: ComponentProps<typeof Button>) {
@@ -22,11 +22,26 @@ export function GoogleSignInButton(props: ComponentProps<typeof Button>) {
   return <Button {...props} onClick={() => signIn(pathname)} />;
 }
 
-export function SignInButton(props: ComponentProps<typeof Button>) {
+export function PrivacyLink({ onClick }: { onClick?: () => void }) {
   const t = useTranslations("Account");
 
   return (
-    <AlertDialog>
+    <Link
+      href="/privacy"
+      onClick={onClick}
+      className="text-[13px] text-primary underline-offset-4 hover:underline"
+    >
+      {t("privacy")}
+    </Link>
+  );
+}
+
+export function SignInButton(props: ComponentProps<typeof Button>) {
+  const t = useTranslations("Account");
+  const [open, setOpen] = useState(false);
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger render={<Button {...props} />} />
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -38,6 +53,7 @@ export function SignInButton(props: ComponentProps<typeof Button>) {
             <p>{t("text")}</p>
             <p className="text-[13px] text-wrap">{t("stores")}</p>
           </AlertDialogDescription>
+          <PrivacyLink onClick={() => setOpen(false)} />
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel variant="tint">{t("later")}</AlertDialogCancel>

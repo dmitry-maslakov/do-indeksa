@@ -137,6 +137,15 @@ test("a guest sees why to sign in before google", async ({ page }) => {
     .click();
   await fromDialog;
 
+  await page.goto("/bank/eks-001");
+  await header.click();
+  await dialog
+    .getByRole("link", { name: "Šta čuvamo i kako obrisati nalog" })
+    .click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Privatnost" })).toBeVisible();
+
   await page.goto("/");
   const direct = page.waitForRequest("**/api/auth/sign-in/social");
   await page.getByRole("button", { name: "Prijavi se preko Google-a" }).click();

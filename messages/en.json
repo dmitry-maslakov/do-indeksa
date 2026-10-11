@@ -30,7 +30,8 @@
   "UserMenu": {
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "account": "Account"
+    "account": "Account",
+    "privacy": "Privacy"
   },
   "Bank": {
     "title": "Task bank",
@@ -231,7 +232,8 @@
     "text": "Tasks, solutions and tests work without an account; progress stays in this browser. With an account, history, mistakes and stats are kept on every device.",
     "stores": "Sign-in is Google only. We keep your name, email and profile photo, your answers and results, and for the session your IP address and browser.",
     "signIn": "Sign in with Google",
-    "later": "Not now"
+    "later": "Not now",
+    "privacy": "What we store and how to delete your account"
   },
   "Compose": {
     "title": "Build your own test",
