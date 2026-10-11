@@ -14,6 +14,9 @@ const withNextIntl = createNextIntlPlugin({
   },
 });
 
+const legacyPath =
+  "(prep|tasks|calculator|diagnostic|cabinet|simulation|history|exams|faculties|training)/:path*";
+
 const nextConfig: NextConfig = {
   output: "standalone",
   deploymentId: process.env.GIT_SHA,
@@ -21,6 +24,17 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   serverExternalPackages: ["@cortex-js/compute-engine"],
+  async redirects() {
+    return [
+      { source: `/${legacyPath}`, destination: "/", statusCode: 301 },
+      { source: `/sr-Latn/${legacyPath}`, destination: "/", statusCode: 301 },
+      {
+        source: `/:locale(ru|en)/${legacyPath}`,
+        destination: "/:locale",
+        statusCode: 301,
+      },
+    ];
+  },
 };
 
 export default withContentCollections(withNextIntl(nextConfig));
