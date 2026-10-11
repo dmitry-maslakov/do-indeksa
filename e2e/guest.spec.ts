@@ -11,19 +11,27 @@ test("a guest checks an answer", async ({ page }) => {
 });
 
 test("a guest finishes the daily test", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
   await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
   await expect(
     page.getByText("Nedovršen test ostaje u ovom pregledaču", { exact: false }),
   ).toBeVisible();
+  await expect(bar).toBeVisible();
   await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
+  await expect(bar).toBeHidden();
+  await page.reload();
+  await page.getByRole("timer").waitFor();
+  await expect(bar).toBeHidden();
   await page.getByRole("button", { name: "Završi test" }).click();
   await page
     .getByRole("alertdialog")
     .getByRole("button", { name: "Završi test" })
     .click();
   await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
+  await expect(bar).toBeVisible();
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
