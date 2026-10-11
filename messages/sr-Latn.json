@@ -157,7 +157,7 @@
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "{count, plural, one {Duže od predviđenog vremena: zadatak {numbers}.} other {Duže od predviđenog vremena: zadaci {numbers}.}}",
     "inNorm": "Svi zadaci su u predviđenom vremenu.",
-    "similar": "Slični greškama · {count, number}",
+    "similar": "Vežbaj slično · {count, plural, one {# greška} few {# greške} other {# grešaka}}",
     "gave": "odgovor",
     "key": "tačno",
     "partsRight": "tačno {right, number} od {total, number} delova",
@@ -185,7 +185,7 @@
     "bankOf": "{solved, number} od {size, number}",
     "bankSolved": "rešeno",
     "bankWrong": "sa greškom",
-    "bankNew": "nedirnuto",
+    "bankNew": "bez pokušaja",
     "recent": "Poslednji testovi",
     "all": "svi →",
     "noRuns": "Još nema završenih testova.",
@@ -234,7 +234,7 @@
     "later": "Ne sada"
   },
   "Compose": {
-    "title": "Sastavi svoj",
+    "title": "Sastavi svoj test",
     "exam": "Kao na ispitu",
     "weak": "Iz mojih slabijih tema",
     "unsolved": "Samo nerešeni",

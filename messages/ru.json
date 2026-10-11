@@ -157,7 +157,7 @@
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "{count, plural, one {Дольше отведённого времени: задача {numbers}.} other {Дольше отведённого времени: задачи {numbers}.}}",
     "inNorm": "Все задачи уложились в отведённое время.",
-    "similar": "Похожие на ошибки · {count, number}",
+    "similar": "Порешать похожие · {count, plural, one {# ошибка} few {# ошибки} many {# ошибок} other {# ошибки}}",
     "gave": "твой ответ",
     "key": "верно",
     "partsRight": "верно {right, number} из {total, number} пунктов",
@@ -185,7 +185,7 @@
     "bankOf": "{solved, number} из {size, number}",
     "bankSolved": "решено",
     "bankWrong": "с ошибкой",
-    "bankNew": "не трогал",
+    "bankNew": "без попыток",
     "recent": "Последние варианты",
     "all": "все →",
     "noRuns": "Пока нет завершённых вариантов.",
@@ -234,7 +234,7 @@
     "later": "Не сейчас"
   },
   "Compose": {
-    "title": "Собрать свой",
+    "title": "Собрать свой вариант",
     "exam": "Как на экзамене",
     "weak": "Из моих слабых тем",
     "unsolved": "Только нерешённые",

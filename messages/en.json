@@ -157,7 +157,7 @@
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "{count, plural, one {Over the allotted time: task {numbers}.} other {Over the allotted time: tasks {numbers}.}}",
     "inNorm": "Every task within the allotted time.",
-    "similar": "Like the mistakes · {count, number}",
+    "similar": "Practice similar · {count, plural, one {# mistake} other {# mistakes}}",
     "gave": "answered",
     "key": "correct",
     "partsRight": "{right, number} of {total, number} parts right",
@@ -185,7 +185,7 @@
     "bankOf": "{solved, number} of {size, number}",
     "bankSolved": "solved",
     "bankWrong": "with a mistake",
-    "bankNew": "untouched",
+    "bankNew": "not tried",
     "recent": "Recent tests",
     "all": "all →",
     "noRuns": "No finished tests yet.",
@@ -234,7 +234,7 @@
     "later": "Not now"
   },
   "Compose": {
-    "title": "Compose your own",
+    "title": "Build your own test",
     "exam": "Like the exam",
     "weak": "From my weaker topics",
     "unsolved": "Unsolved only",
