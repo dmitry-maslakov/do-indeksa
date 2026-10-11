@@ -229,7 +229,7 @@
   },
   "Account": {
     "title": "Nalog nije obavezan",
-    "text": "Zadaci, rešenja i testovi rade i bez naloga; napredak ostaje u ovom pregledaču. Uz nalog se istorija, greške i statistika čuvaju na svakom uređaju.",
+    "text": "Zadaci, rešenja i testovi rade i bez naloga; nedovršeni test ostaje u ovom pregledaču. Uz nalog se istorija, greške i statistika čuvaju na svakom uređaju.",
     "stores": "Prijava je samo preko Google-a. Čuvamo ime, e-adresu i sliku sa naloga, tvoje odgovore i rezultate, a za sesiju IP adresu i pregledač.",
     "signIn": "Prijavi se preko Google-a",
     "later": "Ne sada",
