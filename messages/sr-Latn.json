@@ -258,5 +258,23 @@
     "send": "Pošalji",
     "thanks": "Hvala! Pogledaćemo zadatak.",
     "error": "Slanje nije uspelo. Pokušaj ponovo."
+  },
+  "Privacy": {
+    "title": "Privatnost",
+    "storedTitle": "Šta čuvamo",
+    "account": "Nalog: ime, e-adresu i sliku sa Google naloga, ID tog naloga i Google tokene za prijavu.",
+    "session": "Sesija: IP adresu i pregledač sa kojih se prijavljuješ.",
+    "progress": "Napredak: odgovore, tačnost, iskorišćene nagoveštaje i vreme po zadatku, testove i nedovršeni test, sačuvane zadatke.",
+    "reports": "Greške u zadacima koje javiš.",
+    "why": "Sve to služi samo za prijavu i da istorija, greške i statistika budu na svakom uređaju.",
+    "googleOnly": "Prijava je samo preko Google-a; lozinke ne čuvamo.",
+    "guestTitle": "Bez naloga",
+    "guest": "Odgovore proveravamo, ali ih na serveru ne čuvamo. Nedovršeni test ostaje samo u ovom pregledaču (localStorage) i briše se brisanjem podataka sajta.",
+    "trackingTitle": "Bez reklama i praćenja",
+    "tracking": "Nema reklama, analitike ni alata za praćenje. Kolačići služe samo za prijavu i izabrani jezik.",
+    "deleteTitle": "Brisanje naloga",
+    "delete": "Brisanje odmah uklanja nalog, sesije i sav napredak. Javljene greške ostaju, ali bez veze sa tobom.",
+    "contactTitle": "Pitanja",
+    "contact": "Pitanja i zahtevi: <link>GitHub issues</link> projekta. Sve je javno, zato ne piši e-adresu ni druge lične podatke."
   }
 }

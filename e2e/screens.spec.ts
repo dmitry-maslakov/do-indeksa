@@ -21,6 +21,7 @@ const screens = [
   ["/variants", "Probni testovi", "Probni testovi · Do indeksa"],
   ["/review", "Analiza", "Analiza · Do indeksa"],
   ["/stats", "Statistika", "Statistika · Do indeksa"],
+  ["/privacy", "Šta čuvamo", "Privatnost · Do indeksa"],
 ] as const;
 
 for (const [path, text, title] of screens) {
