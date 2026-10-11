@@ -33,7 +33,7 @@ const screens = [
   [
     "/bank/eks-001",
     "Proveri",
-    "Eksponencijalne jednačine i nejednačine: Rešiti jednačinu 4^{x}-3\\cdot 2^{x}-4=0. · Do indeksa",
+    "Eksponencijalne jednačine i nejednačine: Rešiti jednačinu · Do indeksa",
   ],
   [
     "/variants",

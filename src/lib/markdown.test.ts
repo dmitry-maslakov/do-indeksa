@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { excerpt } from "./markdown";
+import { excerpt, headline } from "./markdown";
 
 describe("excerpt", () => {
   it("joins paragraphs with a space", () => {
@@ -30,5 +30,25 @@ describe("excerpt", () => {
 
   it("is empty when the statement opens with a formula", () => {
     expect(excerpt("$\\pi$ je broj.")).toBe("");
+  });
+});
+
+describe("headline", () => {
+  it("takes the first sentence of the first block", () => {
+    expect(headline("Dat je broj $13$. Naći ga.\n\nDrugi blok.")).toBe(
+      "Dat je broj 13",
+    );
+    expect(headline("Rešiti jednačinu\n\n$$x=1.$$")).toBe("Rešiti jednačinu");
+  });
+
+  it("ends before a formula with markup", () => {
+    expect(headline("Data je funkcija $f(x)=x^2$.")).toBe("Data je funkcija…");
+    expect(headline("Odrediti **broj $\\sqrt{2}$** i $3$.")).toBe(
+      "Odrediti broj…",
+    );
+  });
+
+  it("is empty when the statement opens with a formula", () => {
+    expect(headline("$x^2=1$ je jednačina.")).toBe("");
   });
 });
