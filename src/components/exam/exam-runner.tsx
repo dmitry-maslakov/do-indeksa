@@ -121,7 +121,10 @@ export function ExamRunner({
     });
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
+    <div
+      data-exam="running"
+      className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]"
+    >
       <ExamRail
         run={run}
         tasks={tasks}
