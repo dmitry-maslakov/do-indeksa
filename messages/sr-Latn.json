@@ -302,6 +302,7 @@
     "exams": "{count, plural, one {pravi prijemni} few {prava prijemna} other {pravih prijemnih}} FTN-a ({from}–{to}) sa našim rešenjima",
     "tests": "{count, plural, one {naš probni test} few {naša probna testa} other {naših probnih testova}} po formatu ispita",
     "tasks": "{count, plural, one {zadatak} few {zadatka} other {zadataka}} sa nagoveštajima i rešenjima",
-    "open": "Projekat se razvija javno na <link>GitHub-u</link>."
+    "open": "Projekat se razvija javno na <link>GitHub-u</link>.",
+    "sheet": "{count, plural, one {# tema} few {# teme} other {# tema}} prijemnog ispita"
   }
 }
