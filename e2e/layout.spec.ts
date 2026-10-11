@@ -39,6 +39,7 @@ const routes = [
   "/review",
   "/stats",
   "/privacy",
+  "/launch",
 ];
 
 async function fitsPhone(

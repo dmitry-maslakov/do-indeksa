@@ -31,6 +31,7 @@ test("serves robots and sitemap", async ({ request }) => {
   const urls = await sitemap.text();
   expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
   expect(urls).toContain("https://doindeksa.rs/ru/bank/eks-001");
+  expect(urls).not.toContain("/launch");
 });
 
 const screens = [
@@ -57,6 +58,11 @@ const screens = [
   ["/review", "Analiza", "Analiza · Do indeksa"],
   ["/stats", "Statistika", "Statistika · Do indeksa"],
   ["/privacy", "Šta čuvamo", "Privatnost · Do indeksa"],
+  [
+    "/launch",
+    "Priprema za prijemni iz matematike na FTN-u",
+    "Do indeksa — priprema za prijemni iz matematike za FTN",
+  ],
 ] as const;
 
 for (const [path, text, title] of screens) {
@@ -76,6 +82,35 @@ for (const path of ["/bank/unknown", "/review/a/b"]) {
   });
 }
 
+test("describes the launch page for search", async ({ page, request }) => {
+  await page.goto("/launch");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex/,
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://doindeksa.rs",
+  );
+  await expect(page.locator('link[hreflang="ru"]')).toHaveAttribute(
+    "href",
+    "https://doindeksa.rs/ru",
+  );
+  const ld = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ??
+      "",
+  );
+  expect(
+    ld["@graph"].map((node: { "@type": string }) => node["@type"]),
+  ).toEqual(["WebSite", "EducationalOrganization"]);
+  const image = await page
+    .locator('meta[property="og:image"]')
+    .getAttribute("content");
+  const res = await request.get(new URL(image ?? "").pathname);
+  expect(res.status()).toBe(200);
+  expect(res.headers()["content-type"]).toBe("image/png");
+});
+
 test("switches the locale", async ({ page }) => {
   await page.goto("/bank");
   await page.getByRole("button", { name: /jezik/i }).click();
@@ -83,5 +118,15 @@ test("switches the locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/ru\/bank$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Банк задач",
+  );
+});
+
+test("switches the locale on the launch page", async ({ page }) => {
+  await page.goto("/launch");
+  await page.getByRole("button", { name: /jezik/i }).click();
+  await page.getByRole("menuitemradio", { name: "Русский" }).click();
+  await expect(page).toHaveURL(/\/ru\/launch$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Подготовка к вступительному по математике в FTN",
   );
 });
