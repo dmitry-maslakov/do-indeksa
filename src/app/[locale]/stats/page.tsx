@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { useLocale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -17,6 +18,11 @@ import { BankCard } from "./_components/bank-card";
 import { RecentRuns } from "./_components/recent-runs";
 import { TimeBars } from "./_components/time-bars";
 import { TotalsCard } from "./_components/totals-card";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Stats");
+  return { title: t("title") };
+}
 
 async function loadStats() {
   const session = await getSession();
