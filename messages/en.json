@@ -258,5 +258,23 @@
     "send": "Send",
     "thanks": "Thanks! We'll take a look.",
     "error": "Couldn't send. Please try again."
+  },
+  "Privacy": {
+    "title": "Privacy",
+    "storedTitle": "What we store",
+    "account": "Account: the name, email and profile photo from your Google account, that account's ID and the Google sign-in tokens.",
+    "session": "Session: the IP address and browser you sign in from.",
+    "progress": "Progress: answers, correctness, hints used and time per task, tests including an unfinished one, saved tasks.",
+    "reports": "Task error reports you send.",
+    "why": "We use it only to sign you in and keep your history, mistakes and stats on every device.",
+    "googleOnly": "Sign-in is Google only; we store no passwords.",
+    "guestTitle": "Without an account",
+    "guest": "We check answers but don't store them on the server. An unfinished test stays only in this browser (localStorage); clearing site data removes it.",
+    "trackingTitle": "No ads, no tracking",
+    "tracking": "No ads, analytics or trackers. Cookies only keep you signed in and remember your language.",
+    "deleteTitle": "Deleting your account",
+    "delete": "Deleting removes your account, sessions and all progress right away. Error reports stay, with no link to you.",
+    "contactTitle": "Questions",
+    "contact": "Questions and requests: the project's <link>GitHub issues</link>. Everything there is public, so don't post your email or other personal details."
   }
 }
