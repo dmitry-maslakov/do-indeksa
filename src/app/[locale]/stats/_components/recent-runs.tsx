@@ -79,7 +79,10 @@ export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
       )}
       {repeated.length > 0 && (
         <p className="text-[13px] text-subtle">
-          {t("repeated", { numbers: repeated.join(", ") })}
+          {t("repeated", {
+            count: repeated.length,
+            numbers: repeated.join(", "),
+          })}
         </p>
       )}
     </Card>

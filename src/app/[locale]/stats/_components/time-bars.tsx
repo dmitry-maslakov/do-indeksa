@@ -123,7 +123,10 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
       ) : (
         <p className="text-[13px] text-subtle">
           {over.length > 0
-            ? t("overNorm", { numbers: over.map((b) => b.number).join(", ") })
+            ? t("overNorm", {
+                count: over.length,
+                numbers: over.map((b) => b.number).join(", "),
+              })
             : t("inNorm")}
         </p>
       )}

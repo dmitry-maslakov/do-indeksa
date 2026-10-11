@@ -37,7 +37,10 @@ export function TimeSpent({ review }: { review: Review }) {
       />
       <p className="text-[13px] text-subtle leading-relaxed">
         {over.length > 0
-          ? t("overNorm", { numbers: over.map((r) => r.number).join(", ") })
+          ? t("overNorm", {
+              count: over.length,
+              numbers: over.map((r) => r.number).join(", "),
+            })
           : t("inNorm")}
       </p>
     </Card>

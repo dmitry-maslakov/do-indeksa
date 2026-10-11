@@ -155,7 +155,7 @@
     "skippedTopic": "No answer",
     "timeTitle": "Where the time went",
     "timeOf": "{spent, number} of {norm, number} min",
-    "overNorm": "Over the norm: #{numbers}.",
+    "overNorm": "{count, plural, one {Over the allotted time: task {numbers}.} other {Over the allotted time: tasks {numbers}.}}",
     "inNorm": "Every task within the allotted time.",
     "similar": "Like the mistakes · {count, number}",
     "gave": "answered",
@@ -174,7 +174,7 @@
     "time": "Where the time goes",
     "timeNote": "your average per task · line: about {norm, number}\u00a0min on the exam",
     "minutes": "{minutes, number} min",
-    "overNorm": "Over the norm: #{numbers}.",
+    "overNorm": "{count, plural, one {Over the allotted time: task {numbers}.} other {Over the allotted time: tasks {numbers}.}}",
     "inNorm": "Every task within the allotted time.",
     "solved": "tasks solved",
     "firstTry": "right on the first try",
@@ -190,7 +190,7 @@
     "all": "all →",
     "noRuns": "No finished tests yet.",
     "score": "{score, number} points",
-    "repeated": "Mistakes repeat on #{numbers}."
+    "repeated": "{count, plural, one {Mistakes repeat in task {numbers}.} other {Mistakes repeat in tasks {numbers}.}}"
   },
   "Home": {
     "title": "FTN maths entrance exam",
