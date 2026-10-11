@@ -4,9 +4,19 @@ import {
   VariantScreen,
   variantMetadata,
 } from "@/components/exam/variant-screen";
-import { getVariant } from "@/content/variants";
+import {
+  curatedVariants,
+  getVariant,
+  officialVariants,
+} from "@/content/variants";
 import { redirect } from "@/i18n/navigation";
 import { saveSet } from "@/server/sets";
+
+export const instant = false;
+
+export function generateStaticParams() {
+  return [...officialVariants, ...curatedVariants].map((v) => ({ id: v.id }));
+}
 
 export async function generateMetadata({
   params,

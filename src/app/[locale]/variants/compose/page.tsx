@@ -9,6 +9,8 @@ import { getSession } from "@/server/auth";
 import { getStatAttempts } from "@/server/history";
 import { saveSet } from "@/server/sets";
 
+export const instant = false;
+
 export default async function ComposePage({
   searchParams,
 }: PageProps<"/[locale]/variants/compose">) {
