@@ -32,6 +32,12 @@ for (const [path, text, title] of screens) {
   });
 }
 
+test("titles the not found page", async ({ page }) => {
+  const res = await page.goto("/bank/unknown");
+  expect(res?.status()).toBe(404);
+  await expect(page).toHaveTitle("Stranica nije pronađena · Do indeksa");
+});
+
 test("switches the locale", async ({ page }) => {
   await page.goto("/bank");
   await page.getByRole("button", { name: /jezik/i }).click();
