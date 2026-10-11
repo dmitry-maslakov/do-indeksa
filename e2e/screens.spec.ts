@@ -6,6 +6,19 @@ test("healthz answers without a redirect", async ({ request }) => {
   expect(await res.json()).toEqual({ ok: true });
 });
 
+test("serves robots and sitemap", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const rules = await robots.text();
+  expect(rules).toContain("Sitemap: https://doindeksa.rs/sitemap.xml");
+  expect(rules).toContain("Disallow: /review");
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const urls = await sitemap.text();
+  expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
+  expect(urls).toContain("https://doindeksa.rs/ru/bank/eks-001");
+});
+
 const screens = [
   [
     "/",
