@@ -238,7 +238,8 @@
     "weak": "Iz mojih slabijih tema",
     "unsolved": "Samo nerešeni",
     "topics": "Izaberi teme",
-    "compose": "Sastavi"
+    "compose": "Sastavi",
+    "guest": "Slabije teme i nerešeni zadaci računaju se iz tvoje istorije rešavanja, pa su dostupni uz prijavu."
   },
   "Share": {
     "share": "Podeli",
