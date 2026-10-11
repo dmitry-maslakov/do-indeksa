@@ -1,7 +1,7 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
 import { routing } from "./src/i18n/routing";
-import { renderMarkdown } from "./src/lib/markdown";
+import { excerpt, renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
 
 const root = process.env.CONTENT_DIR ?? "content";
@@ -53,6 +53,7 @@ const tasks = defineCollection({
       id: task._meta.path,
       ...task,
       text: content,
+      excerpt: excerpt(content),
       statement: await render(content),
       answer: await render(answer),
       hints: await Promise.all(hints.map(render)),

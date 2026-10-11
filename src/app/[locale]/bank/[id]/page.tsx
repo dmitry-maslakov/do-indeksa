@@ -30,6 +30,7 @@ export async function generateMetadata({
   const locale = await getLocale();
   return {
     title: `${exam("task", { number: numberOf(task.topic) })} · ${topicName(task.topic, locale)}`,
+    description: task.excerpt,
   };
 }
 
