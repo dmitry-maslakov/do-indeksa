@@ -6,6 +6,20 @@ test("healthz answers without a redirect", async ({ request }) => {
   expect(await res.json()).toEqual({ ok: true });
 });
 
+for (const [from, to] of [
+  ["/prep", "/"],
+  ["/tasks/x/y", "/"],
+  ["/sr-Latn/cabinet", "/"],
+  ["/ru/exams/1", "/ru"],
+  ["/en/faculties/ftn", "/en"],
+] as const) {
+  test(`redirects ${from}`, async ({ request }) => {
+    const res = await request.get(from, { maxRedirects: 0 });
+    expect(res.status()).toBe(301);
+    expect(res.headers().location).toBe(to);
+  });
+}
+
 test("serves robots and sitemap", async ({ request }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);
