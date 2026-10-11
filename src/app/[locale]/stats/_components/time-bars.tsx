@@ -125,9 +125,10 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
           {over.length > 0
             ? t("overNorm", {
                 count: over.length,
+                minutes: norm,
                 numbers: over.map((b) => b.number).join(", "),
               })
-            : t("inNorm")}
+            : t("inNorm", { minutes: norm })}
         </p>
       )}
     </>

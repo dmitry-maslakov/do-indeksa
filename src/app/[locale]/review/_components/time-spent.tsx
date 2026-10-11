@@ -13,6 +13,7 @@ export function TimeSpent({ review }: { review: Review }) {
   const spent = Math.round(review.spentMs / 60_000);
   const norm = Math.round(review.normMs / 60_000);
   const over = review.rows.filter((r) => r.over);
+  const minutes = review.rows[0]?.minutes ?? 0;
 
   return (
     <Card className="gap-3.5">
@@ -39,9 +40,10 @@ export function TimeSpent({ review }: { review: Review }) {
         {over.length > 0
           ? t("overNorm", {
               count: over.length,
+              minutes,
               numbers: over.map((r) => r.number).join(", "),
             })
-          : t("inNorm")}
+          : t("inNorm", { minutes })}
       </p>
     </Card>
   );
