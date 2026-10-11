@@ -23,6 +23,7 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieCache: { enabled: true, maxAge: 300 },
   },
+  user: { deleteUser: { enabled: true } },
   advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
   telemetry: { enabled: false },
   plugins: [
