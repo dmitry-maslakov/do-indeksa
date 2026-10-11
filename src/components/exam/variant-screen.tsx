@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { swapHrefs } from "@/content/compose";
 import { variantTitle } from "@/content/variant-title";
@@ -7,6 +9,7 @@ import { type ExamVariant, minutesOf, tasksFor } from "@/content/variants";
 import type { ComposeMode } from "@/lib/compose";
 import { getSession } from "@/server/auth";
 import { getCurrentRun } from "@/server/current-run";
+import { ExamGhost } from "./exam-ghost";
 import { ExamRunner } from "./exam-runner";
 
 export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
@@ -17,6 +20,14 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
       tasks: variant.taskIds.length,
       minutes: minutesOf(variant),
     }),
+  };
+}
+
+async function loadAccount() {
+  const session = await getSession();
+  return {
+    signedIn: Boolean(session),
+    account: session ? await getCurrentRun(session.user.id) : undefined,
   };
 }
 
@@ -31,8 +42,6 @@ export async function VariantScreen({
   const tasks = tasksFor(variant.taskIds, await getLocale());
   const minutes = minutesOf(variant);
   const title = await variantTitle(variant);
-  const session = await getSession();
-  const account = session ? await getCurrentRun(session.user.id) : undefined;
 
   return (
     <main className="px-4 pb-9 md:px-9">
@@ -42,18 +51,26 @@ export async function VariantScreen({
           {t("format", { tasks: tasks.length, minutes })}
         </span>
       </div>
-      <ExamRunner
-        variantId={variant.id}
-        tasks={tasks}
-        minutes={minutes}
-        title={title}
-        signedIn={Boolean(session)}
-        account={account}
-        fallback={fallback}
-        swaps={
-          variant.kind === "custom" ? swapHrefs(variant.taskIds) : undefined
-        }
-      />
+      <Suspense fallback={<ExamGhost />}>
+        <Await promise={loadAccount()}>
+          {({ signedIn, account }) => (
+            <ExamRunner
+              variantId={variant.id}
+              tasks={tasks}
+              minutes={minutes}
+              title={title}
+              signedIn={signedIn}
+              account={account}
+              fallback={fallback}
+              swaps={
+                variant.kind === "custom"
+                  ? swapHrefs(variant.taskIds)
+                  : undefined
+              }
+            />
+          )}
+        </Await>
+      </Suspense>
     </main>
   );
 }

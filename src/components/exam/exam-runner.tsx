@@ -7,8 +7,6 @@ import {
   useState,
   useTransition,
 } from "react";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
 import type { ComposeMode } from "@/lib/compose";
@@ -16,6 +14,7 @@ import { spentAt, useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
 import type { CurrentRun } from "@/server/current-run";
 import { finishRun, type GuestResult, saveRun } from "@/server/runs";
+import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
@@ -104,23 +103,7 @@ export function ExamRunner({
 
   const task = run && tasks[run.current];
   if (!run || !task) {
-    return (
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
-        <Card size="sm" className="gap-4 max-md:order-1">
-          <Skeleton className="my-1.5 h-3 w-32" />
-          <Skeleton className="h-11 rounded-lg" />
-        </Card>
-        <Card className="gap-3 md:p-9">
-          {[100, 90, 60].map((width) => (
-            <Skeleton
-              key={width}
-              className="h-4"
-              style={{ width: `${width}%` }}
-            />
-          ))}
-        </Card>
-      </div>
-    );
+    return <ExamGhost />;
   }
 
   const finish = () =>
