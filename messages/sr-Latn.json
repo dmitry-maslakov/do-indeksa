@@ -181,7 +181,7 @@
     "runs": "testova završeno",
     "spent": "ukupno vremena",
     "hours": "{hours, number} h",
-    "bank": "Banka P1",
+    "bank": "Banka zadataka",
     "bankOf": "{solved, number} od {size, number}",
     "bankSolved": "rešeno",
     "bankWrong": "sa greškom",

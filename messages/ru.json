@@ -11,7 +11,7 @@
   "Nav": {
     "home": "Главная",
     "bank": "Задачи",
-    "variants": "Тесты",
+    "variants": "Варианты",
     "stats": "Статистика",
     "label": "Основная навигация"
   },
@@ -181,7 +181,7 @@
     "runs": "вариантов пройдено",
     "spent": "за всё время",
     "hours": "{hours, number} ч",
-    "bank": "Банк P1",
+    "bank": "Банк задач",
     "bankOf": "{solved, number} из {size, number}",
     "bankSolved": "решено",
     "bankWrong": "с ошибкой",
