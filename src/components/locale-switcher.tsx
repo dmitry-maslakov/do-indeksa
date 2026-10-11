@@ -2,7 +2,7 @@
 
 import { LanguagesIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { type TransitionStartFunction, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,15 +18,7 @@ export function LocaleSwitcher() {
   const t = useTranslations("LocaleSwitcher");
   const names = useTranslations("Locale");
   const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
-
-  function select(next: string) {
-    const target = routing.locales.find((l) => l === next);
-    if (target)
-      startTransition(() => router.replace(pathname, { locale: target }));
-  }
 
   return (
     <DropdownMenu>
@@ -45,14 +37,35 @@ export function LocaleSwitcher() {
         <span className="hidden sm:inline">{names(locale)}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-auto">
-        <DropdownMenuRadioGroup value={locale} onValueChange={select}>
-          {routing.locales.map((l) => (
-            <DropdownMenuRadioItem key={l} value={l}>
-              {names(l)}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+        <LocaleOptions startTransition={startTransition} />
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function LocaleOptions({
+  startTransition,
+}: {
+  startTransition: TransitionStartFunction;
+}) {
+  const names = useTranslations("Locale");
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  function select(next: string) {
+    const target = routing.locales.find((l) => l === next);
+    if (target)
+      startTransition(() => router.replace(pathname, { locale: target }));
+  }
+
+  return (
+    <DropdownMenuRadioGroup value={locale} onValueChange={select}>
+      {routing.locales.map((l) => (
+        <DropdownMenuRadioItem key={l} value={l}>
+          {names(l)}
+        </DropdownMenuRadioItem>
+      ))}
+    </DropdownMenuRadioGroup>
   );
 }
