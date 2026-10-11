@@ -1,7 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useActionState, useCallback, useState } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { type CheckResult, checkAnswer } from "@/server/answers";
@@ -20,10 +26,14 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
     CheckResult | null,
     FormData
   >(checkAnswer, null);
-  const [startedAt] = useState(() => Date.now());
+  const startedAt = useRef(0);
   const [edited, setEdited] = useState(false);
   const markEdited = useCallback(() => setEdited(true), []);
   const hints = useHints();
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
 
   const stateOf = (i: number): AnswerState =>
     !result || edited ? "empty" : result.parts[i] ? "correct" : "wrong";
@@ -32,12 +42,12 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
     <form
       action={(form) => {
         setEdited(false);
+        form.set("startedAt", String(startedAt.current));
         action(form);
       }}
       className="flex flex-col gap-4"
     >
       <input type="hidden" name="taskId" value={taskId} />
-      <input type="hidden" name="startedAt" value={startedAt} />
       <input type="hidden" name="hintsUsed" value={hints?.used ?? 0} />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {labels.map((labelHtml, i) => (
