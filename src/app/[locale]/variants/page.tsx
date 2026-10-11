@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
@@ -18,6 +19,11 @@ import { VariantList } from "./_components/variant-list";
 
 const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Variants");
+  return { title: t("title") };
+}
 
 async function loadRuns() {
   const session = await getSession();

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -19,6 +20,11 @@ import { getRun } from "@/server/history";
 import { LostPoints } from "../_components/lost-points";
 import { ReviewSummary } from "../_components/review-summary";
 import { TimeSpent } from "../_components/time-spent";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Review");
+  return { title: t("title") };
+}
 
 async function loadRun(key?: string) {
   const session = await getSession();
