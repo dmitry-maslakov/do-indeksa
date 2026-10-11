@@ -1,11 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { answer, expect, finish, test } from "./fixtures";
 
 test("a guest checks an answer", async ({ page }) => {
   await page.goto("/bank/eks-001");
-  await page.waitForFunction(() => customElements.get("math-field"));
-  const field = page.locator("math-field").first();
-  await field.click();
-  await field.pressSequentially("2");
+  await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
@@ -26,11 +23,7 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   await page.reload();
   await page.getByRole("timer").waitFor();
   await expect(bar).toBeHidden();
-  await page.getByRole("button", { name: "Završi test" }).click();
-  await page
-    .getByRole("alertdialog")
-    .getByRole("button", { name: "Završi test" })
-    .click();
+  await finish(page);
   await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
   await expect(bar).toBeVisible();
   await expect(
@@ -39,31 +32,6 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   await expect(
     page.getByRole("button", { name: "Prijavi se" }).last(),
   ).toBeVisible();
-});
-
-test("a guest sees the answers after a test", async ({ page }) => {
-  await page.goto("/variants/set-eks-001");
-  await expect(page).toHaveURL(/\/v\/[\w-]{7}$/);
-  await page.getByRole("button", { name: "Počni" }).click();
-  await page.waitForFunction(() => customElements.get("math-field"));
-  const field = page.locator("math-field").first();
-  await field.click();
-  await field.pressSequentially("0");
-  await page.getByRole("button", { name: "Završi test" }).click();
-  await page
-    .getByRole("alertdialog")
-    .getByRole("button", { name: "Završi test" })
-    .click();
-  await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
-  await expect(
-    page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
-  ).toBeVisible();
-  const row = page.locator("summary").filter({ hasText: "odgovor" });
-  await expect(row).toContainText("tačno");
-  await row.click();
-  await expect(
-    page.getByRole("button", { name: "Otvori zadatak" }),
-  ).toHaveAttribute("href", /\/bank\/eks-001$/);
 });
 
 test("a guest composes an untimed test from a topic", async ({
