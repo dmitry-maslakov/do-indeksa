@@ -14,8 +14,6 @@ export const examOptions = allExams.map((e) => ({
   hours: e.durationMinutes / 60,
 }));
 
-export const examTitle = exam.title;
-
 export const positions = exam.positions;
 
 export const maxPoints = positions.reduce((sum, p) => sum + p.points, 0);

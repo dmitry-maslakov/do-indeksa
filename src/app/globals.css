@@ -66,32 +66,6 @@
     }
   }
 
-  --animate-assemble: assemble 1100ms cubic-bezier(0.2, 0.8, 0.2, 1)
-    calc(var(--i) * 80ms + 150ms) backwards;
-
-  @keyframes assemble {
-    from {
-      opacity: 0;
-      filter: blur(6px);
-      transform: translate(
-          calc(cos(var(--i) * 2.4rad) * 30vw),
-          calc(sin(var(--i) * 2.4rad) * 30vh)
-        )
-        rotate(calc(sin(var(--i) * 1rad) * 18deg)) scale(1.6);
-    }
-  }
-
-  --animate-sweep: sweep 1400ms ease-out 1500ms backwards;
-
-  @keyframes sweep {
-    from {
-      background-position: 100% 0;
-    }
-    to {
-      background-position: 0 0;
-    }
-  }
-
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(20 20 30 / 0.05);
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.06);
 }
