@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { alternates } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { repoUrl, siteUrl } from "@/lib/site";
+import { GlyphField } from "./_components/glyph-field";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -56,18 +57,20 @@ export default function LaunchPage() {
           ],
         }}
       />
-      <h1 className="max-w-[13ch] font-semibold text-[30px] leading-[1.12] tracking-[-0.025em] sm:max-w-[16ch] sm:text-[44px]">
-        {t("title")}
-      </h1>
-      <p className="mt-4.5 max-w-[30ch] text-[15px] text-daily-muted sm:max-w-none sm:text-base">
-        {t("lead")}
-      </p>
-      <time
-        dateTime="2026-11"
-        className="mt-10 text-[13px] text-daily-muted/80 uppercase tracking-[0.18em]"
-      >
-        {t("date")}
-      </time>
+      <GlyphField>
+        <h1 className="max-w-[13ch] font-semibold text-[30px] leading-[1.12] tracking-[-0.025em] sm:max-w-[16ch] sm:text-[44px]">
+          {t("title")}
+        </h1>
+        <p className="mt-4.5 max-w-[30ch] text-[15px] text-daily-muted sm:max-w-none sm:text-base">
+          {t("lead")}
+        </p>
+        <time
+          dateTime="2026-11"
+          className="mt-10 text-[13px] text-daily-muted/80 uppercase tracking-[0.18em]"
+        >
+          {t("date")}
+        </time>
+      </GlyphField>
     </main>
   );
 }

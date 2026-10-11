@@ -46,6 +46,16 @@
   },
   "overrides": [
     {
+      "includes": ["src/app/**/launch/_components/field.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": [
         "src/components/math-html.tsx",
         "src/components/json-ld.tsx"

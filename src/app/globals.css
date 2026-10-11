@@ -39,6 +39,7 @@
   --color-success-tint: var(--success-tint);
   --color-daily: var(--daily);
   --color-daily-muted: var(--daily-muted);
+  --color-daily-glyph: var(--daily-glyph);
 
   --radius-xs: 3px;
   --radius-sm: calc(var(--radius) * 0.6);
@@ -63,6 +64,23 @@
     }
     to {
       background-position: -100% 0;
+    }
+  }
+
+  --animate-rise: rise 20s linear infinite;
+
+  @keyframes rise {
+    from {
+      transform: translate3d(0, 20vh, 0);
+      opacity: 0;
+    }
+    25%,
+    75% {
+      opacity: 0.22;
+    }
+    to {
+      transform: translate3d(0, -20vh, 0);
+      opacity: 0;
     }
   }
 
@@ -107,6 +125,7 @@
   --success-tint: #e3f5ec;
   --daily: #2b2560;
   --daily-muted: #b4b3ba;
+  --daily-glyph: #d9d4ff;
   --nav-bottom: 3.5rem;
 }
 
