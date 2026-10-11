@@ -4,6 +4,7 @@ import {
   variantMetadata,
 } from "@/components/exam/variant-screen";
 import { getVariant } from "@/content/variants";
+import { composeModes } from "@/lib/compose";
 import { setId } from "@/lib/variant-id";
 import { findSet } from "@/server/sets";
 
@@ -21,8 +22,15 @@ export async function generateMetadata({
 
 export default async function SetPage({
   params,
+  searchParams,
 }: PageProps<"/[locale]/v/[code]">) {
   const variant = await load((await params).code);
   if (!variant) notFound();
-  return <VariantScreen variant={variant} />;
+  const { fallback } = await searchParams;
+  return (
+    <VariantScreen
+      variant={variant}
+      fallback={composeModes.find((m) => m === fallback)}
+    />
+  );
 }

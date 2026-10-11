@@ -17,7 +17,7 @@ export default async function ComposePage({
   const session = await getSession();
   const attempts = session ? await getStatAttempts(session.user.id) : [];
   const statuses = latestStatuses(attempts);
-  const { ids } = composeTaskIds(
+  const { ids, fallback } = composeTaskIds(
     {
       mode,
       topics: topic,
@@ -34,8 +34,9 @@ export default async function ComposePage({
     },
     crypto.randomUUID(),
   );
+  const code = await saveSet(ids);
   redirect({
-    href: `/v/${await saveSet(ids)}`,
+    href: fallback ? `/v/${code}?fallback=${mode}` : `/v/${code}`,
     locale: await getLocale(),
   });
 }

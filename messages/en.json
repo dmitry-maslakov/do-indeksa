@@ -127,6 +127,7 @@
     "timer": "Timer {minutes, number} min",
     "introAnswer": "Type / for a fraction, sqrt for a root, pi for π, ^ for a power. Equivalent forms like 1/2 and 0.5 count.",
     "introTime": "When time runs out, the test doesn't stop: you can still finish it, and the overtime is recorded.",
+    "introFallback": "{mode, select, weak {Not enough attempts per topic in the last 30 days yet, so this is an exam-like test.} unsolved {No unsolved tasks are left in the bank, so this is an exam-like test.} other {No task matches your choice, so this is an exam-like test.}}",
     "introSaved": "An unfinished test stays in this browser; results are saved to your history only when you're signed in.",
     "introSynced": "Your latest unfinished test is saved to your account, so you can continue it on another device.",
     "points": "{points, plural, one {# point} other {# points}}",

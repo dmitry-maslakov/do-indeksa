@@ -4,6 +4,7 @@ import { PageTitle } from "@/components/page-title";
 import { swapHrefs } from "@/content/compose";
 import { variantTitle } from "@/content/variant-title";
 import { type ExamVariant, minutesOf, tasksFor } from "@/content/variants";
+import type { ComposeMode } from "@/lib/compose";
 import { getSession } from "@/server/auth";
 import { getCurrentRun } from "@/server/current-run";
 import { ExamRunner } from "./exam-runner";
@@ -19,7 +20,13 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
   };
 }
 
-export async function VariantScreen({ variant }: { variant: ExamVariant }) {
+export async function VariantScreen({
+  variant,
+  fallback,
+}: {
+  variant: ExamVariant;
+  fallback?: ComposeMode;
+}) {
   const t = await getTranslations("Variants");
   const tasks = tasksFor(variant.taskIds, await getLocale());
   const minutes = minutesOf(variant);
@@ -42,6 +49,7 @@ export async function VariantScreen({ variant }: { variant: ExamVariant }) {
         title={title}
         signedIn={Boolean(session)}
         account={account}
+        fallback={fallback}
         swaps={
           variant.kind === "custom" ? swapHrefs(variant.taskIds) : undefined
         }
