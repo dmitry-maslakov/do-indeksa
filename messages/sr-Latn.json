@@ -37,9 +37,9 @@
     "search": "Pretraga po tekstu",
     "number": "Broj",
     "level": "Težina",
-    "topic": "Oblast",
+    "topic": "Tema",
     "any": "Bilo koji",
-    "allTopics": "Sve oblasti",
+    "allTopics": "Sve teme",
     "levels": "{level, select, easy {Lako} medium {Srednje} hard {Teško} other {}}",
     "reset": "Poništi filtere",
     "count": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}",
@@ -59,7 +59,7 @@
     "practice": "Vežbaj: {topic}"
   },
   "Solve": {
-    "inTopic": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} u oblasti",
+    "inTopic": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}} u temi",
     "hint": "Nagoveštaj {number, number}",
     "answer": "Rezultat",
     "solution": "Rešenje",
