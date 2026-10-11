@@ -1,28 +1,28 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { LinkTabs } from "@/components/link-tabs";
 import { ProgressBar } from "@/components/progress-bar";
+import { SearchTabs } from "@/components/search-tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
 
 interface AccuracyCardProps {
   rows: (Accuracy & { label: string })[];
-  byNumber: boolean;
   pending?: boolean;
 }
 
-export function AccuracyCard({ rows, byNumber, pending }: AccuracyCardProps) {
+export function AccuracyCard({ rows, pending }: AccuracyCardProps) {
   const t = useTranslations("Stats");
   return (
     <Card size="lg" className="gap-5">
       <CardHeader>
         <CardTitle>{t("weaker")}</CardTitle>
-        <LinkTabs
+        <SearchTabs
           variant="segmented"
+          param="by"
           items={[
-            { href: "/stats", label: t("topics"), active: !byNumber },
-            { href: "/stats?by=number", label: t("numbers"), active: byNumber },
+            { href: "/stats", label: t("topics") },
+            { href: "/stats?by=number", label: t("numbers"), value: "number" },
           ]}
         />
       </CardHeader>
@@ -32,9 +32,15 @@ export function AccuracyCard({ rows, byNumber, pending }: AccuracyCardProps) {
             key={row.key}
             className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 md:col-span-4 md:grid-cols-subgrid"
           >
-            <span className={cn("truncate", row.pct === null && "text-subtle")}>
-              {row.label}
-            </span>
+            {pending ? (
+              <Skeleton className="my-1 h-3 w-32" />
+            ) : (
+              <span
+                className={cn("truncate", row.pct === null && "text-subtle")}
+              >
+                {row.label}
+              </span>
+            )}
             <span className="col-span-2 row-start-2 md:col-span-1 md:row-start-auto">
               {pending ? (
                 <Skeleton className="h-2.5" />
