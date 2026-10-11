@@ -84,10 +84,7 @@ for (const path of ["/bank/unknown", "/review/a/b"]) {
 
 test("describes the launch page for search", async ({ page, request }) => {
   await page.goto("/launch");
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-    "content",
-    /noindex/,
-  );
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://doindeksa.rs",

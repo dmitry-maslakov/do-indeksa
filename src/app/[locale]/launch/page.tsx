@@ -19,7 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { absolute: title },
     description,
     alternates: alternates("/", locale),
-    robots: { index: false, follow: true },
     openGraph: {
       type: "website",
       siteName: t("title"),
