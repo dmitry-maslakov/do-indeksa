@@ -11,7 +11,13 @@ import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { positions } from "@/content/exam";
-import { getTask, siblings, summarize, tasks } from "@/content/tasks";
+import {
+  getTask,
+  siblings,
+  summarize,
+  tasks,
+  taskTitle,
+} from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { alternates } from "@/i18n/alternates";
 import { SolveRail } from "./_components/solve-rail";
@@ -30,10 +36,7 @@ export async function generateMetadata({
   const meta = await getTranslations("Metadata");
   const locale = await getLocale();
   return {
-    title: meta("task", {
-      topic: topicName(task.topic, locale),
-      headline: task.headline,
-    }),
+    title: taskTitle(task, locale, meta),
     description: task.excerpt,
     alternates: alternates(`/bank/${task.id}`, locale),
   };

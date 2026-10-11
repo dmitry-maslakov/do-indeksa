@@ -41,6 +41,15 @@ function prose(nodes: Node[]) {
   return kept && `${kept}…`;
 }
 
-export function excerpt(source: string, length = 160) {
-  return clip(prose(processor.parse(source).children), length);
+export function excerpt(source: string) {
+  return clip(prose(processor.parse(source).children), 160);
+}
+
+const sentences = new Intl.Segmenter("sr", { granularity: "sentence" });
+
+export function headline(source: string) {
+  const [first] = sentences.segment(
+    prose(processor.parse(source).children.slice(0, 1)),
+  );
+  return first?.segment.trim().replace(/[.,:;]+$/, "") ?? "";
 }
