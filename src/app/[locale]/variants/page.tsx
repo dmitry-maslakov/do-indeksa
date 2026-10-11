@@ -23,9 +23,10 @@ const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Variants");
+  const t = await getTranslations("Metadata");
   return {
-    title: t("title"),
+    title: t("variantsTitle"),
+    description: t("variantsDescription"),
     alternates: alternates("/variants", await getLocale()),
   };
 }

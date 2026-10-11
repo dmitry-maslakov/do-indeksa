@@ -10,7 +10,7 @@ import { ReportTask } from "@/components/report-task";
 import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { numberOf, positions } from "@/content/exam";
+import { positions } from "@/content/exam";
 import { getTask, siblings, summarize, tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { alternates } from "@/i18n/alternates";
@@ -27,10 +27,13 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/bank/[id]">): Promise<Metadata> {
   const task = getTask((await params).id);
   if (!task) return {};
-  const exam = await getTranslations("Exam");
+  const meta = await getTranslations("Metadata");
   const locale = await getLocale();
   return {
-    title: `${exam("task", { number: numberOf(task.topic) })} · ${topicName(task.topic, locale)}`,
+    title: meta("task", {
+      topic: topicName(task.topic, locale),
+      headline: task.headline,
+    }),
     description: task.excerpt,
     alternates: alternates(`/bank/${task.id}`, locale),
   };
