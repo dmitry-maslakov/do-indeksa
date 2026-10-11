@@ -7,19 +7,28 @@ test("healthz answers without a redirect", async ({ request }) => {
 });
 
 const screens = [
-  ["/", "Prijemni iz matematike na FTN-u"],
-  ["/bank", "Banka zadataka"],
-  ["/bank/eks-001", "Proveri"],
-  ["/variants", "Probni testovi"],
-  ["/review", "Analiza"],
-  ["/stats", "Statistika"],
+  [
+    "/",
+    "Prijemni iz matematike na FTN-u",
+    "Do indeksa — prijemni iz matematike za FTN",
+  ],
+  ["/bank", "Banka zadataka", "Banka zadataka · Do indeksa"],
+  [
+    "/bank/eks-001",
+    "Proveri",
+    "Zadatak 4 · Eksponencijalne jednačine i nejednačine · Do indeksa",
+  ],
+  ["/variants", "Probni testovi", "Probni testovi · Do indeksa"],
+  ["/review", "Analiza", "Analiza · Do indeksa"],
+  ["/stats", "Statistika", "Statistika · Do indeksa"],
 ] as const;
 
-for (const [path, text] of screens) {
+for (const [path, text, title] of screens) {
   test(`renders ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
     await expect(page.getByText(text).first()).toBeVisible();
+    await expect(page).toHaveTitle(title);
   });
 }
 
