@@ -1,5 +1,5 @@
 import { createHmac, randomUUID } from "node:crypto";
-import { test as base } from "@playwright/test";
+import { test as base, type Page } from "@playwright/test";
 import { Client } from "pg";
 
 export { expect } from "@playwright/test";
@@ -57,3 +57,18 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
     await db.end();
   },
 });
+
+export async function answer(page: Page, value: string) {
+  await page.waitForFunction(() => customElements.get("math-field"));
+  const field = page.locator("math-field").first();
+  await field.click();
+  await field.pressSequentially(value);
+}
+
+export async function finish(page: Page) {
+  await page.getByRole("button", { name: "Završi test" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Završi test" })
+    .click();
+}
