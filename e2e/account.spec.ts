@@ -1,60 +1,27 @@
-import { createHmac, randomUUID } from "node:crypto";
-import { type BrowserContext, expect, test } from "@playwright/test";
-import { Client } from "pg";
+import type { Client } from "pg";
+import { expect, test } from "./fixtures";
 
-const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 const day = 24 * 60 * 60 * 1000;
 
-test.skip(!DATABASE_URL || !BETTER_AUTH_SECRET, "needs the database");
-
-const db = new Client({ connectionString: DATABASE_URL });
-let userId: string;
-
-test.beforeAll(() => db.connect());
-test.afterAll(() => db.end());
-test.afterEach(() => db.query(`delete from "user" where id = $1`, [userId]));
-
-async function signIn(context: BrowserContext, age: number) {
-  userId = randomUUID();
-  const token = randomUUID();
-  await db.query(
-    `insert into "user" (id, name, email) values ($1, 'Test', $1 || '@example.test')`,
-    [userId],
-  );
-  await db.query(
-    `insert into session (id, token, user_id, created_at, updated_at, expires_at)
-     values ($1, $2, $3, $4, now(), now() + interval '1 day')`,
-    [randomUUID(), token, userId, new Date(Date.now() - age)],
-  );
-  await db.query(
-    `insert into favorites (user_id, task_id) values ($1, 'eks-001')`,
-    [userId],
-  );
-  const signature = createHmac("sha256", BETTER_AUTH_SECRET)
-    .update(token)
-    .digest("base64");
-  await context.addCookies([
-    {
-      name: "better-auth.session_token",
-      value: encodeURIComponent(`${token}.${signature}`),
-      url: test.info().project.use.baseURL,
-    },
-  ]);
-}
-
-const count = async (table: string) =>
+const count = async (db: Client, table: string, id: string) =>
   (
     await db.query(
       `select count(*)::int as n from ${table} where user_id = $1`,
-      [userId],
+      [id],
     )
   ).rows[0].n;
 
-const userExists = async () =>
-  (await db.query(`select 1 from "user" where id = $1`, [userId])).rowCount;
+const userExists = async (db: Client, id: string) =>
+  (await db.query(`select 1 from "user" where id = $1`, [id])).rowCount;
 
-test("a user deletes the account", async ({ page, context }) => {
-  await signIn(context, 0);
+const favorite = (db: Client, id: string) =>
+  db.query(`insert into favorites (user_id, task_id) values ($1, 'eks-001')`, [
+    id,
+  ]);
+
+test("a user deletes the account", async ({ page, auth }) => {
+  const id = await auth.signIn();
+  await favorite(auth.db, id);
   await page.addInitScript(() =>
     localStorage.setItem(
       "do-indeksa-exam",
@@ -72,9 +39,9 @@ test("a user deletes the account", async ({ page, context }) => {
   await expect(
     page.getByRole("banner").getByRole("button", { name: "Prijavi se" }),
   ).toBeVisible();
-  expect(await userExists()).toBe(0);
-  expect(await count("session")).toBe(0);
-  expect(await count("favorites")).toBe(0);
+  expect(await userExists(auth.db, id)).toBe(0);
+  expect(await count(auth.db, "session", id)).toBe(0);
+  expect(await count(auth.db, "favorites", id)).toBe(0);
   expect(
     await page.evaluate(
       () =>
@@ -85,10 +52,11 @@ test("a user deletes the account", async ({ page, context }) => {
 
 test("a stale session signs in again before deleting", async ({
   page,
-  context,
+  auth,
 }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
-  await signIn(context, 2 * day);
+  const id = await auth.signIn(2 * day);
+  await favorite(auth.db, id);
   await page.goto("/privacy");
   await page.getByRole("button", { name: "Obriši nalog" }).click();
   const dialog = page.getByRole("alertdialog");
@@ -100,12 +68,12 @@ test("a stale session signs in again before deleting", async ({
     .getByRole("button", { name: "Prijavi se preko Google-a" })
     .click();
   await signInRequest;
-  expect(await userExists()).toBe(1);
-  expect(await count("favorites")).toBe(1);
+  expect(await userExists(auth.db, id)).toBe(1);
+  expect(await count(auth.db, "favorites", id)).toBe(1);
 });
 
-test("signing out hides the account statistics", async ({ page, context }) => {
-  await signIn(context, 0);
+test("signing out hides the account statistics", async ({ page, auth }) => {
+  await auth.signIn();
   await page.goto("/stats");
   await expect(page.getByText("Još nema završenih testova.")).toBeVisible();
 
