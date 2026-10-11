@@ -155,7 +155,7 @@
     "skippedTopic": "Без ответа",
     "timeTitle": "Куда ушло время",
     "timeOf": "{spent, number} из {norm, number} мин",
-    "overNorm": "Дольше нормы: №{numbers}.",
+    "overNorm": "{count, plural, one {Дольше отведённого времени: задача {numbers}.} other {Дольше отведённого времени: задачи {numbers}.}}",
     "inNorm": "Все задачи уложились в отведённое время.",
     "similar": "Похожие на ошибки · {count, number}",
     "gave": "твой ответ",
@@ -174,7 +174,7 @@
     "time": "Где уходит время",
     "timeNote": "твоё среднее по задачам · черта: около {norm, number}\u00a0мин на экзамене",
     "minutes": "{minutes, number} мин",
-    "overNorm": "Дольше нормы: №{numbers}.",
+    "overNorm": "{count, plural, one {Дольше отведённого времени: задача {numbers}.} other {Дольше отведённого времени: задачи {numbers}.}}",
     "inNorm": "Все задачи укладываются в отведённое время.",
     "solved": "задач решено",
     "firstTry": "верно с первой попытки",
@@ -190,7 +190,7 @@
     "all": "все →",
     "noRuns": "Пока нет завершённых вариантов.",
     "score": "{score, number} баллов",
-    "repeated": "Ошибки повторяются на №{numbers}."
+    "repeated": "{count, plural, one {Ошибки повторяются в задаче {numbers}.} other {Ошибки повторяются в задачах {numbers}.}}"
   },
   "Home": {
     "title": "Вступительный по математике в FTN",

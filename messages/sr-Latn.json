@@ -155,7 +155,7 @@
     "skippedTopic": "Bez odgovora",
     "timeTitle": "Kuda je otišlo vreme",
     "timeOf": "{spent, number} od {norm, number} min",
-    "overNorm": "Duže od norme: №{numbers}.",
+    "overNorm": "{count, plural, one {Duže od predviđenog vremena: zadatak {numbers}.} other {Duže od predviđenog vremena: zadaci {numbers}.}}",
     "inNorm": "Svi zadaci su u predviđenom vremenu.",
     "similar": "Slični greškama · {count, number}",
     "gave": "odgovor",
@@ -174,7 +174,7 @@
     "time": "Gde odlazi vreme",
     "timeNote": "tvoj prosek po zadatku · crta: oko {norm, number}\u00a0min na ispitu",
     "minutes": "{minutes, number} min",
-    "overNorm": "Duže od norme: №{numbers}.",
+    "overNorm": "{count, plural, one {Duže od predviđenog vremena: zadatak {numbers}.} other {Duže od predviđenog vremena: zadaci {numbers}.}}",
     "inNorm": "Svi zadaci su u predviđenom vremenu.",
     "solved": "zadataka rešeno",
     "firstTry": "tačno iz prvog puta",
@@ -190,7 +190,7 @@
     "all": "svi →",
     "noRuns": "Još nema završenih testova.",
     "score": "{score, number} bodova",
-    "repeated": "Greške se ponavljaju na №{numbers}."
+    "repeated": "{count, plural, one {Greške se ponavljaju u zadatku {numbers}.} other {Greške se ponavljaju u zadacima {numbers}.}}"
   },
   "Home": {
     "title": "Prijemni iz matematike na FTN-u",
