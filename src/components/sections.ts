@@ -12,8 +12,8 @@ export const sections = [
   { href: "/stats", key: "stats", icon: ChartColumnIcon },
 ] as const;
 
-export function isActive(pathname: string, href: string) {
+export function isActive(pathname: string | undefined, href: string) {
   return href === "/"
     ? pathname === "/"
-    : pathname === href || pathname.startsWith(`${href}/`);
+    : pathname === href || Boolean(pathname?.startsWith(`${href}/`));
 }
