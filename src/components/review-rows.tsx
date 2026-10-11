@@ -39,8 +39,7 @@ export function ReviewRows({ review, tasks, outcomes }: ReviewRowsProps) {
   return (
     <Card className="gap-0 p-0 py-2 md:p-0 md:py-2">
       <div className={cn(columns, "py-2.5 text-subtle text-xs")}>
-        <span>№</span>
-        <span>{t("task")}</span>
+        <span className="col-span-2">{t("task")}</span>
         <span>{t("points")}</span>
         <span className="hidden md:block">{t("time")}</span>
       </div>
