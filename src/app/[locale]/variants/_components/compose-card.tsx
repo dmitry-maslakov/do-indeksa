@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 import { type ComposeMode, composeModes } from "@/lib/compose";
 
 export function ComposeCard({
   topics,
-  signedIn,
 }: {
   topics: { id: string; name: string }[];
-  signedIn: boolean;
 }) {
   const t = useTranslations("Compose");
+  const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
   const [mode, setMode] = useState<ComposeMode>("exam");
   const [chosen, setChosen] = useState<string[]>([]);
@@ -47,7 +47,9 @@ export function ComposeCard({
               type="radio"
               name="mode"
               checked={mode === m}
-              disabled={!signedIn && (m === "weak" || m === "unsolved")}
+              disabled={
+                !isPending && !session && (m === "weak" || m === "unsolved")
+              }
               onChange={() => setMode(m)}
               className="sr-only"
             />
@@ -73,7 +75,9 @@ export function ComposeCard({
           ))}
         </div>
       )}
-      {!signedIn && <EmptyNote text={t("guest")} signedIn={false} />}
+      {!isPending && !session && (
+        <EmptyNote text={t("guest")} signedIn={false} />
+      )}
       <Button
         variant="secondary"
         className="w-full"
