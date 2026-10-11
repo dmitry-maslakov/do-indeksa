@@ -14,13 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import { useExamStore } from "@/lib/exam-store";
+import { useSignedOut } from "@/lib/use-signed-out";
 
 export function UserMenu() {
   const t = useTranslations("UserMenu");
-  const router = useRouter();
+  const signedOut = useSignedOut();
   const { data, isPending } = authClient.useSession();
 
   if (isPending) return <Skeleton className="size-9" />;
@@ -56,14 +55,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() =>
-            authClient.signOut({
-              fetchOptions: {
-                onSuccess: () => {
-                  useExamStore.setState({ runs: {} });
-                  router.refresh();
-                },
-              },
-            })
+            authClient.signOut({ fetchOptions: { onSuccess: signedOut } })
           }
         >
           <LogOutIcon />
