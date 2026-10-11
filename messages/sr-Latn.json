@@ -275,6 +275,14 @@
     "deleteTitle": "Brisanje naloga",
     "delete": "Brisanje odmah uklanja nalog, sesije i sav napredak. Javljene greške ostaju, ali bez veze sa tobom.",
     "contactTitle": "Pitanja",
-    "contact": "Pitanja i zahtevi: <link>GitHub issues</link> projekta. Sve je javno, zato ne piši e-adresu ni druge lične podatke."
+    "contact": "Pitanja i zahtevi: <link>GitHub issues</link> projekta. Sve je javno, zato ne piši e-adresu ni druge lične podatke.",
+    "signedOut": "Ako imaš nalog, prijavi se pa ga obriši. Bez naloga na serveru ništa ne čuvamo.",
+    "deleteButton": "Obriši nalog",
+    "confirmTitle": "Obrisati nalog?",
+    "confirm": "Nalog, istorija i statistika nestaće zauvek. Ovo ne može da se poništi.",
+    "cancel": "Otkaži",
+    "stale": "Radi zaštite prvo se ponovo prijavi preko Google-a, pa obriši nalog.",
+    "error": "Brisanje nije uspelo. Pokušaj ponovo.",
+    "deleted": "Nalog i napredak su obrisani."
   }
 }

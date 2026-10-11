@@ -275,6 +275,14 @@
     "deleteTitle": "Deleting your account",
     "delete": "Deleting removes your account, sessions and all progress right away. Error reports stay, with no link to you.",
     "contactTitle": "Questions",
-    "contact": "Questions and requests: the project's <link>GitHub issues</link>. Everything there is public, so don't post your email or other personal details."
+    "contact": "Questions and requests: the project's <link>GitHub issues</link>. Everything there is public, so don't post your email or other personal details.",
+    "signedOut": "If you have an account, sign in to delete it. Without an account we store nothing on the server.",
+    "deleteButton": "Delete account",
+    "confirmTitle": "Delete your account?",
+    "confirm": "Your account, history and stats will be gone for good. This can't be undone.",
+    "cancel": "Cancel",
+    "stale": "For safety, sign in with Google again first, then delete your account.",
+    "error": "Deletion failed. Try again.",
+    "deleted": "Your account and progress are deleted."
   }
 }
