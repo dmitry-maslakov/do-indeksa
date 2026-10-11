@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { statAttempts } from "@/content/attempts";
@@ -44,27 +43,38 @@ export default async function StatsPage({
   searchParams,
 }: PageProps<"/[locale]/stats">) {
   const t = await getTranslations("Stats");
-  const byNumber = (await searchParams).by === "number";
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
-      <Suspense fallback={<StatsCards byNumber={byNumber} />}>
-        <Await promise={loadStats()}>
-          {(stats) =>
-            stats ? (
-              <StatsCards byNumber={byNumber} stats={stats} />
-            ) : (
-              <SignInCard text={t("guest")} />
-            )
-          }
-        </Await>
+      <Suspense fallback={<StatsCards />}>
+        <StatsView searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-function StatsCards({ byNumber, stats }: { byNumber: boolean; stats?: Stats }) {
+async function StatsView({
+  searchParams,
+}: Pick<PageProps<"/[locale]/stats">, "searchParams">) {
+  const t = await getTranslations("Stats");
+  const byNumber = (await searchParams).by === "number";
+  const stats = await loadStats();
+
+  return stats ? (
+    <StatsCards byNumber={byNumber} stats={stats} />
+  ) : (
+    <SignInCard text={t("guest")} />
+  );
+}
+
+function StatsCards({
+  byNumber,
+  stats,
+}: {
+  byNumber?: boolean;
+  stats?: Stats;
+}) {
   const locale = useLocale();
   const exam = useTranslations("Exam");
   const attempts = stats?.attempts ?? [];
@@ -84,7 +94,7 @@ function StatsCards({ byNumber, stats }: { byNumber: boolean; stats?: Stats }) {
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
-        <AccuracyCard rows={accuracy} byNumber={byNumber} pending={!stats} />
+        <AccuracyCard rows={accuracy} pending={!stats} />
         <TimeBars
           bars={meanTimeByNumber(attempts, numbers).map((bar) => ({
             ...bar,
