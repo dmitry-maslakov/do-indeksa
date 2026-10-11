@@ -103,3 +103,21 @@ test("a stale session signs in again before deleting", async ({
   expect(await userExists()).toBe(1);
   expect(await count("favorites")).toBe(1);
 });
+
+test("signing out hides the account statistics", async ({ page, context }) => {
+  await signIn(context, 0);
+  await page.goto("/stats");
+  await expect(page.getByText("Još nema završenih testova.")).toBeVisible();
+
+  const nav = page.getByRole("banner").getByRole("navigation");
+  await nav.getByRole("link", { name: "Početna" }).click();
+  await page.getByRole("button", { name: "Nalog" }).click();
+  await page.getByRole("menuitem", { name: "Odjavi se" }).click();
+  await expect(
+    page.getByRole("banner").getByRole("button", { name: "Prijavi se" }),
+  ).toBeVisible();
+  await nav.getByRole("link", { name: "Statistika" }).click();
+
+  await expect(page.getByText("Prijavi se da vidiš statistiku")).toBeVisible();
+  await expect(page.getByText("Još nema završenih testova.")).toBeHidden();
+});
