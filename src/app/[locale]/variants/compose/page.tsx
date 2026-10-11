@@ -17,7 +17,7 @@ export default async function ComposePage({
   const session = await getSession();
   const attempts = session ? await getStatAttempts(session.user.id) : [];
   const statuses = latestStatuses(attempts);
-  const ids = composeTaskIds(
+  const { ids } = composeTaskIds(
     {
       mode,
       topics: topic,

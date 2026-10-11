@@ -1,6 +1,7 @@
 import { pick } from "./pick";
 
 export const composeModes = ["exam", "weak", "unsolved", "topics"] as const;
+export type ComposeMode = (typeof composeModes)[number];
 
 interface Pool {
   byPosition: string[][];
@@ -8,7 +9,7 @@ interface Pool {
 }
 
 interface ComposeInput {
-  mode: (typeof composeModes)[number];
+  mode: ComposeMode;
   topics: string[];
   weak: string[];
   solved: Set<string>;
@@ -16,6 +17,7 @@ interface ComposeInput {
 
 export function compose(pool: Pool, input: ComposeInput, seed: string) {
   const size = pool.byPosition.length;
+  const exam = () => pick(pool.byPosition, size, seed);
   const fromTopics = (topics: string[]) =>
     pick(
       pool.tasks.filter((t) => topics.includes(t.topic)).map((t) => [t.id]),
@@ -23,7 +25,7 @@ export function compose(pool: Pool, input: ComposeInput, seed: string) {
       seed,
     );
   const picked = {
-    exam: () => [],
+    exam,
     weak: () => fromTopics(input.weak),
     topics: () => fromTopics(input.topics),
     unsolved: () =>
@@ -33,7 +35,9 @@ export function compose(pool: Pool, input: ComposeInput, seed: string) {
         seed,
       ),
   }[input.mode]();
-  return picked.length > 0 ? picked : pick(pool.byPosition, size, seed);
+  return picked.length > 0
+    ? { ids: picked, fallback: false }
+    : { ids: exam(), fallback: true };
 }
 
 export function swap(tasks: Pool["tasks"], ids: string[], index: number) {
