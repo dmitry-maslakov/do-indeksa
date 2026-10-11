@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { useRouter } from "@/i18n/navigation";
-import { composeModes } from "@/lib/compose";
+import { type ComposeMode, composeModes } from "@/lib/compose";
 
 export function ComposeCard({
   topics,
@@ -20,7 +20,7 @@ export function ComposeCard({
 }) {
   const t = useTranslations("Compose");
   const router = useRouter();
-  const [mode, setMode] = useState<(typeof composeModes)[number]>("exam");
+  const [mode, setMode] = useState<ComposeMode>("exam");
   const [chosen, setChosen] = useState<string[]>([]);
 
   function compose() {

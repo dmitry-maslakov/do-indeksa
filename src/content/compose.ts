@@ -16,7 +16,10 @@ export const composeSchema = z.object({
 export const composeTaskIds = (
   input: Parameters<typeof compose>[1],
   seed: string,
-) => byNumber(compose({ byPosition, tasks }, input, seed));
+) => {
+  const { ids, fallback } = compose({ byPosition, tasks }, input, seed);
+  return { ids: byNumber(ids), fallback };
+};
 
 export const swapHrefs = (ids: string[]) =>
   ids.map((_, i) => {
