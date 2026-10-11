@@ -11,6 +11,7 @@ import { positions } from "@/content/exam";
 import { summarizeRuns } from "@/content/runs";
 import { topicName } from "@/content/topics";
 import { curatedVariants, officialVariants } from "@/content/variants";
+import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
 import { getAttempts, getRuns } from "@/server/history";
 import { ComposeCard } from "./_components/compose-card";
@@ -23,7 +24,10 @@ type Tab = (typeof tabs)[number];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Variants");
-  return { title: t("title") };
+  return {
+    title: t("title"),
+    alternates: alternates("/variants", await getLocale()),
+  };
 }
 
 async function loadRuns() {

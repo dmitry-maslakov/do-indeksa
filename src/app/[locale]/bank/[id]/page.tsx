@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { numberOf, positions } from "@/content/exam";
 import { getTask, siblings, summarize, tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
+import { alternates } from "@/i18n/alternates";
 import { SolveRail } from "./_components/solve-rail";
 
 export const instant = false;
@@ -31,6 +32,7 @@ export async function generateMetadata({
   return {
     title: `${exam("task", { number: numberOf(task.topic) })} · ${topicName(task.topic, locale)}`,
     description: task.excerpt,
+    alternates: alternates(`/bank/${task.id}`, locale),
   };
 }
 

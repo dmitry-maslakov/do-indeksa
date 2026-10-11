@@ -13,6 +13,8 @@ export const officialVariants = allVariants
 
 export const curatedVariants = allVariants.filter((v) => v.kind === "curated");
 
+export const contentVariants = [...officialVariants, ...curatedVariants];
+
 export interface ExamVariant
   extends Pick<Variant, "id">,
     Partial<Pick<Variant, "title" | "year">> {

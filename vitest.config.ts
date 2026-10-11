@@ -10,5 +10,5 @@ export default defineConfig({
       ).pathname,
     },
   },
-  test: { dir: "src" },
+  test: { dir: "src", server: { deps: { inline: ["next-intl"] } } },
 });
