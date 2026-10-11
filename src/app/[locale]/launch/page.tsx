@@ -7,6 +7,7 @@ import { curatedVariants, officialVariants } from "@/content/variants";
 import { alternates } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { repoUrl } from "@/lib/site";
+import { ExamSheet } from "./_components/exam-sheet";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -38,7 +39,7 @@ export default function LaunchPage() {
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <section className="flex flex-col gap-6 overflow-hidden rounded-3xl bg-daily px-5 py-8 text-white md:p-12">
+      <section className="grid content-center gap-6 overflow-hidden rounded-3xl bg-daily px-5 py-8 text-white *:animate-in *:fill-mode-backwards *:fade-in *:slide-in-from-bottom-3 *:duration-700 *:motion-reduce:animate-none md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-x-12 md:p-12">
         <div className="flex flex-col gap-4">
           <p className="font-semibold text-daily-muted text-sm">
             {t("eyebrow")}
@@ -49,7 +50,7 @@ export default function LaunchPage() {
           <p className="max-w-xl text-daily-muted md:text-lg">{t("lead")}</p>
           <Badge variant="tint">{t("soon")}</Badge>
         </div>
-        <ul className="grid gap-4 sm:grid-cols-3">
+        <ul className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-3 delay-200 sm:grid-cols-3">
           <Fact
             value={years.length}
             label={t("exams", {
@@ -64,7 +65,8 @@ export default function LaunchPage() {
           />
           <Fact value={hinted} label={t("tasks", { count: hinted })} />
         </ul>
-        <p className="text-daily-muted text-sm">
+        <ExamSheet />
+        <p className="text-daily-muted text-sm delay-300">
           {t.rich("open", {
             link: (chunks) => (
               <a
@@ -83,8 +85,8 @@ export default function LaunchPage() {
 
 function Fact({ value, label }: { value: number; label: string }) {
   return (
-    <li className="flex flex-col gap-1">
-      <span className="font-bold text-[32px] tabular-nums leading-none">
+    <li className="col-span-2 grid grid-cols-subgrid items-baseline sm:col-span-1 sm:flex sm:flex-col sm:gap-1">
+      <span className="font-bold text-[28px] tabular-nums leading-none sm:text-[32px]">
         {value}
       </span>
       <span className="text-daily-muted text-sm">{label}</span>

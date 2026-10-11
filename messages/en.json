@@ -302,6 +302,7 @@
     "exams": "{count, plural, one {real FTN entrance exam} other {real FTN entrance exams}} ({from}–{to}) with our own solutions",
     "tests": "{count, plural, one {practice test of our own} other {practice tests of our own}} in the exam format",
     "tasks": "{count, plural, one {task} other {tasks}} with hints and solutions",
-    "open": "Built in the open on <link>GitHub</link>."
+    "open": "Built in the open on <link>GitHub</link>.",
+    "sheet": "{count, plural, one {# topic} other {# topics}} on the entrance exam"
   }
 }
