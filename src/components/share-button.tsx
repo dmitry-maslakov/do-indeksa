@@ -10,7 +10,7 @@ export function ShareButton({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
-    const data = { title, url: location.href };
+    const data = { title, url: location.origin + location.pathname };
     if (matchMedia("(pointer: coarse)").matches && navigator.canShare?.(data)) {
       await navigator.share(data).catch(() => undefined);
       return;
