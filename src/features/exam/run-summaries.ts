@@ -50,7 +50,7 @@ export function summarizeRuns(
       return {
         id: run.id,
         variantId: run.variantId,
-        title: variant ? await variantTitle(variant) : run.variantId,
+        title: variant ? await variantTitle(variant, locale) : run.variantId,
         finishedAt: run.finishedAt,
         segments: result.rows.map((r) => r.segment),
         misses: result.rows
