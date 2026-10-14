@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { BANK_FORM, BankFilters } from "@/components/bank-filters";
+import { BankFilters } from "@/components/bank-filters";
 import { FilterSelect } from "@/components/filter-select";
 import { MoreTasks } from "@/components/more-tasks";
 import { PageTitle } from "@/components/page-title";
@@ -13,13 +14,13 @@ import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  bankFiltersSchema,
   bankPage,
   type BankFilters as Filters,
   searchBank,
 } from "@/content/bank";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { loadBankFilters, serializeBankFilters } from "@/lib/bank-params";
 import type { Progress } from "@/lib/progress";
 import { getSession } from "@/server/auth";
 import { getProgress } from "@/server/progress";
@@ -41,9 +42,11 @@ export default async function BankPage({
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
-      <Suspense fallback={<BankResults filters={{}} pending />}>
-        <Bank searchParams={searchParams} />
-      </Suspense>
+      <NuqsAdapter>
+        <Suspense fallback={<BankResults filters={{}} pending />}>
+          <Bank searchParams={searchParams} />
+        </Suspense>
+      </NuqsAdapter>
     </main>
   );
 }
@@ -51,7 +54,7 @@ export default async function BankPage({
 async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
-  const filters = bankFiltersSchema.parse(await searchParams);
+  const filters = await loadBankFilters(searchParams);
   const session = await getSession();
 
   return session ? (
@@ -82,6 +85,7 @@ function BankResults({
 }: BankResultsProps) {
   const t = useTranslations("Bank");
   const tasks = searchBank(filters, progress);
+  const search = serializeBankFilters(filters);
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
@@ -98,12 +102,7 @@ function BankResults({
               {t("count", { count: tasks.length })}
             </span>
           )}
-          <FilterSelect
-            form={BANK_FORM}
-            name="sort"
-            size="sm"
-            aria-label={t("sort")}
-          >
+          <FilterSelect name="sort" size="sm" aria-label={t("sort")}>
             <NativeSelectOption value="">{t("sortNumber")}</NativeSelectOption>
             <NativeSelectOption value="easy">
               {t("sortEasy")}
@@ -141,11 +140,7 @@ function BankResults({
           <>
             {taskCards(tasks.slice(0, bankPage), progress)}
             {tasks.length > bankPage && (
-              <MoreTasks
-                key={JSON.stringify(filters)}
-                filters={filters}
-                next={bankPage}
-              />
+              <MoreTasks key={search} search={search} next={bankPage} />
             )}
           </>
         )}

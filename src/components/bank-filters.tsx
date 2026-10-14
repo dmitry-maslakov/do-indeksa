@@ -1,18 +1,14 @@
-import Form from "next/form";
 import { useLocale, useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
-import { statusFilters } from "@/content/bank";
 import { positions } from "@/content/exam";
-import { levels } from "@/content/tasks";
 import { topics } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
+import { levels, statusFilters } from "@/lib/bank-params";
 import { FilterSearch } from "./filter-search";
 import { FilterSelect } from "./filter-select";
 import { SignedIn } from "./signed-in";
-
-export const BANK_FORM = "bank-filters";
 
 interface BankFiltersProps {
   signedIn?: boolean;
@@ -33,14 +29,10 @@ export function BankFilters({ signedIn, solveHref }: BankFiltersProps) {
           { href: solveHref, label: solve("solve"), active: false },
         ]}
       />
-      <Form
-        id={BANK_FORM}
-        action=""
-        className="grid grid-cols-2 gap-3 md:grid-cols-1"
-      >
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-1">
         <label className="col-span-2 md:col-span-1">
           <span className="sr-only">{t("search")}</span>
-          <FilterSearch name="q" placeholder={t("search")} />
+          <FilterSearch placeholder={t("search")} />
         </label>
         <label>
           <span className="mb-1 block text-subtle text-xs">{t("number")}</span>
@@ -90,7 +82,7 @@ export function BankFilters({ signedIn, solveHref }: BankFiltersProps) {
             </FilterSelect>
           </label>
         </SignedIn>
-      </Form>
+      </div>
       <Link
         href="/bank"
         className="w-fit text-[13px] text-subtle hover:text-foreground"
