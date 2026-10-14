@@ -1,5 +1,5 @@
 import { useQueryStates } from "nuqs";
-import { bankParsers } from "./bank-params";
+import { bankParsers } from "./params";
 
 export const useBankFilters = () =>
   useQueryStates(bankParsers, { history: "push", shallow: false });
