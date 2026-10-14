@@ -5,14 +5,16 @@ import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { BANK_FORM, BankFilters } from "@/components/bank-filters";
 import { FilterSelect } from "@/components/filter-select";
+import { MoreTasks } from "@/components/more-tasks";
 import { PageTitle } from "@/components/page-title";
-import { TaskCard } from "@/components/task-card";
+import { taskCards } from "@/components/task-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   bankFiltersSchema,
+  bankPage,
   type BankFilters as Filters,
   searchBank,
 } from "@/content/bank";
@@ -136,14 +138,16 @@ function BankResults({
             </Button>
           </Card>
         ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              status={progress?.statuses.get(task.id)}
-              favorite={progress?.favorites.has(task.id)}
-            />
-          ))
+          <>
+            {taskCards(tasks.slice(0, bankPage), progress)}
+            {tasks.length > bankPage && (
+              <MoreTasks
+                key={JSON.stringify(filters)}
+                filters={filters}
+                next={bankPage}
+              />
+            )}
+          </>
         )}
       </section>
     </div>

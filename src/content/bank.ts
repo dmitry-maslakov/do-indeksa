@@ -3,6 +3,8 @@ import { z } from "zod";
 import type { Progress } from "@/lib/progress";
 import { levelOf, levels, summarize, tasks } from "./tasks";
 
+export const bankPage = 30;
+
 export const statusFilters = ["new", "solved", "wrong", "favorite"] as const;
 
 const optional = <T extends z.ZodType>(schema: T) =>
