@@ -1,7 +1,10 @@
 import "server-only";
+import katex from "katex";
 import { getTask } from "@/features/tasks/tasks";
-import { latexToHtml } from "@/lib/latex";
 import type { Outcomes } from "./review";
+
+const latexToHtml = (latex: string) =>
+  katex.renderToString(latex, { throwOnError: false, output: "html" });
 
 export function outcomesOf(
   attempts: { taskId: string; answers: string[] }[],
