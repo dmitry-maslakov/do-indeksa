@@ -92,12 +92,12 @@ export function mistakes(newestFirst: StatAttempt[]) {
 const dayBefore = (day: string) =>
   new Date(Date.parse(`${day}T12:00:00Z`) - DAY).toISOString().slice(0, 10);
 
-export function streak(newestFirst: StatAttempt[], now: Date) {
-  const days = new Set(newestFirst.map((a) => belgradeDate(a.createdAt)));
+export function streak(days: string[], now: Date) {
+  const active = new Set(days);
   let day = belgradeDate(now);
-  if (!days.has(day)) day = dayBefore(day);
+  if (!active.has(day)) day = dayBefore(day);
   let count = 0;
-  while (days.has(day)) {
+  while (active.has(day)) {
     count++;
     day = dayBefore(day);
   }
