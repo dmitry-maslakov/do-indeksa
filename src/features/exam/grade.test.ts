@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { gradeRun } from "./grade";
 
 const tasks = [
@@ -9,7 +9,7 @@ const tasks = [
 ];
 
 describe("gradeRun", () => {
-  const [a, b, c] = gradeRun(tasks, [["2"], ["1", "4"]], [60_000, 2 * DAY]);
+  const [a, b, c] = gradeRun(tasks, [["2"], ["1", "4"]], [60_000, 2 * dayMs]);
 
   it("credits each task by its right parts", () => {
     expect(a).toMatchObject({ parts: [true], correct: true, points: 6 });
@@ -32,7 +32,7 @@ describe("gradeRun", () => {
   it("caps durations at a day", () => {
     expect([a?.durationMs, b?.durationMs, c?.durationMs]).toEqual([
       60_000,
-      DAY,
+      dayMs,
       0,
     ]);
   });

@@ -7,7 +7,7 @@ import { attempts, currentRuns, runs } from "@/db/schema";
 import { outcomesOf } from "@/features/review/outcomes";
 import type { Outcomes, ReviewAttempt } from "@/features/review/review";
 import { getTask } from "@/features/tasks/tasks";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { getSession } from "@/server/auth";
 import { db } from "@/server/db";
 import type { ExamRun } from "./exam-store";
@@ -50,7 +50,7 @@ const progress = z.object({
 
 const inBounds = (startedAt: number) => {
   const now = Date.now();
-  return startedAt <= now && startedAt >= now - DAY;
+  return startedAt <= now && startedAt >= now - dayMs;
 };
 
 export async function saveRun(variantId: string, data: ExamRun) {

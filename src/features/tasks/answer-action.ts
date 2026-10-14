@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { attempts } from "@/db/schema";
+import { hourMs } from "@/lib/dates";
 import { gradeParts } from "@/lib/math";
 import { getSession } from "@/server/auth";
 import { db } from "@/server/db";
@@ -18,8 +19,6 @@ const input = z.object({
   startedAt: z.coerce.number().int().positive(),
   hintsUsed: z.coerce.number().int().min(0).max(3),
 });
-
-const HOUR = 60 * 60 * 1000;
 
 export async function checkAnswer(
   _previous: CheckResult | null,
@@ -49,7 +48,7 @@ export async function checkAnswer(
       parts,
       correct,
       hintsUsed,
-      durationMs: Math.min(Math.max(Date.now() - startedAt, 0), HOUR),
+      durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
     });
   }
   return { parts, correct };

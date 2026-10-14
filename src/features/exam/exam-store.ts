@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 
 interface RunMeta {
   title: string;
@@ -22,7 +22,7 @@ export interface ExamRun extends Omit<RunMeta, "tasks"> {
 }
 
 const fresh = (runs: Record<string, ExamRun>) => {
-  const cutoff = Date.now() - DAY;
+  const cutoff = Date.now() - dayMs;
   return Object.fromEntries(
     Object.entries(runs).filter(([, run]) => run.startedAt >= cutoff),
   );

@@ -1,5 +1,5 @@
 import { creditOf } from "@/features/review/review";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { gradeParts } from "@/lib/math";
 import { isAnswered } from "./run";
 
@@ -23,7 +23,7 @@ export function gradeRun(
       parts,
       correct: parts.every(Boolean),
       answered: isAnswered(given),
-      durationMs: Math.min(durations[i] ?? 0, DAY),
+      durationMs: Math.min(durations[i] ?? 0, dayMs),
       points: creditOf(parts, task.points),
     };
   });

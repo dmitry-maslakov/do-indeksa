@@ -14,9 +14,9 @@ import {
 import { cache } from "react";
 import { z } from "zod";
 import { attempts, runs } from "@/db/schema";
-import { DAY, TIME_ZONE } from "@/lib/dates";
+import { dayMs, timeZone } from "@/lib/dates";
 import { db } from "@/server/db";
-import { ACCURACY_DAYS } from "./stats";
+import { accuracyDays } from "./stats";
 import { taskStats } from "./task-stats";
 
 export const getRun = cache(async (userId: string, key?: string) => {
@@ -83,7 +83,7 @@ const countWhere = (condition: SQL) =>
 export async function getTaskStats(userId: string) {
   const recent = gte(
     attempts.createdAt,
-    new Date(Date.now() - ACCURACY_DAYS * DAY),
+    new Date(Date.now() - accuracyDays * dayMs),
   );
   const right = eq(attempts.correct, true);
   const rows = await db
@@ -103,17 +103,20 @@ export async function getTaskStats(userId: string) {
   return taskStats(rows);
 }
 
-const RECENT_DAYS = 400;
+const streakWindowDays = 400;
 
 export async function getRecentAttemptDays(userId: string) {
-  const day = sql<string>`to_char(${attempts.createdAt} at time zone ${TIME_ZONE}, 'YYYY-MM-DD')`;
+  const day = sql<string>`to_char(${attempts.createdAt} at time zone ${timeZone}, 'YYYY-MM-DD')`;
   const rows = await db
     .selectDistinct({ day })
     .from(attempts)
     .where(
       and(
         eq(attempts.userId, userId),
-        gte(attempts.createdAt, new Date(Date.now() - RECENT_DAYS * DAY)),
+        gte(
+          attempts.createdAt,
+          new Date(Date.now() - streakWindowDays * dayMs),
+        ),
       ),
     );
   return rows.map((row) => row.day);
