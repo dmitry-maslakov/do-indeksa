@@ -3,13 +3,11 @@ import { compose, swap } from "./compose";
 
 const pool = {
   byPosition: [["a1", "a2"], ["b1", "b2"], ["c1"]],
-  tasks: [
-    { id: "a1", topic: "a" },
-    { id: "a2", topic: "a" },
-    { id: "b1", topic: "b" },
-    { id: "b2", topic: "b" },
-    { id: "c1", topic: "c" },
-  ],
+  byTopic: new Map([
+    ["a", ["a1", "a2"]],
+    ["b", ["b1", "b2"]],
+    ["c", ["c1"]],
+  ]),
 };
 const input = {
   mode: "exam" as const,
@@ -50,7 +48,7 @@ describe("compose", () => {
   });
 
   it("falls back to the exam when nothing matches", () => {
-    const solved = new Set(pool.tasks.map((t) => t.id));
+    const solved = new Set(pool.byPosition.flat());
     for (const next of [
       { ...input, mode: "topics" as const, topics: ["z"] },
       { ...input, mode: "weak" as const },
@@ -65,13 +63,17 @@ describe("compose", () => {
 
 describe("swap", () => {
   it("cycles through the other tasks of the same topic", () => {
-    const tasks = [...pool.tasks, { id: "a3", topic: "a" }];
-    expect(swap(tasks, ["a2", "b1"], 0)).toEqual(["a3", "b1"]);
-    expect(swap(tasks, ["a3", "b1"], 0)).toEqual(["a1", "b1"]);
+    const same = ["a1", "a2", "a3"];
+    expect(swap(same, ["a2", "b1"], 0)).toEqual(["a3", "b1"]);
+    expect(swap(same, ["a3", "b1"], 0)).toEqual(["a1", "b1"]);
   });
 
   it("skips tasks already in the variant", () => {
-    expect(swap(pool.tasks, ["b1", "b2"], 0)).toBeUndefined();
-    expect(swap(pool.tasks, ["c1"], 0)).toBeUndefined();
+    expect(swap(["b1", "b2"], ["b1", "b2"], 0)).toBeUndefined();
+    expect(swap(["c1"], ["c1"], 0)).toBeUndefined();
+  });
+
+  it("has nothing to swap in an unknown topic", () => {
+    expect(swap([], ["z1"], 0)).toBeUndefined();
   });
 });

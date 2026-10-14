@@ -4,7 +4,7 @@ import { routing } from "@/i18n/routing";
 import en from "../../messages/en.json";
 import ru from "../../messages/ru.json";
 import sr from "../../messages/sr-Latn.json";
-import { getTask, tasks, taskTitle } from "./tasks";
+import { getTask, idsByTopic, tasks, taskTitle } from "./tasks";
 
 const messages = { "sr-Latn": sr, ru, en };
 
@@ -15,6 +15,15 @@ describe("task index", () => {
   it("finds every task by id", () => {
     for (const task of tasks) expect(getTask(task.id)).toBe(task);
     expect(getTask("nema-takvog")).toBeUndefined();
+  });
+
+  it("groups task ids by topic", () => {
+    for (const [topic, ids] of idsByTopic) {
+      for (const id of ids) expect(getTask(id)?.topic).toBe(topic);
+    }
+    expect([...idsByTopic.values()].flat().sort()).toEqual(
+      tasks.map((t) => t.id).sort(),
+    );
   });
 });
 
