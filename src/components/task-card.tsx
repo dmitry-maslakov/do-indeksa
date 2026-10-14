@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import type { TaskSummary } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
-import type { TaskStatus } from "@/lib/progress";
+import type { Progress, TaskStatus } from "@/lib/progress";
 
 interface TaskCardProps {
   task: TaskSummary;
@@ -15,11 +15,7 @@ interface TaskCardProps {
   favorite?: boolean;
 }
 
-export function TaskCard({
-  task,
-  status = "new",
-  favorite = false,
-}: TaskCardProps) {
+function TaskCard({ task, status = "new", favorite = false }: TaskCardProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
 
@@ -64,3 +60,13 @@ export function TaskCard({
     </Link>
   );
 }
+
+export const taskCards = (tasks: TaskSummary[], progress?: Progress) =>
+  tasks.map((task) => (
+    <TaskCard
+      key={task.id}
+      task={task}
+      status={progress?.statuses.get(task.id)}
+      favorite={progress?.favorites.has(task.id)}
+    />
+  ));
