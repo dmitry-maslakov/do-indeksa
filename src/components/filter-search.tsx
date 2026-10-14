@@ -1,23 +1,35 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import { type ComponentProps, Suspense } from "react";
 import { Input } from "@/components/ui/input";
-import { WithSearchParams } from "./with-url";
+import { bankParsers } from "@/lib/bank-params";
+import { useBankFilters } from "@/lib/use-bank-filters";
 
-export function FilterSearch({
-  name,
-  ...props
-}: ComponentProps<typeof Input> & { name: string }) {
+type FilterSearchProps = Omit<ComponentProps<typeof Input>, "name" | "type">;
+
+function UrlSearch(props: FilterSearchProps) {
+  const [{ q }, setFilters] = useBankFilters();
+
   return (
-    <WithSearchParams>
-      {(params) => (
-        <Input
-          {...props}
-          type="search"
-          name={name}
-          defaultValue={params?.get(name) ?? ""}
-        />
-      )}
-    </WithSearchParams>
+    <Input
+      {...props}
+      key={q}
+      type="search"
+      name="q"
+      defaultValue={q ?? ""}
+      enterKeyHint="search"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.nativeEvent.isComposing)
+          setFilters({ q: bankParsers.q.parse(e.currentTarget.value) });
+      }}
+    />
+  );
+}
+
+export function FilterSearch(props: FilterSearchProps) {
+  return (
+    <Suspense fallback={<Input {...props} type="search" name="q" />}>
+      <UrlSearch {...props} />
+    </Suspense>
   );
 }

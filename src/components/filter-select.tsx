@@ -1,23 +1,33 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import { type ComponentProps, Suspense } from "react";
 import { NativeSelect } from "@/components/ui/native-select";
-import { WithSearchParams } from "./with-url";
+import { bankParsers } from "@/lib/bank-params";
+import { useBankFilters } from "@/lib/use-bank-filters";
 
-export function FilterSelect({
-  name,
-  ...props
-}: ComponentProps<typeof NativeSelect> & { name: string }) {
+type FilterSelectProps = ComponentProps<typeof NativeSelect> & {
+  name: Exclude<keyof typeof bankParsers, "q">;
+};
+
+function UrlSelect({ name, ...props }: FilterSelectProps) {
+  const [filters, setFilters] = useBankFilters();
+
   return (
-    <WithSearchParams>
-      {(params) => (
-        <NativeSelect
-          {...props}
-          name={name}
-          defaultValue={params?.get(name) ?? ""}
-          onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        />
-      )}
-    </WithSearchParams>
+    <NativeSelect
+      {...props}
+      name={name}
+      value={String(filters[name] ?? "")}
+      onChange={(e) =>
+        setFilters({ [name]: bankParsers[name].parse(e.currentTarget.value) })
+      }
+    />
+  );
+}
+
+export function FilterSelect(props: FilterSelectProps) {
+  return (
+    <Suspense fallback={<NativeSelect {...props} />}>
+      <UrlSelect {...props} />
+    </Suspense>
   );
 }

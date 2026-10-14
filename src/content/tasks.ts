@@ -2,13 +2,11 @@ import "server-only";
 import { allTasks, type Task } from "content-collections";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
+import type { Level } from "@/lib/bank-params";
 import { clip } from "@/lib/clip";
 import { renderMarkdown } from "@/lib/markdown";
 import { numberOf } from "./exam";
 import { topicName } from "./topics";
-
-export const levels = ["easy", "medium", "hard"] as const;
-export type Level = (typeof levels)[number];
 
 export const levelOf = (difficulty: number): Level =>
   difficulty <= 2 ? "easy" : difficulty === 3 ? "medium" : "hard";

@@ -10,15 +10,14 @@ import {
   useTransition,
 } from "react";
 import { Button } from "@/components/ui/button";
-import type { BankFilters } from "@/content/bank";
 import { loadBankTasks } from "@/server/bank";
 
 interface MoreTasksProps {
-  filters: BankFilters;
+  search: string;
   next: number;
 }
 
-export function MoreTasks({ filters, next: first }: MoreTasksProps) {
+export function MoreTasks({ search, next: first }: MoreTasksProps) {
   const t = useTranslations("Bank");
   const [cards, setCards] = useState<ReactNode[]>([]);
   const [next, setNext] = useState<number | null>(first);
@@ -28,7 +27,7 @@ export function MoreTasks({ filters, next: first }: MoreTasksProps) {
   const load = () => {
     if (next === null || pending) return;
     startTransition(async () => {
-      const page = await loadBankTasks(filters, next);
+      const page = await loadBankTasks(search, next);
       setCards((shown) => [...shown, ...page.cards]);
       setNext(page.next);
     });
