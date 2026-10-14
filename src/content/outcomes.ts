@@ -1,7 +1,7 @@
 import "server-only";
+import { getTask } from "@/features/tasks/tasks";
 import { latexToHtml } from "@/lib/latex";
 import type { Outcomes } from "@/lib/review";
-import { getTask } from "./tasks";
 
 export function outcomesOf(
   attempts: { taskId: string; answers: string[] }[],

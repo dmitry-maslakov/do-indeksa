@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { renderTask } from "@/content/tasks";
+import { renderTask } from "./tasks";
 
 const partSchema = z.union([
   z.literal("answer"),

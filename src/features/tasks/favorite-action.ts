@@ -2,10 +2,10 @@
 
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { getTask } from "@/content/tasks";
 import { favorites } from "@/db/schema";
-import { getSession } from "./auth";
-import { db } from "./db";
+import { getSession } from "@/server/auth";
+import { db } from "@/server/db";
+import { getTask } from "./tasks";
 
 const taskIdSchema = z.string().refine((id) => getTask(id) !== undefined);
 

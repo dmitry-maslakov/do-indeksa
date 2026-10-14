@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { AnswerForm } from "@/components/answer-form";
-import { FavoriteButton } from "@/components/favorite-button";
-import { HintsProvider } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
 import { PageTitle } from "@/components/page-title";
-import { ReportTask } from "@/components/report-task";
-import { Reveal } from "@/components/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { positions } from "@/content/exam";
+import { AnswerForm } from "@/features/tasks/answer-form";
+import { FavoriteButton } from "@/features/tasks/favorite-button";
+import { HintsProvider } from "@/features/tasks/hints";
+import { ReportTask } from "@/features/tasks/report-task";
+import { Reveal } from "@/features/tasks/reveal";
 import {
   getTask,
   renderTask,
@@ -18,8 +18,8 @@ import {
   summarize,
   tasks,
   taskTitle,
-} from "@/content/tasks";
-import { topicName } from "@/content/topics";
+} from "@/features/tasks/tasks";
+import { topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { SolveRail } from "./_components/solve-rail";
 

@@ -4,7 +4,6 @@ import { PanelLeftCloseIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LinkTabs } from "@/components/link-tabs";
-import { type RailTask, TaskRow } from "@/components/task-row";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,6 +11,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { VariantStrip } from "@/components/variant-strip";
+import { type RailTask, TaskRow } from "@/features/tasks/task-row";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import type { TaskStatus } from "@/lib/progress";

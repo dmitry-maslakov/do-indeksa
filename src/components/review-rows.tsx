@@ -1,10 +1,10 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
-import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/content/variants";
+import { Reveal } from "@/features/tasks/reveal";
 import { Link } from "@/i18n/navigation";
 import type {
   AnswerOutcome,

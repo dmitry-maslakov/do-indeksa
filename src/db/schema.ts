@@ -12,8 +12,8 @@ import {
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
+import { reportKinds } from "@/features/tasks/report-kinds";
 import type { ExamRun } from "@/lib/exam-store";
-import { reportKinds } from "@/lib/report";
 import { user } from "./auth-schema";
 
 export * from "./auth-schema";

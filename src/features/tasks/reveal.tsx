@@ -2,10 +2,10 @@
 
 import { ChevronDownIcon } from "lucide-react";
 import { useState, useTransition } from "react";
-import { useHints } from "@/components/hints";
 import { MathHtml } from "@/components/math-html";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type RevealPart, reveal } from "@/server/reveal";
+import { useHints } from "./hints";
+import { type RevealPart, reveal } from "./reveal-action";
 
 interface RevealProps {
   label: string;

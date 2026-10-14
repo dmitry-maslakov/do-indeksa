@@ -1,7 +1,7 @@
 import "server-only";
+import { getTask } from "@/features/tasks/tasks";
 import type { TaskStat } from "@/lib/stats";
 import { numberOf } from "./exam";
-import { getTask } from "./tasks";
 
 type TaskTotals = Omit<TaskStat, "number" | "topic">;
 

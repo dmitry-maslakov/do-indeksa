@@ -2,10 +2,10 @@ import "server-only";
 import { allTasks, type Task } from "content-collections";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
+import { numberOf } from "@/content/exam";
 import type { Level } from "@/features/bank/params";
 import { clip } from "@/lib/clip";
 import { renderMarkdown } from "@/lib/markdown";
-import { numberOf } from "./exam";
 import { topicName } from "./topics";
 
 const levelOf = (difficulty: number): Level =>
