@@ -2,7 +2,7 @@
 
 import { FlagIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useStateAction } from "next-safe-action/hooks";
 import { Button } from "@/components/ui/button";
 import {
   NativeSelect,
@@ -18,7 +18,8 @@ export function ReportTask({ taskId }: { taskId: string }) {
   const t = useTranslations("Report");
   const user = useTranslations("UserMenu");
   const { data: session } = authClient.useSession();
-  const [state, action, pending] = useActionState(reportTask, "idle");
+  const { formAction, isPending, hasSucceeded, hasErrored } =
+    useStateAction(reportTask);
 
   return (
     <details>
@@ -33,12 +34,12 @@ export function ReportTask({ taskId }: { taskId: string }) {
             {user("signIn")}
           </SignInButton>
         </div>
-      ) : state === "sent" ? (
+      ) : hasSucceeded ? (
         <p role="status" className="mt-3 text-sm text-success-text">
           {t("thanks")}
         </p>
       ) : (
-        <form action={action} className="mt-3 flex flex-col gap-3">
+        <form action={formAction} className="mt-3 flex flex-col gap-3">
           <input type="hidden" name="taskId" value={taskId} />
           <NativeSelect name="kind" aria-label={t("kind")} className="w-full">
             {reportKinds.map((kind) => (
@@ -53,7 +54,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
             aria-label={t("message")}
             placeholder={t("message")}
           />
-          {state === "error" && (
+          {hasErrored && (
             <p role="alert" className="text-sm text-error-text">
               {t("error")}
             </p>
@@ -61,7 +62,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
           <Button
             type="submit"
             variant="secondary"
-            disabled={pending}
+            disabled={isPending}
             className="self-start"
           >
             {t("send")}
