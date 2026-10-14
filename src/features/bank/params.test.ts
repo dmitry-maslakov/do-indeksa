@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadBankFilters as load } from "./bank-params";
+import { loadBankFilters as load } from "./params";
 
 const none = {
   q: null,

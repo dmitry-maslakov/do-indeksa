@@ -2,8 +2,8 @@
 
 import { type ComponentProps, Suspense } from "react";
 import { Input } from "@/components/ui/input";
-import { bankParsers } from "@/lib/bank-params";
-import { useBankFilters } from "@/lib/use-bank-filters";
+import { bankParsers } from "./params";
+import { useBankFilters } from "./use-bank-filters";
 
 type FilterSearchProps = Omit<ComponentProps<typeof Input>, "name" | "type">;
 

@@ -1,11 +1,11 @@
 "use server";
 
 import { z } from "zod";
-import { taskCards } from "@/components/task-card";
-import { bankPage, filterByStatus, searchBank } from "@/content/bank";
-import { loadBankFilters } from "@/lib/bank-params";
-import { getSession } from "./auth";
-import { getProgress } from "./progress";
+import { getSession } from "@/server/auth";
+import { getProgress } from "@/server/progress";
+import { loadBankFilters } from "./params";
+import { bankPage, filterByStatus, searchBank } from "./search";
+import { taskCards } from "./task-card";
 
 export async function loadBankTasks(search: string, offset: number) {
   const session = await getSession();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterByStatus, searchBank } from "./bank";
+import { filterByStatus, searchBank } from "./search";
 
 const ids = (filters: Parameters<typeof searchBank>[0]) =>
   searchBank(filters).map((t) => t.id);

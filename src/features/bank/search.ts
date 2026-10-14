@@ -1,8 +1,8 @@
 import "server-only";
 import type { inferParserType } from "nuqs/server";
-import type { bankParsers, statusFilters } from "@/lib/bank-params";
+import { summarize, type TaskSummary, tasks } from "@/content/tasks";
 import type { Progress } from "@/lib/progress";
-import { summarize, type TaskSummary, tasks } from "./tasks";
+import type { bankParsers, statusFilters } from "./params";
 
 export const bankPage = 30;
 

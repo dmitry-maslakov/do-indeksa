@@ -10,7 +10,7 @@ import {
   useTransition,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { loadBankTasks } from "@/server/bank";
+import { loadBankTasks } from "./load-tasks-action";
 
 interface MoreTasksProps {
   search: string;

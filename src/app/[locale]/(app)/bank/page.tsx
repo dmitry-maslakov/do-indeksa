@@ -4,25 +4,25 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { BankFilters } from "@/components/bank-filters";
-import { FilterSelect } from "@/components/filter-select";
-import { MoreTasks } from "@/components/more-tasks";
 import { PageTitle } from "@/components/page-title";
-import { taskCards } from "@/components/task-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { TaskSummary } from "@/content/tasks";
+import { BankFilters } from "@/features/bank/bank-filters";
+import { FilterSelect } from "@/features/bank/filter-select";
+import { MoreTasks } from "@/features/bank/more-tasks";
+import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
 import {
   bankPage,
   type BankFilters as Filters,
   filterByStatus,
   searchBank,
-} from "@/content/bank";
-import type { TaskSummary } from "@/content/tasks";
+} from "@/features/bank/search";
+import { taskCards } from "@/features/bank/task-card";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import { loadBankFilters, serializeBankFilters } from "@/lib/bank-params";
 import type { Progress } from "@/lib/progress";
 import { getSession } from "@/server/auth";
 import { getProgress } from "@/server/progress";

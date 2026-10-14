@@ -1,14 +1,14 @@
 import { useLocale, useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
+import { SignedIn } from "@/components/signed-in";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { positions } from "@/content/exam";
 import { topics } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
-import { levels, statusFilters } from "@/lib/bank-params";
 import { FilterSearch } from "./filter-search";
 import { FilterSelect } from "./filter-select";
-import { SignedIn } from "./signed-in";
+import { levels, statusFilters } from "./params";
 
 interface BankFiltersProps {
   signedIn?: boolean;

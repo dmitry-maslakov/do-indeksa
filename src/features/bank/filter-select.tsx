@@ -2,8 +2,8 @@
 
 import { type ComponentProps, Suspense } from "react";
 import { NativeSelect } from "@/components/ui/native-select";
-import { bankParsers } from "@/lib/bank-params";
-import { useBankFilters } from "@/lib/use-bank-filters";
+import { bankParsers } from "./params";
+import { useBankFilters } from "./use-bank-filters";
 
 type FilterSelectProps = ComponentProps<typeof NativeSelect> & {
   name: Exclude<keyof typeof bankParsers, "q">;
