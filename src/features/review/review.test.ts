@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { review } from "./review";
+import { review, reviewHref } from "./review";
 
 const task = (taskId: string, topic: string) => ({
   taskId,
@@ -55,5 +55,13 @@ describe("review", () => {
   it("sums time against the norm", () => {
     expect(result.spentMs).toBe(41 * 60_000);
     expect(result.normMs).toBe(96 * 60_000);
+  });
+});
+
+describe("reviewHref", () => {
+  it("links to the first eight characters of the run id", () => {
+    expect(reviewHref("0a1b2c3d-4e5f-6789-abcd-ef0123456789")).toBe(
+      "/review/0a1b2c3d",
+    );
   });
 });

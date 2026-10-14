@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Review } from "@/lib/review";
+import type { Review } from "@/features/review/review";
 
 export function TimeSpent({ review }: { review: Review }) {
   const t = useTranslations("Review");

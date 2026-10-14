@@ -1,13 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReviewRows } from "@/components/review-rows";
 import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
+import { review } from "@/features/review/review";
+import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
-import { review } from "@/lib/review";
 import type { GuestResult } from "./run-actions";
 import type { ExamTask } from "./variants";
 

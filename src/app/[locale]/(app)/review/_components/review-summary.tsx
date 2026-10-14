@@ -2,8 +2,8 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
+import type { Review } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
-import type { Review } from "@/lib/review";
 
 interface ReviewSummaryProps {
   review: Review;

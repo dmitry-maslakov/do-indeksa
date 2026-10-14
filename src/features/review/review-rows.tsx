@@ -12,7 +12,7 @@ import type {
   Review,
   ReviewAttempt,
   ReviewRow,
-} from "@/lib/review";
+} from "./review";
 
 interface ReviewRowsProps {
   review: Review;

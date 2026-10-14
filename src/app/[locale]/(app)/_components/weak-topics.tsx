@@ -1,7 +1,6 @@
 import { cn } from "cn";
 import { useLocale, useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
-import { PracticeLinks } from "@/components/practice-links";
 import { ProgressBar } from "@/components/progress-bar";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Accuracy, SAMPLE_MIN } from "@/features/progress/stats";
+import { PracticeLinks } from "@/features/review/practice-links";
 import { topicName } from "@/features/tasks/topics";
 
 const list = "flex flex-col gap-3 text-[13px]";
