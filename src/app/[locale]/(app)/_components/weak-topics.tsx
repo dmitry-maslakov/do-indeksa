@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Accuracy, SAMPLE_MIN } from "@/features/progress/stats";
 import { topicName } from "@/features/tasks/topics";
-import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
 
 const list = "flex flex-col gap-3 text-[13px]";
 

@@ -2,9 +2,9 @@
 
 import { z } from "zod";
 import { idsByTopic } from "@/features/tasks/tasks";
-import type { TaskStatus } from "@/lib/progress";
-import { getSession } from "./auth";
+import { getSession } from "@/server/auth";
 import { getTaskStatuses } from "./progress";
+import type { TaskStatus } from "./status";
 
 export async function getStatuses(
   topic: string,

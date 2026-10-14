@@ -11,13 +11,13 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { VariantStrip } from "@/components/variant-strip";
+import type { TaskStatus } from "@/features/progress/status";
+import { getStatuses } from "@/features/progress/status-action";
 import { type RailTask, TaskRow } from "@/features/tasks/task-row";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import type { TaskStatus } from "@/lib/progress";
 import { statusSegment } from "@/lib/strip";
 import { useStoredFlag } from "@/lib/use-stored-flag";
-import { getStatuses } from "@/server/statuses";
 import { RailNumbers } from "./rail-numbers";
 
 interface SolveRailProps {

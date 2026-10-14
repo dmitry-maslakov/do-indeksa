@@ -4,7 +4,7 @@ import { FlameIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { getStreak } from "@/server/streak";
+import { getStreak } from "./streak-action";
 
 export function StreakBadge() {
   const t = useTranslations("Home");

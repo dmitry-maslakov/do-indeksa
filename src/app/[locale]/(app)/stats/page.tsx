@@ -6,11 +6,19 @@ import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";
+import {
+  getRunAttempts,
+  getRuns,
+  getTaskStats,
+} from "@/features/progress/history";
+import {
+  accuracyBy,
+  meanTimeByNumber,
+  totals,
+} from "@/features/progress/stats";
 import { tasks } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
-import { accuracyBy, meanTimeByNumber, totals } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getRunAttempts, getRuns, getTaskStats } from "@/server/history";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
 import { RecentRuns } from "./_components/recent-runs";

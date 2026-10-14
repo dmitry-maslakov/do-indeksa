@@ -4,7 +4,7 @@ import { ProgressBar } from "@/components/progress-bar";
 import { SearchTabs } from "@/components/search-tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
+import { type Accuracy, SAMPLE_MIN } from "@/features/progress/stats";
 
 interface AccuracyCardProps {
   rows: (Accuracy & { label: string })[];

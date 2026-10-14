@@ -1,4 +1,4 @@
-import type { TaskStatus } from "./progress";
+import type { TaskStatus } from "@/features/progress/status";
 
 export type Segment = "none" | "done" | "error" | "partial" | "current";
 

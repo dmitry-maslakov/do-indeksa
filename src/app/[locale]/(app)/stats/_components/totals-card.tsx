@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { totals } from "@/lib/stats";
+import type { totals } from "@/features/progress/stats";
 
 interface TotalsCardProps {
   totals?: ReturnType<typeof totals>;
