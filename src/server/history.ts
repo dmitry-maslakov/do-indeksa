@@ -1,9 +1,10 @@
 import "server-only";
-import { and, desc, eq, like, sql } from "drizzle-orm";
+import { and, desc, eq, gte, like, sql } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
 import { statAttempts } from "@/content/attempts";
 import { attempts, runs } from "@/db/schema";
+import { DAY, TIME_ZONE } from "@/lib/dates";
 import { db } from "./db";
 
 export const getRun = cache(async (userId: string, key?: string) => {
@@ -69,3 +70,19 @@ export const getRuns = cache(async (userId: string) =>
 
 export const getStatAttempts = async (userId: string) =>
   statAttempts(await getAttempts(userId));
+
+const RECENT_DAYS = 400;
+
+export async function getRecentAttemptDays(userId: string) {
+  const day = sql<string>`to_char(${attempts.createdAt} at time zone ${TIME_ZONE}, 'YYYY-MM-DD')`;
+  const rows = await db
+    .selectDistinct({ day })
+    .from(attempts)
+    .where(
+      and(
+        eq(attempts.userId, userId),
+        gte(attempts.createdAt, new Date(Date.now() - RECENT_DAYS * DAY)),
+      ),
+    );
+  return rows.map((row) => row.day);
+}
