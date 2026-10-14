@@ -4,11 +4,12 @@ import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { SignedIn } from "@/features/account/signed-in";
 import { positions } from "@/features/exam/exam";
+import { levels } from "@/features/tasks/level";
 import { topics } from "@/features/tasks/topics";
 import { Link } from "@/i18n/navigation";
 import { FilterSearch } from "./filter-search";
 import { FilterSelect } from "./filter-select";
-import { levels, statusFilters } from "./params";
+import { statusFilters } from "./params";
 
 interface BankFiltersProps {
   signedIn?: boolean;

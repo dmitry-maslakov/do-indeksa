@@ -4,9 +4,7 @@ import {
   createSerializer,
   parseAsStringLiteral,
 } from "nuqs/server";
-
-export const levels = ["easy", "medium", "hard"] as const;
-export type Level = (typeof levels)[number];
+import { levels } from "@/features/tasks/level";
 
 const sorts = ["easy", "hard"] as const;
 

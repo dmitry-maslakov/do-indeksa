@@ -2,14 +2,11 @@ import "server-only";
 import { allTasks, type Task } from "content-collections";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
-import type { Level } from "@/features/bank/params";
 import { numberOf } from "@/features/exam/exam";
 import { clip } from "@/lib/clip";
 import { renderMarkdown } from "@/lib/markdown";
+import { type Level, levelOf } from "./level";
 import { topicName } from "./topics";
-
-const levelOf = (difficulty: number): Level =>
-  difficulty <= 2 ? "easy" : difficulty === 3 ? "medium" : "hard";
 
 export interface TaskSummary {
   id: string;
