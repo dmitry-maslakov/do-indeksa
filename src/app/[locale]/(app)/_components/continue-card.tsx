@@ -21,6 +21,13 @@ interface ContinueCardProps {
   account?: CurrentRun;
 }
 
+const newest = (candidates: [string, ExamRun][]) =>
+  candidates.reduce<[string, ExamRun] | undefined>(
+    (best, candidate) =>
+      !best || candidate[1].updatedAt > best[1].updatedAt ? candidate : best,
+    undefined,
+  );
+
 export function ContinueCard({ start, account }: ContinueCardProps) {
   const t = useTranslations("Home");
   const variants = useTranslations("Variants");
@@ -28,8 +35,7 @@ export function ContinueCard({ start, account }: ContinueCardProps) {
   const runs = useExamStore((s) => s.runs);
   const candidates: [string, ExamRun][] = hydrated ? Object.entries(runs) : [];
   if (account) candidates.push([account.variantId, account.run]);
-  const [variantId, run] =
-    candidates.sort(([, a], [, b]) => b.updatedAt - a.updatedAt)[0] ?? [];
+  const [variantId, run] = newest(candidates) ?? [];
 
   if (!variantId || !run) {
     return (
