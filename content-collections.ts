@@ -1,7 +1,7 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
 import { routing } from "./src/i18n/routing";
-import { excerpt, headline, renderMarkdown } from "./src/lib/markdown";
+import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
 
 const root = process.env.CONTENT_DIR ?? "content";
@@ -56,6 +56,7 @@ const tasks = defineCollection({
       ...task,
       text: content,
       excerpt: excerpt(content),
+      preview: preview(content),
       headline: title,
       statement: await render(content),
       answer: await render(answer),

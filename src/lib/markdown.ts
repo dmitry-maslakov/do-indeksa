@@ -25,13 +25,17 @@ type Node = ReturnType<typeof processor.parse>["children"][number];
 
 const formula = "\0";
 
-function readable(node: Node): string {
-  if (node.type === "math" || node.type === "inlineMath") {
-    return /[\\^_{}]/.test(node.value) ? formula : node.value;
+function flatten(node: Node, math: (value: string) => string): string {
+  if (node.type === "math" || node.type === "inlineMath")
+    return math(node.value);
+  if ("children" in node) {
+    return node.children.map((child) => flatten(child, math)).join("");
   }
-  if ("children" in node) return node.children.map(readable).join("");
   return plainText(node);
 }
+
+const readable = (node: Node) =>
+  flatten(node, (value) => (/[\\^_{}]/.test(value) ? formula : value));
 
 function prose(nodes: Node[]) {
   const [words = "", ...rest] = nodes.map(readable).join(" ").split(formula);
@@ -43,6 +47,15 @@ function prose(nodes: Node[]) {
 
 export function excerpt(source: string) {
   return clip(prose(processor.parse(source).children), 160);
+}
+
+export function preview(source: string) {
+  return processor
+    .parse(source)
+    .children.map((node) => flatten(node, (value) => `$${value}$`))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 const sentences = new Intl.Segmenter("sr", { granularity: "sentence" });

@@ -64,9 +64,10 @@ export default async function SolvePage({
         <SolveRail
           current={id}
           topic={task.topic}
-          rail={rail.map((s) => ({
-            ...s,
-            meta: bank("meta", { number: s.number, level: s.level }),
+          rail={rail.map(({ id, preview, number, level }) => ({
+            id,
+            preview,
+            meta: bank("meta", { number, level }),
           }))}
           topics={positions.flatMap((p) => {
             const first = tasks.find((x) => x.topic === p.topic);
