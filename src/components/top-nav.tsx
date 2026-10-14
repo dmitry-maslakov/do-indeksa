@@ -1,5 +1,5 @@
-import { currentExam, examOptions } from "@/content/exam";
-import { ExamSwitcher } from "./exam-switcher";
+import { currentExam, examOptions } from "@/features/exam/exam";
+import { ExamSwitcher } from "@/features/exam/exam-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";

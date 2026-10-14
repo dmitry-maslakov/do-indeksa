@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DAY } from "./dates";
+import { DAY } from "@/lib/dates";
 import { gradeRun } from "./grade";
 
 const tasks = [

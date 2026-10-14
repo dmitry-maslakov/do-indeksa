@@ -4,15 +4,15 @@ import { and, eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { outcomesOf } from "@/content/outcomes";
-import { getVariant, pointsOf } from "@/content/variants";
 import { attempts, currentRuns, runs } from "@/db/schema";
 import { getTask } from "@/features/tasks/tasks";
 import { DAY } from "@/lib/dates";
-import type { ExamRun } from "@/lib/exam-store";
-import { gradeRun } from "@/lib/grade";
 import type { Outcomes, ReviewAttempt } from "@/lib/review";
-import { getSession } from "./auth";
-import { db } from "./db";
+import { getSession } from "@/server/auth";
+import { db } from "@/server/db";
+import type { ExamRun } from "./exam-store";
+import { gradeRun } from "./grade";
+import { getVariant, pointsOf } from "./variants";
 
 export interface GuestResult {
   saved: false;

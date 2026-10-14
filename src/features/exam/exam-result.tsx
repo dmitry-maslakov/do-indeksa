@@ -6,10 +6,10 @@ import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
-import type { ExamTask } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { review } from "@/lib/review";
-import type { GuestResult } from "@/server/runs";
+import type { GuestResult } from "./run-actions";
+import type { ExamTask } from "./variants";
 
 interface ExamResultProps {
   tasks: ExamTask[];

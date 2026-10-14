@@ -5,7 +5,7 @@ import { Score } from "@/components/score";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
-import type { RunSummary } from "@/content/runs";
+import type { RunSummary } from "@/features/exam/run-summaries";
 import { Link } from "@/i18n/navigation";
 import { reviewHref } from "@/lib/review-href";
 

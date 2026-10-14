@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DAY } from "./dates";
+import { DAY } from "@/lib/dates";
 import { type ExamRun, useExamStore } from "./exam-store";
 
 const meta = {

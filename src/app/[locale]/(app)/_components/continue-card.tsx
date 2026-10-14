@@ -4,17 +4,21 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
-import { Link } from "@/i18n/navigation";
-import { type ExamRun, useExamHydrated, useExamStore } from "@/lib/exam-store";
+import type { CurrentRun } from "@/features/exam/current-run";
+import {
+  type ExamRun,
+  useExamHydrated,
+  useExamStore,
+} from "@/features/exam/exam-store";
 import {
   answeredCount,
   blankSegments,
   minutesLeft,
   nextIndex,
   runSegments,
-} from "@/lib/run";
+} from "@/features/exam/run";
+import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
-import type { CurrentRun } from "@/server/current-run";
 
 interface ContinueCardProps {
   start: { id: string; title: string; tasks: number; minutes: number };

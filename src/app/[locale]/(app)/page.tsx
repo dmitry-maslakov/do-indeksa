@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { DailyBanner } from "@/components/daily-banner";
-import { minutesAt, positions } from "@/content/exam";
-import { contentVariants, minutesOf } from "@/content/variants";
+import { getCurrentRun } from "@/features/exam/current-run";
+import { DailyBanner } from "@/features/exam/daily-banner";
+import { minutesAt, positions } from "@/features/exam/exam";
+import { contentVariants, minutesOf } from "@/features/exam/variants";
 import { alternates } from "@/i18n/alternates";
 import {
   meanTimeByNumber,
@@ -14,7 +15,6 @@ import {
   weakest,
 } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getCurrentRun } from "@/server/current-run";
 import { getTaskStats } from "@/server/history";
 import { AccountNote } from "./_components/account-note";
 import { ContinueCard } from "./_components/continue-card";

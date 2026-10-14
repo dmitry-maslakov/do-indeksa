@@ -1,6 +1,6 @@
 import "server-only";
 import { getFormatter, getTranslations } from "next-intl/server";
-import type { ExamVariant } from "@/content/variants";
+import type { ExamVariant } from "./variants";
 
 export async function variantTitle(variant: ExamVariant) {
   const t = await getTranslations("Variants");

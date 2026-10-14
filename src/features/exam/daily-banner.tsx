@@ -4,9 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getVariant, minutesOf } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
 import { belgradeDate } from "@/lib/dates";
+import { getVariant, minutesOf } from "./variants";
 
 export function DailyBanner() {
   const t = useTranslations("Variants");

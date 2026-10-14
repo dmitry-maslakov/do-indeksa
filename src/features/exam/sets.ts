@@ -2,8 +2,8 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
 import { sets } from "@/db/schema";
-import { setCode } from "@/lib/set-code";
-import { db } from "./db";
+import { db } from "@/server/db";
+import { setCode } from "./set-code";
 
 export async function saveSet(taskIds: string[]) {
   const code = setCode(taskIds);

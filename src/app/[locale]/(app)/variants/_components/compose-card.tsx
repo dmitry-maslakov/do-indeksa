@@ -8,9 +8,9 @@ import { EmptyNote } from "@/components/empty-note";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import { type ComposeMode, composeModes } from "@/features/exam/compose";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
-import { type ComposeMode, composeModes } from "@/lib/compose";
 
 export function ComposeCard({
   topics,

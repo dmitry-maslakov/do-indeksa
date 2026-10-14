@@ -3,14 +3,14 @@
 import { RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
-import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import type { ExamTask } from "@/content/variants";
 import { Link } from "@/i18n/navigation";
-import type { ComposeMode } from "@/lib/compose";
+import type { ComposeMode } from "./compose";
+import { ShareButton } from "./share-button";
 import { TaskLines } from "./task-lines";
+import type { ExamTask } from "./variants";
 
 interface ExamIntroProps {
   title: string;

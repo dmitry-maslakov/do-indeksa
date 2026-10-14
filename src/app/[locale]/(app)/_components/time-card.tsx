@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { positions } from "@/content/exam";
+import { positions } from "@/features/exam/exam";
 
 interface TimeRow {
   number: number;

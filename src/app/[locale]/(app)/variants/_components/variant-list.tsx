@@ -1,7 +1,7 @@
 import type { Variant } from "content-collections";
 import { Card } from "@/components/ui/card";
-import { VariantRow } from "@/components/variant-row";
-import type { RunSummary } from "@/content/runs";
+import type { RunSummary } from "@/features/exam/run-summaries";
+import { VariantRow } from "@/features/exam/variant-row";
 
 export function VariantList({
   variants,

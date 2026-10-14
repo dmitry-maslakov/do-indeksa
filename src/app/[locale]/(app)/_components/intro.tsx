@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
-import { durationHours, maxPoints, positions } from "@/content/exam";
-import { byPosition } from "@/content/variants";
+import { durationHours, maxPoints, positions } from "@/features/exam/exam";
+import { byPosition } from "@/features/exam/variants";
 import { Link } from "@/i18n/navigation";
 
 export function Intro() {

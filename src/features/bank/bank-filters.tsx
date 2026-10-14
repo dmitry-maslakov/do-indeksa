@@ -3,7 +3,7 @@ import { LinkTabs } from "@/components/link-tabs";
 import { SignedIn } from "@/components/signed-in";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
-import { positions } from "@/content/exam";
+import { positions } from "@/features/exam/exam";
 import { topics } from "@/features/tasks/topics";
 import { Link } from "@/i18n/navigation";
 import { FilterSearch } from "./filter-search";
