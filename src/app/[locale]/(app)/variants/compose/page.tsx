@@ -15,7 +15,8 @@ export default async function ComposePage({
 }: PageProps<"/[locale]/variants/compose">) {
   await connection();
   const { mode, topic } = composeSchema.parse(await searchParams);
-  const session = await getSession();
+  const needsHistory = mode === "weak" || mode === "unsolved";
+  const session = needsHistory ? await getSession() : null;
   const stats = session ? await getTaskStats(session.user.id) : [];
   const { ids, fallback } = composeTaskIds(
     {
