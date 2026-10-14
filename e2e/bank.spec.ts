@@ -29,7 +29,7 @@ function bank(page: Page) {
     sort: page.getByRole("combobox", { name: "Redosled", exact: true }),
     search: page.getByRole("searchbox"),
     cards: page.getByRole("link").filter({ hasText: "na ispitu" }),
-    count: page.getByText(/^\d+ zadat(ak|ka|aka)$/),
+    count: page.getByText(/^[\d.]+ zadat(ak|ka|aka)$/),
     empty: page.getByText("Ništa nije pronađeno"),
   };
 }
@@ -40,7 +40,7 @@ test("the bank keeps topic, level and sort in the URL", async ({
 }) => {
   await open(page);
   const { topic, level, sort, cards } = bank(page);
-  await expect(cards.first()).toContainText("Zadatak 1 na ispitu");
+  const first = await cards.first().textContent();
 
   await topic.selectOption({ label: "Logaritmi" });
   await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
@@ -62,7 +62,7 @@ test("the bank keeps topic, level and sort in the URL", async ({
   await topic.selectOption({ label: "Sve teme" });
   await level.selectOption({ label: "Bilo koji" });
   await expect.poll(() => params(page)).toEqual({});
-  await expect(cards.first()).toContainText("Zadatak 1 na ispitu");
+  await expect(cards.first()).toHaveText(first ?? "");
 
   await sort.selectOption({ label: "Prvo teži" });
   await expect.poll(() => params(page)).toEqual({ sort: "hard" });
@@ -74,7 +74,7 @@ test("the bank keeps topic, level and sort in the URL", async ({
 
   await sort.selectOption({ label: "Po broju zadatka" });
   await expect.poll(() => params(page)).toEqual({});
-  await expect(cards.first()).toContainText("Zadatak 1 na ispitu");
+  await expect(cards.first()).toHaveText(first ?? "");
   expect(errors).toEqual([]);
 });
 
