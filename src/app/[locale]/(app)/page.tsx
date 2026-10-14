@@ -9,13 +9,13 @@ import { alternates } from "@/i18n/alternates";
 import {
   meanTimeByNumber,
   mistakes,
-  type StatAttempt,
+  type TaskStat,
   warming,
   weakest,
 } from "@/lib/stats";
 import { getSession } from "@/server/auth";
 import { getCurrentRun } from "@/server/current-run";
-import { getStatAttempts } from "@/server/history";
+import { getTaskStats } from "@/server/history";
 import { AccountNote } from "./_components/account-note";
 import { ContinueCard } from "./_components/continue-card";
 import { EntryCards } from "./_components/entry-cards";
@@ -37,7 +37,7 @@ async function loadStats() {
   const session = await getSession();
   return {
     signedIn: Boolean(session),
-    attempts: session ? await getStatAttempts(session.user.id) : [],
+    stats: session ? await getTaskStats(session.user.id) : [],
   };
 }
 
@@ -48,9 +48,9 @@ async function loadCurrentRun() {
 
 const topics = positions.map((p) => p.topic);
 
-const slowest = (attempts: StatAttempt[]) =>
+const slowest = (stats: TaskStat[]) =>
   meanTimeByNumber(
-    attempts,
+    stats,
     positions.map((p) => p.number),
   )
     .flatMap((row) =>
@@ -95,7 +95,7 @@ export default function HomePage() {
           <Suspense fallback={<TimeCard />}>
             <Await promise={stats}>
               {(s) =>
-                s.attempts.length > 0 && <TimeCard rows={slowest(s.attempts)} />
+                s.stats.length > 0 && <TimeCard rows={slowest(s.stats)} />
               }
             </Await>
           </Suspense>
@@ -117,15 +117,14 @@ export default function HomePage() {
             <Await promise={stats}>
               {(s) => {
                 if (!s.signedIn) return <AccountNote />;
-                const now = new Date();
                 return (
                   <>
                     <WeakTopics
-                      topics={weakest(s.attempts, topics, now)}
-                      warming={warming(s.attempts, topics, now)}
+                      topics={weakest(s.stats, topics)}
+                      warming={warming(s.stats, topics)}
                     />
-                    {s.attempts.length > 0 && (
-                      <MistakesCard taskIds={mistakes(s.attempts)} />
+                    {s.stats.length > 0 && (
+                      <MistakesCard taskIds={mistakes(s.stats)} />
                     )}
                   </>
                 );

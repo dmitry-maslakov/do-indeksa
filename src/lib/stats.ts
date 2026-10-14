@@ -1,13 +1,16 @@
 import { belgradeDate, DAY } from "./dates";
-import { latestStatuses } from "./progress";
 
-export interface StatAttempt {
+export interface TaskStat {
   taskId: string;
   number: number;
   topic: string;
-  correct: boolean;
+  attempts: number;
+  right: number;
+  recentAttempts: number;
+  recentRight: number;
   durationMs: number;
-  createdAt: Date;
+  firstRight: boolean;
+  latestRight: boolean;
 }
 
 export interface Accuracy {
@@ -18,75 +21,77 @@ export interface Accuracy {
 
 export const SAMPLE_MIN = 3;
 
+export const ACCURACY_DAYS = 30;
+
+const sum = (stats: TaskStat[], of: (stat: TaskStat) => number) =>
+  stats.reduce((total, stat) => total + of(stat), 0);
+
 export function accuracyBy<K extends string | number>(
-  attempts: StatAttempt[],
+  stats: TaskStat[],
   keys: K[],
-  keyOf: (a: StatAttempt) => K,
+  keyOf: (stat: TaskStat) => K,
 ): Accuracy[] {
   return keys.map((key) => {
-    const mine = attempts.filter((a) => keyOf(a) === key);
-    const right = mine.filter((a) => a.correct).length;
+    const mine = stats.filter((s) => keyOf(s) === key);
+    const total = sum(mine, (s) => s.attempts);
     return {
       key,
-      total: mine.length,
+      total,
       pct:
-        mine.length < SAMPLE_MIN
+        total < SAMPLE_MIN
           ? null
-          : Math.round((right / mine.length) * 100),
+          : Math.round((sum(mine, (s) => s.right) / total) * 100),
     };
   });
 }
 
-export function meanTimeByNumber(attempts: StatAttempt[], numbers: number[]) {
+export function meanTimeByNumber(stats: TaskStat[], numbers: number[]) {
   return numbers.map((number) => {
-    const mine = attempts.filter((a) => a.number === number);
+    const mine = stats.filter((s) => s.number === number);
+    const attempts = sum(mine, (s) => s.attempts);
     return {
       number,
-      meanMs:
-        mine.length === 0
-          ? null
-          : mine.reduce((sum, a) => sum + a.durationMs, 0) / mine.length,
+      meanMs: attempts === 0 ? null : sum(mine, (s) => s.durationMs) / attempts,
     };
   });
 }
 
-export function totals(newestFirst: StatAttempt[]) {
-  const statuses = latestStatuses(newestFirst);
-  const first = new Map<string, boolean>();
-  for (const a of newestFirst) first.set(a.taskId, a.correct);
-  const firstRight = [...first.values()].filter(Boolean).length;
+export function totals(stats: TaskStat[]) {
+  const firstRight = stats.filter((s) => s.firstRight).length;
   return {
-    solved: [...statuses.values()].filter((s) => s === "solved").length,
-    wrong: [...statuses.values()].filter((s) => s === "wrong").length,
+    solved: stats.filter((s) => s.latestRight).length,
+    wrong: stats.filter((s) => !s.latestRight).length,
     firstTryPct:
-      first.size === 0 ? null : Math.round((firstRight / first.size) * 100),
-    spentMs: newestFirst.reduce((sum, a) => sum + a.durationMs, 0),
+      stats.length === 0 ? null : Math.round((firstRight / stats.length) * 100),
+    spentMs: sum(stats, (s) => s.durationMs),
   };
 }
 
-const recentBy = (attempts: StatAttempt[], topics: string[], now: Date) =>
+const recentBy = (stats: TaskStat[], topics: string[]) =>
   accuracyBy(
-    attempts.filter((a) => now.getTime() - a.createdAt.getTime() <= 30 * DAY),
+    stats.map((s) => ({
+      ...s,
+      attempts: s.recentAttempts,
+      right: s.recentRight,
+    })),
     topics,
-    (a) => a.topic,
+    (s) => s.topic,
   );
 
-export function weakest(attempts: StatAttempt[], topics: string[], now: Date) {
-  return recentBy(attempts, topics, now)
+export function weakest(stats: TaskStat[], topics: string[]) {
+  return recentBy(stats, topics)
     .filter((a): a is Accuracy & { pct: number } => a.pct !== null)
     .sort((a, b) => a.pct - b.pct);
 }
 
-export function warming(attempts: StatAttempt[], topics: string[], now: Date) {
-  return recentBy(attempts, topics, now)
+export function warming(stats: TaskStat[], topics: string[]) {
+  return recentBy(stats, topics)
     .filter((a) => a.pct === null && a.total > 0)
     .sort((a, b) => b.total - a.total);
 }
 
-export function mistakes(newestFirst: StatAttempt[]) {
-  return [...latestStatuses(newestFirst)]
-    .filter(([, status]) => status === "wrong")
-    .map(([taskId]) => taskId);
+export function mistakes(stats: TaskStat[]) {
+  return stats.filter((s) => !s.latestRight).map((s) => s.taskId);
 }
 
 const dayBefore = (day: string) =>

@@ -3,37 +3,52 @@ import {
   accuracyBy,
   meanTimeByNumber,
   mistakes,
-  type StatAttempt,
   streak,
+  type TaskStat,
   totals,
   warming,
   weakest,
 } from "./stats";
 
-const at = (
+const minutes = (count: number) => count * 60_000;
+
+const stat = (
   taskId: string,
   number: number,
-  correct: boolean,
-  minutes: number,
-): StatAttempt => ({
+  extra: Partial<TaskStat> = {},
+): TaskStat => ({
   taskId,
   number,
   topic: `t${number}`,
-  correct,
-  durationMs: minutes * 60_000,
-  createdAt: new Date(0),
+  attempts: 1,
+  right: 0,
+  recentAttempts: 0,
+  recentRight: 0,
+  durationMs: 0,
+  firstRight: false,
+  latestRight: false,
+  ...extra,
 });
 
-const newestFirst = [
-  at("a", 1, true, 10),
-  at("b", 1, false, 20),
-  at("a", 1, false, 30),
-  at("c", 2, true, 5),
+const stats = [
+  stat("a", 1, {
+    attempts: 2,
+    right: 1,
+    durationMs: minutes(40),
+    latestRight: true,
+  }),
+  stat("b", 1, { durationMs: minutes(20) }),
+  stat("c", 2, {
+    right: 1,
+    durationMs: minutes(5),
+    firstRight: true,
+    latestRight: true,
+  }),
 ];
 
 describe("stats", () => {
   it("hides accuracy below the sample minimum", () => {
-    expect(accuracyBy(newestFirst, [1, 2, 3], (a) => a.number)).toEqual([
+    expect(accuracyBy(stats, [1, 2, 3], (s) => s.number)).toEqual([
       { key: 1, total: 3, pct: 33 },
       { key: 2, total: 1, pct: null },
       { key: 3, total: 0, pct: null },
@@ -41,29 +56,28 @@ describe("stats", () => {
   });
 
   it("averages time per number", () => {
-    expect(meanTimeByNumber(newestFirst, [1, 3])).toEqual([
-      { number: 1, meanMs: 20 * 60_000 },
+    expect(meanTimeByNumber(stats, [1, 3])).toEqual([
+      { number: 1, meanMs: minutes(20) },
       { number: 3, meanMs: null },
     ]);
   });
 
   it("counts latest statuses and first tries", () => {
-    expect(totals(newestFirst)).toEqual({
+    expect(totals(stats)).toEqual({
       solved: 2,
       wrong: 1,
       firstTryPct: 33,
-      spentMs: 65 * 60_000,
+      spentMs: minutes(65),
     });
+  });
+
+  it("has no first tries without attempts", () => {
+    expect(totals([]).firstTryPct).toBeNull();
   });
 });
 
 describe("home folds", () => {
   const now = new Date("2026-10-07T10:00:00Z");
-  const day = (n: number, extra: Partial<StatAttempt> = {}) => ({
-    ...at("a", 1, false, 1),
-    createdAt: new Date(now.getTime() - n * 24 * 60 * 60 * 1000),
-    ...extra,
-  });
 
   it("counts consecutive days up to today or yesterday", () => {
     expect(
@@ -87,30 +101,38 @@ describe("home folds", () => {
 
   it("lists tasks whose latest attempt is wrong", () => {
     const rows = [
-      day(1, { taskId: "a", correct: true }),
-      day(2, { taskId: "a" }),
-      day(3, { taskId: "b" }),
-      day(9, { taskId: "c" }),
+      stat("a", 1, { latestRight: true }),
+      stat("b", 1),
+      stat("c", 1),
     ];
     expect(mistakes(rows)).toEqual(["b", "c"]);
   });
 
+  const recent = (
+    taskId: string,
+    topic: string,
+    recentAttempts: number,
+    recentRight: number,
+  ) => stat(taskId, 1, { topic, recentAttempts, recentRight });
+
   const topicRows = [
-    ...[1, 2, 3].map((n) => day(n, { topic: "x", correct: n === 1 })),
-    ...[1, 2, 3].map((n) => day(n, { topic: "y", correct: true })),
-    day(1, { topic: "z" }),
-    ...[40, 41, 42].map((n) => day(n, { topic: "w" })),
+    recent("x1", "x", 2, 1),
+    recent("x2", "x", 1, 0),
+    recent("y1", "y", 3, 3),
+    recent("z1", "z", 1, 0),
+    stat("w1", 1, { topic: "w", attempts: 3 }),
   ];
 
   it("ranks the weakest topics with enough attempts", () => {
-    expect(
-      weakest(topicRows, ["w", "x", "y", "z"], now).map((a) => a.key),
-    ).toEqual(["x", "y"]);
+    expect(weakest(topicRows, ["w", "x", "y", "z"]).map((a) => a.key)).toEqual([
+      "x",
+      "y",
+    ]);
   });
 
   it("lists recent topics below the sample minimum", () => {
-    const rows = [...topicRows, day(2, { topic: "v" }), day(5, { topic: "v" })];
-    expect(warming(rows, ["u", "v", "w", "x", "y", "z"], now)).toEqual([
+    const rows = [...topicRows, recent("v1", "v", 2, 1)];
+    expect(warming(rows, ["u", "v", "w", "x", "y", "z"])).toEqual([
       { key: "v", total: 2, pct: null },
       { key: "z", total: 1, pct: null },
     ]);

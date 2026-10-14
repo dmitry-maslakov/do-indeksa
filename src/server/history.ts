@@ -1,10 +1,22 @@
 import "server-only";
-import { and, desc, eq, gte, like, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  inArray,
+  like,
+  type SQL,
+  sql,
+  sum,
+} from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
-import { statAttempts } from "@/content/attempts";
+import { taskStats } from "@/content/task-stats";
 import { attempts, runs } from "@/db/schema";
 import { DAY, TIME_ZONE } from "@/lib/dates";
+import { ACCURACY_DAYS } from "@/lib/stats";
 import { db } from "./db";
 
 export const getRun = cache(async (userId: string, key?: string) => {
@@ -55,6 +67,18 @@ export const getAttempts = cache(async (userId: string) =>
     .orderBy(desc(attempts.createdAt)),
 );
 
+export const getRunAttempts = (userId: string, runIds: string[]) =>
+  db
+    .select({
+      taskId: attempts.taskId,
+      runId: attempts.runId,
+      parts: attempts.parts,
+      correct: attempts.correct,
+      durationMs: attempts.durationMs,
+    })
+    .from(attempts)
+    .where(and(eq(attempts.userId, userId), inArray(attempts.runId, runIds)));
+
 export const getRuns = cache(async (userId: string) =>
   db
     .select({
@@ -68,8 +92,31 @@ export const getRuns = cache(async (userId: string) =>
     .orderBy(desc(runs.finishedAt)),
 );
 
-export const getStatAttempts = async (userId: string) =>
-  statAttempts(await getAttempts(userId));
+const countWhere = (condition: SQL) =>
+  sql<number>`count(*) filter (where ${condition})`.mapWith(Number);
+
+export async function getTaskStats(userId: string) {
+  const recent = gte(
+    attempts.createdAt,
+    new Date(Date.now() - ACCURACY_DAYS * DAY),
+  );
+  const right = eq(attempts.correct, true);
+  const rows = await db
+    .select({
+      taskId: attempts.taskId,
+      attempts: count(),
+      right: countWhere(right),
+      recentAttempts: countWhere(recent),
+      recentRight: countWhere(sql`${recent} and ${right}`),
+      durationMs: sum(attempts.durationMs).mapWith(Number),
+      firstRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt}))[1]`,
+      latestRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt} desc))[1]`,
+    })
+    .from(attempts)
+    .where(eq(attempts.userId, userId))
+    .groupBy(attempts.taskId);
+  return taskStats(rows);
+}
 
 const RECENT_DAYS = 400;
 
