@@ -7,8 +7,9 @@ import { SignInCard } from "@/features/account/sign-in-card";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";
 import {
+  countRuns,
+  getRecentRuns,
   getRunAttempts,
-  getRuns,
   getTaskStats,
 } from "@/features/progress/history";
 import {
@@ -30,18 +31,20 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
+const recentRunCount = 5;
+
 async function loadStats() {
   const session = await getSession();
   if (!session) return undefined;
   const userId = session.user.id;
-  const [byTask, all] = await Promise.all([
+  const [byTask, recent, runCount] = await Promise.all([
     getTaskStats(userId),
-    getRuns(userId),
+    getRecentRuns(userId, recentRunCount),
+    countRuns(userId),
   ]);
-  const recent = all.slice(0, 5);
   return {
     byTask,
-    runCount: all.length,
+    runCount,
     runs: await summarizeRuns(
       recent,
       await getRunAttempts(
