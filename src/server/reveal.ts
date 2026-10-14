@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { getTask } from "@/content/tasks";
+import { renderTask } from "@/content/tasks";
 
 const partSchema = z.union([
   z.literal("answer"),
@@ -15,10 +15,10 @@ export async function reveal(
   taskId: string,
   part: RevealPart,
 ): Promise<string | null> {
-  const task = getTask(z.string().parse(taskId));
+  const html = await renderTask(z.string().parse(taskId));
   const which = partSchema.parse(part);
-  if (!task) return null;
-  if (which === "answer") return task.answer;
-  if (which === "solution") return task.solution;
-  return task.hints[which] ?? null;
+  if (!html) return null;
+  if (which === "answer") return html.answer;
+  if (which === "solution") return html.solution;
+  return html.hints[which] ?? null;
 }

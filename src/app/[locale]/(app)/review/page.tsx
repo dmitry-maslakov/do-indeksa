@@ -108,7 +108,7 @@ async function RunReview({
 }: {
   found: NonNullable<Awaited<ReturnType<typeof getRun>>>;
 }) {
-  const tasks = tasksFor(found.run.taskIds, await getLocale());
+  const tasks = await tasksFor(found.run.taskIds, await getLocale());
   const result = review(
     tasks.map((task) => ({ ...task, taskId: task.id })),
     found.attempts,

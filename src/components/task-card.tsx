@@ -1,10 +1,10 @@
 import { cn } from "cn";
 import { StarIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import type { TaskSummary } from "@/content/tasks";
+import { renderTask, type TaskSummary } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { Link } from "@/i18n/navigation";
 import type { Progress, TaskStatus } from "@/lib/progress";
@@ -15,9 +15,15 @@ interface TaskCardProps {
   favorite?: boolean;
 }
 
-function TaskCard({ task, status = "new", favorite = false }: TaskCardProps) {
-  const t = useTranslations("Bank");
-  const locale = useLocale();
+async function TaskCard({
+  task,
+  status = "new",
+  favorite = false,
+}: TaskCardProps) {
+  const t = await getTranslations("Bank");
+  const locale = await getLocale();
+  const html = await renderTask(task.id);
+  if (!html) return null;
 
   return (
     <Link
@@ -55,7 +61,7 @@ function TaskCard({ task, status = "new", favorite = false }: TaskCardProps) {
             />
           </div>
         </div>
-        <MathHtml html={task.statement} />
+        <MathHtml html={html.statement} />
       </Card>
     </Link>
   );

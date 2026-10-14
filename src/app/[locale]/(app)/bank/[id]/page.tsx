@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { positions } from "@/content/exam";
 import {
   getTask,
+  renderTask,
   siblings,
   summarize,
   tasks,
@@ -53,6 +54,8 @@ export default async function SolvePage({
   const bank = await getTranslations("Bank");
   const locale = await getLocale();
   const summary = summarize(task);
+  const html = await renderTask(id);
+  if (!html) notFound();
   const rail = siblings(task);
   const hintNumbers = task.hints.map((_, i) => i + 1);
   const next = rail[(rail.findIndex((s) => s.id === id) + 1) % rail.length];
@@ -98,12 +101,12 @@ export default async function SolvePage({
               <FavoriteButton taskId={task.id} />
             </div>
             <MathHtml
-              html={task.statement}
+              html={html.statement}
               className="font-semibold text-lg tracking-tight md:text-task-lg"
             />
             <AnswerForm
               taskId={task.id}
-              labels={task.check.map((c) => c.label)}
+              labels={html.labels}
               skip={next && next.id !== id ? `/bank/${next.id}` : undefined}
             />
             <div className="flex flex-col gap-2">

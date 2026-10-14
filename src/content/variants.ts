@@ -4,7 +4,7 @@ import type { Locale } from "next-intl";
 import { pick } from "@/lib/pick";
 import { parseVariantId } from "@/lib/variant-id";
 import { dailySize, numberOf, positionOf, positions } from "./exam";
-import { getTask, tasks } from "./tasks";
+import { getTask, renderTask, tasks } from "./tasks";
 import { topicName } from "./topics";
 
 export const officialVariants = allVariants
@@ -70,20 +70,26 @@ export interface ExamTask {
   labels: (string | null)[];
 }
 
-export function tasksFor(taskIds: string[], locale: Locale): ExamTask[] {
-  return taskIds.flatMap((id) => {
-    const task = getTask(id);
-    if (!task) return [];
-    const number = numberOf(task.topic);
-    return {
-      id,
-      number,
-      topic: task.topic,
-      topicName: topicName(task.topic, locale),
-      points: pointsOf(id),
-      minutes: positionOf(task.topic)?.minutes ?? 0,
-      statement: task.statement,
-      labels: task.check.map((c) => c.label),
-    };
-  });
+export async function tasksFor(
+  taskIds: string[],
+  locale: Locale,
+): Promise<ExamTask[]> {
+  const tasks = await Promise.all(
+    taskIds.map(async (id) => {
+      const task = getTask(id);
+      const html = await renderTask(id);
+      if (!task || !html) return [];
+      return {
+        id,
+        number: numberOf(task.topic),
+        topic: task.topic,
+        topicName: topicName(task.topic, locale),
+        points: pointsOf(id),
+        minutes: positionOf(task.topic)?.minutes ?? 0,
+        statement: html.statement,
+        labels: html.labels,
+      };
+    }),
+  );
+  return tasks.flat();
 }
