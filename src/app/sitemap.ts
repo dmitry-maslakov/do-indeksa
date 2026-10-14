@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
 import { contentVariants } from "@/features/exam/variants";
+import { launchPages } from "@/features/launch/launch";
 import { tasks } from "@/features/tasks/tasks";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { chunk } from "@/lib/chunk";
-import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
 import { env } from "@/server/env";
 
