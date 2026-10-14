@@ -1,3 +1,4 @@
+import { sumBy } from "es-toolkit";
 import "server-only";
 import { allExams } from "content-collections";
 
@@ -16,7 +17,7 @@ export const examOptions = allExams.map((e) => ({
 
 export const positions = exam.positions;
 
-export const maxPoints = positions.reduce((sum, p) => sum + p.points, 0);
+export const maxPoints = sumBy(positions, (p) => p.points);
 
 export const durationMinutes = exam.durationMinutes;
 

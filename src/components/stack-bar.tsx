@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { sumBy } from "es-toolkit";
 
 interface StackBarProps {
   parts: { key: string; value: number; className: string }[];
@@ -6,7 +7,7 @@ interface StackBarProps {
 }
 
 export function StackBar({ parts, label }: StackBarProps) {
-  const total = parts.reduce((sum, p) => sum + p.value, 0) || 1;
+  const total = sumBy(parts, (p) => p.value) || 1;
 
   return (
     <div

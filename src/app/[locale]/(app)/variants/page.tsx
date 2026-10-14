@@ -1,3 +1,4 @@
+import { sumBy } from "es-toolkit";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -123,7 +124,7 @@ async function CatalogTab({
 
 function Catalog({ children }: { children: ReactNode }) {
   const t = useTranslations("Variants");
-  const minutes = positions.reduce((sum, p) => sum + p.minutes, 0);
+  const minutes = sumBy(positions, (p) => p.minutes);
 
   return (
     <div className="flex flex-col gap-3.5 md:col-start-1 md:row-span-2 md:row-start-1">

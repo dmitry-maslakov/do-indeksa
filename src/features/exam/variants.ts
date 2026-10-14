@@ -1,3 +1,4 @@
+import { sumBy } from "es-toolkit";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
@@ -45,10 +46,10 @@ export const byNumber = (ids: string[]) =>
   [...ids].sort((a, b) => numberOfTask(a) - numberOfTask(b));
 
 export function minutesOf(variant: ExamVariant) {
-  return variant.taskIds.reduce((sum, id) => {
+  return sumBy(variant.taskIds, (id) => {
     const task = getTask(id);
-    return sum + (task ? (positionOf(task.topic)?.minutes ?? 0) : 0);
-  }, 0);
+    return task ? (positionOf(task.topic)?.minutes ?? 0) : 0;
+  });
 }
 
 export function pointsOf(taskId: string) {

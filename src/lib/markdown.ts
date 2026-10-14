@@ -1,3 +1,4 @@
+import { truncate } from "es-toolkit/compat";
 import { toString as plainText } from "mdast-util-to-string";
 import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
@@ -5,7 +6,6 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import { clip } from "./clip";
 
 const processor = unified()
   .use(remarkParse)
@@ -46,7 +46,11 @@ function prose(nodes: Node[]) {
 }
 
 export function excerpt(source: string) {
-  return clip(prose(processor.parse(source).children), 160);
+  return truncate(prose(processor.parse(source).children), {
+    length: 160,
+    separator: " ",
+    omission: "…",
+  });
 }
 
 export function preview(source: string) {

@@ -1,3 +1,4 @@
+import { sumBy } from "es-toolkit";
 import { type Segment, segmentOf } from "@/lib/strip";
 
 export interface ReviewTask {
@@ -73,11 +74,11 @@ export function review<A extends ReviewAttempt>(
 
   return {
     rows,
-    score: Math.round(rows.reduce((sum, r) => sum + r.earned, 0) * 10) / 10,
-    max: rows.reduce((sum, r) => sum + r.points, 0),
+    score: Math.round(sumBy(rows, (r) => r.earned) * 10) / 10,
+    max: sumBy(rows, (r) => r.points),
     correct: rows.filter((r) => r.attempt?.correct).length,
-    spentMs: rows.reduce((sum, r) => sum + (r.attempt?.durationMs ?? 0), 0),
-    normMs: rows.reduce((sum, r) => sum + r.minutes * 60_000, 0),
+    spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
+    normMs: sumBy(rows, (r) => r.minutes * 60_000),
     lost: [...lost]
       .map(([topic, points]) => ({ topic, points }))
       .sort((a, b) => b.points - a.points),

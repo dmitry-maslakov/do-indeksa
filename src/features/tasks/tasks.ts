@@ -1,9 +1,10 @@
+import { sumBy } from "es-toolkit";
+import { truncate } from "es-toolkit/compat";
 import "server-only";
 import { allTasks, type Task } from "content-collections";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
 import { numberOf } from "@/features/exam/exam";
-import { clip } from "@/lib/clip";
 import { renderMarkdown } from "@/lib/markdown";
 import { type Level, levelOf } from "./level";
 import { topicName } from "./topics";
@@ -50,9 +51,16 @@ type RenderedTask = {
 const rendered = new LRUCache<string, RenderedTask>({
   maxSize: 32 * 1024 * 1024,
   sizeCalculation: (html) =>
-    [html.statement, html.answer, html.solution, ...html.hints, ...html.labels]
-      .map((part) => part?.length ?? 0)
-      .reduce((sum, length) => sum + length, 1),
+    sumBy(
+      [
+        html.statement,
+        html.answer,
+        html.solution,
+        ...html.hints,
+        ...html.labels,
+      ],
+      (part) => part?.length ?? 0,
+    ) + 1,
 });
 
 export async function renderTask(id: string) {
@@ -91,5 +99,9 @@ export function taskTitle(
   meta: ReturnType<typeof useTranslations<"Metadata">>,
 ) {
   const topic = topicName(task.topic, locale);
-  return clip(meta("task", { topic, headline: task.headline }), 60);
+  return truncate(meta("task", { topic, headline: task.headline }), {
+    length: 60,
+    separator: " ",
+    omission: "…",
+  });
 }
