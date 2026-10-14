@@ -1,12 +1,16 @@
 "use server";
 
+import { z } from "zod";
+import { idsByTopic } from "@/content/tasks";
 import type { TaskStatus } from "@/lib/progress";
 import { getSession } from "./auth";
-import { getProgress } from "./progress";
+import { getTaskStatuses } from "./progress";
 
-export async function getStatuses(): Promise<Record<string, TaskStatus>> {
+export async function getStatuses(
+  topic: string,
+): Promise<Record<string, TaskStatus>> {
   const session = await getSession();
   if (!session) return {};
-  const { statuses } = await getProgress(session.user.id);
-  return Object.fromEntries(statuses);
+  const ids = idsByTopic.get(z.string().parse(topic)) ?? [];
+  return Object.fromEntries(await getTaskStatuses(session.user.id, ids));
 }

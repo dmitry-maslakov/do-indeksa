@@ -37,9 +37,9 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
   const userId = session?.user.id;
 
   useEffect(() => {
-    if (userId) getStatuses().then(setStatuses);
+    if (userId) getStatuses(topic).then(setStatuses);
     else setStatuses({});
-  }, [userId]);
+  }, [userId, topic]);
 
   if (collapsed) {
     return (
