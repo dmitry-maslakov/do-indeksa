@@ -89,10 +89,6 @@ export function warming(stats: TaskStat[], topics: string[]) {
     .sort((a, b) => b.total - a.total);
 }
 
-export function mistakes(stats: TaskStat[]) {
-  return stats.filter((s) => !s.latestRight).map((s) => s.taskId);
-}
-
 const dayBefore = (day: string) =>
   new Date(Date.parse(`${day}T12:00:00Z`) - dayMs).toISOString().slice(0, 10);
 
