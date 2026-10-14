@@ -2,6 +2,7 @@ import { orderBy, sumBy } from "es-toolkit";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
+import type { ReviewTask } from "@/features/review/review";
 import { getTask, idsByTopic, renderTask } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
 import { dailySize, numberOf, positionOf, positions } from "./exam";
@@ -57,6 +58,21 @@ export function minutesOf(variant: ExamVariant) {
 export function pointsOf(taskId: string) {
   const task = getTask(taskId);
   return task ? (positionOf(task.topic)?.points ?? 0) : 0;
+}
+
+export function reviewTasks(taskIds: string[]): ReviewTask[] {
+  return taskIds.flatMap((taskId) => {
+    const task = getTask(taskId);
+    if (!task) return [];
+    const position = positionOf(task.topic);
+    return {
+      taskId,
+      number: position?.number ?? 0,
+      topic: task.topic,
+      points: position?.points ?? 0,
+      minutes: position?.minutes ?? 0,
+    };
+  });
 }
 
 export interface ExamTask {

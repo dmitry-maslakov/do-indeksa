@@ -3,7 +3,7 @@ import type { Locale } from "next-intl";
 import { review } from "@/features/review/review";
 import type { Segment } from "@/lib/strip";
 import { variantTitle } from "./variant-title";
-import { getVariant, tasksFor } from "./variants";
+import { getVariant, reviewTasks } from "./variants";
 
 interface RunRow {
   id: string;
@@ -40,13 +40,7 @@ export function summarizeRuns(
   return Promise.all(
     runs.map(async (run) => {
       const variant = getVariant(run.variantId);
-      const result = review(
-        (await tasksFor(run.taskIds, locale)).map((task) => ({
-          ...task,
-          taskId: task.id,
-        })),
-        byRun.get(run.id) ?? [],
-      );
+      const result = review(reviewTasks(run.taskIds), byRun.get(run.id) ?? []);
       return {
         id: run.id,
         variantId: run.variantId,
