@@ -1,0 +1,51 @@
+import type { Page } from "@playwright/test";
+import type { Client } from "pg";
+import { expect, test } from "./fixtures";
+
+test.use({ viewport: { width: 1280, height: 400 } });
+
+const seedRuns = (db: Client, userId: string, count: number) =>
+  db.query(
+    `insert into runs (id, user_id, kind, variant_id, task_ids, started_at, finished_at)
+     select gen_random_uuid(), $1::text, 'daily'::run_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
+       '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour'
+     from generate_series(1, $2::int) n`,
+    [userId, count],
+  );
+
+const feed = async (page: Page) =>
+  (await page.request.get("/api/runs?offset=0&locale=sr-Latn")).json();
+
+test("the run history loads older runs while scrolling", async ({
+  page,
+  auth,
+  errors,
+}) => {
+  await seedRuns(auth.db, await auth.signIn(), 25);
+  await page.goto("/variants?tab=history");
+  const rows = page.getByRole("img", { name: "Test od 0 zadataka" });
+  const more = page.getByRole("button", { name: "Prikaži još" });
+  await expect(rows).toHaveCount(20);
+
+  await more.scrollIntoViewIfNeeded();
+  await expect(rows).toHaveCount(25);
+  await expect(more).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test("the run feed returns only the caller's runs", async ({ page, auth }) => {
+  await seedRuns(auth.db, await auth.signIn(), 3);
+  expect((await feed(page)).runs).toHaveLength(3);
+
+  await auth.signIn();
+  expect(await feed(page)).toEqual({ runs: [], next: null });
+});
+
+test("the run feed rejects guests and malformed page requests", async ({
+  request,
+}) => {
+  const guest = await request.get("/api/runs?offset=0&locale=sr-Latn");
+  expect(guest.status()).toBe(401);
+  const malformed = await request.get("/api/runs?offset=-1&locale=xx");
+  expect(malformed.status()).toBe(400);
+});
