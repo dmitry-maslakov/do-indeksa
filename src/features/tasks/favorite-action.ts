@@ -1,26 +1,13 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { favorites } from "@/db/schema";
 import { getSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { byUser } from "./favorites";
 import { getTask } from "./tasks";
 
 const taskIdSchema = z.string().refine((id) => getTask(id) !== undefined);
-
-const byUser = (userId: string, taskId: string) =>
-  and(eq(favorites.userId, userId), eq(favorites.taskId, taskId));
-
-export async function isFavorite(taskId: string): Promise<boolean> {
-  const session = await getSession();
-  if (!session) return false;
-  const [row] = await db
-    .select({ taskId: favorites.taskId })
-    .from(favorites)
-    .where(byUser(session.user.id, taskIdSchema.parse(taskId)));
-  return row !== undefined;
-}
 
 export async function setFavorite(
   taskId: string,

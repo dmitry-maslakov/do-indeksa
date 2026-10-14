@@ -5,29 +5,31 @@ import { StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   type ComponentProps,
-  useEffect,
   useOptimistic,
   useState,
   useTransition,
 } from "react";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/features/account/auth-client";
 import { SignInButton } from "@/features/account/sign-in-button";
-import { isFavorite, setFavorite } from "./favorite-action";
+import { setFavorite } from "./favorite-action";
 
-export function FavoriteButton({ taskId }: { taskId: string }) {
+interface FavoriteButtonProps {
+  taskId: string;
+  saved?: boolean;
+  signedIn?: boolean;
+  pending?: boolean;
+}
+
+export function FavoriteButton({
+  taskId,
+  saved: initial = false,
+  signedIn = false,
+  pending = false,
+}: FavoriteButtonProps) {
   const t = useTranslations("Solve");
-  const { data: session, isPending } = authClient.useSession();
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(initial);
   const [shown, setShown] = useOptimistic(saved);
   const [, startTransition] = useTransition();
-
-  const userId = session?.user.id;
-
-  useEffect(() => {
-    if (userId) isFavorite(taskId).then(setSaved);
-    else setSaved(false);
-  }, [userId, taskId]);
 
   function toggle() {
     startTransition(async () => {
@@ -40,7 +42,7 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
   const props = {
     variant: "ghost",
     size: "sm",
-    disabled: isPending,
+    disabled: pending,
     "aria-label": label,
     className: "-mr-2 bg-transparent px-2 sm:px-4",
   } satisfies ComponentProps<typeof Button>;
@@ -53,7 +55,7 @@ export function FavoriteButton({ taskId }: { taskId: string }) {
     </>
   );
 
-  if (!session) return <SignInButton {...props}>{star}</SignInButton>;
+  if (!signedIn) return <SignInButton {...props}>{star}</SignInButton>;
 
   return (
     <Button {...props} onClick={toggle} aria-pressed={shown}>

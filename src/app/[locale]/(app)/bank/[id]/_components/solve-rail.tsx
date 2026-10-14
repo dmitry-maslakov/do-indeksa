@@ -2,7 +2,6 @@
 
 import { PanelLeftCloseIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,49 +10,45 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { VariantStrip } from "@/components/variant-strip";
-import { authClient } from "@/features/account/auth-client";
 import type { TaskStatus } from "@/features/progress/status";
 import { statusSegment } from "@/features/progress/status";
-import { getStatuses } from "@/features/progress/status-action";
 import { type RailTask, TaskRow } from "@/features/tasks/task-row";
 import { useRouter } from "@/i18n/navigation";
 import { useStoredFlag } from "@/lib/use-stored-flag";
 import { RailNumbers } from "./rail-numbers";
 
-interface SolveRailProps {
+export interface SolveRailProps {
   current: string;
   topic: string;
   rail: (RailTask & { meta: string })[];
   topics: { id: string; name: string; first: string }[];
+  statuses?: Record<string, TaskStatus>;
 }
 
-export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
+export function SolveRail({
+  current,
+  topic,
+  rail,
+  topics,
+  statuses,
+}: SolveRailProps) {
   const t = useTranslations("Solve");
   const router = useRouter();
-  const { data: session } = authClient.useSession();
-  const [statuses, setStatuses] = useState<Record<string, TaskStatus>>({});
   const [collapsed, toggle] = useStoredFlag("do-indeksa-rail-collapsed");
-
-  const userId = session?.user.id;
-
-  useEffect(() => {
-    if (userId) getStatuses(topic).then(setStatuses);
-    else setStatuses({});
-  }, [userId, topic]);
 
   if (collapsed) {
     return (
       <RailNumbers
         ids={rail.map((s) => s.id)}
         current={current}
-        statuses={statuses}
+        statuses={statuses ?? {}}
         onExpand={toggle}
       />
     );
   }
 
-  const right = rail.filter((s) => statuses[s.id] === "solved").length;
-  const wrong = rail.filter((s) => statuses[s.id] === "wrong").length;
+  const right = rail.filter((s) => statuses?.[s.id] === "solved").length;
+  const wrong = rail.filter((s) => statuses?.[s.id] === "wrong").length;
   const marks: Partial<Record<TaskStatus, string>> = {
     solved: t("solvedMark"),
     wrong: t("wrongMark"),
@@ -97,30 +92,30 @@ export function SolveRail({ current, topic, rail, topics }: SolveRailProps) {
       <div className="flex flex-col gap-2 px-1">
         <div className="flex justify-between gap-2 whitespace-nowrap text-[13px] text-subtle">
           <span>
-            {session
+            {statuses
               ? t("doneOf", { done: right + wrong, total: rail.length })
               : t("inTopic", { count: rail.length })}
           </span>
-          {session && <span>{t("tally", { right, wrong })}</span>}
+          {statuses && <span>{t("tally", { right, wrong })}</span>}
         </div>
         <VariantStrip
           size="sm"
           label={t("tally", { right, wrong })}
           segments={rail.map((s) =>
-            s.id === current ? "current" : statusSegment(statuses[s.id]),
+            s.id === current ? "current" : statusSegment(statuses?.[s.id]),
           )}
         />
       </div>
       <nav className="flex flex-col gap-0.5">
         {rail.map((s) => {
-          const mark = marks[statuses[s.id] ?? "new"];
+          const mark = marks[statuses?.[s.id] ?? "new"];
           return (
             <TaskRow
               key={s.id}
               task={s}
               active={s.id === current}
               meta={mark ? `${s.meta} · ${mark}` : s.meta}
-              status={statuses[s.id]}
+              status={statuses?.[s.id]}
             />
           );
         })}
