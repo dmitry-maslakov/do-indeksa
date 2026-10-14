@@ -4,6 +4,7 @@ import "server-only";
 import { allTasks, type Task } from "content-collections";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
+import { z } from "zod";
 import { numberOf } from "@/features/exam/exam";
 import { renderMarkdown } from "@/lib/markdown";
 import { type Level, levelOf } from "./level";
@@ -39,6 +40,10 @@ export const idsByTopic = new Map(
 );
 
 export const getTask = (id: string) => byId.get(id);
+
+export const taskIdSchema = z
+  .string()
+  .refine((id) => getTask(id) !== undefined);
 
 type RenderedTask = {
   statement: string;

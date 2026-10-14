@@ -2,27 +2,23 @@
 
 import { z } from "zod";
 import { favorites } from "@/db/schema";
-import { getSession } from "@/server/auth";
+import { authActionClient } from "@/server/action-client";
 import { db } from "@/server/db";
 import { byUser } from "./favorites";
-import { getTask } from "./tasks";
+import { taskIdSchema } from "./tasks";
 
-const taskIdSchema = z.string().refine((id) => getTask(id) !== undefined);
+const schema = z.object({ taskId: taskIdSchema, favorite: z.boolean() });
 
-export async function setFavorite(
-  taskId: string,
-  favorite: boolean,
-): Promise<boolean> {
-  const session = await getSession();
-  if (!session) throw new Error("sign in required");
-  const id = taskIdSchema.parse(taskId);
-  if (z.boolean().parse(favorite)) {
-    await db
-      .insert(favorites)
-      .values({ userId: session.user.id, taskId: id })
-      .onConflictDoNothing();
-  } else {
-    await db.delete(favorites).where(byUser(session.user.id, id));
-  }
-  return favorite;
-}
+export const setFavorite = authActionClient
+  .inputSchema(schema)
+  .action(async ({ parsedInput: { taskId, favorite }, ctx: { userId } }) => {
+    if (favorite) {
+      await db
+        .insert(favorites)
+        .values({ userId, taskId })
+        .onConflictDoNothing();
+    } else {
+      await db.delete(favorites).where(byUser(userId, taskId));
+    }
+    return favorite;
+  });

@@ -34,7 +34,8 @@ export function FavoriteButton({
   function toggle() {
     startTransition(async () => {
       setShown(!saved);
-      setSaved(await setFavorite(taskId, !saved));
+      const { data } = await setFavorite({ taskId, favorite: !saved });
+      if (data !== undefined) setSaved(data);
     });
   }
 

@@ -6,7 +6,14 @@ import en from "../../../messages/en.json";
 import ru from "../../../messages/ru.json";
 import sr from "../../../messages/sr-Latn.json";
 import { taskMeta } from "./level";
-import { getTask, idsByTopic, summarize, tasks, taskTitle } from "./tasks";
+import {
+  getTask,
+  idsByTopic,
+  summarize,
+  taskIdSchema,
+  tasks,
+  taskTitle,
+} from "./tasks";
 
 const messages = { "sr-Latn": sr, ru, en };
 
@@ -17,6 +24,14 @@ describe("task index", () => {
   it("finds every task by id", () => {
     for (const task of tasks) expect(getTask(task.id)).toBe(task);
     expect(getTask("nema-takvog")).toBeUndefined();
+  });
+
+  it("accepts only known task ids", () => {
+    for (const task of tasks) {
+      expect(taskIdSchema.safeParse(task.id).success).toBe(true);
+    }
+    expect(taskIdSchema.safeParse("nema-takvog").success).toBe(false);
+    expect(taskIdSchema.safeParse(1).success).toBe(false);
   });
 
   it("groups task ids by topic", () => {
