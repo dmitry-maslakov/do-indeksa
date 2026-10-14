@@ -13,7 +13,7 @@ import { topicName } from "@/content/topics";
 import { curatedVariants, officialVariants } from "@/content/variants";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
-import { getAttempts, getRuns } from "@/server/history";
+import { getRunAttempts, getRuns } from "@/server/history";
 import { ComposeCard } from "./_components/compose-card";
 import { RecentCard } from "./_components/recent-card";
 import { RunHistory } from "./_components/run-history";
@@ -34,10 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
 async function loadRuns() {
   const session = await getSession();
   if (!session) return { signedIn: false, runs: [] };
-  const [rows, attempts] = await Promise.all([
-    getRuns(session.user.id),
-    getAttempts(session.user.id),
-  ]);
+  const rows = await getRuns(session.user.id);
+  const attempts = await getRunAttempts(
+    session.user.id,
+    rows.map((run) => run.id),
+  );
   return {
     signedIn: true,
     runs: await summarizeRuns(rows, attempts, await getLocale()),

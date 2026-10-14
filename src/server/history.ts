@@ -52,21 +52,6 @@ export const getRun = cache(async (userId: string, key?: string) => {
   return { run, attempts: rows };
 });
 
-export const getAttempts = cache(async (userId: string) =>
-  db
-    .select({
-      taskId: attempts.taskId,
-      runId: attempts.runId,
-      parts: attempts.parts,
-      correct: attempts.correct,
-      durationMs: attempts.durationMs,
-      createdAt: attempts.createdAt,
-    })
-    .from(attempts)
-    .where(eq(attempts.userId, userId))
-    .orderBy(desc(attempts.createdAt)),
-);
-
 export const getRunAttempts = (userId: string, runIds: string[]) =>
   db
     .select({

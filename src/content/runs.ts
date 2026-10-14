@@ -36,6 +36,7 @@ export function summarizeRuns(
   attempts: AttemptRow[],
   locale: Locale,
 ): Promise<RunSummary[]> {
+  const byRun = Map.groupBy(attempts, (a) => a.runId);
   return Promise.all(
     runs.map(async (run) => {
       const variant = getVariant(run.variantId);
@@ -44,7 +45,7 @@ export function summarizeRuns(
           ...task,
           taskId: task.id,
         })),
-        attempts.filter((a) => a.runId === run.id),
+        byRun.get(run.id) ?? [],
       );
       return {
         id: run.id,
