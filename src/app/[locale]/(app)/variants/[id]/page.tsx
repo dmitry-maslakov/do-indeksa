@@ -9,7 +9,7 @@ import { redirect } from "@/i18n/navigation";
 export const instant = false;
 
 export function generateStaticParams() {
-  return contentVariants.map((v) => ({ id: v.id }));
+  return contentVariants.slice(0, 1).map((v) => ({ id: v.id }));
 }
 
 export async function generateMetadata({
