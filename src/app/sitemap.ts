@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
-import { contentVariants } from "@/content/variants";
+import { contentVariants } from "@/features/exam/variants";
 import { tasks } from "@/features/tasks/tasks";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";

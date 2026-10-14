@@ -1,5 +1,5 @@
+import { useExamStore } from "@/features/exam/exam-store";
 import { useRouter } from "@/i18n/navigation";
-import { useExamStore } from "@/lib/exam-store";
 
 export function useSignedOut() {
   const router = useRouter();

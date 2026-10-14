@@ -5,7 +5,7 @@ import { MathHtml } from "@/components/math-html";
 import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { positions } from "@/content/exam";
+import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { HintsProvider } from "@/features/tasks/hints";

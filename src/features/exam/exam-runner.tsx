@@ -7,18 +7,18 @@ import {
   useState,
   useTransition,
 } from "react";
-import type { ExamTask as Task } from "@/content/variants";
 import { useRouter } from "@/i18n/navigation";
-import type { ComposeMode } from "@/lib/compose";
-import { spentAt, useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
-import type { CurrentRun } from "@/server/current-run";
-import { finishRun, type GuestResult, saveRun } from "@/server/runs";
+import type { ComposeMode } from "./compose";
+import type { CurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
+import { spentAt, useExamHydrated, useExamStore } from "./exam-store";
 import { ExamTask } from "./exam-task";
+import { finishRun, type GuestResult, saveRun } from "./run-actions";
+import type { ExamTask as Task } from "./variants";
 
 interface ExamRunnerProps {
   variantId: string;

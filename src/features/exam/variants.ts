@@ -3,9 +3,9 @@ import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
 import { getTask, idsByTopic, renderTask } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
-import { pick } from "@/lib/pick";
-import { parseVariantId } from "@/lib/variant-id";
 import { dailySize, numberOf, positionOf, positions } from "./exam";
+import { pick } from "./pick";
+import { parseVariantId } from "./variant-id";
 
 export const officialVariants = allVariants
   .filter((v) => v.kind === "official")

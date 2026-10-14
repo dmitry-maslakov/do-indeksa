@@ -1,4 +1,4 @@
-import type { Segment } from "./strip";
+import type { Segment } from "@/lib/strip";
 
 interface RunProgress {
   current: number;

@@ -1,12 +1,9 @@
 import { notFound } from "next/navigation";
-import {
-  VariantScreen,
-  variantMetadata,
-} from "@/components/exam/variant-screen";
-import { getVariant } from "@/content/variants";
-import { composeModes } from "@/lib/compose";
-import { setId } from "@/lib/variant-id";
-import { findSet } from "@/server/sets";
+import { composeModes } from "@/features/exam/compose";
+import { findSet } from "@/features/exam/sets";
+import { setId } from "@/features/exam/variant-id";
+import { VariantScreen, variantMetadata } from "@/features/exam/variant-screen";
+import { getVariant } from "@/features/exam/variants";
 
 export const instant = false;
 

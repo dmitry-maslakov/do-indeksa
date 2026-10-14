@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Card, CardTitle } from "@/components/ui/card";
-import { durationMinutes, positions } from "@/content/exam";
+import { durationMinutes, positions } from "@/features/exam/exam";
 import { topicName } from "@/features/tasks/topics";
 import { Link } from "@/i18n/navigation";
 

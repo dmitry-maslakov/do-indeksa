@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
-import type { RunSummary } from "@/content/runs";
+import type { RunSummary } from "@/features/exam/run-summaries";
 import { Link } from "@/i18n/navigation";
 import { reviewHref } from "@/lib/review-href";
 

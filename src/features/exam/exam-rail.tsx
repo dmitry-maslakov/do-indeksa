@@ -3,11 +3,11 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
-import type { ExamTask } from "@/content/variants";
-import type { ExamRun } from "@/lib/exam-store";
-import { answeredCount, isAnswered } from "@/lib/run";
+import type { ExamRun } from "./exam-store";
 import { ExamTimer } from "./exam-timer";
 import { FinishDialog } from "./finish-dialog";
+import { answeredCount, isAnswered } from "./run";
+import type { ExamTask } from "./variants";
 
 interface ExamRailProps {
   run: ExamRun;

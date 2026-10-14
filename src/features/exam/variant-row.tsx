@@ -2,15 +2,15 @@
 
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { Score } from "@/components/score";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { VariantStrip } from "@/components/variant-strip";
 import { Link } from "@/i18n/navigation";
-import { useExamHydrated, useExamStore } from "@/lib/exam-store";
 import { reviewHref } from "@/lib/review-href";
-import { answeredCount, blankSegments, runSegments } from "@/lib/run";
 import type { Segment } from "@/lib/strip";
-import { Score } from "./score";
-import { VariantStrip } from "./variant-strip";
+import { useExamHydrated, useExamStore } from "./exam-store";
+import { answeredCount, blankSegments, runSegments } from "./run";
 
 interface VariantRowProps {
   id: string;

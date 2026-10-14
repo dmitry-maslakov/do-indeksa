@@ -3,8 +3,8 @@ import { and, eq, gt, notExists } from "drizzle-orm";
 import { cache } from "react";
 import { currentRuns, runs } from "@/db/schema";
 import { DAY } from "@/lib/dates";
-import type { ExamRun } from "@/lib/exam-store";
-import { db } from "./db";
+import { db } from "@/server/db";
+import type { ExamRun } from "./exam-store";
 
 export interface CurrentRun {
   variantId: string;

@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { ExamTask } from "@/content/variants";
+import type { ExamTask } from "@/features/exam/variants";
 import { Reveal } from "@/features/tasks/reveal";
 import { Link } from "@/i18n/navigation";
 import type {

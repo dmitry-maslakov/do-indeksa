@@ -3,14 +3,14 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
-import { swapHrefs } from "@/content/compose";
-import { variantTitle } from "@/content/variant-title";
-import { type ExamVariant, minutesOf, tasksFor } from "@/content/variants";
-import type { ComposeMode } from "@/lib/compose";
 import { getSession } from "@/server/auth";
-import { getCurrentRun } from "@/server/current-run";
+import type { ComposeMode } from "./compose";
+import { swapHrefs } from "./compose-set";
+import { getCurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
 import { ExamRunner } from "./exam-runner";
+import { variantTitle } from "./variant-title";
+import { type ExamVariant, minutesOf, tasksFor } from "./variants";
 
 export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
   const t = await getTranslations("Variants");

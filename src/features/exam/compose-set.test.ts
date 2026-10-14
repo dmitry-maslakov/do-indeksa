@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { composeSchema, swapHrefs } from "./compose";
+import { composeSchema, swapHrefs } from "./compose-set";
 
 const parse = (input: object) => composeSchema.parse(input);
 

@@ -1,6 +1,6 @@
-import { DAY } from "./dates";
-import { gradeParts } from "./math";
-import { creditOf } from "./review";
+import { DAY } from "@/lib/dates";
+import { gradeParts } from "@/lib/math";
+import { creditOf } from "@/lib/review";
 import { isAnswered } from "./run";
 
 interface GradedTask {

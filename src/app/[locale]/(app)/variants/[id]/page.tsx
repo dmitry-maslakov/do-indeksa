@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import {
-  VariantScreen,
-  variantMetadata,
-} from "@/components/exam/variant-screen";
-import { contentVariants, getVariant } from "@/content/variants";
+import { saveSet } from "@/features/exam/sets";
+import { VariantScreen, variantMetadata } from "@/features/exam/variant-screen";
+import { contentVariants, getVariant } from "@/features/exam/variants";
 import { alternates } from "@/i18n/alternates";
 import { redirect } from "@/i18n/navigation";
-import { saveSet } from "@/server/sets";
 
 export const instant = false;
 

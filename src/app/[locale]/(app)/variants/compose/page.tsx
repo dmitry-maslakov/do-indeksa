@@ -1,12 +1,12 @@
 import { connection } from "next/server";
 import { getLocale } from "next-intl/server";
-import { composeSchema, composeTaskIds } from "@/content/compose";
-import { positions } from "@/content/exam";
+import { composeSchema, composeTaskIds } from "@/features/exam/compose-set";
+import { positions } from "@/features/exam/exam";
+import { saveSet } from "@/features/exam/sets";
 import { redirect } from "@/i18n/navigation";
 import { weakest } from "@/lib/stats";
 import { getSession } from "@/server/auth";
 import { getTaskStats } from "@/server/history";
-import { saveSet } from "@/server/sets";
 
 export const instant = false;
 

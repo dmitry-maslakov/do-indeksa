@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { DAY } from "./dates";
+import { DAY } from "@/lib/dates";
 
 interface RunMeta {
   title: string;
