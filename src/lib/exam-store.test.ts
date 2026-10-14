@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { DAY } from "./dates";
 import { type ExamRun, useExamStore } from "./exam-store";
 
 const meta = {
@@ -87,5 +88,65 @@ describe("exam store", () => {
     store().start("v", meta);
     store().clear("v");
     expect(run()).toBeUndefined();
+  });
+});
+
+describe("persisted runs", () => {
+  const NAME = "do-indeksa-exam";
+
+  const open = async (runs: Record<string, ExamRun>) => {
+    const items = new Map([
+      [NAME, JSON.stringify({ state: { runs }, version: 2 })],
+    ]);
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => items.get(key) ?? null,
+      setItem: (key: string, value: string) => items.set(key, value),
+      removeItem: (key: string) => items.delete(key),
+    });
+    vi.resetModules();
+    const { useExamStore: persisted } = await import("./exam-store");
+    await persisted.persist.rehydrate();
+    const stored = () =>
+      Object.keys(JSON.parse(items.get(NAME) ?? "{}").state.runs);
+    return { persisted, stored };
+  };
+
+  const startedAgo = (ms: number) => ({ ...saved, startedAt: Date.now() - ms });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("drops runs older than a day when hydrating", async () => {
+    const { persisted } = await open({
+      "daily-2026-01-01": startedAgo(DAY + 1000),
+      "set-a.b": startedAgo(3 * DAY),
+      "daily-2026-01-03": startedAgo(DAY - 60_000),
+      "set-c": startedAgo(0),
+    });
+    expect(Object.keys(persisted.getState().runs)).toEqual([
+      "daily-2026-01-03",
+      "set-c",
+    ]);
+  });
+
+  it("keeps a run younger than a day unchanged", async () => {
+    const run = startedAgo(DAY - 60_000);
+    const { persisted } = await open({ v: run });
+    expect(persisted.getState().runs.v).toEqual(run);
+  });
+
+  it("writes only the kept runs back to storage", async () => {
+    const { persisted, stored } = await open({
+      "daily-2026-01-01": startedAgo(2 * DAY),
+      "set-c": startedAgo(0),
+    });
+    persisted.getState().answer("set-c", 0, "x");
+    expect(stored()).toEqual(["set-c"]);
+  });
+
+  it("hydrates an empty storage", async () => {
+    const { persisted } = await open({});
+    expect(persisted.getState().runs).toEqual({});
   });
 });
