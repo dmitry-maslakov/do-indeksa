@@ -9,6 +9,7 @@ import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { HintsProvider } from "@/features/tasks/hints";
+import { taskMeta } from "@/features/tasks/level";
 import { ReportTask } from "@/features/tasks/report-task";
 import { Reveal } from "@/features/tasks/reveal";
 import {
@@ -67,10 +68,10 @@ export default async function SolvePage({
         <SolveRail
           current={id}
           topic={task.topic}
-          rail={rail.map(({ id, preview, number, level }) => ({
-            id,
-            preview,
-            meta: bank("meta", { number, level }),
+          rail={rail.map((s) => ({
+            id: s.id,
+            preview: s.preview,
+            meta: taskMeta(s, bank),
           }))}
           topics={positions.flatMap((p) => {
             const first = tasks.find((x) => x.topic === p.topic);
@@ -91,11 +92,7 @@ export default async function SolvePage({
                   {topicName(task.topic, locale)}
                 </Badge>
                 <span>
-                  {bank("meta", {
-                    number: summary.number,
-                    level: summary.level,
-                  })}{" "}
-                  · {task.source}
+                  {taskMeta(summary, bank)} · {task.source}
                 </span>
               </div>
               <FavoriteButton taskId={task.id} />

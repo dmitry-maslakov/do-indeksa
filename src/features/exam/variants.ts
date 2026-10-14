@@ -1,4 +1,4 @@
-import { sumBy } from "es-toolkit";
+import { orderBy, sumBy } from "es-toolkit";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
@@ -40,10 +40,12 @@ export function getVariant(id: string): ExamVariant | undefined {
   }
 }
 
-const numberOfTask = (id: string) => numberOf(getTask(id)?.topic ?? "");
-
 export const byNumber = (ids: string[]) =>
-  [...ids].sort((a, b) => numberOfTask(a) - numberOfTask(b));
+  orderBy(
+    ids.map((id) => ({ id, number: numberOf(getTask(id)?.topic ?? "") })),
+    ["number"],
+    ["asc"],
+  ).map((task) => task.id);
 
 export function minutesOf(variant: ExamVariant) {
   return sumBy(variant.taskIds, (id) => {
@@ -79,7 +81,7 @@ export async function tasksFor(
       if (!task || !html) return [];
       return {
         id,
-        number: numberOf(task.topic),
+        number: numberOf(task.topic) ?? 0,
         topic: task.topic,
         topicName: topicName(task.topic, locale),
         points: pointsOf(id),

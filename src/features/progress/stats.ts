@@ -3,7 +3,7 @@ import { belgradeDate, dayMs } from "@/lib/dates";
 
 export interface TaskStat {
   taskId: string;
-  number: number;
+  number: number | null;
   topic: string;
   attempts: number;
   right: number;
@@ -27,7 +27,7 @@ export const accuracyDays = 30;
 export function accuracyBy<K extends string | number>(
   stats: TaskStat[],
   keys: K[],
-  keyOf: (stat: TaskStat) => K,
+  keyOf: (stat: TaskStat) => K | null,
 ): Accuracy[] {
   return keys.map((key) => {
     const mine = stats.filter((s) => keyOf(s) === key);

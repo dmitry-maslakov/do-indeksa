@@ -11,7 +11,7 @@ import { topicName } from "./topics";
 
 export interface TaskSummary {
   id: string;
-  number: number;
+  number: number | null;
   topic: string;
   difficulty: number;
   level: Level;

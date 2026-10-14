@@ -1,10 +1,12 @@
+import type { Task } from "content-collections";
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import { routing } from "@/i18n/routing";
 import en from "../../../messages/en.json";
 import ru from "../../../messages/ru.json";
 import sr from "../../../messages/sr-Latn.json";
-import { getTask, idsByTopic, tasks, taskTitle } from "./tasks";
+import { taskMeta } from "./level";
+import { getTask, idsByTopic, summarize, tasks, taskTitle } from "./tasks";
 
 const messages = { "sr-Latn": sr, ru, en };
 
@@ -78,4 +80,35 @@ describe("task titles", () => {
     }
     expect(new Set(titles).size).toBe(tasks.length);
   });
+});
+
+describe("task numbers", () => {
+  const taskOn = (topic: string) => ({ id: "t", topic, difficulty: 2 }) as Task;
+
+  it("take the exam position of the topic", () => {
+    expect(summarize(taskOn("logarithms")).number).toBe(3);
+  });
+
+  it("are missing for topics outside the exam", () => {
+    expect(summarize(taskOn("sequences")).number).toBeNull();
+  });
+});
+
+describe("task meta", () => {
+  it.each([
+    ["sr-Latn", "Zadatak 3 na ispitu · srednje", "srednje"],
+    ["ru", "Задача 3 на экзамене · средняя", "средняя"],
+    ["en", "Task 3 on the exam · medium", "medium"],
+  ] as const)(
+    "names the exam number only when there is one in %s",
+    (locale, onExam, outside) => {
+      const bank = createTranslator({
+        locale,
+        messages: messages[locale],
+        namespace: "Bank",
+      });
+      expect(taskMeta({ number: 3, level: "medium" }, bank)).toBe(onExam);
+      expect(taskMeta({ number: null, level: "medium" }, bank)).toBe(outside);
+    },
+  );
 });
