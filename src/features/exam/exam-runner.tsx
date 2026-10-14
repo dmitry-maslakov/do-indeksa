@@ -7,8 +7,8 @@ import {
   useState,
   useTransition,
 } from "react";
+import { reviewHref } from "@/features/review/review";
 import { useRouter } from "@/i18n/navigation";
-import { reviewHref } from "@/lib/review-href";
 import type { ComposeMode } from "./compose";
 import type { CurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";

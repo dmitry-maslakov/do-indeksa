@@ -1,6 +1,6 @@
 import "server-only";
 import type { Locale } from "next-intl";
-import { review } from "@/lib/review";
+import { review } from "@/features/review/review";
 import type { Segment } from "@/lib/strip";
 import { variantTitle } from "./variant-title";
 import { getVariant, tasksFor } from "./variants";

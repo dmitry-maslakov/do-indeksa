@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import type { RunSummary } from "@/features/exam/run-summaries";
+import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
-import { reviewHref } from "@/lib/review-href";
 
 export function RecentCard({ runs }: { runs: RunSummary[] }) {
   const t = useTranslations("Variants");

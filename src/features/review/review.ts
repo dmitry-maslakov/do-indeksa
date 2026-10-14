@@ -1,4 +1,4 @@
-import { type Segment, segmentOf } from "./strip";
+import { type Segment, segmentOf } from "@/lib/strip";
 
 export interface ReviewTask {
   taskId: string;
@@ -39,6 +39,8 @@ export interface Review<A extends ReviewAttempt = ReviewAttempt> {
   normMs: number;
   lost: { topic: string | null; points: number }[];
 }
+
+export const reviewHref = (runId: string) => `/review/${runId.slice(0, 8)}`;
 
 export const creditOf = (parts: boolean[], points: number) =>
   parts.length === 0

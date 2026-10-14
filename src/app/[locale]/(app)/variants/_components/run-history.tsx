@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
 import type { RunSummary } from "@/features/exam/run-summaries";
+import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
-import { reviewHref } from "@/lib/review-href";
 
 const row =
   "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-5 py-4 text-sm md:grid-cols-[150px_minmax(0,1fr)_72px] md:px-6";

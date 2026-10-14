@@ -4,8 +4,8 @@ import { EmptyNote } from "@/components/empty-note";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
+import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
-import { reviewHref } from "@/lib/review-href";
 import type { Segment } from "@/lib/strip";
 
 interface RecentRun {

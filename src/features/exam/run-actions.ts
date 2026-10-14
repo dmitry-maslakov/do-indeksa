@@ -3,11 +3,11 @@
 import { and, eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { outcomesOf } from "@/content/outcomes";
 import { attempts, currentRuns, runs } from "@/db/schema";
+import { outcomesOf } from "@/features/review/outcomes";
+import type { Outcomes, ReviewAttempt } from "@/features/review/review";
 import { getTask } from "@/features/tasks/tasks";
 import { DAY } from "@/lib/dates";
-import type { Outcomes, ReviewAttempt } from "@/lib/review";
 import { getSession } from "@/server/auth";
 import { db } from "@/server/db";
 import type { ExamRun } from "./exam-store";
