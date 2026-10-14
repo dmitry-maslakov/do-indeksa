@@ -1,23 +1,38 @@
 import "server-only";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
-import { latestStatuses, type Progress } from "@/lib/progress";
+import type { Progress, TaskStatus } from "@/lib/progress";
 import { db } from "./db";
 
+export async function getTaskStatuses(userId: string, taskIds?: string[]) {
+  const rows = await db
+    .selectDistinctOn([attempts.taskId], {
+      taskId: attempts.taskId,
+      correct: attempts.correct,
+    })
+    .from(attempts)
+    .where(
+      and(
+        eq(attempts.userId, userId),
+        taskIds && inArray(attempts.taskId, taskIds),
+      ),
+    )
+    .orderBy(attempts.taskId, desc(attempts.createdAt));
+  return new Map<string, TaskStatus>(
+    rows.map((row) => [row.taskId, row.correct ? "solved" : "wrong"]),
+  );
+}
+
 export async function getProgress(userId: string): Promise<Progress> {
-  const [results, starred] = await Promise.all([
-    db
-      .select({ taskId: attempts.taskId, correct: attempts.correct })
-      .from(attempts)
-      .where(eq(attempts.userId, userId))
-      .orderBy(desc(attempts.createdAt)),
+  const [statuses, starred] = await Promise.all([
+    getTaskStatuses(userId),
     db
       .select({ taskId: favorites.taskId })
       .from(favorites)
       .where(eq(favorites.userId, userId)),
   ]);
   return {
-    statuses: latestStatuses(results),
+    statuses,
     favorites: new Set(starred.map((f) => f.taskId)),
   };
 }
