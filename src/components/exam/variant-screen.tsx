@@ -39,7 +39,7 @@ export async function VariantScreen({
   fallback?: ComposeMode;
 }) {
   const t = await getTranslations("Variants");
-  const tasks = tasksFor(variant.taskIds, await getLocale());
+  const tasks = await tasksFor(variant.taskIds, await getLocale());
   const minutes = minutesOf(variant);
   const title = await variantTitle(variant);
 

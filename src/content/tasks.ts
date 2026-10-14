@@ -1,7 +1,9 @@
 import "server-only";
 import { allTasks, type Task } from "content-collections";
+import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
 import { clip } from "@/lib/clip";
+import { renderMarkdown } from "@/lib/markdown";
 import { numberOf } from "./exam";
 import { topicName } from "./topics";
 
@@ -17,7 +19,6 @@ export interface TaskSummary {
   topic: string;
   difficulty: number;
   level: Level;
-  statement: string;
 }
 
 export function summarize(task: Task): TaskSummary {
@@ -27,11 +28,45 @@ export function summarize(task: Task): TaskSummary {
     topic: task.topic,
     difficulty: task.difficulty,
     level: levelOf(task.difficulty),
-    statement: task.statement,
   };
 }
 
 export const tasks = allTasks;
+
+type RenderedTask = {
+  statement: string;
+  answer: string;
+  hints: string[];
+  solution: string;
+  labels: (string | null)[];
+};
+
+const rendered = new LRUCache<string, RenderedTask>({
+  maxSize: 32 * 1024 * 1024,
+  sizeCalculation: (html) =>
+    [html.statement, html.answer, html.solution, ...html.hints, ...html.labels]
+      .map((part) => part?.length ?? 0)
+      .reduce((sum, length) => sum + length, 1),
+});
+
+export async function renderTask(id: string) {
+  const cached = rendered.get(id);
+  if (cached) return cached;
+  const task = getTask(id);
+  if (!task) return null;
+  const render = (source: string) => renderMarkdown(source, id);
+  const html = {
+    statement: await render(task.text),
+    answer: await render(task.answer),
+    hints: await Promise.all(task.hints.map(render)),
+    solution: await render(task.solution),
+    labels: await Promise.all(
+      task.check.map((c) => (c.label ? render(c.label) : null)),
+    ),
+  };
+  rendered.set(id, html);
+  return html;
+}
 
 export function getTask(id: string) {
   return allTasks.find((t) => t.id === id);

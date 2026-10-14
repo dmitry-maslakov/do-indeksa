@@ -40,7 +40,7 @@ export function summarizeRuns(
     runs.map(async (run) => {
       const variant = getVariant(run.variantId);
       const result = review(
-        tasksFor(run.taskIds, locale).map((task) => ({
+        (await tasksFor(run.taskIds, locale)).map((task) => ({
           ...task,
           taskId: task.id,
         })),

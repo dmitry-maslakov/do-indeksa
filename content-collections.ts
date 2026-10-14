@@ -51,6 +51,15 @@ const tasks = defineCollection({
     const title = headline(content);
     if (!title) throw new Error(`${origin}: statement must start with words`);
     const render = (source: string) => renderMarkdown(source, origin);
+    await Promise.all(
+      [
+        content,
+        answer,
+        solution,
+        ...hints,
+        ...check.map((c) => c.label ?? ""),
+      ].map(render),
+    );
     return {
       id: task._meta.path,
       ...task,
@@ -58,16 +67,13 @@ const tasks = defineCollection({
       excerpt: excerpt(content),
       preview: preview(content),
       headline: title,
-      statement: await render(content),
-      answer: await render(answer),
-      hints: await Promise.all(hints.map(render)),
-      solution: await render(solution),
-      check: await Promise.all(
-        check.map(async ({ label, expected }) => ({
-          expected,
-          label: label ? await render(label) : null,
-        })),
-      ),
+      answer,
+      hints,
+      solution,
+      check: check.map(({ label, expected }) => ({
+        expected,
+        label: label ?? null,
+      })),
     };
   },
 });
