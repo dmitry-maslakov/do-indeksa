@@ -4,14 +4,13 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/components/sign-in-card";
-import { statAttempts } from "@/content/attempts";
 import { minutesAt, positions } from "@/content/exam";
 import { summarizeRuns } from "@/content/runs";
 import { tasks } from "@/content/tasks";
 import { topicName } from "@/content/topics";
 import { accuracyBy, meanTimeByNumber, totals } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getAttempts, getRuns } from "@/server/history";
+import { getRunAttempts, getRuns, getTaskStats } from "@/server/history";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
 import { RecentRuns } from "./_components/recent-runs";
@@ -26,14 +25,23 @@ export async function generateMetadata(): Promise<Metadata> {
 async function loadStats() {
   const session = await getSession();
   if (!session) return undefined;
-  const [rows, all] = await Promise.all([
-    getAttempts(session.user.id),
-    getRuns(session.user.id),
+  const userId = session.user.id;
+  const [byTask, all] = await Promise.all([
+    getTaskStats(userId),
+    getRuns(userId),
   ]);
+  const recent = all.slice(0, 5);
   return {
-    attempts: statAttempts(rows),
+    byTask,
     runCount: all.length,
-    runs: await summarizeRuns(all.slice(0, 5), rows, await getLocale()),
+    runs: await summarizeRuns(
+      recent,
+      await getRunAttempts(
+        userId,
+        recent.map((run) => run.id),
+      ),
+      await getLocale(),
+    ),
   };
 }
 
@@ -77,26 +85,26 @@ function StatsCards({
 }) {
   const locale = useLocale();
   const exam = useTranslations("Exam");
-  const attempts = stats?.attempts ?? [];
+  const byTask = stats?.byTask ?? [];
   const numbers = positions.map((p) => p.number);
   const accuracy = byNumber
-    ? accuracyBy(attempts, numbers, (a) => a.number).map((a) => ({
+    ? accuracyBy(byTask, numbers, (s) => s.number).map((a) => ({
         ...a,
         label: exam("task", { number: Number(a.key) }),
       }))
     : accuracyBy(
-        attempts,
+        byTask,
         positions.map((p) => p.topic),
-        (a) => a.topic,
+        (s) => s.topic,
       ).map((a) => ({ ...a, label: topicName(String(a.key), locale) }));
-  const summary = stats && totals(attempts);
+  const summary = stats && totals(byTask);
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
         <AccuracyCard rows={accuracy} pending={!stats} />
         <TimeBars
-          bars={meanTimeByNumber(attempts, numbers).map((bar) => ({
+          bars={meanTimeByNumber(byTask, numbers).map((bar) => ({
             ...bar,
             normMs: minutesAt(bar.number) * 60_000,
           }))}

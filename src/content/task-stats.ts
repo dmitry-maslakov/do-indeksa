@@ -1,16 +1,11 @@
 import "server-only";
-import type { StatAttempt } from "@/lib/stats";
+import type { TaskStat } from "@/lib/stats";
 import { numberOf } from "./exam";
 import { getTask } from "./tasks";
 
-interface AttemptRow {
-  taskId: string;
-  correct: boolean;
-  durationMs: number;
-  createdAt: Date;
-}
+type TaskTotals = Omit<TaskStat, "number" | "topic">;
 
-export function statAttempts(rows: AttemptRow[]): StatAttempt[] {
+export function taskStats(rows: TaskTotals[]): TaskStat[] {
   return rows.flatMap((row) => {
     const task = getTask(row.taskId);
     return task
