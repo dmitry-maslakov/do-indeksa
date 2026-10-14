@@ -5,24 +5,42 @@ import { contentVariants } from "@/content/variants";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { chunk } from "@/lib/chunk";
 import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
 import { env } from "@/server/env";
+
+const urlsPerSitemap = 10_000;
 
 const pages = [
   "/",
   "/bank",
   "/variants",
   "/privacy",
-  ...tasks.map((t) => `/bank/${t.id}`),
   ...contentVariants.map((v) => `/variants/${v.id}`),
 ];
 
+const taskPages = chunk(
+  tasks.map((t) => `/bank/${t.id}`),
+  Math.floor(urlsPerSitemap / routing.locales.length),
+);
+
+const sitemaps = () =>
+  env.LAUNCH_ACCESS ? [launchPages] : [pages, ...taskPages];
+
 const url = (path: string) => new URL(path, siteUrl).href;
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export async function generateSitemaps() {
+  return sitemaps().map((_, id) => ({ id }));
+}
+
+export default async function sitemap({
+  id,
+}: {
+  id: Promise<string>;
+}): Promise<MetadataRoute.Sitemap> {
   await connection();
-  return (env.LAUNCH_ACCESS ? launchPages : pages).flatMap((href) =>
+  return (sitemaps()[Number(await id)] ?? []).flatMap((href) =>
     routing.locales.map((locale) => ({
       url: url(getPathname({ href, locale })),
       alternates: {

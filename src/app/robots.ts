@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
 import { env } from "@/server/env";
+import { generateSitemaps } from "./sitemap";
 
 const personal = [
   "/review",
@@ -32,7 +33,7 @@ const closed = {
       launchPages.map((href) => `${getPathname({ href, locale })}$`),
     ),
     "/_next/static/",
-    "/sitemap.xml",
+    "/sitemap/",
   ],
   disallow: "/",
 };
@@ -41,6 +42,8 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   await connection();
   return {
     rules: { userAgent: "*", ...(env.LAUNCH_ACCESS ? closed : open) },
-    sitemap: new URL("/sitemap.xml", siteUrl).href,
+    sitemap: (await generateSitemaps()).map(
+      ({ id }) => new URL(`/sitemap/${id}.xml`, siteUrl).href,
+    ),
   };
 }
