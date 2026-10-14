@@ -1,8 +1,8 @@
 import { allTaskIds } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
+import { launchCookie, launchGate } from "@/features/launch/launch";
 import { routing } from "./i18n/routing";
-import { launchCookie, launchGate } from "./lib/launch";
 
 const intl = createMiddleware(routing);
 const taskIds = new Set(allTaskIds.map((t) => t.id));

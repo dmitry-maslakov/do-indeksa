@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
+import { launchPages } from "@/features/launch/launch";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { launchPages } from "@/lib/launch";
 import { siteUrl } from "@/lib/site";
 import { env } from "@/server/env";
 import { generateSitemaps } from "./sitemap";
