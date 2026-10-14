@@ -183,3 +183,31 @@ test("a signed-in user filters the bank by status", async ({ page, auth }) => {
   await expect(cards.first()).toBeVisible();
   await expect(empty).toBeHidden();
 });
+
+test("the bank feed loads the next page while scrolling", async ({
+  page,
+  errors,
+}) => {
+  await open(page);
+  const { count } = bank(page);
+  const total = Number((await count.textContent())?.replace(/\D/g, ""));
+  test.skip(total <= 30, "the bank fits on one page");
+  const cards = page.locator("main section").getByRole("link");
+  await expect(cards).toHaveCount(30);
+
+  await page
+    .getByRole("button", { name: "Prikaži još" })
+    .scrollIntoViewIfNeeded();
+  await expect(cards).toHaveCount(Math.min(total, 60));
+  const hrefs = await cards.evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href")),
+  );
+  expect(new Set(hrefs).size).toBe(hrefs.length);
+  await expect(page).toHaveURL(/\/bank$/);
+  expect(errors).toEqual([]);
+});
+
+test("the bank feed rejects a malformed page request", async ({ request }) => {
+  const page = await request.get("/api/bank?offset=-1&locale=xx");
+  expect(page.status()).toBe(400);
+});
