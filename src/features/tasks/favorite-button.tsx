@@ -13,7 +13,7 @@ import {
 import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { isFavorite, setFavorite } from "@/server/favorites";
+import { isFavorite, setFavorite } from "./favorite-action";
 
 export function FavoriteButton({ taskId }: { taskId: string }) {
   const t = useTranslations("Solve");

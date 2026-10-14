@@ -1,11 +1,11 @@
 "use server";
 
 import { z } from "zod";
-import { getTask } from "@/content/tasks";
 import { reports } from "@/db/schema";
-import { reportKinds } from "@/lib/report";
-import { getSession } from "./auth";
-import { db } from "./db";
+import { getSession } from "@/server/auth";
+import { db } from "@/server/db";
+import { reportKinds } from "./report-kinds";
+import { getTask } from "./tasks";
 
 const input = z.object({
   taskId: z.string().refine((id) => getTask(id) !== undefined),

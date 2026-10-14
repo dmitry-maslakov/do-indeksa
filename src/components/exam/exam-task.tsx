@@ -2,12 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { AnswerField } from "@/components/answer-field";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ExamTask as Task } from "@/content/variants";
+import { AnswerField } from "@/features/tasks/answer-field";
 
 interface ExamTaskProps {
   task: Task;

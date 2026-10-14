@@ -1,9 +1,9 @@
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import { routing } from "@/i18n/routing";
-import en from "../../messages/en.json";
-import ru from "../../messages/ru.json";
-import sr from "../../messages/sr-Latn.json";
+import en from "../../../messages/en.json";
+import ru from "../../../messages/ru.json";
+import sr from "../../../messages/sr-Latn.json";
 import { getTask, idsByTopic, tasks, taskTitle } from "./tasks";
 
 const messages = { "sr-Latn": sr, ru, en };

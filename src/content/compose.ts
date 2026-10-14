@@ -1,9 +1,9 @@
 import "server-only";
 import { z } from "zod";
+import { getTask, idsByTopic } from "@/features/tasks/tasks";
+import { topics } from "@/features/tasks/topics";
 import { compose, composeModes, swap } from "@/lib/compose";
 import { setId } from "@/lib/variant-id";
-import { getTask, idsByTopic } from "./tasks";
-import { topics } from "./topics";
 import { byNumber, byPosition } from "./variants";
 
 const topicIds = topics.map((t) => t.id);

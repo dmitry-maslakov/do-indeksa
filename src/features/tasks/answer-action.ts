@@ -1,11 +1,11 @@
 "use server";
 
 import { z } from "zod";
-import { getTask } from "@/content/tasks";
 import { attempts } from "@/db/schema";
 import { gradeParts } from "@/lib/math";
-import { getSession } from "./auth";
-import { db } from "./db";
+import { getSession } from "@/server/auth";
+import { db } from "@/server/db";
+import { getTask } from "./tasks";
 
 export interface CheckResult {
   parts: boolean[];

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { topicName } from "@/content/topics";
+import { topicName } from "@/features/tasks/topics";
 import { type Accuracy, SAMPLE_MIN } from "@/lib/stats";
 
 const list = "flex flex-col gap-3 text-[13px]";

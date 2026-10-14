@@ -1,6 +1,6 @@
 import "server-only";
 import type { inferParserType } from "nuqs/server";
-import { summarize, type TaskSummary, tasks } from "@/content/tasks";
+import { summarize, type TaskSummary, tasks } from "@/features/tasks/tasks";
 import type { Progress } from "@/lib/progress";
 import type { bankParsers, statusFilters } from "./params";
 

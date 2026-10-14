@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { idsByTopic } from "@/content/tasks";
+import { idsByTopic } from "@/features/tasks/tasks";
 import type { TaskStatus } from "@/lib/progress";
 import { getSession } from "./auth";
 import { getTaskStatuses } from "./progress";

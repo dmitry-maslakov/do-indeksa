@@ -10,7 +10,7 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { type CheckResult, checkAnswer } from "@/server/answers";
+import { type CheckResult, checkAnswer } from "./answer-action";
 import { AnswerField, type AnswerState } from "./answer-field";
 import { useHints } from "./hints";
 

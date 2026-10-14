@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { TaskSummary } from "@/content/tasks";
 import { BankFilters } from "@/features/bank/bank-filters";
 import { FilterSelect } from "@/features/bank/filter-select";
 import { MoreTasks } from "@/features/bank/more-tasks";
@@ -21,6 +20,7 @@ import {
   searchBank,
 } from "@/features/bank/search";
 import { taskCards } from "@/features/bank/task-card";
+import type { TaskSummary } from "@/features/tasks/tasks";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import type { Progress } from "@/lib/progress";

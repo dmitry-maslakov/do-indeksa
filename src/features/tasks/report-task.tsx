@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
-import { reportKinds } from "@/lib/report";
-import { reportTask } from "@/server/reports";
+import { reportTask } from "./report-action";
+import { reportKinds } from "./report-kinds";
 
 export function ReportTask({ taskId }: { taskId: string }) {
   const t = useTranslations("Report");
