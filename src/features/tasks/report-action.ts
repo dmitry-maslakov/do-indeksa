@@ -1,35 +1,21 @@
 "use server";
 
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { reports } from "@/db/schema";
-import { getSession } from "@/server/auth";
+import { authActionClient } from "@/server/action-client";
 import { db } from "@/server/db";
 import { reportKinds } from "./report-kinds";
-import { getTask } from "./tasks";
+import { taskIdSchema } from "./tasks";
 
-const input = z.object({
-  taskId: z.string().refine((id) => getTask(id) !== undefined),
+const schema = zfd.formData({
+  taskId: taskIdSchema,
   kind: z.enum(reportKinds),
   message: z.string().trim().max(1000),
 });
 
-type ReportState = "idle" | "sent" | "error";
-
-export async function reportTask(
-  _: ReportState,
-  form: FormData,
-): Promise<ReportState> {
-  const report = input.safeParse(Object.fromEntries(form));
-  if (!report.success) return "error";
-  const session = await getSession();
-  if (!session) return "error";
-  try {
-    await db
-      .insert(reports)
-      .values({ ...report.data, userId: session.user.id });
-    return "sent";
-  } catch (error) {
-    console.error("report failed", error);
-    return "error";
-  }
-}
+export const reportTask = authActionClient
+  .inputSchema(schema)
+  .stateAction(async ({ parsedInput, ctx: { userId } }) => {
+    await db.insert(reports).values({ ...parsedInput, userId });
+  });
