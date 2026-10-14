@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { UserMenu } from "@/features/account/user-menu";
 import { currentExam, examOptions } from "@/features/exam/exam";
 import { ExamSwitcher } from "@/features/exam/exam-switcher";
@@ -13,7 +14,9 @@ export function TopNav() {
       <ExamSwitcher exams={examOptions} current={currentExam} />
       <NavLinks />
       <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
-        <StreakBadge />
+        <Suspense>
+          <StreakBadge />
+        </Suspense>
         <LocaleSwitcher />
         <UserMenu />
       </div>
