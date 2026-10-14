@@ -1,22 +1,14 @@
-"use client";
-
 import { FlameIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { authClient } from "@/features/account/auth-client";
-import { getStreak } from "./streak-action";
+import { getTranslations } from "next-intl/server";
+import { getSession } from "@/server/auth";
+import { getStreak } from "./streak";
 
-export function StreakBadge() {
-  const t = useTranslations("Home");
-  const userId = authClient.useSession().data?.user.id;
-  const [days, setDays] = useState(0);
-
-  useEffect(() => {
-    if (userId) getStreak().then(setDays);
-    else setDays(0);
-  }, [userId]);
-
+export async function StreakBadge() {
+  const session = await getSession();
+  const days = session ? await getStreak(session.user.id) : 0;
   if (days === 0) return null;
+  const t = await getTranslations("Home");
+
   return (
     <span
       title={t("streak", { count: days })}
