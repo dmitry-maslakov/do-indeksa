@@ -4,12 +4,19 @@ import { routing } from "@/i18n/routing";
 import en from "../../messages/en.json";
 import ru from "../../messages/ru.json";
 import sr from "../../messages/sr-Latn.json";
-import { tasks, taskTitle } from "./tasks";
+import { getTask, tasks, taskTitle } from "./tasks";
 
 const messages = { "sr-Latn": sr, ru, en };
 
 const byId = (pick: (t: (typeof tasks)[number]) => string) =>
   Object.fromEntries(tasks.map((t) => [t.id, pick(t)]));
+
+describe("task index", () => {
+  it("finds every task by id", () => {
+    for (const task of tasks) expect(getTask(task.id)).toBe(task);
+    expect(getTask("nema-takvog")).toBeUndefined();
+  });
+});
 
 describe("task excerpts", () => {
   it.each(tasks.map((t) => [t.id, t.excerpt]))("%s has no LaTeX", (_, text) => {

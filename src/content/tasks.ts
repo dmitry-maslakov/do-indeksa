@@ -31,6 +31,10 @@ export function summarize(task: Task): TaskSummary {
 
 export const tasks = allTasks;
 
+const byId = new Map(allTasks.map((t) => [t.id, t]));
+
+export const getTask = (id: string) => byId.get(id);
+
 type RenderedTask = {
   statement: string;
   answer: string;
@@ -64,10 +68,6 @@ export async function renderTask(id: string) {
   };
   rendered.set(id, html);
   return html;
-}
-
-export function getTask(id: string) {
-  return allTasks.find((t) => t.id === id);
 }
 
 export function siblings(task: Task) {

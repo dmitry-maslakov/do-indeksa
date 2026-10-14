@@ -41,11 +41,10 @@ export function getVariant(id: string): ExamVariant | undefined {
   }
 }
 
+const numberOfTask = (id: string) => numberOf(getTask(id)?.topic ?? "");
+
 export const byNumber = (ids: string[]) =>
-  [...ids].sort(
-    (a, b) =>
-      numberOf(getTask(a)?.topic ?? "") - numberOf(getTask(b)?.topic ?? ""),
-  );
+  [...ids].sort((a, b) => numberOfTask(a) - numberOfTask(b));
 
 export function minutesOf(variant: ExamVariant) {
   return variant.taskIds.reduce((sum, id) => {
