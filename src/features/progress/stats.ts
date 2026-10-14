@@ -1,3 +1,4 @@
+import { sumBy } from "es-toolkit";
 import { belgradeDate, DAY } from "@/lib/dates";
 
 export interface TaskStat {
@@ -23,9 +24,6 @@ export const SAMPLE_MIN = 3;
 
 export const ACCURACY_DAYS = 30;
 
-const sum = (stats: TaskStat[], of: (stat: TaskStat) => number) =>
-  stats.reduce((total, stat) => total + of(stat), 0);
-
 export function accuracyBy<K extends string | number>(
   stats: TaskStat[],
   keys: K[],
@@ -33,14 +31,14 @@ export function accuracyBy<K extends string | number>(
 ): Accuracy[] {
   return keys.map((key) => {
     const mine = stats.filter((s) => keyOf(s) === key);
-    const total = sum(mine, (s) => s.attempts);
+    const total = sumBy(mine, (s) => s.attempts);
     return {
       key,
       total,
       pct:
         total < SAMPLE_MIN
           ? null
-          : Math.round((sum(mine, (s) => s.right) / total) * 100),
+          : Math.round((sumBy(mine, (s) => s.right) / total) * 100),
     };
   });
 }
@@ -48,10 +46,11 @@ export function accuracyBy<K extends string | number>(
 export function meanTimeByNumber(stats: TaskStat[], numbers: number[]) {
   return numbers.map((number) => {
     const mine = stats.filter((s) => s.number === number);
-    const attempts = sum(mine, (s) => s.attempts);
+    const attempts = sumBy(mine, (s) => s.attempts);
     return {
       number,
-      meanMs: attempts === 0 ? null : sum(mine, (s) => s.durationMs) / attempts,
+      meanMs:
+        attempts === 0 ? null : sumBy(mine, (s) => s.durationMs) / attempts,
     };
   });
 }
@@ -63,7 +62,7 @@ export function totals(stats: TaskStat[]) {
     wrong: stats.filter((s) => !s.latestRight).length,
     firstTryPct:
       stats.length === 0 ? null : Math.round((firstRight / stats.length) * 100),
-    spentMs: sum(stats, (s) => s.durationMs),
+    spentMs: sumBy(stats, (s) => s.durationMs),
   };
 }
 

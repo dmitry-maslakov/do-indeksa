@@ -6,6 +6,12 @@ describe("excerpt", () => {
     expect(excerpt("a\n\nb")).toBe("a b");
   });
 
+  it("cuts long text at a word boundary", () => {
+    const text = excerpt("reč ".repeat(60).trim());
+    expect(text.length).toBeLessThanOrEqual(160);
+    expect(text).toMatch(/ reč…$/);
+  });
+
   it("keeps short text unchanged", () => {
     expect(excerpt("Odrediti moduo.")).toBe("Odrediti moduo.");
   });
