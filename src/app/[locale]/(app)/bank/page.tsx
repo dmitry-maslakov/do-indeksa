@@ -10,16 +10,14 @@ import { Card } from "@/components/ui/card";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BankFilters } from "@/features/bank/bank-filters";
+import { BankList } from "@/features/bank/bank-list";
 import { FilterSelect } from "@/features/bank/filter-select";
-import { MoreTasks } from "@/features/bank/more-tasks";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
 import {
-  bankPage,
   type BankFilters as Filters,
   filterByStatus,
   searchBank,
 } from "@/features/bank/search";
-import { taskCards } from "@/features/bank/task-card";
 import { getProgress } from "@/features/progress/progress";
 import type { Progress } from "@/features/progress/status";
 import type { TaskSummary } from "@/features/tasks/tasks";
@@ -150,12 +148,7 @@ function BankResults({
             </Button>
           </Card>
         ) : (
-          <>
-            {taskCards(tasks.slice(0, bankPage), progress)}
-            {tasks.length > bankPage && (
-              <MoreTasks key={search} search={search} next={bankPage} />
-            )}
-          </>
+          <BankList tasks={tasks} search={search} progress={progress} />
         )}
       </section>
     </div>
