@@ -64,7 +64,7 @@ export const getRunAttempts = (userId: string, runIds: string[]) =>
     .from(attempts)
     .where(and(eq(attempts.userId, userId), inArray(attempts.runId, runIds)));
 
-export const getRuns = cache(async (userId: string) =>
+const newestRuns = (userId: string) =>
   db
     .select({
       id: runs.id,
@@ -74,8 +74,15 @@ export const getRuns = cache(async (userId: string) =>
     })
     .from(runs)
     .where(eq(runs.userId, userId))
-    .orderBy(desc(runs.finishedAt)),
-);
+    .orderBy(desc(runs.finishedAt));
+
+export const getRuns = cache(async (userId: string) => newestRuns(userId));
+
+export const getRecentRuns = (userId: string, limit: number) =>
+  newestRuns(userId).limit(limit);
+
+export const countRuns = (userId: string) =>
+  db.$count(runs, eq(runs.userId, userId));
 
 const countWhere = (condition: SQL) =>
   sql<number>`count(*) filter (where ${condition})`.mapWith(Number);
