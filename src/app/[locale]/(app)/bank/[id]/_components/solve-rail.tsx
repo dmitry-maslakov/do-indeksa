@@ -4,7 +4,7 @@ import { PanelLeftCloseIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LinkTabs } from "@/components/link-tabs";
-import { TaskRow } from "@/components/task-row";
+import { type RailTask, TaskRow } from "@/components/task-row";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,7 +12,6 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { VariantStrip } from "@/components/variant-strip";
-import type { TaskSummary } from "@/content/tasks";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import type { TaskStatus } from "@/lib/progress";
@@ -24,7 +23,7 @@ import { RailNumbers } from "./rail-numbers";
 interface SolveRailProps {
   current: string;
   topic: string;
-  rail: (TaskSummary & { meta: string })[];
+  rail: (RailTask & { meta: string })[];
   topics: { id: string; name: string; first: string }[];
 }
 

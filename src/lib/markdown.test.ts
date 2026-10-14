@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { excerpt, headline } from "./markdown";
+import { excerpt, headline, preview } from "./markdown";
 
 describe("excerpt", () => {
   it("joins paragraphs with a space", () => {
@@ -50,5 +50,19 @@ describe("headline", () => {
 
   it("is empty when the statement opens with a formula", () => {
     expect(headline("$x^2=1$ je jednačina.")).toBe("");
+  });
+});
+
+describe("preview", () => {
+  it("keeps formulas as inline LaTeX and drops markup", () => {
+    expect(preview("Odrediti **broj $\\sqrt{2}$** i $3$.")).toBe(
+      "Odrediti broj $\\sqrt{2}$ i $3$.",
+    );
+  });
+
+  it("puts display formulas inline", () => {
+    expect(preview("Rešiti jednačinu:\n\n$$\n4^{x}=2.\n$$")).toBe(
+      "Rešiti jednačinu: $4^{x}=2.$",
+    );
   });
 });

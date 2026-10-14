@@ -38,7 +38,14 @@ export function getTask(id: string) {
 }
 
 export function siblings(task: Task) {
-  return allTasks.filter((t) => t.topic === task.topic).map(summarize);
+  return allTasks
+    .filter((t) => t.topic === task.topic)
+    .map(({ id, topic, difficulty, preview }) => ({
+      id,
+      number: numberOf(topic),
+      level: levelOf(difficulty),
+      preview,
+    }));
 }
 
 export function taskTitle(
