@@ -68,7 +68,7 @@ export function ExamRunner({
     if (!signedIn || !run || run.updatedAt <= synced) return;
     const id = setTimeout(() => {
       const spent = spentAt(run, Date.now());
-      saveRun(variantId, { ...run, spent }).catch(() => undefined);
+      saveRun({ ...run, spent, variantId }).catch(() => undefined);
     }, 1500);
     return () => clearTimeout(id);
   }, [signedIn, run, synced, variantId]);
@@ -108,16 +108,17 @@ export function ExamRunner({
 
   const finish = () =>
     startTransition(async () => {
-      const saved = await finishRun({
+      const { data } = await finishRun({
         runId: run.runId,
         variantId,
         startedAt: run.startedAt,
         answers: run.answers,
         durations: spentAt(run, Date.now()),
       });
+      if (!data) return;
       clear(variantId);
-      if (saved.saved) router.push(reviewHref(run.runId));
-      else setResult(saved);
+      if (data.saved) router.push(reviewHref(run.runId));
+      else setResult(data);
     });
 
   return (
