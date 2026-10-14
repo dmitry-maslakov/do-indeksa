@@ -108,7 +108,8 @@ async function RunReview({
 }: {
   found: NonNullable<Awaited<ReturnType<typeof getRun>>>;
 }) {
-  const tasks = await tasksFor(found.run.taskIds, await getLocale());
+  const locale = await getLocale();
+  const tasks = await tasksFor(found.run.taskIds, locale);
   const result = review(
     tasks.map((task) => ({ ...task, taskId: task.id })),
     found.attempts,
@@ -120,7 +121,9 @@ async function RunReview({
       <ReviewSummary
         review={result}
         variantId={found.run.variantId}
-        title={variant ? await variantTitle(variant) : found.run.variantId}
+        title={
+          variant ? await variantTitle(variant, locale) : found.run.variantId
+        }
         finishedAt={found.run.finishedAt}
       />
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">

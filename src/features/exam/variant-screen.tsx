@@ -15,7 +15,7 @@ import { type ExamVariant, minutesOf, tasksFor } from "./variants";
 export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
   const t = await getTranslations("Variants");
   return {
-    title: await variantTitle(variant),
+    title: await variantTitle(variant, await getLocale()),
     description: t("format", {
       tasks: variant.taskIds.length,
       minutes: minutesOf(variant),
@@ -39,9 +39,10 @@ export async function VariantScreen({
   fallback?: ComposeMode;
 }) {
   const t = await getTranslations("Variants");
-  const tasks = await tasksFor(variant.taskIds, await getLocale());
+  const locale = await getLocale();
+  const tasks = await tasksFor(variant.taskIds, locale);
   const minutes = minutesOf(variant);
-  const title = await variantTitle(variant);
+  const title = await variantTitle(variant, locale);
 
   return (
     <main className="px-4 pb-9 md:px-9">
