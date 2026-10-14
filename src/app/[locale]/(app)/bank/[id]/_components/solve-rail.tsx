@@ -13,10 +13,10 @@ import {
 import { VariantStrip } from "@/components/variant-strip";
 import { authClient } from "@/features/account/auth-client";
 import type { TaskStatus } from "@/features/progress/status";
+import { statusSegment } from "@/features/progress/status";
 import { getStatuses } from "@/features/progress/status-action";
 import { type RailTask, TaskRow } from "@/features/tasks/task-row";
 import { useRouter } from "@/i18n/navigation";
-import { statusSegment } from "@/lib/strip";
 import { useStoredFlag } from "@/lib/use-stored-flag";
 import { RailNumbers } from "./rail-numbers";
 
