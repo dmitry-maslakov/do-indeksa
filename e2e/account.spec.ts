@@ -89,3 +89,19 @@ test("signing out hides the account statistics", async ({ page, auth }) => {
   await expect(page.getByText("Prijavi se da vidiš statistiku")).toBeVisible();
   await expect(page.getByText("Još nema završenih testova.")).toBeHidden();
 });
+
+test("the header shows the practice streak", async ({ page, auth }) => {
+  const id = await auth.signIn();
+  for (const ago of [0, 1, 2, 4]) {
+    await auth.db.query(
+      `insert into attempts (user_id, task_id, answers, parts, correct, duration_ms, created_at)
+       values ($1, 'eks-001', '{1}', '{true}', true, 1000, now() - $2::int * interval '1 day')`,
+      [id, ago],
+    );
+  }
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("banner").getByTitle("Serija: 3 dana"),
+  ).toBeVisible();
+});
