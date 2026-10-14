@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
+import { FavoriteToggle } from "@/features/tasks/favorite-toggle";
 import { HintsProvider } from "@/features/tasks/hints";
 import { taskMeta } from "@/features/tasks/level";
 import { ReportTask } from "@/features/tasks/report-task";
@@ -23,6 +25,7 @@ import {
 import { topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { SolveRail } from "./_components/solve-rail";
+import { StatusRail } from "./_components/status-rail";
 
 export const instant = false;
 
@@ -61,29 +64,33 @@ export default async function SolvePage({
   const hintNumbers = task.hints.map((_, i) => i + 1);
   const next = rail[(rail.findIndex((s) => s.id === id) + 1) % rail.length];
 
+  const railProps = {
+    current: id,
+    topic: task.topic,
+    rail: rail.map((s) => ({
+      id: s.id,
+      preview: s.preview,
+      meta: taskMeta(s, bank),
+    })),
+    topics: positions.flatMap((p) => {
+      const first = tasks.find((x) => x.topic === p.topic);
+      return first
+        ? {
+            id: p.topic,
+            name: topicName(p.topic, locale),
+            first: first.id,
+          }
+        : [];
+    }),
+  };
+
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{bank("title")}</PageTitle>
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:has-data-[rail=collapsed]:grid-cols-[56px_minmax(0,1fr)]">
-        <SolveRail
-          current={id}
-          topic={task.topic}
-          rail={rail.map((s) => ({
-            id: s.id,
-            preview: s.preview,
-            meta: taskMeta(s, bank),
-          }))}
-          topics={positions.flatMap((p) => {
-            const first = tasks.find((x) => x.topic === p.topic);
-            return first
-              ? {
-                  id: p.topic,
-                  name: topicName(p.topic, locale),
-                  first: first.id,
-                }
-              : [];
-          })}
-        />
+        <Suspense fallback={<SolveRail {...railProps} />}>
+          <StatusRail {...railProps} />
+        </Suspense>
         <HintsProvider>
           <Card className="gap-6 md:p-9">
             <div className="flex items-start justify-between gap-2 text-sm text-subtle">
@@ -95,7 +102,9 @@ export default async function SolvePage({
                   {taskMeta(summary, bank)} · {task.source}
                 </span>
               </div>
-              <FavoriteButton taskId={task.id} />
+              <Suspense fallback={<FavoriteButton taskId={task.id} pending />}>
+                <FavoriteToggle taskId={task.id} />
+              </Suspense>
             </div>
             <MathHtml
               html={html.statement}
