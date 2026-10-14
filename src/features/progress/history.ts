@@ -1,12 +1,12 @@
 import "server-only";
 import {
   and,
+  between,
   count,
   desc,
   eq,
   gte,
   inArray,
-  like,
   type SQL,
   sql,
   sum,
@@ -18,6 +18,13 @@ import { dayMs, timeZone } from "@/lib/dates";
 import { db } from "@/server/db";
 import { accuracyDays } from "./stats";
 import { taskStats } from "./task-stats";
+
+const runIdStartingWith = (code: string) =>
+  between(
+    runs.id,
+    `${code}-0000-0000-0000-000000000000`,
+    `${code}-ffff-ffff-ffff-ffffffffffff`,
+  );
 
 export const getRun = cache(async (userId: string, key?: string) => {
   const id = z.uuid().safeParse(key);
@@ -33,7 +40,7 @@ export const getRun = cache(async (userId: string, key?: string) => {
       and(
         eq(runs.userId, userId),
         id.success ? eq(runs.id, id.data) : undefined,
-        code.success ? like(sql`${runs.id}::text`, `${code.data}%`) : undefined,
+        code.success ? runIdStartingWith(code.data) : undefined,
       ),
     )
     .orderBy(desc(runs.finishedAt))
