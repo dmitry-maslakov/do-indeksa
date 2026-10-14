@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { type ExamRun, useExamStore } from "./exam-store";
 
 const meta = {
@@ -92,11 +92,11 @@ describe("exam store", () => {
 });
 
 describe("persisted runs", () => {
-  const NAME = "do-indeksa-exam";
+  const storageName = "do-indeksa-exam";
 
   const open = async (runs: Record<string, ExamRun>) => {
     const items = new Map([
-      [NAME, JSON.stringify({ state: { runs }, version: 2 })],
+      [storageName, JSON.stringify({ state: { runs }, version: 2 })],
     ]);
     vi.stubGlobal("localStorage", {
       getItem: (key: string) => items.get(key) ?? null,
@@ -107,7 +107,7 @@ describe("persisted runs", () => {
     const { useExamStore: persisted } = await import("./exam-store");
     await persisted.persist.rehydrate();
     const stored = () =>
-      Object.keys(JSON.parse(items.get(NAME) ?? "{}").state.runs);
+      Object.keys(JSON.parse(items.get(storageName) ?? "{}").state.runs);
     return { persisted, stored };
   };
 
@@ -119,9 +119,9 @@ describe("persisted runs", () => {
 
   it("drops runs older than a day when hydrating", async () => {
     const { persisted } = await open({
-      "daily-2026-01-01": startedAgo(DAY + 1000),
-      "set-a.b": startedAgo(3 * DAY),
-      "daily-2026-01-03": startedAgo(DAY - 60_000),
+      "daily-2026-01-01": startedAgo(dayMs + 1000),
+      "set-a.b": startedAgo(3 * dayMs),
+      "daily-2026-01-03": startedAgo(dayMs - 60_000),
       "set-c": startedAgo(0),
     });
     expect(Object.keys(persisted.getState().runs)).toEqual([
@@ -131,14 +131,14 @@ describe("persisted runs", () => {
   });
 
   it("keeps a run younger than a day unchanged", async () => {
-    const run = startedAgo(DAY - 60_000);
+    const run = startedAgo(dayMs - 60_000);
     const { persisted } = await open({ v: run });
     expect(persisted.getState().runs.v).toEqual(run);
   });
 
   it("writes only the kept runs back to storage", async () => {
     const { persisted, stored } = await open({
-      "daily-2026-01-01": startedAgo(2 * DAY),
+      "daily-2026-01-01": startedAgo(2 * dayMs),
       "set-c": startedAgo(0),
     });
     persisted.getState().answer("set-c", 0, "x");

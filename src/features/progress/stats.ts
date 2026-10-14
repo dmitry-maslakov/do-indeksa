@@ -1,5 +1,5 @@
 import { sumBy } from "es-toolkit";
-import { belgradeDate, DAY } from "@/lib/dates";
+import { belgradeDate, dayMs } from "@/lib/dates";
 
 export interface TaskStat {
   taskId: string;
@@ -20,9 +20,9 @@ export interface Accuracy {
   pct: number | null;
 }
 
-export const SAMPLE_MIN = 3;
+export const minSample = 3;
 
-export const ACCURACY_DAYS = 30;
+export const accuracyDays = 30;
 
 export function accuracyBy<K extends string | number>(
   stats: TaskStat[],
@@ -36,7 +36,7 @@ export function accuracyBy<K extends string | number>(
       key,
       total,
       pct:
-        total < SAMPLE_MIN
+        total < minSample
           ? null
           : Math.round((sumBy(mine, (s) => s.right) / total) * 100),
     };
@@ -94,7 +94,7 @@ export function mistakes(stats: TaskStat[]) {
 }
 
 const dayBefore = (day: string) =>
-  new Date(Date.parse(`${day}T12:00:00Z`) - DAY).toISOString().slice(0, 10);
+  new Date(Date.parse(`${day}T12:00:00Z`) - dayMs).toISOString().slice(0, 10);
 
 export function streak(days: string[], now: Date) {
   const active = new Set(days);

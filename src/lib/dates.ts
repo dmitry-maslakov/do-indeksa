@@ -1,7 +1,9 @@
-export const DAY = 24 * 60 * 60 * 1000;
+export const hourMs = 60 * 60 * 1000;
 
-export const TIME_ZONE = "Europe/Belgrade";
+export const dayMs = 24 * hourMs;
 
-const belgrade = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE });
+export const timeZone = "Europe/Belgrade";
+
+const belgrade = new Intl.DateTimeFormat("en-CA", { timeZone });
 
 export const belgradeDate = (at = new Date()) => belgrade.format(at);

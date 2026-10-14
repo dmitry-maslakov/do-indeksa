@@ -2,7 +2,7 @@ import "server-only";
 import { and, eq, gt, notExists } from "drizzle-orm";
 import { cache } from "react";
 import { currentRuns, runs } from "@/db/schema";
-import { DAY } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import type { ExamRun } from "./exam-store";
 
@@ -19,7 +19,7 @@ export const getCurrentRun = cache(
       .where(
         and(
           eq(currentRuns.userId, userId),
-          gt(currentRuns.startedAt, new Date(Date.now() - DAY)),
+          gt(currentRuns.startedAt, new Date(Date.now() - dayMs)),
           notExists(
             db
               .select({ id: runs.id })

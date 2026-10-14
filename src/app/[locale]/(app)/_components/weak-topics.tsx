@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Accuracy, SAMPLE_MIN } from "@/features/progress/stats";
+import { type Accuracy, minSample } from "@/features/progress/stats";
 import { PracticeLinks } from "@/features/review/practice-links";
 import { topicName } from "@/features/tasks/topics";
 
@@ -86,7 +86,7 @@ export function WeakTopics({
                 </div>
                 {row.pct === null ? (
                   <span className="text-subtle">
-                    {t("attemptsLeft", { count: SAMPLE_MIN - row.total })}
+                    {t("attemptsLeft", { count: minSample - row.total })}
                   </span>
                 ) : (
                   <ProgressBar value={row.pct / 100} />

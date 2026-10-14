@@ -4,7 +4,7 @@ import { ProgressBar } from "@/components/progress-bar";
 import { SearchTabs } from "@/components/search-tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Accuracy, SAMPLE_MIN } from "@/features/progress/stats";
+import { type Accuracy, minSample } from "@/features/progress/stats";
 
 interface AccuracyCardProps {
   rows: (Accuracy & { label: string })[];
@@ -72,7 +72,7 @@ export function AccuracyCard({ rows, pending }: AccuracyCardProps) {
         ))}
       </ul>
       <p className="text-[13px] text-subtle">
-        {t("sample", { count: SAMPLE_MIN })}
+        {t("sample", { count: minSample })}
       </p>
     </Card>
   );
