@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
   deploymentId: process.env.GIT_SHA,
   agentRules: false,
   cacheComponents: true,
+  cacheMaxMemorySize: 0,
   partialPrefetching: true,
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
