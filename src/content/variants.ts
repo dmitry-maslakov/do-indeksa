@@ -4,7 +4,7 @@ import type { Locale } from "next-intl";
 import { pick } from "@/lib/pick";
 import { parseVariantId } from "@/lib/variant-id";
 import { dailySize, numberOf, positionOf, positions } from "./exam";
-import { getTask, renderTask, tasks } from "./tasks";
+import { getTask, idsByTopic, renderTask } from "./tasks";
 import { topicName } from "./topics";
 
 export const officialVariants = allVariants
@@ -22,9 +22,7 @@ export interface ExamVariant
   taskIds: string[];
 }
 
-export const byPosition = positions.map((p) =>
-  tasks.filter((t) => t.topic === p.topic).map((t) => t.id),
-);
+export const byPosition = positions.map((p) => idsByTopic.get(p.topic) ?? []);
 
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);

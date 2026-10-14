@@ -2,27 +2,35 @@ import "server-only";
 import { z } from "zod";
 import { compose, composeModes, swap } from "@/lib/compose";
 import { setId } from "@/lib/variant-id";
-import { tasks } from "./tasks";
+import { getTask, idsByTopic } from "./tasks";
+import { topics } from "./topics";
 import { byNumber, byPosition } from "./variants";
+
+const topicIds = topics.map((t) => t.id);
 
 export const composeSchema = z.object({
   mode: z.enum(composeModes).catch("exam"),
   topic: z
     .union([z.string(), z.array(z.string())])
     .optional()
-    .transform((t) => (t === undefined ? [] : [t].flat())),
+    .transform((t) => topicIds.filter((id) => [t].flat().includes(id))),
 });
 
 export const composeTaskIds = (
   input: Parameters<typeof compose>[1],
   seed: string,
 ) => {
-  const { ids, fallback } = compose({ byPosition, tasks }, input, seed);
+  const { ids, fallback } = compose(
+    { byPosition, byTopic: idsByTopic },
+    input,
+    seed,
+  );
   return { ids: byNumber(ids), fallback };
 };
 
 export const swapHrefs = (ids: string[]) =>
-  ids.map((_, i) => {
-    const swapped = swap(tasks, ids, i);
+  ids.map((id, i) => {
+    const same = idsByTopic.get(getTask(id)?.topic ?? "") ?? [];
+    const swapped = swap(same, ids, i);
     return swapped && `/variants/${setId(swapped)}`;
   });

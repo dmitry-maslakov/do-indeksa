@@ -33,6 +33,13 @@ export const tasks = allTasks;
 
 const byId = new Map(allTasks.map((t) => [t.id, t]));
 
+export const idsByTopic = new Map(
+  Array.from(
+    Map.groupBy(allTasks, (t) => t.topic),
+    ([topic, group]) => [topic, group.map((t) => t.id)] as const,
+  ),
+);
+
 export const getTask = (id: string) => byId.get(id);
 
 type RenderedTask = {

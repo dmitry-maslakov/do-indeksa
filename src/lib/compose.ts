@@ -5,7 +5,7 @@ export type ComposeMode = (typeof composeModes)[number];
 
 interface Pool {
   byPosition: string[][];
-  tasks: { id: string; topic: string }[];
+  byTopic: Map<string, string[]>;
 }
 
 interface ComposeInput {
@@ -20,7 +20,7 @@ export function compose(pool: Pool, input: ComposeInput, seed: string) {
   const exam = () => pick(pool.byPosition, size, seed);
   const fromTopics = (topics: string[]) =>
     pick(
-      pool.tasks.filter((t) => topics.includes(t.topic)).map((t) => [t.id]),
+      topics.flatMap((t) => pool.byTopic.get(t) ?? []).map((id) => [id]),
       size,
       seed,
     );
@@ -40,9 +40,7 @@ export function compose(pool: Pool, input: ComposeInput, seed: string) {
     : { ids: exam(), fallback: true };
 }
 
-export function swap(tasks: Pool["tasks"], ids: string[], index: number) {
-  const topic = tasks.find((t) => t.id === ids[index])?.topic;
-  const same = tasks.filter((t) => t.topic === topic).map((t) => t.id);
+export function swap(same: string[], ids: string[], index: number) {
   const at = same.indexOf(ids[index] ?? "");
   const next = [...same.slice(at + 1), ...same.slice(0, at)].find(
     (id) => !ids.includes(id),
