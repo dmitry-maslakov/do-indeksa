@@ -24,14 +24,28 @@ test("serves robots and sitemap", async ({ request }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);
   const rules = await robots.text();
-  expect(rules).toContain("Sitemap: https://doindeksa.rs/sitemap.xml");
+  expect(rules).toContain("Sitemap: https://doindeksa.rs/sitemap/0.xml");
   expect(rules).toContain("Disallow: /review");
-  const sitemap = await request.get("/sitemap.xml");
-  expect(sitemap.status()).toBe(200);
-  const urls = await sitemap.text();
+  const parts = [...rules.matchAll(/^Sitemap: (.+)$/gm)].map(
+    ([, href]) => new URL(href as string).pathname,
+  );
+  expect(parts.length).toBeGreaterThan(1);
+  const sitemaps: string[] = [];
+  for (const part of parts) {
+    const sitemap = await request.get(part);
+    expect(sitemap.status()).toBe(200);
+    const xml = await sitemap.text();
+    expect(xml.match(/<loc>/g)?.length).toBeLessThanOrEqual(50_000);
+    sitemaps.push(xml);
+  }
+  const [pages = "", ...tasks] = sitemaps;
+  expect(pages).toContain("<loc>https://doindeksa.rs/bank</loc>");
+  expect(pages).not.toContain("/bank/eks-001");
+  const urls = tasks.join();
   expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
   expect(urls).toContain("https://doindeksa.rs/ru/bank/eks-001");
-  expect(urls).not.toContain("/launch");
+  expect(urls).not.toContain("<loc>https://doindeksa.rs/bank</loc>");
+  expect(sitemaps.join()).not.toContain("/launch");
 });
 
 const screens = [
