@@ -1,0 +1,1 @@
+CREATE INDEX "attempts_user_id_task_id_created_at_index" ON "attempts" USING btree ("user_id","task_id","created_at" DESC NULLS LAST);

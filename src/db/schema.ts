@@ -60,6 +60,7 @@ export const attempts = pgTable(
   },
   (t) => [
     index().on(t.userId, t.createdAt.desc()),
+    index().on(t.userId, t.taskId, t.createdAt.desc()),
     unique().on(t.runId, t.taskId),
   ],
 );
