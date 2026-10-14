@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { DAY } from "./dates";
 
 interface RunMeta {
   title: string;
@@ -19,6 +20,13 @@ export interface ExamRun extends Omit<RunMeta, "tasks"> {
   answers: string[][];
   spent: number[];
 }
+
+const fresh = (runs: Record<string, ExamRun>) => {
+  const cutoff = Date.now() - DAY;
+  return Object.fromEntries(
+    Object.entries(runs).filter(([, run]) => run.startedAt >= cutoff),
+  );
+};
 
 export const spentAt = (run: ExamRun, now: number) =>
   run.spent.map((ms, i) => (i === run.current ? ms + now - run.enteredAt : ms));
@@ -111,6 +119,12 @@ export const useExamStore = create<ExamState>()(
             ]),
           ),
         };
+      },
+      merge: (persisted, current) => {
+        const { runs = current.runs } = (persisted ?? {}) as Partial<
+          Pick<ExamState, "runs">
+        >;
+        return { ...current, runs: fresh(runs) };
       },
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
