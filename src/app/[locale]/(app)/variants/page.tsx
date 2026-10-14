@@ -5,7 +5,7 @@ import { type ReactNode, Suspense } from "react";
 import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { SignInCard } from "@/components/sign-in-card";
+import { SignInCard } from "@/features/account/sign-in-card";
 import { DailyBanner } from "@/features/exam/daily-banner";
 import { positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";

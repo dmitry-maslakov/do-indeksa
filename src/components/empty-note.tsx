@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
-import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
+import { SignInButton } from "@/features/account/sign-in-button";
 import { Link } from "@/i18n/navigation";
 
 interface EmptyNoteProps {

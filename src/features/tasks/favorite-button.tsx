@@ -10,9 +10,9 @@ import {
   useState,
   useTransition,
 } from "react";
-import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/account/auth-client";
+import { SignInButton } from "@/features/account/sign-in-button";
 import { isFavorite, setFavorite } from "./favorite-action";
 
 export function FavoriteButton({ taskId }: { taskId: string }) {

@@ -3,7 +3,7 @@
 import { FlameIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/account/auth-client";
 import { getStreak } from "./streak-action";
 
 export function StreakBadge() {
