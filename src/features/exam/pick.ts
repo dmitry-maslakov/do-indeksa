@@ -18,13 +18,16 @@ function random(seed: string) {
 
 export function pick<T>(groups: T[][], size: number, seed: string): T[] {
   const next = random(seed);
-  const order = groups.filter((g) => g.length > 0);
+  const order = groups.flatMap((group, i) => (group.length > 0 ? [i] : []));
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(next() * (i + 1));
-    [order[i], order[j]] = [order[j] as T[], order[i] as T[]];
+    [order[i], order[j]] = [order[j] as number, order[i] as number];
   }
   return order
     .slice(0, size)
-    .sort((a, b) => groups.indexOf(a) - groups.indexOf(b))
-    .map((g) => g[Math.floor(next() * g.length)] as T);
+    .sort((a, b) => a - b)
+    .map((i) => {
+      const group = groups[i] as T[];
+      return group[Math.floor(next() * group.length)] as T;
+    });
 }
