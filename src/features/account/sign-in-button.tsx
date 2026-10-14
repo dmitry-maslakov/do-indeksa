@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
-import { signIn } from "@/lib/auth-client";
+import { signIn } from "./auth-client";
 
 export function GoogleSignInButton(props: ComponentProps<typeof Button>) {
   const pathname = usePathname();

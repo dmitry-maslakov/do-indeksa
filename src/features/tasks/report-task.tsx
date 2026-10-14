@@ -3,14 +3,14 @@
 import { FlagIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/account/auth-client";
+import { SignInButton } from "@/features/account/sign-in-button";
 import { reportTask } from "./report-action";
 import { reportKinds } from "./report-kinds";
 

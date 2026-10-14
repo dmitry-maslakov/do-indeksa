@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { SignInButton } from "@/components/sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
+import { SignInButton } from "@/features/account/sign-in-button";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";

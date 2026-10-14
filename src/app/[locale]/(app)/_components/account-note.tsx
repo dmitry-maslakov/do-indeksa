@@ -1,6 +1,9 @@
 import { useTranslations } from "next-intl";
-import { GoogleSignInButton, PrivacyLink } from "@/components/sign-in-button";
 import { Card, CardTitle } from "@/components/ui/card";
+import {
+  GoogleSignInButton,
+  PrivacyLink,
+} from "@/features/account/sign-in-button";
 
 export function AccountNote() {
   const t = useTranslations("Account");

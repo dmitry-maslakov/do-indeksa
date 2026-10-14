@@ -3,7 +3,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
-import { SignInCard } from "@/components/sign-in-card";
+import { SignInCard } from "@/features/account/sign-in-card";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";
 import {

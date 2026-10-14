@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { GoogleSignInButton } from "@/components/sign-in-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +14,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-import { useSignedOut } from "@/lib/use-signed-out";
+import { authClient } from "@/features/account/auth-client";
+import { GoogleSignInButton } from "@/features/account/sign-in-button";
+import { useSignedOut } from "@/features/account/use-signed-out";
 
 type Status = "idle" | "pending" | "stale" | "error" | "deleted";
 
