@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Score } from "@/components/score";
@@ -9,14 +7,15 @@ import { VariantStrip } from "@/components/variant-strip";
 import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
-import { useExamHydrated, useExamStore } from "./exam-store";
+import type { ExamRun } from "./exam-store";
 import { answeredCount, blankSegments, runSegments } from "./run";
 
-interface VariantRowProps {
+export interface VariantRowProps {
   id: string;
   title: string;
   tasks: number;
   latest?: { id: string; segments: Segment[]; score: number; max: number };
+  run?: ExamRun;
   pending?: boolean;
 }
 
@@ -25,11 +24,10 @@ export function VariantRow({
   title,
   tasks,
   latest,
+  run,
   pending,
 }: VariantRowProps) {
   const t = useTranslations("Variants");
-  const hydrated = useExamHydrated();
-  const run = useExamStore((s) => (hydrated ? s.runs[id] : undefined));
   const done = run ? answeredCount(run) : 0;
   const segments = run
     ? runSegments(run)
