@@ -1,24 +1,27 @@
+import { range } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 
 interface MistakesCardProps {
-  taskIds?: string[];
+  count?: number;
 }
+
+const maxSquares = 5;
 
 const squares = (
   <span className="flex gap-1">
-    {[1, 2, 3, 4, 5].map((n) => (
+    {range(maxSquares).map((n) => (
       <Skeleton key={n} className="size-3 rounded-[3px]" />
     ))}
   </span>
 );
 
-export function MistakesCard({ taskIds }: MistakesCardProps) {
+export function MistakesCard({ count }: MistakesCardProps) {
   const t = useTranslations("Home");
 
-  if (!taskIds) {
+  if (count === undefined) {
     return (
       <Card className="flex-row items-center justify-between gap-4">
         <div className="flex flex-col gap-2">
@@ -30,7 +33,6 @@ export function MistakesCard({ taskIds }: MistakesCardProps) {
     );
   }
 
-  const count = taskIds.length;
   if (count === 0) {
     return (
       <Card className="flex-row items-center justify-between gap-4">
@@ -52,9 +54,9 @@ export function MistakesCard({ taskIds }: MistakesCardProps) {
           </span>
         </div>
         <span className="flex gap-1">
-          {taskIds.slice(0, 5).map((id) => (
+          {range(Math.min(count, maxSquares)).map((n) => (
             <i
-              key={id}
+              key={n}
               className="size-3 rounded-[3px] border-2 border-error bg-error-tint"
             />
           ))}

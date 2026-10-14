@@ -9,8 +9,8 @@ import { contentVariants, minutesOf } from "@/features/exam/variants";
 import { getTaskStats } from "@/features/progress/history";
 import {
   meanTimeByNumber,
-  mistakes,
   type TaskStat,
+  totals,
   warming,
   weakest,
 } from "@/features/progress/stats";
@@ -124,7 +124,7 @@ export default function HomePage() {
                       warming={warming(s.stats, topics)}
                     />
                     {s.stats.length > 0 && (
-                      <MistakesCard taskIds={mistakes(s.stats)} />
+                      <MistakesCard count={totals(s.stats).wrong} />
                     )}
                   </>
                 );

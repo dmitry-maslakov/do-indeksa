@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   accuracyBy,
   meanTimeByNumber,
-  mistakes,
   streak,
   type TaskStat,
   totals,
@@ -97,15 +96,6 @@ describe("home folds", () => {
     expect(streak(["2026-10-26", "2026-10-25", "2026-10-24"], late)).toBe(3);
     const early = new Date("2026-03-30T22:30:00Z");
     expect(streak(["2026-03-30", "2026-03-29", "2026-03-28"], early)).toBe(3);
-  });
-
-  it("lists tasks whose latest attempt is wrong", () => {
-    const rows = [
-      stat("a", 1, { latestRight: true }),
-      stat("b", 1),
-      stat("c", 1),
-    ];
-    expect(mistakes(rows)).toEqual(["b", "c"]);
   });
 
   const recent = (
