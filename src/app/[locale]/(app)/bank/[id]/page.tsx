@@ -25,7 +25,7 @@ import { SolveRail } from "./_components/solve-rail";
 export const instant = false;
 
 export function generateStaticParams() {
-  return tasks.map((t) => ({ id: t.id }));
+  return tasks.slice(0, 1).map((t) => ({ id: t.id }));
 }
 
 export async function generateMetadata({
