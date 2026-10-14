@@ -8,7 +8,7 @@ import { renderMarkdown } from "@/lib/markdown";
 import { numberOf } from "./exam";
 import { topicName } from "./topics";
 
-export const levelOf = (difficulty: number): Level =>
+const levelOf = (difficulty: number): Level =>
   difficulty <= 2 ? "easy" : difficulty === 3 ? "medium" : "hard";
 
 export interface TaskSummary {

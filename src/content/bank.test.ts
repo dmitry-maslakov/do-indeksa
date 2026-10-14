@@ -31,9 +31,35 @@ describe("searchBank", () => {
     );
   });
 
-  it("sorts by difficulty", () => {
-    const hard = searchBank({ sort: "hard" }).map((t) => t.difficulty);
-    expect(hard).toEqual([...hard].sort((a, b) => b - a));
+  it("combines the text search with the other filters", () => {
+    const found = searchBank({ q: "jednacinu", level: "easy", sort: "hard" });
+    const all = searchBank({ q: "jednacinu", sort: "hard" });
+    expect(found.length).toBeGreaterThan(0);
+    expect(found).toEqual(all.filter((t) => t.level === "easy"));
+  });
+
+  it("sorts easy first by difficulty, then by number", () => {
+    const found = searchBank({ sort: "easy" });
+    expect(found).toEqual(
+      [...found].sort(
+        (a, b) => a.difficulty - b.difficulty || a.number - b.number,
+      ),
+    );
+  });
+
+  it("sorts hard first by difficulty, then by number", () => {
+    const found = searchBank({ sort: "hard" });
+    expect(found).toEqual(
+      [...found].sort(
+        (a, b) => b.difficulty - a.difficulty || a.number - b.number,
+      ),
+    );
+  });
+
+  it("returns the same tasks in every order", () => {
+    const sorted = (sort?: "easy" | "hard") => ids({ sort }).sort();
+    expect(sorted("easy")).toEqual(sorted());
+    expect(sorted("hard")).toEqual(sorted());
   });
 
   it("filters by status and favorites", () => {
