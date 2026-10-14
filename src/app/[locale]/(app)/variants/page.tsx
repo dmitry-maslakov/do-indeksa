@@ -9,9 +9,10 @@ import { SearchTabs } from "@/components/search-tabs";
 import { SignInCard } from "@/features/account/sign-in-card";
 import { DailyBanner } from "@/features/exam/daily-banner";
 import { positions } from "@/features/exam/exam";
-import { summarizeRuns } from "@/features/exam/run-summaries";
+import { runPage } from "@/features/exam/run-feed";
+import { type RunRow, summarizeRuns } from "@/features/exam/run-summaries";
 import { curatedVariants, officialVariants } from "@/features/exam/variants";
-import { getRunAttempts, getRuns } from "@/features/progress/history";
+import { getLatestRuns, getRuns } from "@/features/progress/history";
 import { topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
@@ -32,18 +33,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function loadRuns() {
+const recentRunCount = 3;
+
+async function loadRuns(read: (userId: string) => PromiseLike<RunRow[]>) {
   const session = await getSession();
-  if (!session) return { signedIn: false, runs: [] };
-  const rows = await getRuns(session.user.id);
-  const attempts = await getRunAttempts(
+  if (!session) return [];
+  return summarizeRuns(
     session.user.id,
-    rows.map((run) => run.id),
+    await read(session.user.id),
+    await getLocale(),
   );
-  return {
-    signedIn: true,
-    runs: await summarizeRuns(rows, attempts, await getLocale()),
-  };
+}
+
+async function loadHistory() {
+  const session = await getSession();
+  return session && runPage(session.user.id, 0, await getLocale());
 }
 
 export default async function VariantsPage({
@@ -51,7 +55,7 @@ export default async function VariantsPage({
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
-  const runs = loadRuns();
+  const recent = loadRuns((userId) => getRuns(userId, recentRunCount));
   const topics = positions.map((p) => ({
     id: p.topic,
     name: topicName(p.topic, locale),
@@ -69,15 +73,13 @@ export default async function VariantsPage({
             </Catalog>
           }
         >
-          <CatalogTab searchParams={searchParams} runs={runs} />
+          <CatalogTab searchParams={searchParams} />
         </Suspense>
         <aside className="flex flex-col gap-5">
           <ComposeCard topics={topics} />
           <Suspense>
-            <Await promise={runs}>
-              {(r) =>
-                r.runs.length > 0 && <RecentCard runs={r.runs.slice(0, 3)} />
-              }
+            <Await promise={recent}>
+              {(runs) => runs.length > 0 && <RecentCard runs={runs} />}
             </Await>
           </Suspense>
         </aside>
@@ -88,23 +90,21 @@ export default async function VariantsPage({
 
 async function CatalogTab({
   searchParams,
-  runs,
-}: Pick<PageProps<"/[locale]/variants">, "searchParams"> & {
-  runs: ReturnType<typeof loadRuns>;
-}) {
+}: Pick<PageProps<"/[locale]/variants">, "searchParams">) {
   const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
   const variants = tab === "official" ? officialVariants : curatedVariants;
+  const ids = variants.map((v) => v.id);
 
   return (
     <Catalog>
       {tab === "history" ? (
         <Suspense fallback={<RunHistory />}>
-          <Await promise={runs}>
-            {(r) =>
-              r.signedIn ? (
-                <RunHistory runs={r.runs} />
+          <Await promise={loadHistory()}>
+            {(first) =>
+              first ? (
+                <RunHistory first={first} />
               ) : (
                 <SignInCard text={t("historyGuest")} />
               )
@@ -113,8 +113,8 @@ async function CatalogTab({
         </Suspense>
       ) : (
         <Suspense fallback={<VariantList variants={variants} />}>
-          <Await promise={runs}>
-            {(r) => <VariantList variants={variants} runs={r.runs} />}
+          <Await promise={loadRuns((userId) => getLatestRuns(userId, ids))}>
+            {(runs) => <VariantList variants={variants} runs={runs} />}
           </Await>
         </Suspense>
       )}
