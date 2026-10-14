@@ -1,16 +1,10 @@
 import type { NextRequest } from "next/server";
-import { z } from "zod";
 import { feedPage } from "@/features/bank/feed";
 import { loadBankFilters } from "@/features/bank/params";
 import { filterByStatus, searchBank } from "@/features/bank/search";
 import { getProgress } from "@/features/progress/progress";
-import { routing } from "@/i18n/routing";
 import { getSession } from "@/server/auth";
-
-const pageQuery = z.object({
-  offset: z.coerce.number().int().min(0),
-  locale: z.enum(routing.locales),
-});
+import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

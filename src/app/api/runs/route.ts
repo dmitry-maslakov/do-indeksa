@@ -1,13 +1,7 @@
 import type { NextRequest } from "next/server";
-import { z } from "zod";
 import { runPage } from "@/features/exam/run-feed";
-import { routing } from "@/i18n/routing";
 import { getSession } from "@/server/auth";
-
-const pageQuery = z.object({
-  offset: z.coerce.number().int().min(0),
-  locale: z.enum(routing.locales),
-});
+import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {
   const query = pageQuery.safeParse(
