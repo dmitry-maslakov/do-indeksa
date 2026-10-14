@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { MathPreview } from "@/components/math-preview";
+import type { TaskStatus } from "@/features/progress/status";
 import { Link } from "@/i18n/navigation";
-import type { TaskStatus } from "@/lib/progress";
 
 export interface RailTask {
   id: string;

@@ -3,8 +3,8 @@ import { PanelLeftOpenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { TaskStatus } from "@/features/progress/status";
 import { Link } from "@/i18n/navigation";
-import type { TaskStatus } from "@/lib/progress";
 
 interface RailNumbersProps {
   ids: string[];

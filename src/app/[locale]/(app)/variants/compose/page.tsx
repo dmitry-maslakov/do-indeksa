@@ -3,10 +3,10 @@ import { getLocale } from "next-intl/server";
 import { composeSchema, composeTaskIds } from "@/features/exam/compose-set";
 import { positions } from "@/features/exam/exam";
 import { saveSet } from "@/features/exam/sets";
+import { getTaskStats } from "@/features/progress/history";
+import { weakest } from "@/features/progress/stats";
 import { redirect } from "@/i18n/navigation";
-import { weakest } from "@/lib/stats";
 import { getSession } from "@/server/auth";
-import { getTaskStats } from "@/server/history";
 
 export const instant = false;
 

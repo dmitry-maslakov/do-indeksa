@@ -1,8 +1,8 @@
 import "server-only";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
-import type { Progress, TaskStatus } from "@/lib/progress";
-import { db } from "./db";
+import { db } from "@/server/db";
+import type { Progress, TaskStatus } from "./status";
 
 export async function getTaskStatuses(userId: string, taskIds?: string[]) {
   const rows = await db

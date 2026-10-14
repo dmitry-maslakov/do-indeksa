@@ -1,4 +1,4 @@
-import { belgradeDate, DAY } from "./dates";
+import { belgradeDate, DAY } from "@/lib/dates";
 
 export interface TaskStat {
   taskId: string;

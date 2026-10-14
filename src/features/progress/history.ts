@@ -13,11 +13,11 @@ import {
 } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
-import { taskStats } from "@/content/task-stats";
 import { attempts, runs } from "@/db/schema";
 import { DAY, TIME_ZONE } from "@/lib/dates";
-import { ACCURACY_DAYS } from "@/lib/stats";
-import { db } from "./db";
+import { db } from "@/server/db";
+import { ACCURACY_DAYS } from "./stats";
+import { taskStats } from "./task-stats";
 
 export const getRun = cache(async (userId: string, key?: string) => {
   const id = z.uuid().safeParse(key);

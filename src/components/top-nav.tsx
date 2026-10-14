@@ -1,9 +1,9 @@
 import { currentExam, examOptions } from "@/features/exam/exam";
 import { ExamSwitcher } from "@/features/exam/exam-switcher";
+import { StreakBadge } from "@/features/progress/streak-badge";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
-import { StreakBadge } from "./streak-badge";
 import { UserMenu } from "./user-menu";
 
 export function TopNav() {

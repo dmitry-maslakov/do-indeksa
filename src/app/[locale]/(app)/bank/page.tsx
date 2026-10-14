@@ -20,12 +20,12 @@ import {
   searchBank,
 } from "@/features/bank/search";
 import { taskCards } from "@/features/bank/task-card";
+import { getProgress } from "@/features/progress/progress";
+import type { Progress } from "@/features/progress/status";
 import type { TaskSummary } from "@/features/tasks/tasks";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import type { Progress } from "@/lib/progress";
 import { getSession } from "@/server/auth";
-import { getProgress } from "@/server/progress";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");

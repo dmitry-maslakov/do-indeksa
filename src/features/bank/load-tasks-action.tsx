@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import { getProgress } from "@/features/progress/progress";
 import { getSession } from "@/server/auth";
-import { getProgress } from "@/server/progress";
 import { loadBankFilters } from "./params";
 import { bankPage, filterByStatus, searchBank } from "./search";
 import { taskCards } from "./task-card";

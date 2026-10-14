@@ -1,8 +1,8 @@
 "use server";
 
-import { streak } from "@/lib/stats";
-import { getSession } from "./auth";
+import { getSession } from "@/server/auth";
 import { getRecentAttemptDays } from "./history";
+import { streak } from "./stats";
 
 export async function getStreak(): Promise<number> {
   const session = await getSession();

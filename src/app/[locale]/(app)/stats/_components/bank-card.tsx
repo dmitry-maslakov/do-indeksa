@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { totals } from "@/lib/stats";
+import type { totals } from "@/features/progress/stats";
 
 interface BankCardProps {
   totals?: ReturnType<typeof totals>;

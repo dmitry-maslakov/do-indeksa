@@ -6,16 +6,16 @@ import { getCurrentRun } from "@/features/exam/current-run";
 import { DailyBanner } from "@/features/exam/daily-banner";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { contentVariants, minutesOf } from "@/features/exam/variants";
-import { alternates } from "@/i18n/alternates";
+import { getTaskStats } from "@/features/progress/history";
 import {
   meanTimeByNumber,
   mistakes,
   type TaskStat,
   warming,
   weakest,
-} from "@/lib/stats";
+} from "@/features/progress/stats";
+import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
-import { getTaskStats } from "@/server/history";
 import { AccountNote } from "./_components/account-note";
 import { ContinueCard } from "./_components/continue-card";
 import { EntryCards } from "./_components/entry-cards";
