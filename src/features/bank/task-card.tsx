@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { taskMeta } from "@/features/tasks/level";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
 
@@ -21,9 +22,7 @@ export function TaskCard({ card }: { card: BankCard }) {
             <Badge variant="tint" className="max-w-full whitespace-normal">
               {card.topic}
             </Badge>
-            <span className="text-subtle">
-              {t("meta", { number: card.number, level: card.level })}
-            </span>
+            <span className="text-subtle">{taskMeta(card, t)}</span>
           </div>
           <div className="flex items-center gap-2.5">
             {card.status === "solved" && (

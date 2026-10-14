@@ -1,14 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { filterByStatus, searchBank } from "./search";
 
+const rank = (t: { number: number | null }) =>
+  t.number ?? Number.MAX_SAFE_INTEGER;
+
 const ids = (filters: Parameters<typeof searchBank>[0]) =>
   searchBank(filters).map((t) => t.id);
 
 describe("searchBank", () => {
-  it("lists every task by number", () => {
-    const numbers = searchBank({}).map((t) => t.number);
-    expect(numbers.length).toBeGreaterThan(0);
-    expect(numbers).toEqual([...numbers].sort((a, b) => a - b));
+  it("lists every task by number, tasks outside the exam last", () => {
+    const found = searchBank({});
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.map(rank)).toEqual(found.map(rank).sort((a, b) => a - b));
   });
 
   it("searches without diacritics", () => {
@@ -40,7 +43,7 @@ describe("searchBank", () => {
     const found = searchBank({ sort: "easy" });
     expect(found).toEqual(
       [...found].sort(
-        (a, b) => a.difficulty - b.difficulty || a.number - b.number,
+        (a, b) => a.difficulty - b.difficulty || rank(a) - rank(b),
       ),
     );
   });
@@ -49,7 +52,7 @@ describe("searchBank", () => {
     const found = searchBank({ sort: "hard" });
     expect(found).toEqual(
       [...found].sort(
-        (a, b) => b.difficulty - a.difficulty || a.number - b.number,
+        (a, b) => b.difficulty - a.difficulty || rank(a) - rank(b),
       ),
     );
   });

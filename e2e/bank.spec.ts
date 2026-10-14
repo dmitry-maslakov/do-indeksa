@@ -28,7 +28,7 @@ function bank(page: Page) {
     level: page.getByRole("combobox", { name: "Težina", exact: true }),
     sort: page.getByRole("combobox", { name: "Redosled", exact: true }),
     search: page.getByRole("searchbox"),
-    cards: page.getByRole("link").filter({ hasText: "na ispitu" }),
+    cards: page.locator("main section").getByRole("link"),
     count: page.getByText(/^[\d.]+ zadat(ak|ka|aka)$/),
     empty: page.getByText("Ništa nije pronađeno"),
   };
@@ -189,10 +189,9 @@ test("the bank feed loads the next page while scrolling", async ({
   errors,
 }) => {
   await open(page);
-  const { count } = bank(page);
+  const { count, cards } = bank(page);
   const total = Number((await count.textContent())?.replace(/\D/g, ""));
   test.skip(total <= 30, "the bank fits on one page");
-  const cards = page.locator("main section").getByRole("link");
   await expect(cards).toHaveCount(30);
 
   await page

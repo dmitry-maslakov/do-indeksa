@@ -1,3 +1,4 @@
+import { orderBy } from "es-toolkit";
 import "server-only";
 import type { inferParserType } from "nuqs/server";
 import type { Progress } from "@/features/progress/status";
@@ -22,10 +23,10 @@ const entries: Entry[] = tasks.map((task) => ({
 }));
 
 const sortedBy = (order: -1 | 0 | 1) =>
-  entries.toSorted(
-    (a, b) =>
-      order * (a.summary.difficulty - b.summary.difficulty) ||
-      a.summary.number - b.summary.number,
+  orderBy(
+    entries,
+    [(e) => order * e.summary.difficulty, (e) => e.summary.number],
+    ["asc"],
   );
 
 const orders = { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };

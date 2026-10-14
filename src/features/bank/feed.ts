@@ -9,7 +9,7 @@ import { bankPage } from "./search";
 export interface BankCard {
   id: string;
   topic: string;
-  number: number;
+  number: number | null;
   level: Level;
   statement: string;
   status: TaskStatus;
