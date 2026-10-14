@@ -1,16 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  useActionState,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useStateAction } from "next-safe-action/hooks";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { type CheckResult, checkAnswer } from "./answer-action";
+import { checkAnswer } from "./answer-action";
 import { AnswerField, type AnswerState } from "./answer-field";
 import { useHints } from "./hints";
 
@@ -22,10 +17,8 @@ interface AnswerFormProps {
 
 export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
   const t = useTranslations("Solve");
-  const [result, action, pending] = useActionState<
-    CheckResult | null,
-    FormData
-  >(checkAnswer, null);
+  const { formAction, result, isPending } = useStateAction(checkAnswer);
+  const checked = result.data;
   const startedAt = useRef(0);
   const [edited, setEdited] = useState(false);
   const markEdited = useCallback(() => setEdited(true), []);
@@ -36,14 +29,14 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
   }, []);
 
   const stateOf = (i: number): AnswerState =>
-    !result || edited ? "empty" : result.parts[i] ? "correct" : "wrong";
+    !checked || edited ? "empty" : checked.parts[i] ? "correct" : "wrong";
 
   return (
     <form
       action={(form) => {
         setEdited(false);
         form.set("startedAt", String(startedAt.current));
-        action(form);
+        formAction(form);
       }}
       className="flex flex-col gap-4"
     >
@@ -66,15 +59,17 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
         ))}
       </div>
       <div className="flex items-center gap-4">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={isPending}>
           {t("check")}
         </Button>
-        {result && !edited && (
+        {checked && !edited && (
           <span
             role="status"
-            className={result.correct ? "text-success-text" : "text-error-text"}
+            className={
+              checked.correct ? "text-success-text" : "text-error-text"
+            }
           >
-            {result.correct ? t("correct") : t("wrong")}
+            {checked.correct ? t("correct") : t("wrong")}
           </span>
         )}
         {skip && (

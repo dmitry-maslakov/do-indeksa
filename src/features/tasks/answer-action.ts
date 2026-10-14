@@ -1,55 +1,48 @@
 "use server";
 
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { attempts } from "@/db/schema";
 import { hourMs } from "@/lib/dates";
 import { gradeParts } from "@/lib/math";
-import { getSession } from "@/server/auth";
+import { actionClient } from "@/server/action-client";
 import { db } from "@/server/db";
 import { getTask } from "./tasks";
 
-export interface CheckResult {
-  parts: boolean[];
-  correct: boolean;
-}
-
-const input = z.object({
-  taskId: z.string().min(1),
-  answers: z.array(z.string().max(500)).max(6),
-  startedAt: z.coerce.number().int().positive(),
-  hintsUsed: z.coerce.number().int().min(0).max(3),
+const schema = zfd.formData({
+  taskId: zfd.text(),
+  answer: zfd.repeatable(z.array(z.string().max(500)).max(6)),
+  startedAt: zfd.numeric(z.number().int().positive()),
+  hintsUsed: zfd.numeric(z.number().int().min(0).max(3)),
 });
 
-export async function checkAnswer(
-  _previous: CheckResult | null,
-  form: FormData,
-): Promise<CheckResult> {
-  const { taskId, answers, startedAt, hintsUsed } = input.parse({
-    taskId: form.get("taskId"),
-    answers: form.getAll("answer"),
-    startedAt: form.get("startedAt"),
-    hintsUsed: form.get("hintsUsed") ?? 0,
-  });
-  const task = getTask(taskId);
-  if (!task) throw new Error(`unknown task ${taskId}`);
+export const checkAnswer = actionClient
+  .inputSchema(schema)
+  .stateAction(
+    async ({
+      parsedInput: { taskId, answer: answers, startedAt, hintsUsed },
+      ctx: { userId },
+    }) => {
+      const task = getTask(taskId);
+      if (!task) throw new Error(`unknown task ${taskId}`);
 
-  const parts = gradeParts(
-    task.check.map((c) => c.expected),
-    answers,
+      const parts = gradeParts(
+        task.check.map((c) => c.expected),
+        answers,
+      );
+      const correct = parts.every(Boolean);
+
+      if (userId) {
+        await db.insert(attempts).values({
+          userId,
+          taskId,
+          answers,
+          parts,
+          correct,
+          hintsUsed,
+          durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
+        });
+      }
+      return { parts, correct };
+    },
   );
-  const correct = parts.every(Boolean);
-
-  const session = await getSession();
-  if (session) {
-    await db.insert(attempts).values({
-      userId: session.user.id,
-      taskId,
-      answers,
-      parts,
-      correct,
-      hintsUsed,
-      durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
-    });
-  }
-  return { parts, correct };
-}
