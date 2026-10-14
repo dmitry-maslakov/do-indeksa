@@ -16,8 +16,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   bankPage,
   type BankFilters as Filters,
+  filterByStatus,
   searchBank,
 } from "@/content/bank";
+import type { TaskSummary } from "@/content/tasks";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { loadBankFilters, serializeBankFilters } from "@/lib/bank-params";
@@ -43,7 +45,9 @@ export default async function BankPage({
     <main className="px-4 pb-9 md:px-9">
       <PageTitle>{t("title")}</PageTitle>
       <NuqsAdapter>
-        <Suspense fallback={<BankResults filters={{}} pending />}>
+        <Suspense
+          fallback={<BankResults filters={{}} tasks={searchBank({})} pending />}
+        >
           <Bank searchParams={searchParams} />
         </Suspense>
       </NuqsAdapter>
@@ -55,23 +59,32 @@ async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
+  const tasks = searchBank(filters);
   const session = await getSession();
 
   return session ? (
-    <Suspense fallback={<BankResults filters={filters} signedIn />}>
+    <Suspense
+      fallback={<BankResults filters={filters} tasks={tasks} signedIn />}
+    >
       <Await promise={getProgress(session.user.id)}>
         {(progress) => (
-          <BankResults filters={filters} signedIn progress={progress} />
+          <BankResults
+            filters={filters}
+            tasks={filterByStatus(tasks, filters.status, progress)}
+            signedIn
+            progress={progress}
+          />
         )}
       </Await>
     </Suspense>
   ) : (
-    <BankResults filters={filters} signedIn={false} />
+    <BankResults filters={filters} tasks={tasks} signedIn={false} />
   );
 }
 
 interface BankResultsProps {
   filters: Filters;
+  tasks: TaskSummary[];
   signedIn?: boolean;
   progress?: Progress;
   pending?: boolean;
@@ -79,12 +92,12 @@ interface BankResultsProps {
 
 function BankResults({
   filters,
+  tasks,
   signedIn,
   progress,
   pending = signedIn && !progress && Boolean(filters.status),
 }: BankResultsProps) {
   const t = useTranslations("Bank");
-  const tasks = searchBank(filters, progress);
   const search = serializeBankFilters(filters);
 
   return (

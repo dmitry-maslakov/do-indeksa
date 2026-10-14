@@ -30,6 +30,19 @@ const sortedBy = (order: -1 | 0 | 1) =>
 
 const orders = { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };
 
+export function searchBank({ q, number, topic, level, sort }: BankFilters) {
+  const query = q && fold(q);
+  return orders[sort ?? "number"]
+    .filter(
+      ({ summary, text }) =>
+        (!query || text.includes(query)) &&
+        (!topic || summary.topic === topic) &&
+        (!level || summary.level === level) &&
+        (!number || summary.number === number),
+    )
+    .map(({ summary }) => summary);
+}
+
 function matchesStatus(
   filter: (typeof statusFilters)[number],
   id: string,
@@ -39,19 +52,11 @@ function matchesStatus(
   return (progress.statuses.get(id) ?? "new") === filter;
 }
 
-export function searchBank(
-  { q, number, topic, level, sort, status }: BankFilters,
+export function filterByStatus(
+  found: TaskSummary[],
+  status: BankFilters["status"],
   progress?: Progress,
 ) {
-  const query = q && fold(q);
-  return orders[sort ?? "number"]
-    .filter(
-      ({ summary, text }) =>
-        (!query || text.includes(query)) &&
-        (!topic || summary.topic === topic) &&
-        (!level || summary.level === level) &&
-        (!status || !progress || matchesStatus(status, summary.id, progress)) &&
-        (!number || summary.number === number),
-    )
-    .map(({ summary }) => summary);
+  if (!status || !progress) return found;
+  return found.filter((t) => matchesStatus(status, t.id, progress));
 }
