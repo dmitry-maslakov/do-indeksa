@@ -12,7 +12,13 @@ describe("setCode", () => {
     );
   });
 
-  it("is seven url-safe characters", () => {
-    expect(setCode(["kb-001", "log-002"])).toMatch(/^[\w-]{7}$/);
+  it("depends on the content", () => {
+    expect(setCode(["kb-001", "log-002"])).not.toBe(
+      setCode(["kb-001", "log-003"]),
+    );
+  });
+
+  it("is sixteen url-safe characters", () => {
+    expect(setCode(["kb-001", "log-002"])).toMatch(/^[\w-]{16}$/);
   });
 });
