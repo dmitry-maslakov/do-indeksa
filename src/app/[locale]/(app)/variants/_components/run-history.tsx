@@ -1,11 +1,16 @@
+"use client";
+
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
+import { LoadMore } from "@/components/load-more";
 import { Score } from "@/components/score";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
+import type { RunPage } from "@/features/exam/run-feed";
 import type { RunSummary } from "@/features/exam/run-summaries";
+import { useRunFeed } from "@/features/exam/use-run-feed";
 import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
 
@@ -28,14 +33,13 @@ const ghost = (
   </ul>
 );
 
-export function RunHistory({ runs }: { runs?: RunSummary[] }) {
+export function RunHistory({ first }: { first?: RunPage }) {
   const t = useTranslations("Variants");
   const home = useTranslations("Home");
-  const format = useFormatter();
 
-  if (!runs) return <Card className="p-0 md:p-0">{ghost}</Card>;
+  if (!first) return <Card className="p-0 md:p-0">{ghost}</Card>;
 
-  if (runs.length === 0) {
+  if (first.runs.length === 0) {
     return (
       <Card>
         <EmptyNote
@@ -48,34 +52,61 @@ export function RunHistory({ runs }: { runs?: RunSummary[] }) {
     );
   }
 
+  return <RunFeed first={first} />;
+}
+
+function RunRow({ run }: { run: RunSummary }) {
+  const t = useTranslations("Variants");
+  const format = useFormatter();
+
   return (
-    <Card className="p-0 md:p-0">
-      <ul className="divide-y divide-subtle/15 py-1.5">
-        {runs.map((run) => (
-          <li key={run.id}>
-            <Link
-              href={reviewHref(run.id)}
-              className={cn(row, "hover:bg-muted/50")}
-            >
-              <span className="flex flex-col">
-                <span className="truncate font-semibold">{run.title}</span>
-                <span className="text-subtle text-xs">
-                  {format.dateTime(run.finishedAt, {
-                    day: "numeric",
-                    month: "long",
-                  })}
-                </span>
-              </span>
-              <VariantStrip
-                segments={run.segments}
-                label={t("strip", { count: run.segments.length })}
-                className={strip}
-              />
-              <Score value={run.score} max={run.max} className="text-right" />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <li>
+      <Link href={reviewHref(run.id)} className={cn(row, "hover:bg-muted/50")}>
+        <span className="flex flex-col">
+          <span className="truncate font-semibold">{run.title}</span>
+          <span className="text-subtle text-xs">
+            {format.dateTime(run.finishedAt, {
+              day: "numeric",
+              month: "long",
+            })}
+          </span>
+        </span>
+        <VariantStrip
+          segments={run.segments}
+          label={t("strip", { count: run.segments.length })}
+          className={strip}
+        />
+        <Score value={run.score} max={run.max} className="text-right" />
+      </Link>
+    </li>
+  );
+}
+
+function RunFeed({ first }: { first: RunPage }) {
+  const t = useTranslations("Bank");
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useRunFeed(first);
+
+  return (
+    <>
+      <Card className="p-0 md:p-0">
+        <ul className="divide-y divide-subtle/15 py-1.5">
+          {data.pages
+            .flatMap((page) => page.runs)
+            .map((run) => (
+              <RunRow key={run.id} run={run} />
+            ))}
+        </ul>
+      </Card>
+      {hasNextPage && (
+        <LoadMore
+          key={data.pages.length}
+          pending={isFetchingNextPage}
+          onLoad={() => fetchNextPage({ cancelRefetch: false })}
+        >
+          {t("more")}
+        </LoadMore>
+      )}
+    </>
   );
 }

@@ -6,12 +6,7 @@ import { PageTitle } from "@/components/page-title";
 import { SignInCard } from "@/features/account/sign-in-card";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";
-import {
-  countRuns,
-  getRecentRuns,
-  getRunAttempts,
-  getTaskStats,
-} from "@/features/progress/history";
+import { countRuns, getRuns, getTaskStats } from "@/features/progress/history";
 import {
   accuracyBy,
   meanTimeByNumber,
@@ -39,20 +34,13 @@ async function loadStats() {
   const userId = session.user.id;
   const [byTask, recent, runCount] = await Promise.all([
     getTaskStats(userId),
-    getRecentRuns(userId, recentRunCount),
+    getRuns(userId, recentRunCount),
     countRuns(userId),
   ]);
   return {
     byTask,
     runCount,
-    runs: await summarizeRuns(
-      recent,
-      await getRunAttempts(
-        userId,
-        recent.map((run) => run.id),
-      ),
-      await getLocale(),
-    ),
+    runs: await summarizeRuns(userId, recent, await getLocale()),
   };
 }
 

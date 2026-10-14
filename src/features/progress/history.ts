@@ -71,22 +71,28 @@ export const getRunAttempts = (userId: string, runIds: string[]) =>
     .from(attempts)
     .where(and(eq(attempts.userId, userId), inArray(attempts.runId, runIds)));
 
-const newestRuns = (userId: string) =>
+const runColumns = {
+  id: runs.id,
+  variantId: runs.variantId,
+  taskIds: runs.taskIds,
+  finishedAt: runs.finishedAt,
+};
+
+export const getRuns = (userId: string, limit: number, offset = 0) =>
   db
-    .select({
-      id: runs.id,
-      variantId: runs.variantId,
-      taskIds: runs.taskIds,
-      finishedAt: runs.finishedAt,
-    })
+    .select(runColumns)
     .from(runs)
     .where(eq(runs.userId, userId))
-    .orderBy(desc(runs.finishedAt));
+    .orderBy(desc(runs.finishedAt), desc(runs.id))
+    .limit(limit)
+    .offset(offset);
 
-export const getRuns = cache(async (userId: string) => newestRuns(userId));
-
-export const getRecentRuns = (userId: string, limit: number) =>
-  newestRuns(userId).limit(limit);
+export const getLatestRuns = (userId: string, variantIds: string[]) =>
+  db
+    .selectDistinctOn([runs.variantId], runColumns)
+    .from(runs)
+    .where(and(eq(runs.userId, userId), inArray(runs.variantId, variantIds)))
+    .orderBy(runs.variantId, desc(runs.finishedAt));
 
 export const countRuns = (userId: string) =>
   db.$count(runs, eq(runs.userId, userId));
