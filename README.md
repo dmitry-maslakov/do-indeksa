@@ -31,7 +31,9 @@ e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both o
 
 - `content/` sample topics, exam, tasks and tests. Production content is built in from a separate bank via `CONTENT_DIR`.
 - `messages/` UI strings for `sr-Latn`, `ru` and `en`.
-- `src/app` routes, `src/components` UI, `src/content` content queries, `src/lib` pure logic, `src/server` database, auth and server actions.
+- `src/app` routes; UI used by one route sits in its `_components`.
+- `src/features/<feature>` everything one feature owns: server-only core, `*-action.ts` server actions, components, `use-*.ts` hooks and its constants.
+- `src/components` app shell and shared UI, `src/lib` helpers without domain knowledge, `src/server` database, env and auth.
 - `docs/decisions` short architecture decisions.
 
 ## License
