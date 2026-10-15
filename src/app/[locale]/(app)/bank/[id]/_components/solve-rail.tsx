@@ -12,9 +12,10 @@ import {
 import { VariantStrip } from "@/components/variant-strip";
 import type { TaskStatus } from "@/features/progress/status";
 import { statusSegment } from "@/features/progress/status";
-import { type RailTask, TaskRow } from "@/features/tasks/task-row";
+import type { RailTask } from "@/features/tasks/task-row";
 import { useRouter } from "@/i18n/navigation";
 import { useStoredFlag } from "@/lib/use-stored-flag";
+import { RailList } from "./rail-list";
 import { RailNumbers } from "./rail-numbers";
 
 export interface SolveRailProps {
@@ -106,20 +107,12 @@ export function SolveRail({
           )}
         />
       </div>
-      <nav className="flex flex-col gap-0.5">
-        {rail.map((s) => {
-          const mark = marks[statuses?.[s.id] ?? "new"];
-          return (
-            <TaskRow
-              key={s.id}
-              task={s}
-              active={s.id === current}
-              meta={mark ? `${s.meta} · ${mark}` : s.meta}
-              status={statuses?.[s.id]}
-            />
-          );
-        })}
-      </nav>
+      <RailList
+        rail={rail}
+        current={current}
+        statuses={statuses}
+        marks={marks}
+      />
     </Card>
   );
 }
