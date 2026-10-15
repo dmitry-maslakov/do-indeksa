@@ -16,6 +16,6 @@ const schema = zfd.formData({
 
 export const reportTask = authActionClient
   .inputSchema(schema)
-  .stateAction(async ({ parsedInput, ctx: { userId } }) => {
+  .action(async ({ parsedInput, ctx: { userId } }) => {
     await db.insert(reports).values({ ...parsedInput, userId });
   });

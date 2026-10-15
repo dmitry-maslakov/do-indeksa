@@ -40,6 +40,18 @@ describe("action clients", () => {
     expect(await userAction({ n: 1 })).toEqual({ data: { userId: "u1" } });
   });
 
+  it("logs an unexpected error and returns only its code", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const failing = actionClient.action(async () => {
+      throw new Error("database is down");
+    });
+    expect(await failing()).toEqual({ serverError: "unexpected" });
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "database is down" }),
+    );
+    log.mockRestore();
+  });
+
   it("returns validation errors for invalid input", async () => {
     vi.mocked(getSession).mockResolvedValue({ user: { id: "u1" } } as never);
     const result = await userAction({ n: "x" } as never);

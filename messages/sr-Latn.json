@@ -15,6 +15,14 @@
     "title": "Stranica nije pronađena",
     "home": "Na početnu"
   },
+  "Errors": {
+    "title": "Nešto nije u redu",
+    "text": "Stranica se nije učitala. Pokušaj ponovo ili se vrati na početnu.",
+    "retry": "Pokušaj ponovo",
+    "unexpected": "Nešto nije uspelo. Pokušaj ponovo.",
+    "offline": "Nema internet veze. Proveri vezu i pokušaj ponovo.",
+    "unauthorized": "Sesija je istekla. Prijavi se ponovo."
+  },
   "Nav": {
     "home": "Početna",
     "bank": "Zadaci",
@@ -125,6 +133,7 @@
     "finishTitle": "Završiti test?",
     "finishLeft": "Bez odgovora: {count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}. Posle završetka odgovori se ne mogu menjati.",
     "finishAll": "Posle završetka odgovori se ne mogu menjati.",
+    "finishFailed": "Test nije predat. Odgovori su sačuvani.",
     "cancel": "Nastavi",
     "result": "Rezultat",
     "strip": "{score, number} od {max, number} bodova",
@@ -268,8 +277,7 @@
     "other": "Nešto drugo",
     "message": "Opiši ukratko (nije obavezno)",
     "send": "Pošalji",
-    "thanks": "Hvala! Pogledaćemo zadatak.",
-    "error": "Slanje nije uspelo. Pokušaj ponovo."
+    "thanks": "Hvala! Pogledaćemo zadatak."
   },
   "Privacy": {
     "title": "Privatnost",

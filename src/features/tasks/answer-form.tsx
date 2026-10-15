@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useStateAction } from "next-safe-action/hooks";
+import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { useErrorText } from "@/lib/use-error-text";
 import { checkAnswer } from "./answer-action";
 import { AnswerField, type AnswerState } from "./answer-field";
 import { useHints } from "./hints";
@@ -17,7 +18,8 @@ interface AnswerFormProps {
 
 export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
   const t = useTranslations("Solve");
-  const { formAction, result, isPending } = useStateAction(checkAnswer);
+  const { execute, result, isPending, hasErrored } = useAction(checkAnswer);
+  const errorText = useErrorText();
   const checked = result.data;
   const startedAt = useRef(0);
   const [edited, setEdited] = useState(false);
@@ -36,7 +38,7 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
       action={(form) => {
         setEdited(false);
         form.set("startedAt", String(startedAt.current));
-        formAction(form);
+        execute(form);
       }}
       className="flex flex-col gap-4"
     >
@@ -62,6 +64,11 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
         <Button type="submit" disabled={isPending}>
           {t("check")}
         </Button>
+        {hasErrored && (
+          <span role="alert" className="text-error-text">
+            {errorText(result.serverError)}
+          </span>
+        )}
         {checked && !edited && (
           <span
             role="status"

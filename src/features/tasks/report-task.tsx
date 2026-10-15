@@ -2,7 +2,7 @@
 
 import { FlagIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useStateAction } from "next-safe-action/hooks";
+import { useAction } from "next-safe-action/hooks";
 import { Button } from "@/components/ui/button";
 import {
   NativeSelect,
@@ -11,6 +11,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/features/account/auth-client";
 import { SignInButton } from "@/features/account/sign-in-button";
+import { useErrorText } from "@/lib/use-error-text";
 import { reportTask } from "./report-action";
 import { reportKinds } from "./report-kinds";
 
@@ -18,8 +19,9 @@ export function ReportTask({ taskId }: { taskId: string }) {
   const t = useTranslations("Report");
   const user = useTranslations("UserMenu");
   const { data: session } = authClient.useSession();
-  const { formAction, isPending, hasSucceeded, hasErrored } =
-    useStateAction(reportTask);
+  const { execute, result, isPending, hasSucceeded, hasErrored } =
+    useAction(reportTask);
+  const errorText = useErrorText();
 
   return (
     <details>
@@ -39,7 +41,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
           {t("thanks")}
         </p>
       ) : (
-        <form action={formAction} className="mt-3 flex flex-col gap-3">
+        <form action={execute} className="mt-3 flex flex-col gap-3">
           <input type="hidden" name="taskId" value={taskId} />
           <NativeSelect name="kind" aria-label={t("kind")} className="w-full">
             {reportKinds.map((kind) => (
@@ -56,7 +58,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
           />
           {hasErrored && (
             <p role="alert" className="text-sm text-error-text">
-              {t("error")}
+              {errorText(result.serverError)}
             </p>
           )}
           <Button

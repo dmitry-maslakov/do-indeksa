@@ -15,6 +15,14 @@
     "title": "Page not found",
     "home": "Back to home"
   },
+  "Errors": {
+    "title": "Something went wrong",
+    "text": "This page didn't load. Please try again or go back to the home page.",
+    "retry": "Try again",
+    "unexpected": "Something didn't work. Please try again.",
+    "offline": "No internet connection. Check it and try again.",
+    "unauthorized": "Your session has expired. Please sign in again."
+  },
   "Nav": {
     "home": "Home",
     "bank": "Tasks",
@@ -125,6 +133,7 @@
     "finishTitle": "Finish the test?",
     "finishLeft": "{count, plural, one {# task} other {# tasks}} without an answer. Answers can't be changed after finishing.",
     "finishAll": "Answers can't be changed after finishing.",
+    "finishFailed": "The test wasn't submitted. Your answers are saved.",
     "cancel": "Keep going",
     "result": "Result",
     "strip": "{score, number} of {max, number} points",
@@ -268,8 +277,7 @@
     "other": "Something else",
     "message": "Describe it briefly (optional)",
     "send": "Send",
-    "thanks": "Thanks! We'll take a look.",
-    "error": "Couldn't send. Please try again."
+    "thanks": "Thanks! We'll take a look."
   },
   "Privacy": {
     "title": "Privacy",

@@ -13,10 +13,13 @@ interface BankFeedProps {
 
 export function BankFeed({ search, first }: BankFeedProps) {
   const t = useTranslations("Bank");
-  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useBankFeed(
-    search,
-    first,
-  );
+  const {
+    data,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  } = useBankFeed(search, first);
 
   return (
     <>
@@ -29,6 +32,7 @@ export function BankFeed({ search, first }: BankFeedProps) {
         <LoadMore
           key={data.pages.length}
           pending={isFetchingNextPage}
+          failed={isFetchNextPageError}
           onLoad={() => fetchNextPage({ cancelRefetch: false })}
         >
           {t("more")}
