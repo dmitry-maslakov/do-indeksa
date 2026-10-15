@@ -18,7 +18,7 @@ const schema = zfd.formData({
 
 export const checkAnswer = actionClient
   .inputSchema(schema)
-  .stateAction(
+  .action(
     async ({
       parsedInput: { taskId, answer: answers, startedAt, hintsUsed },
       ctx: { userId },
