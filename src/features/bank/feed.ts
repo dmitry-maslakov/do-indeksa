@@ -2,7 +2,7 @@ import "server-only";
 import type { Locale } from "next-intl";
 import type { Progress, TaskStatus } from "@/features/progress/status";
 import type { Level } from "@/features/tasks/level";
-import { renderTask, type TaskSummary } from "@/features/tasks/tasks";
+import { getTask, type TaskSummary } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
 import { bankPage } from "./search";
 
@@ -21,34 +21,33 @@ export interface FeedPage {
   next: number | null;
 }
 
-async function cardOf(
+function cardOf(
   task: TaskSummary,
   locale: Locale,
   progress?: Progress,
-): Promise<BankCard> {
-  const html = await renderTask(task.id);
+): BankCard {
   return {
     id: task.id,
     topic: topicName(task.topic, locale),
     number: task.number,
     level: task.level,
-    statement: html?.statement ?? "",
+    statement: getTask(task.id)?.text ?? "",
     status: progress?.statuses.get(task.id) ?? "new",
     favorite: progress?.favorites.has(task.id) ?? false,
   };
 }
 
-export async function feedPage(
+export function feedPage(
   tasks: TaskSummary[],
   offset: number,
   locale: Locale,
   progress?: Progress,
-): Promise<FeedPage> {
+): FeedPage {
   const end = offset + bankPage;
   return {
-    cards: await Promise.all(
-      tasks.slice(offset, end).map((task) => cardOf(task, locale, progress)),
-    ),
+    cards: tasks
+      .slice(offset, end)
+      .map((task) => cardOf(task, locale, progress)),
     next: end < tasks.length ? end : null,
   };
 }

@@ -11,6 +11,6 @@ interface BankListProps {
 }
 
 export async function BankList({ tasks, search, progress }: BankListProps) {
-  const first = await feedPage(tasks, 0, await getLocale(), progress);
+  const first = feedPage(tasks, 0, await getLocale(), progress);
   return <BankFeed key={search} search={search} first={first} />;
 }
