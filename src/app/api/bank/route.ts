@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
   const progress = session ? await getProgress(session.user.id) : undefined;
   const tasks = filterByStatus(searchBank(filters), filters.status, progress);
   return Response.json(
-    await feedPage(tasks, query.data.offset, query.data.locale, progress),
+    feedPage(tasks, query.data.offset, query.data.locale, progress),
   );
 }

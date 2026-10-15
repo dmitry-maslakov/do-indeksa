@@ -40,6 +40,7 @@ test("the bank keeps topic, level and sort in the URL", async ({
 }) => {
   await open(page);
   const { topic, level, sort, cards } = bank(page);
+  await expect(cards.first().locator("[data-slot=skeleton]")).toHaveCount(0);
   const first = await cards.first().textContent();
 
   await topic.selectOption({ label: "Logaritmi" });

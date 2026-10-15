@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { MathHtml } from "@/components/math-html";
+import { Markdown } from "@/components/markdown";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { taskMeta } from "@/features/tasks/level";
@@ -16,7 +16,10 @@ export function TaskCard({ card }: { card: BankCard }) {
       href={`/bank/${card.id}`}
       className="rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Card size="sm" className="transition-shadow hover:shadow-raised">
+      <Card
+        size="sm"
+        className="transition-shadow [contain-intrinsic-size:auto_200px] [content-visibility:auto] hover:shadow-raised"
+      >
         <div className="flex items-start justify-between gap-3 text-[13px]">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Badge variant="tint" className="max-w-full whitespace-normal">
@@ -45,7 +48,7 @@ export function TaskCard({ card }: { card: BankCard }) {
             />
           </div>
         </div>
-        <MathHtml html={card.statement} />
+        <Markdown source={card.statement} />
       </Card>
     </Link>
   );
