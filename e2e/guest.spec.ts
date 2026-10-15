@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { answer, expect, finish, test } from "./fixtures";
 
 test("a guest checks an answer", async ({ page }) => {
@@ -43,7 +44,7 @@ test("a guest composes an untimed test from a topic", async ({
   await page.getByText("Izaberi teme").click();
   await page.getByRole("button", { name: "Logaritmi" }).click();
   await page.getByRole("button", { name: "Sastavi", exact: true }).click();
-  await expect(page).toHaveURL(/\/v\/[\w-]{16}$/);
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await page.getByRole("button", { name: "Podeli" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     page.url(),
@@ -51,6 +52,27 @@ test("a guest composes an untimed test from a topic", async ({
   await page.getByRole("switch", { name: "Tajmer" }).click();
   await page.getByRole("button", { name: "Počni" }).click();
   await expect(page.getByText("Proteklo vreme")).toBeVisible();
+});
+
+test("an old test link opens the test under its short code", async ({
+  page,
+  auth,
+}) => {
+  const legacy = randomBytes(12).toString("base64url").slice(0, 16);
+  await auth.db.query("insert into sets (code, task_ids) values ($1, $2)", [
+    legacy,
+    ["kb-003", "log-001"],
+  ]);
+  try {
+    await page.goto(`/v/${legacy}`);
+    await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+    const code = page.url().split("/").at(-1) ?? "";
+    await expect(page.getByText(`Kod ${code}`)).toBeVisible();
+    await page.goto(`/v/${code.toLowerCase()}`);
+    await expect(page).toHaveURL(new RegExp(`/v/${code}$`));
+  } finally {
+    await auth.db.query("delete from sets where code = $1", [legacy]);
+  }
 });
 
 test("a guest sees personal compose modes need sign-in", async ({ page }) => {
@@ -70,7 +92,7 @@ test("a guest sees personal compose modes need sign-in", async ({ page }) => {
 
 test("a guest is told when a personal mode falls back", async ({ page }) => {
   await page.goto("/variants/compose?mode=weak");
-  await expect(page).toHaveURL(/\/v\/[\w-]{16}\?fallback=weak$/);
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}\?fallback=weak$/);
   await expect(
     page.getByText("Slabije teme i nerešeni zadaci", { exact: false }),
   ).toBeVisible();

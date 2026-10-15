@@ -1,3 +1,4 @@
+import { isNull } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -10,6 +11,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import type { ExamRun } from "@/features/exam/exam-store";
@@ -90,11 +92,16 @@ export const favorites = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.taskId] })],
 );
 
-export const sets = pgTable("sets", {
-  code: text().primaryKey(),
-  taskIds: text().array().notNull(),
-  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
+export const sets = pgTable(
+  "sets",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    code: text().unique(),
+    taskIds: text().array().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex().on(t.taskIds).where(isNull(t.code))],
+);
 
 export const reportKind = pgEnum("report_kind", reportKinds);
 
