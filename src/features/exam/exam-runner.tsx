@@ -1,14 +1,12 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import { useTranslations } from "next-intl";
+import { useAction } from "next-safe-action/hooks";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { reviewHref } from "@/features/review/review";
 import { useRouter } from "@/i18n/navigation";
+import { useErrorText } from "@/lib/use-error-text";
 import type { ComposeMode } from "./compose";
 import type { CurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
@@ -46,7 +44,19 @@ export function ExamRunner({
   const run = useExamStore((s) => s.runs[variantId]);
   const { start, answer, go, restore, clear } = useExamStore.getState();
   const [result, setResult] = useState<GuestResult>();
-  const [pending, startTransition] = useTransition();
+  const t = useTranslations("Exam");
+  const errorText = useErrorText();
+  const { execute: submit, isPending: pending } = useAction(finishRun, {
+    onSuccess: ({ data, input }) => {
+      clear(variantId);
+      if (data.saved) router.push(reviewHref(input.runId));
+      else setResult(data);
+    },
+    onError: ({ error }) =>
+      toast.error(t("finishFailed"), {
+        description: errorText(error.serverError),
+      }),
+  });
   const meta = useMemo(
     () => ({
       title,
@@ -107,18 +117,12 @@ export function ExamRunner({
   }
 
   const finish = () =>
-    startTransition(async () => {
-      const { data } = await finishRun({
-        runId: run.runId,
-        variantId,
-        startedAt: run.startedAt,
-        answers: run.answers,
-        durations: spentAt(run, Date.now()),
-      });
-      if (!data) return;
-      clear(variantId);
-      if (data.saved) router.push(reviewHref(run.runId));
-      else setResult(data);
+    submit({
+      runId: run.runId,
+      variantId,
+      startedAt: run.startedAt,
+      answers: run.answers,
+      durations: spentAt(run, Date.now()),
     });
 
   return (

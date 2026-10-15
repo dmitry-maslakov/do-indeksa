@@ -133,6 +133,7 @@
     "finishTitle": "Finish the test?",
     "finishLeft": "{count, plural, one {# task} other {# tasks}} without an answer. Answers can't be changed after finishing.",
     "finishAll": "Answers can't be changed after finishing.",
+    "finishFailed": "The test wasn't submitted. Your answers are saved.",
     "cancel": "Keep going",
     "result": "Result",
     "strip": "{score, number} of {max, number} points",
