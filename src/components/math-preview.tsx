@@ -1,26 +1,26 @@
-"use client";
-
-import "katex/dist/katex.min.css";
-import { cn } from "cn";
-import renderMathInElement from "katex/contrib/auto-render";
-import { useCallback } from "react";
-
-const delimiters = [{ left: "$", right: "$", display: false }];
+import { escape as escapeHtml } from "es-toolkit";
+import katex from "katex";
+import { useMemo } from "react";
+import { MathHtml } from "@/components/math-html";
 
 interface MathPreviewProps {
   source: string;
   className?: string;
 }
 
+const toHtml = (part: string, index: number) =>
+  index % 2
+    ? katex.renderToString(part, { throwOnError: false })
+    : escapeHtml(part);
+
 export function MathPreview({ source, className }: MathPreviewProps) {
-  const render = useCallback(
-    (element: HTMLSpanElement | null) => {
-      if (!element) return;
-      element.textContent = source;
-      renderMathInElement(element, { delimiters, throwOnError: false });
-    },
+  const html = useMemo(
+    () =>
+      source
+        .split(/\$([^$]+)\$/)
+        .map(toHtml)
+        .join(""),
     [source],
   );
-
-  return <span ref={render} className={cn("math-text", className)} />;
+  return <MathHtml as="span" html={html} className={className} />;
 }
