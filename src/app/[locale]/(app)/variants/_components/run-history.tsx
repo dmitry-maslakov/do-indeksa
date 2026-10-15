@@ -84,8 +84,13 @@ function RunRow({ run }: { run: RunSummary }) {
 
 function RunFeed({ first }: { first: RunPage }) {
   const t = useTranslations("Bank");
-  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useRunFeed(first);
+  const {
+    data,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  } = useRunFeed(first);
 
   return (
     <>
@@ -102,6 +107,7 @@ function RunFeed({ first }: { first: RunPage }) {
         <LoadMore
           key={data.pages.length}
           pending={isFetchingNextPage}
+          failed={isFetchNextPageError}
           onLoad={() => fetchNextPage({ cancelRefetch: false })}
         >
           {t("more")}
