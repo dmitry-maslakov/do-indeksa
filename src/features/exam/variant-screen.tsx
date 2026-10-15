@@ -33,9 +33,11 @@ async function loadAccount() {
 
 export async function VariantScreen({
   variant,
+  code,
   fallback,
 }: {
   variant: ExamVariant;
+  code?: string;
   fallback?: ComposeMode;
 }) {
   const t = await getTranslations("Variants");
@@ -50,6 +52,7 @@ export async function VariantScreen({
         <PageTitle className="p-0">{title}</PageTitle>
         <span className="text-sm text-subtle">
           {t("format", { tasks: tasks.length, minutes })}
+          {code && ` · ${t("code", { code })}`}
         </span>
       </div>
       <Suspense fallback={<ExamGhost />}>

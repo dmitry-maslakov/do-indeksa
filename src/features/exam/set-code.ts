@@ -1,9 +1,21 @@
-import { createHash } from "node:crypto";
+import Sqids from "sqids";
 
-const codeLength = 16;
+const sqids = new Sqids({
+  alphabet: "K7QM2XRV9WPHT4ZCAN3FJ8EGBY5SD6U",
+  minLength: 5,
+});
 
-export const setCode = (taskIds: string[]) =>
-  createHash("sha256")
-    .update(taskIds.join("."))
-    .digest("base64url")
-    .slice(0, codeLength);
+const legacyCode = /^[\w-]{7}$|^[\w-]{16}$/;
+
+export const setCode = (id: number) => sqids.encode([id]);
+
+type SetRef = { id: number } | { legacy: string };
+
+export function parseSetCode(code: string): SetRef | undefined {
+  if (legacyCode.test(code)) return { legacy: code };
+  const upper = code.toUpperCase();
+  const [id, ...rest] = sqids.decode(upper);
+  if (id !== undefined && rest.length === 0 && setCode(id) === upper) {
+    return { id };
+  }
+}

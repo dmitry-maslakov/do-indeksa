@@ -109,7 +109,8 @@
     "notSolved": "nije rešen",
     "continue": "Nastavi",
     "review": "Analiza",
-    "custom": "Sastavljeni test"
+    "custom": "Sastavljeni test",
+    "code": "Kod {code}"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",

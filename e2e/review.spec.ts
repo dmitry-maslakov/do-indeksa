@@ -3,7 +3,7 @@ import { answer, expect, finish, test } from "./fixtures";
 
 async function finishSet(page: Page) {
   await page.goto("/variants/set-eks-001");
-  await expect(page).toHaveURL(/\/v\/[\w-]{16}$/);
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await page.getByRole("button", { name: "Počni" }).click();
   await answer(page, "0");
   await finish(page);

@@ -109,7 +109,8 @@
     "notSolved": "not solved",
     "continue": "Continue",
     "review": "Review",
-    "custom": "Custom test"
+    "custom": "Custom test",
+    "code": "Code {code}"
   },
   "Exam": {
     "timeLeft": "Time left",
