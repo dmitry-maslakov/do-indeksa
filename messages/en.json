@@ -276,8 +276,7 @@
     "other": "Something else",
     "message": "Describe it briefly (optional)",
     "send": "Send",
-    "thanks": "Thanks! We'll take a look.",
-    "error": "Couldn't send. Please try again."
+    "thanks": "Thanks! We'll take a look."
   },
   "Privacy": {
     "title": "Privacy",
