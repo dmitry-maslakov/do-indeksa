@@ -3,14 +3,12 @@
 import { cn } from "cn";
 import { StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  type ComponentProps,
-  useOptimistic,
-  useState,
-  useTransition,
-} from "react";
+import { useOptimisticAction } from "next-safe-action/hooks";
+import { type ComponentProps, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { SignInButton } from "@/features/account/sign-in-button";
+import { useErrorText } from "@/lib/use-error-text";
 import { setFavorite } from "./favorite-action";
 
 interface FavoriteButtonProps {
@@ -27,17 +25,15 @@ export function FavoriteButton({
   pending = false,
 }: FavoriteButtonProps) {
   const t = useTranslations("Solve");
+  const errorText = useErrorText();
   const [saved, setSaved] = useState(initial);
-  const [shown, setShown] = useOptimistic(saved);
-  const [, startTransition] = useTransition();
-
-  function toggle() {
-    startTransition(async () => {
-      setShown(!saved);
-      const { data } = await setFavorite({ taskId, favorite: !saved });
-      if (data !== undefined) setSaved(data);
-    });
-  }
+  const { execute, optimisticState: shown } = useOptimisticAction(setFavorite, {
+    currentState: saved,
+    updateFn: (_, { favorite }) => favorite,
+    onSuccess: ({ data }) => setSaved(data),
+    onError: ({ error }) => toast.error(errorText(error.serverError)),
+  });
+  const toggle = () => execute({ taskId, favorite: !shown });
 
   const label = shown ? t("saved") : t("save");
   const props = {
