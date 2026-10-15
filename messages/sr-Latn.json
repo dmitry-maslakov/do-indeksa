@@ -15,6 +15,14 @@
     "title": "Stranica nije pronađena",
     "home": "Na početnu"
   },
+  "Errors": {
+    "title": "Nešto nije u redu",
+    "text": "Stranica se nije učitala. Pokušaj ponovo ili se vrati na početnu.",
+    "retry": "Pokušaj ponovo",
+    "unexpected": "Nešto nije uspelo. Pokušaj ponovo.",
+    "offline": "Nema internet veze. Proveri vezu i pokušaj ponovo.",
+    "unauthorized": "Sesija je istekla. Prijavi se ponovo."
+  },
   "Nav": {
     "home": "Početna",
     "bank": "Zadaci",

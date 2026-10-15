@@ -15,6 +15,14 @@
     "title": "Page not found",
     "home": "Back to home"
   },
+  "Errors": {
+    "title": "Something went wrong",
+    "text": "This page didn't load. Please try again or go back to the home page.",
+    "retry": "Try again",
+    "unexpected": "Something didn't work. Please try again.",
+    "offline": "No internet connection. Check it and try again.",
+    "unauthorized": "Your session has expired. Please sign in again."
+  },
   "Nav": {
     "home": "Home",
     "bank": "Tasks",
