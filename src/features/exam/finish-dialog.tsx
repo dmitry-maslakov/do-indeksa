@@ -40,7 +40,7 @@ export function FinishDialog({ left, pending, onFinish }: FinishDialogProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-          <AlertDialogAction onClick={onFinish}>
+          <AlertDialogAction disabled={pending} onClick={onFinish}>
             {t("finish")}
           </AlertDialogAction>
         </AlertDialogFooter>

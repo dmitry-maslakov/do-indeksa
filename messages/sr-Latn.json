@@ -133,6 +133,7 @@
     "finishTitle": "Završiti test?",
     "finishLeft": "Bez odgovora: {count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}. Posle završetka odgovori se ne mogu menjati.",
     "finishAll": "Posle završetka odgovori se ne mogu menjati.",
+    "finishFailed": "Test nije predat. Odgovori su sačuvani.",
     "cancel": "Nastavi",
     "result": "Rezultat",
     "strip": "{score, number} od {max, number} bodova",
