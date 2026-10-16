@@ -38,7 +38,7 @@ const tasks = defineCollection({
   }),
   transform: async (
     { content, answer, check, hints, solution, ...task },
-    { documents },
+    { documents, cache },
   ) => {
     const origin = task._meta.filePath;
     if (!documents(topics).some((t) => t._meta.path === task.topic)) {
@@ -51,14 +51,9 @@ const tasks = defineCollection({
     const title = headline(content);
     if (!title) throw new Error(`${origin}: statement must start with words`);
     const render = (source: string) => renderMarkdown(source, origin);
-    await Promise.all(
-      [
-        content,
-        answer,
-        solution,
-        ...hints,
-        ...check.map((c) => c.label ?? ""),
-      ].map(render),
+    await cache(
+      [content, answer, solution, ...hints, ...check.map((c) => c.label ?? "")],
+      (sources) => Promise.all(sources.map(render)).then(() => true),
     );
     return {
       id: task._meta.path,
