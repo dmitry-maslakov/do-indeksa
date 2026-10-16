@@ -1,8 +1,11 @@
 .git
 node_modules
 .next
+!.next/standalone
+!.next/static
 .content-collections
 .env*
 test-results
 playwright-report
 e2e
+bank
