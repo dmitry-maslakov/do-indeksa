@@ -1,11 +1,12 @@
 "use client";
 
 import { cn } from "cn";
-import { range } from "es-toolkit";
+import { noop, range } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { useHelp } from "./help";
 import { RevealContent } from "./reveal";
+import { saveReveal } from "./reveal-action";
 import type { RevealPart } from "./reveal-part";
 
 interface HelpPanelProps {
@@ -38,6 +39,10 @@ export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
   const t = useTranslations("Solve");
   const { hints, solution, showHint, showSolution } = useHelp();
   const [answer, setAnswer] = useState(false);
+  const open = (part: RevealPart, show: () => void) => () => {
+    saveReveal({ taskId, part }).catch(noop);
+    show();
+  };
   const content = (part: RevealPart) => (
     <RevealContent
       taskId={taskId}
@@ -66,10 +71,20 @@ export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
         </div>
       )}
       <div className="flex flex-wrap gap-2">
-        {hints < hintCount && <Chip label={t("hint")} onClick={showHint} />}
-        {!solution && <Chip label={t("solution")} onClick={showSolution} />}
+        {hints < hintCount && (
+          <Chip label={t("hint")} onClick={open(hints, showHint)} />
+        )}
+        {!solution && (
+          <Chip
+            label={t("solution")}
+            onClick={open("solution", showSolution)}
+          />
+        )}
         {!answer && (
-          <Chip label={t("answer")} onClick={() => setAnswer(true)} />
+          <Chip
+            label={t("answer")}
+            onClick={open("answer", () => setAnswer(true))}
+          />
         )}
       </div>
     </div>
