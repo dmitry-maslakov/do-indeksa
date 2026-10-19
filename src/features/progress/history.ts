@@ -16,6 +16,7 @@ import { z } from "zod";
 import { attempts, runs } from "@/db/schema";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
+import { decidesStatus } from "./decides-status";
 import { accuracyDays } from "./stats";
 import { taskStats } from "./task-stats";
 
@@ -50,7 +51,7 @@ export const getRun = cache(async (userId: string, key?: string) => {
     .select({
       taskId: attempts.taskId,
       answers: attempts.answers,
-      parts: attempts.parts,
+      outcomes: attempts.outcomes,
       correct: attempts.correct,
       durationMs: attempts.durationMs,
     })
@@ -64,7 +65,7 @@ export const getRunAttempts = (userId: string, runIds: string[]) =>
     .select({
       taskId: attempts.taskId,
       runId: attempts.runId,
-      parts: attempts.parts,
+      outcomes: attempts.outcomes,
       correct: attempts.correct,
       durationMs: attempts.durationMs,
     })
@@ -122,7 +123,7 @@ export async function getTaskStats(userId: string) {
         ),
     })
     .from(attempts)
-    .where(eq(attempts.userId, userId))
+    .where(and(eq(attempts.userId, userId), decidesStatus))
     .groupBy(attempts.taskId);
   return taskStats(rows);
 }
@@ -137,7 +138,11 @@ export const getLatestResults = async (
       .select({ correct: attempts.correct })
       .from(attempts)
       .where(
-        and(eq(attempts.userId, userId), inArray(attempts.taskId, taskIds)),
+        and(
+          eq(attempts.userId, userId),
+          inArray(attempts.taskId, taskIds),
+          decidesStatus,
+        ),
       )
       .orderBy(desc(attempts.createdAt))
       .limit(limit)

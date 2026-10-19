@@ -5,6 +5,7 @@ import { positions } from "@/features/exam/exam";
 import { idsByTopic } from "@/features/tasks/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
+import { decidesStatus } from "./decides-status";
 import { getLatestResults, getTaskStats } from "./history";
 import { type TaskStat, weakest } from "./stats";
 import type { Attempted, Progress, TaskStatus } from "./status";
@@ -22,6 +23,7 @@ const getLatestAttempts = (userId: string, taskIds?: string[]) =>
       and(
         eq(attempts.userId, userId),
         taskIds && inArray(attempts.taskId, taskIds),
+        decidesStatus,
       ),
     )
     .orderBy(attempts.taskId, desc(attempts.createdAt));
