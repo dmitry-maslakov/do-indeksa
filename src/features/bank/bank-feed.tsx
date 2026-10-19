@@ -9,9 +9,10 @@ import { useBankFeed } from "./use-bank-feed";
 interface BankFeedProps {
   search: string;
   first: FeedPage;
+  signedIn: boolean;
 }
 
-export function BankFeed({ search, first }: BankFeedProps) {
+export function BankFeed({ search, first, signedIn }: BankFeedProps) {
   const t = useTranslations("Bank");
   const {
     data,
@@ -26,7 +27,12 @@ export function BankFeed({ search, first }: BankFeedProps) {
       {data.pages
         .flatMap((page) => page.cards)
         .map((card) => (
-          <TaskCard key={card.id} card={card} />
+          <TaskCard
+            key={card.id}
+            card={card}
+            search={search}
+            signedIn={signedIn}
+          />
         ))}
       {hasNextPage && (
         <LoadMore

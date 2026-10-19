@@ -1,29 +1,26 @@
 import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { PageTitle } from "@/components/page-title";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { NativeSelectOption } from "@/components/ui/native-select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { BankFilters } from "@/features/bank/bank-filters";
 import { BankList } from "@/features/bank/bank-list";
-import { FilterSelect } from "@/features/bank/filter-select";
+import { BankTabs } from "@/features/bank/bank-tabs";
+import { FilterLabel } from "@/features/bank/filter-label";
+import { FilterSearch } from "@/features/bank/filter-search";
+import { FiltersSheet } from "@/features/bank/filters-sheet";
+import { activeFilters, filterLabel } from "@/features/bank/label";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
-import {
-  type BankFilters as Filters,
-  filterByStatus,
-  searchBank,
-} from "@/features/bank/search";
+import { type BankFilters as Filters, findTasks } from "@/features/bank/search";
 import { getProgress } from "@/features/progress/progress";
 import type { Progress } from "@/features/progress/status";
 import type { TaskSummary } from "@/features/tasks/tasks";
 import { alternates } from "@/i18n/alternates";
-import { Link } from "@/i18n/navigation";
 import { getSession } from "@/server/auth";
+import { EmptyResults } from "./_components/empty-results";
+import { ResultsHead } from "./_components/results-head";
+import { ResultsSkeleton } from "./_components/results-skeleton";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -40,11 +37,11 @@ export default async function BankPage({
   const t = await getTranslations("Bank");
 
   return (
-    <main className="px-4 pb-9 md:px-9">
-      <PageTitle>{t("title")}</PageTitle>
+    <main className="px-3 pt-4 pb-9 max-lg:min-h-dvh max-lg:bg-muted lg:px-10 lg:pt-2 lg:pb-15">
+      <h1 className="sr-only">{t("title")}</h1>
       <NuqsAdapter>
         <Suspense
-          fallback={<BankResults filters={{}} tasks={searchBank({})} pending />}
+          fallback={<BankResults filters={{}} tasks={findTasks({})} pending />}
         >
           <Bank searchParams={searchParams} />
         </Suspense>
@@ -57,7 +54,7 @@ async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
-  const tasks = searchBank(filters);
+  const tasks = findTasks(filters);
   const session = await getSession();
 
   return session ? (
@@ -68,7 +65,7 @@ async function Bank({
         {(progress) => (
           <BankResults
             filters={filters}
-            tasks={filterByStatus(tasks, filters.status, progress)}
+            tasks={findTasks(filters, progress)}
             signedIn
             progress={progress}
           />
@@ -91,64 +88,60 @@ interface BankResultsProps {
 function BankResults({
   filters,
   tasks,
-  signedIn,
+  signedIn = false,
   progress,
   pending = signedIn && !progress && Boolean(filters.status),
 }: BankResultsProps) {
   const t = useTranslations("Bank");
+  const locale = useLocale();
   const search = serializeBankFilters(filters);
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
-      <BankFilters
-        signedIn={signedIn}
-        solveHref={tasks[0] ? `/bank/${tasks[0].id}` : "/bank"}
-      />
-      <section className="flex flex-col gap-3.5">
-        <div className="flex items-center justify-between gap-4 px-1 text-sm">
-          {pending ? (
-            <Skeleton className="h-3 w-20" />
-          ) : (
-            <span className="font-semibold">
-              {t("count", { count: tasks.length })}
-            </span>
-          )}
-          <FilterSelect name="sort" size="sm" aria-label={t("sort")}>
-            <NativeSelectOption value="">{t("sortNumber")}</NativeSelectOption>
-            <NativeSelectOption value="easy">
-              {t("sortEasy")}
-            </NativeSelectOption>
-            <NativeSelectOption value="hard">
-              {t("sortHard")}
-            </NativeSelectOption>
-          </FilterSelect>
-        </div>
-        {pending ? (
-          [80, 60, 70].map((width) => (
-            <Card key={width} size="sm">
-              <div className="flex gap-2">
-                <Skeleton className="h-6 w-28 rounded-md" />
-                <Skeleton className="my-1.5 h-3 w-24" />
-              </div>
-              <Skeleton className="mt-1 h-3.5" />
-              <Skeleton className="h-3.5" style={{ width: `${width}%` }} />
-            </Card>
-          ))
-        ) : tasks.length === 0 ? (
-          <Card className="items-center text-center">
-            <p className="font-semibold">{t("empty")}</p>
-            <p className="text-muted-foreground text-sm">{t("emptyHint")}</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              render={<Link href="/bank" />}
-              nativeButton={false}
+    <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex [&_input]:bg-card [&_select]:bg-card">
+        <BankTabs />
+        <BankFilters signedIn={signedIn}>
+          <FilterLabel text={t("search")}>
+            <FilterSearch
+              aria-label={t("search")}
+              placeholder={t("searchPlaceholder")}
+            />
+          </FilterLabel>
+        </BankFilters>
+      </aside>
+      <section className="flex min-w-0 flex-col gap-3">
+        <div className="flex flex-col gap-3 px-1 lg:hidden [&_input]:bg-card">
+          <BankTabs />
+          <div className="flex gap-2">
+            <FilterSearch
+              aria-label={t("search")}
+              placeholder={t("searchPlaceholder")}
+              className="flex-1"
+            />
+            <FiltersSheet
+              active={activeFilters(filters, t, locale).length}
+              count={tasks.length}
             >
-              {t("showAll")}
-            </Button>
-          </Card>
+              <BankFilters signedIn={signedIn} />
+            </FiltersSheet>
+          </div>
+        </div>
+        <ResultsHead
+          count={tasks.length}
+          label={filterLabel(filters, t, locale)}
+          pending={pending}
+        />
+        {pending ? (
+          <ResultsSkeleton />
+        ) : tasks.length === 0 ? (
+          <EmptyResults />
         ) : (
-          <BankList tasks={tasks} search={search} progress={progress} />
+          <BankList
+            tasks={tasks}
+            search={search}
+            signedIn={signedIn}
+            progress={progress}
+          />
         )}
       </section>
     </div>

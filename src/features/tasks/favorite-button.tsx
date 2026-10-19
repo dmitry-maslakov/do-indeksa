@@ -16,6 +16,7 @@ interface FavoriteButtonProps {
   saved?: boolean;
   signedIn?: boolean;
   pending?: boolean;
+  compact?: boolean;
 }
 
 export function FavoriteButton({
@@ -23,6 +24,7 @@ export function FavoriteButton({
   saved: initial = false,
   signedIn = false,
   pending = false,
+  compact = false,
 }: FavoriteButtonProps) {
   const t = useTranslations("Solve");
   const errorText = useErrorText();
@@ -41,14 +43,22 @@ export function FavoriteButton({
     size: "sm",
     disabled: pending,
     "aria-label": label,
-    className: "-mr-2 bg-transparent px-2 sm:px-4",
+    className: cn(
+      "bg-transparent",
+      compact
+        ? "size-9 shrink-0 rounded-xl px-0 hover:bg-muted"
+        : "-mr-2 px-2 sm:px-4",
+    ),
   } satisfies ComponentProps<typeof Button>;
   const star = (
     <>
       <StarIcon
-        className={cn("text-subtle", shown && "fill-overtime text-overtime")}
+        className={cn(
+          compact ? "size-4 text-foreground" : "text-subtle",
+          shown && "fill-overtime text-overtime",
+        )}
       />
-      <span className="hidden sm:inline">{label}</span>
+      {!compact && <span className="hidden sm:inline">{label}</span>}
     </>
   );
 

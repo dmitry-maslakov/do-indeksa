@@ -1,11 +1,19 @@
 "use client";
 
+import { cn } from "cn";
+import { SearchIcon } from "lucide-react";
+import { debounce } from "nuqs";
 import { type ComponentProps, Suspense } from "react";
 import { Input } from "@/components/ui/input";
-import { bankParsers } from "./params";
 import { useBankFilters } from "./use-bank-filters";
 
-type FilterSearchProps = Omit<ComponentProps<typeof Input>, "name" | "type">;
+type FilterSearchProps = Omit<
+  ComponentProps<typeof Input>,
+  "name" | "type" | "value" | "defaultValue" | "onChange"
+>;
+
+const field =
+  "h-10 pl-10 font-medium placeholder:font-normal [&::-webkit-search-cancel-button]:hidden";
 
 function UrlSearch(props: FilterSearchProps) {
   const [{ q }, setFilters] = useBankFilters();
@@ -13,23 +21,33 @@ function UrlSearch(props: FilterSearchProps) {
   return (
     <Input
       {...props}
-      key={q}
       type="search"
       name="q"
-      defaultValue={q ?? ""}
+      value={q ?? ""}
       enterKeyHint="search"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" && !e.nativeEvent.isComposing)
-          setFilters({ q: bankParsers.q.parse(e.currentTarget.value) });
-      }}
+      className={field}
+      onChange={(e) =>
+        setFilters(
+          { q: e.currentTarget.value || null },
+          { limitUrlUpdates: debounce(300) },
+        )
+      }
     />
   );
 }
 
-export function FilterSearch(props: FilterSearchProps) {
+export function FilterSearch({ className, ...props }: FilterSearchProps) {
   return (
-    <Suspense fallback={<Input {...props} type="search" name="q" />}>
-      <UrlSearch {...props} />
-    </Suspense>
+    <div className={cn("relative", className)}>
+      <SearchIcon
+        aria-hidden="true"
+        className="pointer-events-none absolute top-3 left-3 z-10 size-4 text-subtle"
+      />
+      <Suspense
+        fallback={<Input {...props} type="search" name="q" className={field} />}
+      >
+        <UrlSearch {...props} />
+      </Suspense>
+    </div>
   );
 }
