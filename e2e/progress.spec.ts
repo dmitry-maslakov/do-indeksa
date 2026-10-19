@@ -1,5 +1,5 @@
 import type { Client } from "pg";
-import { expect, test } from "./fixtures";
+import { answer, expect, test } from "./fixtures";
 
 const attempt = (
   db: Client,
@@ -60,4 +60,34 @@ test("a topic starts from its recommended task", async ({ page, auth }) => {
   await expect(page.getByLabel("Tema").filter({ visible: true })).toHaveValue(
     "exponential-equations",
   );
+});
+
+test("opening hints and the solution is recorded around the check", async ({
+  page,
+  auth,
+}) => {
+  const userId = await auth.signIn();
+  const open = (label: string) =>
+    page.getByRole("button", { name: label, exact: true }).click();
+  const events = async () => {
+    const { rows } = await auth.db.query<{ event: string }>(
+      `select part::text as event, created_at from reveals where user_id = $1 and task_id = 'kv-002'
+       union all
+       select 'check', created_at from attempts where user_id = $1 and task_id = 'kv-002'
+       order by created_at`,
+      [userId],
+    );
+    return rows.map((row) => row.event);
+  };
+
+  await page.goto("/bank/kv-002");
+  await open("Nagoveštaj");
+  await expect(page.getByText("Svi traženi izrazi")).toBeVisible();
+  await expect.poll(events).toEqual(["hint1"]);
+  await answer(page, "5");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect.poll(events).toEqual(["hint1", "check"]);
+  await open("Rešenje");
+  await expect(page.getByText("Realnost korena").first()).toBeVisible();
+  await expect.poll(events).toEqual(["hint1", "check", "solution"]);
 });
