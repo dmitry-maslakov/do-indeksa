@@ -1,5 +1,6 @@
 "use client";
 
+import { noop } from "es-toolkit";
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -7,6 +8,7 @@ import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useErrorText } from "@/lib/use-error-text";
+import { saveReveal } from "./reveal-action";
 import type { RevealPart } from "./reveal-part";
 import { useReveal } from "./use-reveal";
 
@@ -46,10 +48,15 @@ interface RevealProps {
 export function Reveal({ label, taskId, part }: RevealProps) {
   const [requested, setRequested] = useState(false);
 
+  function open() {
+    if (!requested) saveReveal({ taskId, part }).catch(noop);
+    setRequested(true);
+  }
+
   return (
     <details
       className="group rounded-xl bg-muted px-4 py-3"
-      onToggle={(e) => e.currentTarget.open && setRequested(true)}
+      onToggle={(e) => e.currentTarget.open && open()}
     >
       <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-sm [&::-webkit-details-marker]:hidden">
         {label}

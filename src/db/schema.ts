@@ -103,6 +103,28 @@ export const sets = pgTable(
   (t) => [uniqueIndex().on(t.taskIds).where(isNull(t.code))],
 );
 
+export const revealPart = pgEnum("reveal_part", [
+  "hint1",
+  "hint2",
+  "hint3",
+  "answer",
+  "solution",
+]);
+
+export const reveals = pgTable(
+  "reveals",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    userId: text()
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    taskId: text().notNull(),
+    part: revealPart().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.userId, t.taskId, t.createdAt.desc())],
+);
+
 export const reportKind = pgEnum("report_kind", reportKinds);
 
 export const reports = pgTable("reports", {
