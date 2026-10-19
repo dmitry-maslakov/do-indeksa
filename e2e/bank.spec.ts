@@ -12,8 +12,8 @@ const hydrated = (page: Page) =>
     ),
   );
 
-async function open(page: Page) {
-  await page.goto("/bank");
+async function open(page: Page, path = "/bank") {
+  await page.goto(path);
   await hydrated(page);
 }
 
@@ -26,20 +26,21 @@ function bank(page: Page) {
   return {
     topic: page.getByRole("combobox", { name: "Tema", exact: true }),
     level: page.getByRole("combobox", { name: "Težina", exact: true }),
-    sort: page.getByRole("combobox", { name: "Redosled", exact: true }),
+    source: page.getByRole("combobox", { name: "Izvor", exact: true }),
     search: page.getByRole("searchbox"),
-    cards: page.locator("main section").getByRole("link"),
-    count: page.getByText(/^[\d.]+ zadat(ak|ka|aka)$/),
-    empty: page.getByText("Ništa nije pronađeno"),
+    cards: page.locator("main article"),
+    links: page.locator("main article a"),
+    count: page.getByText(/^\d+(\.\d{3})* zadat(ak|ka|aka)$/),
+    empty: page.getByText("Nema zadataka za ove filtere."),
   };
 }
 
-test("the bank keeps topic, level and sort in the URL", async ({
+test("the bank keeps topic, source and level in the URL", async ({
   page,
   errors,
 }) => {
   await open(page);
-  const { topic, level, sort, cards } = bank(page);
+  const { topic, level, source, cards } = bank(page);
   await expect(cards.first().locator("[data-slot=skeleton]")).toHaveCount(0);
   const first = await cards.first().textContent();
 
@@ -48,38 +49,32 @@ test("the bank keeps topic, level and sort in the URL", async ({
   await expect(cards.first()).toContainText("Logaritmi");
   await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
 
-  await level.selectOption({ label: "Lako" });
+  await level.selectOption({ label: "lako" });
   await expect
     .poll(() => params(page))
     .toEqual({ topic: "logarithms", level: "easy" });
-  await expect(cards.first()).toContainText("lako");
   await expect(cards.filter({ hasNotText: "lako" })).toHaveCount(0);
+
+  await source.selectOption({ label: "Do indeksa" });
+  await expect
+    .poll(() => params(page))
+    .toEqual({ topic: "logarithms", level: "easy", source: "ours" });
+  await expect(cards.filter({ hasNotText: "Do indeksa" })).toHaveCount(0);
 
   await reload(page);
   await expect(topic).toHaveValue("logarithms");
   await expect(level).toHaveValue("easy");
-  await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
+  await expect(source).toHaveValue("ours");
 
   await topic.selectOption({ label: "Sve teme" });
-  await level.selectOption({ label: "Bilo koji" });
-  await expect.poll(() => params(page)).toEqual({});
-  await expect(cards.first()).toHaveText(first ?? "");
-
-  await sort.selectOption({ label: "Prvo teži" });
-  await expect.poll(() => params(page)).toEqual({ sort: "hard" });
-  await expect(cards.first()).toContainText("teško");
-
-  await sort.selectOption({ label: "Prvo lakši" });
-  await expect.poll(() => params(page)).toEqual({ sort: "easy" });
-  await expect(cards.first()).toContainText("lako");
-
-  await sort.selectOption({ label: "Po broju zadatka" });
+  await level.selectOption({ label: "Bilo koja" });
+  await source.selectOption({ label: "Svi" });
   await expect.poll(() => params(page)).toEqual({});
   await expect(cards.first()).toHaveText(first ?? "");
   expect(errors).toEqual([]);
 });
 
-test("the bank search runs on enter and lives in the URL", async ({
+test("the bank searches while typing and keeps the query in the URL", async ({
   page,
   errors,
 }) => {
@@ -88,14 +83,11 @@ test("the bank search runs on enter and lives in the URL", async ({
   const all = await count.textContent();
 
   await search.fill("nema-takve-reci");
-  await expect(page).toHaveURL(/\/bank$/);
-  await search.press("Enter");
   await expect.poll(() => params(page)).toEqual({ q: "nema-takve-reci" });
   await expect(empty).toBeVisible();
   await expect(cards).toHaveCount(0);
 
   await search.fill("jednacinu");
-  await search.press("Enter");
   await expect.poll(() => params(page)).toEqual({ q: "jednacinu" });
   await expect(empty).toBeHidden();
   await expect(cards.first()).toBeVisible();
@@ -110,6 +102,22 @@ test("the bank search runs on enter and lives in the URL", async ({
   expect(errors).toEqual([]);
 });
 
+test("a task opened from the list keeps the filters", async ({
+  page,
+  errors,
+}) => {
+  await open(page, "/bank?topic=logarithms&level=easy");
+  const { links } = bank(page);
+  await expect(links.first()).toHaveAttribute(
+    "href",
+    /\/bank\/[\w-]+\?topic=logarithms&level=easy$/,
+  );
+
+  await links.first().click();
+  await expect(page).toHaveURL(/\/bank\/[\w-]+\?topic=logarithms&level=easy$/);
+  expect(errors).toEqual([]);
+});
+
 test("back and forward restore the bank filters", async ({ page }) => {
   await open(page);
   const { topic, level, search, cards, empty } = bank(page);
@@ -117,12 +125,11 @@ test("back and forward restore the bank filters", async ({ page }) => {
 
   await topic.selectOption({ label: "Logaritmi" });
   await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
-  await level.selectOption({ label: "Lako" });
+  await level.selectOption({ label: "lako" });
   await expect
     .poll(() => params(page))
     .toEqual({ topic: "logarithms", level: "easy" });
   await search.fill("nema-takve-reci");
-  await search.press("Enter");
   await expect(empty).toBeVisible();
 
   await page.goBack();
@@ -156,13 +163,15 @@ test("back and forward restore the bank filters", async ({ page }) => {
 
 test("the bank ignores filters it does not know", async ({ page, errors }) => {
   await page.goto("/bank");
-  const { topic, level, sort, search, count } = bank(page);
+  const { topic, level, source, search, count } = bank(page);
   const all = await count.textContent();
 
-  await page.goto("/bank?level=bogus&sort=up&number=-1&topic=&q=%20");
+  await page.goto(
+    "/bank?level=bogus&source=book&sort=up&number=-1&topic=&q=%20",
+  );
   await expect(count).toHaveText(all ?? "");
   await expect(level).toHaveValue("");
-  await expect(sort).toHaveValue("");
+  await expect(source).toHaveValue("");
   await expect(topic).toHaveValue("");
   await expect(search).toHaveValue("");
   expect(errors).toEqual([]);
@@ -172,10 +181,10 @@ test("a signed-in user filters the bank by status", async ({ page, auth }) => {
   await auth.signIn();
   await open(page);
   const { cards, empty } = bank(page);
-  const status = page.getByRole("combobox", { name: "Status", exact: true });
+  const status = page.getByRole("combobox", { name: "Moj status" });
   await expect(cards.first()).toBeVisible();
 
-  await status.selectOption({ label: "Rešeni" });
+  await status.selectOption({ label: "Tačno rešeni" });
   await expect.poll(() => params(page)).toEqual({ status: "solved" });
   await expect(empty).toBeVisible();
 
@@ -190,7 +199,7 @@ test("the bank feed loads the next page while scrolling", async ({
   errors,
 }) => {
   await open(page);
-  const { count, cards } = bank(page);
+  const { count, cards, links } = bank(page);
   const total = Number((await count.textContent())?.replace(/\D/g, ""));
   test.skip(total <= 30, "the bank fits on one page");
   await expect(cards).toHaveCount(30);
@@ -199,11 +208,33 @@ test("the bank feed loads the next page while scrolling", async ({
     .getByRole("button", { name: "Prikaži još" })
     .scrollIntoViewIfNeeded();
   await expect(cards).toHaveCount(Math.min(total, 60));
-  const hrefs = await cards.evaluateAll((links) =>
-    links.map((link) => link.getAttribute("href")),
+  const hrefs = await links.evaluateAll((all) =>
+    all.map((link) => link.getAttribute("href")),
   );
   expect(new Set(hrefs).size).toBe(hrefs.length);
   await expect(page).toHaveURL(/\/bank$/);
+  expect(errors).toEqual([]);
+});
+
+test("the bank filters open in a sheet on a phone @mobile", async ({
+  page,
+  errors,
+}) => {
+  await open(page);
+  const { topic, count } = bank(page);
+  await expect(topic).toBeHidden();
+
+  await page.getByRole("button", { name: "Filteri", exact: true }).click();
+  await topic.selectOption({ label: "Logaritmi" });
+  await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
+  const shown = page.getByRole("button", { name: /^Prikaži / });
+  await expect(shown).toHaveText(`Prikaži ${await count.textContent()}`);
+  await shown.click();
+  await expect(topic).toBeHidden();
+  await expect(page.getByRole("button", { name: "Filteri · 1" })).toBeVisible();
+  await expect(
+    page.getByText("Logaritmi", { exact: true }).filter({ visible: true }),
+  ).not.toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
