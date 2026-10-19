@@ -16,7 +16,8 @@ import { ExamRail } from "./exam-rail";
 import { ExamResult } from "./exam-result";
 import { spentAt, useExamHydrated, useExamStore } from "./exam-store";
 import { ExamTask } from "./exam-task";
-import { finishRun, type GuestResult, saveRun } from "./run-actions";
+import type { GuestResult } from "./finish-run";
+import { finishRun, saveRun } from "./run-actions";
 import type { ExamTask as Task } from "./variants";
 
 interface ExamRunnerProps {
