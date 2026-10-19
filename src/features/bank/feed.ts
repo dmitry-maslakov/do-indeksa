@@ -3,13 +3,15 @@ import type { Locale } from "next-intl";
 import type { Progress, TaskStatus } from "@/features/progress/status";
 import type { Level } from "@/features/tasks/level";
 import { getTask, type TaskSummary } from "@/features/tasks/tasks";
-import { topicName } from "@/features/tasks/topics";
+import type { Tone, TopicIconData } from "@/features/tasks/topic-look";
+import { topicLook, topicName } from "@/features/tasks/topics";
 import { bankPage } from "./search";
+import { type ExamSource, examSource } from "./source";
 
 export interface BankCard {
   id: string;
-  topic: string;
-  number: number | null;
+  topic: { id: string; name: string; icon: TopicIconData; tone: Tone };
+  exam: ExamSource | null;
   level: Level;
   statement: string;
   status: TaskStatus;
@@ -26,12 +28,17 @@ function cardOf(
   locale: Locale,
   progress?: Progress,
 ): BankCard {
+  const content = getTask(task.id);
   return {
     id: task.id,
-    topic: topicName(task.topic, locale),
-    number: task.number,
+    topic: {
+      id: task.topic,
+      name: topicName(task.topic, locale),
+      ...topicLook(task.topic),
+    },
+    exam: content ? examSource(content.source) : null,
     level: task.level,
-    statement: getTask(task.id)?.text ?? "",
+    statement: content?.text ?? "",
     status: progress?.statuses.get(task.id) ?? "new",
     favorite: progress?.favorites.has(task.id) ?? false,
   };

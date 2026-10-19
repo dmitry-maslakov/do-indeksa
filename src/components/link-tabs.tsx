@@ -6,6 +6,7 @@ const list = cva("flex", {
     variant: {
       underline: "gap-5",
       segmented: "gap-1 rounded-xl bg-muted p-1",
+      fill: "gap-1 rounded-xl bg-untouched p-1",
     },
   },
 });
@@ -14,16 +15,17 @@ const tab = cva("font-medium transition-colors", {
   variants: {
     variant: {
       underline:
-        "border-b-2 pb-1 text-[15px] data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=false]:border-transparent data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
+        "border-b-2 pb-1 text-sm data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=false]:border-transparent data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
       segmented:
-        "rounded-lg px-3 py-1.5 text-sm data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
+        "rounded-lg px-3 py-2 text-sm data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
+      fill: "flex h-8 flex-1 items-center justify-center rounded-md text-sm data-[active=true]:bg-card data-[active=true]:shadow-raised data-[active=false]:text-muted-foreground data-[active=false]:hover:text-foreground",
     },
   },
 });
 
 interface LinkTabsProps {
   items: { href: string; label: string; active: boolean }[];
-  variant: "underline" | "segmented";
+  variant: "underline" | "segmented" | "fill";
 }
 
 export function LinkTabs({ items, variant }: LinkTabsProps) {
