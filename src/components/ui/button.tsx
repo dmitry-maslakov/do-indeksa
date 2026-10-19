@@ -7,8 +7,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-[0_6px_16px_rgb(99_86_246/0.3)]",
+        default: "bg-primary text-primary-foreground",
+        lime: "bg-lime text-foreground hover:bg-lime-strong",
         secondary: "bg-data text-primary-foreground",
         tint: "bg-data-tint text-data",
         destructive: "bg-error-tint text-error-text",
