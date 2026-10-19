@@ -67,6 +67,25 @@
           }
         }
       }
+    },
+    {
+      "includes": ["src/app/**", "src/**/*-action.ts", "src/**/*-actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }
