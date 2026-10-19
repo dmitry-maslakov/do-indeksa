@@ -2,12 +2,8 @@
 
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { attempts } from "@/db/schema";
-import { hourMs } from "@/lib/dates";
-import { gradeParts } from "@/lib/math";
 import { actionClient } from "@/server/action-client";
-import { db } from "@/server/db";
-import { getTask } from "./tasks";
+import { submitAnswer } from "./answers";
 
 const schema = zfd.formData({
   taskId: zfd.text(),
@@ -18,31 +14,6 @@ const schema = zfd.formData({
 
 export const checkAnswer = actionClient
   .inputSchema(schema)
-  .action(
-    async ({
-      parsedInput: { taskId, answer: answers, startedAt, hintsUsed },
-      ctx: { userId },
-    }) => {
-      const task = getTask(taskId);
-      if (!task) throw new Error(`unknown task ${taskId}`);
-
-      const parts = gradeParts(
-        task.check.map((c) => c.expected),
-        answers,
-      );
-      const correct = parts.every(Boolean);
-
-      if (userId) {
-        await db.insert(attempts).values({
-          userId,
-          taskId,
-          answers,
-          parts,
-          correct,
-          hintsUsed,
-          durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
-        });
-      }
-      return { parts, correct };
-    },
+  .action(({ parsedInput: { answer, ...input }, ctx: { userId } }) =>
+    submitAnswer(userId, { ...input, answers: answer }),
   );

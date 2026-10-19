@@ -2,10 +2,9 @@
 
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { reports } from "@/db/schema";
 import { authActionClient } from "@/server/action-client";
-import { db } from "@/server/db";
 import { reportKinds } from "./report-kinds";
+import { saveReport } from "./reports";
 import { taskIdSchema } from "./tasks";
 
 const schema = zfd.formData({
@@ -16,6 +15,6 @@ const schema = zfd.formData({
 
 export const reportTask = authActionClient
   .inputSchema(schema)
-  .action(async ({ parsedInput, ctx: { userId } }) => {
-    await db.insert(reports).values({ ...parsedInput, userId });
-  });
+  .action(({ parsedInput, ctx: { userId } }) =>
+    saveReport(userId, parsedInput),
+  );
