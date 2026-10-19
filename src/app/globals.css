@@ -42,6 +42,12 @@
   --color-daily-glyph: var(--daily-glyph);
   --color-lime: var(--lime);
   --color-lime-strong: var(--lime-strong);
+  --color-tone-blue: var(--tone-blue);
+  --color-tone-pink: var(--tone-pink);
+  --color-tone-orange: var(--tone-orange);
+  --color-tone-cyan: var(--tone-cyan);
+  --color-tone-yellow: var(--tone-yellow);
+  --color-exam: var(--exam);
 
   --radius-xs: 3px;
   --radius-sm: calc(var(--radius) * 0.6);
@@ -51,6 +57,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
 
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1;
   --text-task: 18px;
   --text-task--line-height: 1.55;
   --text-task-lg: 23px;
@@ -88,6 +96,7 @@
 
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(20 20 30 / 0.05);
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-sheet: 0 -10px 40px rgb(17 20 24 / 0.15);
 }
 
 :root {
@@ -130,6 +139,12 @@
   --daily-glyph: #d9d4ff;
   --lime: #d4f56e;
   --lime-strong: #c6ec4f;
+  --tone-blue: #9ab8ff;
+  --tone-pink: #ffb3df;
+  --tone-orange: #ffb882;
+  --tone-cyan: #8fe0f3;
+  --tone-yellow: #ffe27a;
+  --exam: #c3b4ff;
   --nav-bottom: 3.5rem;
 }
 

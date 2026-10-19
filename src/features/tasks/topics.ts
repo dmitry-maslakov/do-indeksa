@@ -7,3 +7,9 @@ export const topics = allTopics;
 export function topicName(id: string, locale: Locale) {
   return allTopics.find((t) => t.id === id)?.name[locale] ?? id;
 }
+
+export function topicLook(id: string) {
+  const topic = allTopics.find((t) => t.id === id);
+  if (!topic) throw new Error(`unknown topic ${id}`);
+  return { icon: topic.icon, tone: topic.tone };
+}

@@ -1,5 +1,6 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
+import { tones, topicIconSchema } from "./src/features/tasks/topic-look";
 import { routing } from "./src/i18n/routing";
 import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
@@ -13,7 +14,11 @@ const topics = defineCollection({
   directory: `${root}/topics`,
   include: "*.yaml",
   parser: "yaml",
-  schema: z.object({ name: localized }),
+  schema: z.object({
+    name: localized,
+    icon: topicIconSchema,
+    tone: z.enum(tones),
+  }),
   transform: (topic) => ({ ...topic, id: topic._meta.path }),
 });
 
