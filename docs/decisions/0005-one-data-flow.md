@@ -1,14 +1,20 @@
 # 5. One data flow
 
-Server-only functions in `src/features/*` are the core: they take plain arguments, check the session and ownership themselves and return plain data. Pages, route handlers and actions are thin adapters over them.
+Code has three layers:
+
+- Adapters: pages, route handlers and `*-action.ts` files. They parse input, take the user from the session and call a service. They never import the database or Drizzle; Biome enforces it.
+- Services: server-only functions in `src/features/*`. They take plain arguments, the user id included, scope every query to that user, run the Drizzle queries and transactions and return plain data.
+- Pure functions without I/O hold the domain logic and carry the unit tests.
+
+There is no repository layer: Drizzle already is the typed query layer, and tests that need the database run against Postgres.
 
 Pages read through Server Components; user data renders inside `<Suspense>`. Filters, sort and search live in the URL through nuqs, and the page and its controls share one set of parsers.
 
-Lists that grow on the client, like the bank feed and the task rail, use TanStack Query through a hook. The hook calls a GET route handler under `src/app/api` that parses its input with the same parsers and calls the core. The server renders the first page.
+Lists that grow on the client, like the bank feed and the task rail, use TanStack Query through a hook. The hook calls a GET route handler under `src/app/api` that parses its input with the same parsers and calls a service. The server renders the first page.
 
-Mutations are next-safe-action actions, one per `*-action.ts` file. Actions never read data: they are POST requests that run one at a time per client and cannot be cached.
+Mutations are next-safe-action actions in `*-action.ts` files. Actions don't serve reads and return only the result of their own write: they are POST requests that run one at a time per client and cannot be cached. An unexpected error reaches the client only as a code, `unexpected` or `unauthorized`; the texts live in `use-error-text`.
 
-No other API style is added. When a second consumer appears, oRPC goes over the same core. External services, gRPC included, are called from the server only.
+No other API style is added. When a second consumer appears, oRPC goes over the same services. External services, gRPC included, are called from the server only.
 
 Task HTML is rendered on demand from the Markdown in the bundle and kept in a byte-bounded LRU cache. Rendered pages are not kept in server memory.
 
