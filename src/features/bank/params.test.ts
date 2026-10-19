@@ -5,6 +5,7 @@ const none = {
   q: null,
   number: null,
   topic: null,
+  source: null,
   level: null,
   sort: null,
   status: null,
@@ -14,12 +15,13 @@ describe("bankParsers", () => {
   it("reads every filter", () => {
     expect(
       load(
-        "?q=%20Jednačina%20&number=3&topic=logarithms&level=easy&sort=hard&status=wrong",
+        "?q=%20Jednačina%20&number=3&topic=logarithms&source=exam&level=easy&sort=hard&status=wrong",
       ),
     ).toEqual({
       q: "Jednačina",
       number: 3,
       topic: "logarithms",
+      source: "exam",
       level: "easy",
       sort: "hard",
       status: "wrong",
@@ -32,7 +34,9 @@ describe("bankParsers", () => {
 
   it("drops empty and unknown values", () => {
     expect(
-      load("?q=%20&number=-1&topic=&level=bogus&sort=up&status=old"),
+      load(
+        "?q=%20&number=-1&topic=&source=book&level=bogus&sort=up&status=old",
+      ),
     ).toEqual(none);
     expect(load("?number=0")).toEqual(none);
     expect(load("?number=1.5")).toEqual(none);
