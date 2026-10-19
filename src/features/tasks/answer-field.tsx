@@ -34,6 +34,7 @@ const box = cva("flex items-center transition-colors", {
       empty: "",
       correct: "border-success bg-success-tint",
       wrong: "border-error bg-error-tint",
+      unreadable: "border-overtime bg-overtime-tint",
     },
   },
 });
@@ -119,7 +120,7 @@ export function AnswerField({
         >
           {defaultValue}
         </math-field>
-        {state !== "empty" && (
+        {(state === "correct" || state === "wrong") && (
           <span className="flex pr-4">
             <StatusIcon
               status={state === "correct" ? "solved" : "wrong"}

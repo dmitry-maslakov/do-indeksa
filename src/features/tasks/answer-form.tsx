@@ -4,8 +4,10 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { useRouter } from "@/i18n/navigation";
+import { isRight, type PartOutcome } from "@/lib/part-outcome";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { checkAnswer } from "./answer-action";
@@ -23,29 +25,52 @@ interface AnswerFormProps {
 }
 
 interface Checked {
-  parts: boolean[];
+  outcomes: PartOutcome[];
   correct: boolean;
 }
 
-function Result({ checked }: { checked: Checked }) {
+const fieldStates: Record<PartOutcome, AnswerState> = {
+  right: "correct",
+  wrong: "wrong",
+  empty: "empty",
+  unreadable: "unreadable",
+};
+
+type Verdict = "correct" | "wrong" | "unreadable" | "incomplete";
+
+function verdictOf(outcomes: PartOutcome[]): Verdict {
+  if (outcomes.every(isRight)) return "correct";
+  if (outcomes.includes("wrong")) return "wrong";
+  return outcomes.includes("unreadable") ? "unreadable" : "incomplete";
+}
+
+const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
+  correct: { look: "text-success-text", status: "solved" },
+  wrong: { look: "text-error-text", status: "wrong" },
+  unreadable: { look: "text-overtime-text" },
+  incomplete: { look: "text-overtime-text" },
+};
+
+function Result({ checked: { outcomes } }: { checked: Checked }) {
   const t = useTranslations("Solve");
-  const right = checked.parts.filter(Boolean).length;
+  const verdict = verdictOf(outcomes);
+  const { look, status } = verdicts[verdict];
   return (
     <span
       role="status"
       className={cn(
         "order-3 flex items-center gap-2 font-semibold text-base",
-        checked.correct ? "text-success-text" : "text-error-text",
+        look,
       )}
     >
-      <StatusIcon
-        status={checked.correct ? "solved" : "wrong"}
-        className="size-5"
-      />
-      {checked.correct ? t("correct") : t("wrong")}
-      {!checked.correct && checked.parts.length > 1 && (
+      {status && <StatusIcon status={status} className="size-5" />}
+      {t(verdict)}
+      {verdict === "wrong" && outcomes.length > 1 && (
         <small className="font-normal text-muted-foreground text-sm">
-          {t("partsRight", { right, total: checked.parts.length })}
+          {t("partsRight", {
+            right: outcomes.filter(isRight).length,
+            total: outcomes.length,
+          })}
         </small>
       )}
     </span>
@@ -85,7 +110,7 @@ export function AnswerForm({
   }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const stateOf = (i: number): AnswerState =>
-    !checked ? "empty" : checked.parts[i] ? "correct" : "wrong";
+    checked ? fieldStates[checked.outcomes[i] ?? "empty"] : "empty";
 
   return (
     <form

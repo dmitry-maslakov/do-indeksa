@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/features/exam/variants";
 import { Reveal } from "@/features/tasks/reveal";
 import { Link } from "@/i18n/navigation";
+import { isRight } from "@/lib/part-outcome";
 import type {
   AnswerOutcome,
   Outcomes,
@@ -155,16 +156,27 @@ function Outcome({
 }) {
   const t = useTranslations("Review");
 
+  const unreadable = attempt.outcomes.filter((o) => o === "unreadable").length;
+
   if (!outcome) {
-    return t("partsRight", {
-      right: attempt.parts.filter(Boolean).length,
-      total: attempt.parts.length,
+    const right = t("partsRight", {
+      right: attempt.outcomes.filter(isRight).length,
+      total: attempt.outcomes.length,
     });
+    return unreadable > 0
+      ? `${right} · ${t("unreadable", { count: unreadable })}`
+      : right;
   }
   return (
     <>
-      {t("gave")} <MathHtml as="span" html={outcome.given} />, {t("key")}{" "}
-      <MathHtml as="span" html={outcome.key} />
+      {unreadable > 0 ? (
+        t("unreadableOne")
+      ) : (
+        <>
+          {t("gave")} <MathHtml as="span" html={outcome.given} />
+        </>
+      )}
+      , {t("key")} <MathHtml as="span" html={outcome.key} />
     </>
   );
 }

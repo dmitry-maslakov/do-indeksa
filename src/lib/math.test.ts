@@ -38,11 +38,25 @@ describe("isEquivalent", () => {
 });
 
 describe("gradeParts", () => {
-  it("grades each part and treats a missing answer as wrong", () => {
-    expect(gradeParts(["2", "\\frac{1}{2}"], ["2"])).toEqual([true, false]);
+  it("grades each part and treats a missing answer as empty", () => {
+    expect(gradeParts(["2", "\\frac{1}{2}"], ["2"])).toEqual([
+      "right",
+      "empty",
+    ]);
     expect(gradeParts(["2", "\\frac{1}{2}"], ["1", "0{,}5"])).toEqual([
-      false,
-      true,
+      "wrong",
+      "right",
     ]);
   });
+
+  it.each(["", "  ", "\\placeholder{}"])("treats %j as empty", (input) => {
+    expect(gradeParts(["1"], [input])).toEqual(["empty"]);
+  });
+
+  it.each(["\\frac{1", "(2,", "2+", "x=", "\\sqrt{}", "\\frac{}{}"])(
+    "treats %j as unreadable",
+    (input) => {
+      expect(gradeParts(["1"], [input])).toEqual(["unreadable"]);
+    },
+  );
 });

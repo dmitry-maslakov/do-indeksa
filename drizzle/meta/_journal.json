@@ -71,6 +71,13 @@
       "when": 1792515639418,
       "tag": "0009_reveals",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792516472216,
+      "tag": "0010_attempt_outcomes",
+      "breakpoints": true
     }
   ]
 }

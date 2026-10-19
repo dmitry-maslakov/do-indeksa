@@ -16,6 +16,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { ExamRun } from "@/features/exam/exam-store";
 import { reportKinds } from "@/features/tasks/report-kinds";
+import { partOutcomes } from "@/lib/part-outcome";
 import { user } from "./auth-schema";
 
 export * from "./auth-schema";
@@ -44,6 +45,8 @@ export const runs = pgTable(
   (t) => [index().on(t.userId, t.finishedAt.desc())],
 );
 
+export const partOutcome = pgEnum("part_outcome", partOutcomes);
+
 export const attempts = pgTable(
   "attempts",
   {
@@ -54,7 +57,7 @@ export const attempts = pgTable(
     taskId: text().notNull(),
     runId: uuid().references(() => runs.id, { onDelete: "cascade" }),
     answers: text().array().notNull(),
-    parts: boolean().array().notNull(),
+    outcomes: partOutcome().array().notNull(),
     correct: boolean().notNull(),
     hintsUsed: smallint().notNull().default(0),
     durationMs: integer().notNull(),
