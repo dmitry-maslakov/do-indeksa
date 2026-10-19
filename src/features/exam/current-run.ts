@@ -5,6 +5,8 @@ import { currentRuns, runs } from "@/db/schema";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import type { ExamRun } from "./exam-store";
+import { withinDay } from "./run-bounds";
+import { getVariant } from "./variants";
 
 export interface CurrentRun {
   variantId: string;
@@ -40,3 +42,25 @@ export const getCurrentRun = cache(
     };
   },
 );
+
+interface SavedRun {
+  runId: string;
+  variantId: string;
+  startedAt: number;
+  run: (typeof currentRuns.$inferInsert)["run"];
+}
+
+export async function saveCurrentRun(
+  userId: string,
+  { runId, variantId, startedAt, run }: SavedRun,
+) {
+  if (!getVariant(variantId) || !withinDay(startedAt)) return;
+  const row = { runId, variantId, startedAt: new Date(startedAt), run };
+  await db
+    .insert(currentRuns)
+    .values({ userId, ...row })
+    .onConflictDoUpdate({
+      target: currentRuns.userId,
+      set: { ...row, updatedAt: new Date() },
+    });
+}

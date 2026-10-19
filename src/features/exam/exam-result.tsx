@@ -8,7 +8,7 @@ import { SignInButton } from "@/features/account/sign-in-button";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
-import type { GuestResult } from "./run-actions";
+import type { GuestResult } from "./finish-run";
 import type { ExamTask } from "./variants";
 
 interface ExamResultProps {
