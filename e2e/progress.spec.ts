@@ -92,3 +92,28 @@ test("opening hints and the solution is recorded around the check", async ({
   await expect(page.getByText("Realnost korena").first()).toBeVisible();
   await expect.poll(events).toEqual(["hint1", "check", "solution"]);
 });
+
+test("an unreadable answer asks to check the entry and is not a mistake", async ({
+  page,
+  auth,
+}) => {
+  const userId = await auth.signIn();
+  await page.goto("/bank/eks-001");
+  await answer(page, "2+");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(
+    page.getByText("Ne možemo da pročitamo odgovor. Proveri zapis."),
+  ).toBeVisible();
+  await expect
+    .poll(async () => {
+      const { rows } = await auth.db.query<{ outcomes: string }>(
+        "select outcomes::text from attempts where user_id = $1 and task_id = 'eks-001'",
+        [userId],
+      );
+      return rows.map((row) => row.outcomes);
+    })
+    .toEqual(["{unreadable}"]);
+
+  await page.goto("/bank?status=wrong");
+  await expect(page.locator('a[href$="/bank/eks-001"]')).toHaveCount(0);
+});
