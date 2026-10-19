@@ -2,3 +2,6 @@ name:
   sr-Latn: Trigonometrija
   ru: Тригонометрия
   en: "Trigonometry"
+icon:
+  text: "sin"
+tone: pink

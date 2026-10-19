@@ -2,3 +2,6 @@ name:
   sr-Latn: Stereometrija
   ru: Стереометрия
   en: "Solid geometry"
+icon:
+  name: "box"
+tone: orange

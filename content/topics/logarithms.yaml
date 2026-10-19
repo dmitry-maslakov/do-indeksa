@@ -2,3 +2,6 @@ name:
   sr-Latn: Logaritmi
   ru: Логарифмы
   en: "Logarithms"
+icon:
+  text: "log"
+tone: blue
