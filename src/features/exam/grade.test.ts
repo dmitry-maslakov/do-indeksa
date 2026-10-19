@@ -12,11 +12,24 @@ describe("gradeRun", () => {
   const [a, b, c] = gradeRun(tasks, [["2"], ["1", "4"]], [60_000, 2 * dayMs]);
 
   it("credits each task by its right parts", () => {
-    expect(a).toMatchObject({ parts: [true], correct: true, points: 6 });
+    expect(a).toMatchObject({ outcomes: ["right"], correct: true, points: 6 });
     expect(b).toMatchObject({
-      parts: [true, false],
+      outcomes: ["right", "wrong"],
       correct: false,
       points: 3,
+    });
+  });
+
+  it("keeps unreadable and empty parts apart from wrong ones", () => {
+    const [d] = gradeRun(
+      [{ taskId: "d", expected: ["1", "2", "3"], points: 6 }],
+      [["1", "\\frac{2", ""]],
+      [0],
+    );
+    expect(d).toMatchObject({
+      outcomes: ["right", "unreadable", "empty"],
+      correct: false,
+      points: 2,
     });
   });
 

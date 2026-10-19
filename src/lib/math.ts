@@ -4,6 +4,7 @@ import {
   isFunction,
   isSymbol,
 } from "@cortex-js/compute-engine";
+import type { PartOutcome } from "./part-outcome";
 
 const ce = new ComputeEngine();
 
@@ -48,5 +49,14 @@ export function isEquivalent(input: string, expected: string): boolean {
   return candidates.some((c) => sameItems(items(target), items(c)));
 }
 
+const isBlank = (input: string) =>
+  input.replaceAll("\\placeholder{}", "").trim() === "";
+
+function gradePart(input: string, expected: string): PartOutcome {
+  if (isBlank(input)) return "empty";
+  if (!parseMath(input).isValid) return "unreadable";
+  return isEquivalent(input, expected) ? "right" : "wrong";
+}
+
 export const gradeParts = (expected: string[], answers: string[]) =>
-  expected.map((e, i) => isEquivalent(answers[i] ?? "", e));
+  expected.map((e, i) => gradePart(answers[i] ?? "", e));

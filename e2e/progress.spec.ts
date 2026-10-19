@@ -9,8 +9,9 @@ const attempt = (
   hoursAgo: number,
 ) =>
   db.query(
-    `insert into attempts (user_id, task_id, answers, parts, correct, duration_ms, created_at)
-     values ($1, $2, '{1}', '{true}', $3, 1000, now() - $4::int * interval '1 hour')`,
+    `insert into attempts (user_id, task_id, answers, outcomes, correct, duration_ms, created_at)
+     values ($1, $2, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
+       now() - $4::int * interval '1 hour')`,
     [userId, taskId, correct, hoursAgo],
   );
 

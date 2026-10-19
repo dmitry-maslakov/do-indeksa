@@ -89,6 +89,8 @@
     "check": "Proveri",
     "correct": "Tačno",
     "wrong": "Nije tačno",
+    "unreadable": "Ne možemo da pročitamo odgovor. Proveri zapis.",
+    "incomplete": "Popuni sve delove.",
     "answerPart": "Odgovor {number, number}",
     "yourAnswer": "Tvoj odgovor",
     "save": "Sačuvaj zadatak",
@@ -208,6 +210,8 @@
     "gave": "odgovor",
     "key": "tačno",
     "partsRight": "tačno {right, number} od {total, number} delova",
+    "unreadable": "{count, plural, one {# deo nije pročitan} few {# dela nisu pročitana} other {# delova nije pročitano}}",
+    "unreadableOne": "odgovor nije pročitan",
     "toTask": "Otvori zadatak"
   },
   "Stats": {

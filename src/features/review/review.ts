@@ -1,4 +1,5 @@
 import { sumBy } from "es-toolkit";
+import { isRight, type PartOutcome } from "@/lib/part-outcome";
 import { type Segment, segmentOf } from "@/lib/strip";
 
 export interface ReviewTask {
@@ -11,7 +12,7 @@ export interface ReviewTask {
 
 export interface ReviewAttempt {
   taskId: string;
-  parts: boolean[];
+  outcomes: PartOutcome[];
   correct: boolean;
   durationMs: number;
 }
@@ -43,11 +44,12 @@ export interface Review<A extends ReviewAttempt = ReviewAttempt> {
 
 export const reviewHref = (runId: string) => `/review/${runId.slice(0, 8)}`;
 
-export const creditOf = (parts: boolean[], points: number) =>
-  parts.length === 0
+export const creditOf = (outcomes: PartOutcome[], points: number) =>
+  outcomes.length === 0
     ? 0
-    : Math.round((points * parts.filter(Boolean).length * 10) / parts.length) /
-      10;
+    : Math.round(
+        (points * outcomes.filter(isRight).length * 10) / outcomes.length,
+      ) / 10;
 
 export function review<A extends ReviewAttempt>(
   tasks: ReviewTask[],
@@ -59,9 +61,9 @@ export function review<A extends ReviewAttempt>(
     return {
       ...task,
       attempt,
-      earned: attempt ? creditOf(attempt.parts, task.points) : 0,
+      earned: attempt ? creditOf(attempt.outcomes, task.points) : 0,
       over: (attempt?.durationMs ?? 0) > task.minutes * 60_000,
-      segment: segmentOf(attempt?.parts),
+      segment: segmentOf(attempt?.outcomes.map(isRight)),
     };
   });
 

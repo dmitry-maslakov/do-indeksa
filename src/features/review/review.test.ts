@@ -18,14 +18,19 @@ const tasks = [
 
 describe("review", () => {
   const result = review(tasks, [
-    { taskId: "a", parts: [true], correct: true, durationMs: 10 * 60_000 },
+    {
+      taskId: "a",
+      outcomes: ["right"],
+      correct: true,
+      durationMs: 10 * 60_000,
+    },
     {
       taskId: "b",
-      parts: [true, false],
+      outcomes: ["right", "wrong"],
       correct: false,
       durationMs: 30 * 60_000,
     },
-    { taskId: "c", parts: [false], correct: false, durationMs: 60_000 },
+    { taskId: "c", outcomes: ["wrong"], correct: false, durationMs: 60_000 },
   ]);
 
   it("credits correct parts", () => {

@@ -89,6 +89,8 @@
     "check": "Check",
     "correct": "Correct",
     "wrong": "Not quite",
+    "unreadable": "We couldn't read the answer. Check how it's written.",
+    "incomplete": "Fill in every part.",
     "answerPart": "Answer {number, number}",
     "yourAnswer": "Your answer",
     "save": "Save task",
@@ -208,6 +210,8 @@
     "gave": "answered",
     "key": "correct",
     "partsRight": "{right, number} of {total, number} parts right",
+    "unreadable": "{count, plural, one {# part couldn't be read} other {# parts couldn't be read}}",
+    "unreadableOne": "answer couldn't be read",
     "toTask": "Open the task"
   },
   "Stats": {

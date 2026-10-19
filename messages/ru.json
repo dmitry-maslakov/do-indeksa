@@ -89,6 +89,8 @@
     "check": "Проверить",
     "correct": "Верно",
     "wrong": "Неверно",
+    "unreadable": "Не получилось прочитать ответ. Проверь запись.",
+    "incomplete": "Заполни все пункты.",
     "answerPart": "Ответ {number, number}",
     "yourAnswer": "Твой ответ",
     "save": "Сохранить задачу",
@@ -208,6 +210,8 @@
     "gave": "твой ответ",
     "key": "верно",
     "partsRight": "верно {right, number} из {total, number} пунктов",
+    "unreadable": "{count, plural, one {# пункт не прочитан} few {# пункта не прочитаны} other {# пунктов не прочитано}}",
+    "unreadableOne": "ответ не прочитан",
     "toTask": "Открыть задачу"
   },
   "Stats": {

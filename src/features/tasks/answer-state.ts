@@ -1,1 +1,1 @@
-export type AnswerState = "empty" | "correct" | "wrong";
+export type AnswerState = "empty" | "correct" | "wrong" | "unreadable";
