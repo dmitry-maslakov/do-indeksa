@@ -4,6 +4,7 @@ import type { inferParserType } from "nuqs/server";
 import type { Progress } from "@/features/progress/status";
 import { summarize, type TaskSummary, tasks } from "@/features/tasks/tasks";
 import type { bankParsers, statusFilters } from "./params";
+import { examSource } from "./source";
 
 export const bankPage = 30;
 
@@ -15,11 +16,13 @@ const fold = (s: string) =>
 interface Entry {
   summary: TaskSummary;
   text: string;
+  exam: boolean;
 }
 
 const entries: Entry[] = tasks.map((task) => ({
   summary: summarize(task),
-  text: fold(task.text),
+  text: fold(`${task.text} ${task.source}`),
+  exam: examSource(task.source) !== null,
 }));
 
 const sortedBy = (order: -1 | 0 | 1) =>
@@ -31,13 +34,23 @@ const sortedBy = (order: -1 | 0 | 1) =>
 
 const orders = { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };
 
-export function searchBank({ q, number, topic, level, sort }: BankFilters) {
+export const firstTaskId = orders.number[0]?.summary.id;
+
+export function searchBank({
+  q,
+  number,
+  topic,
+  source,
+  level,
+  sort,
+}: BankFilters) {
   const query = q && fold(q);
   return orders[sort ?? "number"]
     .filter(
-      ({ summary, text }) =>
+      ({ summary, text, exam }) =>
         (!query || text.includes(query)) &&
         (!topic || summary.topic === topic) &&
+        (!source || exam === (source === "exam")) &&
         (!level || summary.level === level) &&
         (!number || summary.number === number),
     )
@@ -61,3 +74,6 @@ export function filterByStatus(
   if (!status || !progress) return found;
   return found.filter((t) => matchesStatus(status, t.id, progress));
 }
+
+export const findTasks = (filters: BankFilters, progress?: Progress) =>
+  filterByStatus(searchBank(filters), filters.status, progress);

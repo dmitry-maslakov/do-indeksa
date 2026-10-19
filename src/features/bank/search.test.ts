@@ -32,6 +32,17 @@ describe("searchBank", () => {
     );
   });
 
+  it("filters by source", () => {
+    const exam = ids({ source: "exam" });
+    const ours = ids({ source: "ours" });
+    expect(exam.length + ours.length).toBe(ids({}).length);
+    expect(exam.filter((id) => ours.includes(id))).toEqual([]);
+  });
+
+  it("searches the source", () => {
+    expect(ids({ q: "do indeksa" })).toEqual(ids({ source: "ours" }));
+  });
+
   it("combines the text search with the other filters", () => {
     const found = searchBank({ q: "jednacinu", level: "easy", sort: "hard" });
     const all = searchBank({ q: "jednacinu", sort: "hard" });
