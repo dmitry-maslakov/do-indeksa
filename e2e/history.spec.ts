@@ -5,7 +5,7 @@ import { expect, test } from "./fixtures";
 
 test.use({ viewport: { width: 1280, height: 400 } });
 
-const seedRuns = (db: Client, profileId: string, count: number) =>
+const seedTests = (db: Client, profileId: string, count: number) =>
   db.query(
     `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
      select gen_random_uuid(), $1::uuid, 'daily'::test_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
@@ -15,14 +15,14 @@ const seedRuns = (db: Client, profileId: string, count: number) =>
   );
 
 const feed = async (page: Page) =>
-  (await page.request.get("/api/runs?offset=0&locale=sr-Latn")).json();
+  (await page.request.get("/api/tests?offset=0&locale=sr-Latn")).json();
 
 test("the run history loads older runs while scrolling", async ({
   page,
   auth,
   errors,
 }) => {
-  await seedRuns(auth.db, (await auth.signIn()).profileId, 25);
+  await seedTests(auth.db, (await auth.signIn()).profileId, 25);
   await page.goto("/variants?tab=history");
   const rows = page.getByRole("img", { name: "0 od 0 tačno" });
   const more = page.getByRole("button", { name: "Prikaži još" });
@@ -42,32 +42,32 @@ test("a finished variant shows its result in the catalog", async ({
   await page.goto("/variants");
   const first = page.getByRole("link", { name: /Počni →/ }).first();
   const href = (await first.getAttribute("href")) ?? "";
-  const runId = randomUUID();
+  const testId = randomUUID();
   await auth.db.query(
     `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
      values ($1, $2, 'official', $3, '{}', now(), now(), false)`,
-    [runId, profileId, href.split("/").at(-1)],
+    [testId, profileId, href.split("/").at(-1)],
   );
   await page.reload();
-  const row = page.locator(`a[href="/review/${runId.slice(0, 8)}"]`);
+  const row = page.locator(`a[href="/review/${testId.slice(0, 8)}"]`);
   await expect(row).toContainText("Pregled");
   await expect(row).toContainText("rešeno");
   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
 });
 
 test("the run feed returns only the caller's runs", async ({ page, auth }) => {
-  await seedRuns(auth.db, (await auth.signIn()).profileId, 3);
-  expect((await feed(page)).runs).toHaveLength(3);
+  await seedTests(auth.db, (await auth.signIn()).profileId, 3);
+  expect((await feed(page)).tests).toHaveLength(3);
 
   await auth.signIn();
-  expect(await feed(page)).toEqual({ runs: [], next: null });
+  expect(await feed(page)).toEqual({ tests: [], next: null });
 });
 
 test("the run feed is empty without a profile and rejects malformed pages", async ({
   request,
 }) => {
-  const guest = await request.get("/api/runs?offset=0&locale=sr-Latn");
-  expect(await guest.json()).toEqual({ runs: [], next: null });
-  const malformed = await request.get("/api/runs?offset=-1&locale=xx");
+  const guest = await request.get("/api/tests?offset=0&locale=sr-Latn");
+  expect(await guest.json()).toEqual({ tests: [], next: null });
+  const malformed = await request.get("/api/tests?offset=-1&locale=xx");
   expect(malformed.status()).toBe(400);
 });

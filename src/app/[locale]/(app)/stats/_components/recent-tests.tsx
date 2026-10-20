@@ -8,7 +8,7 @@ import { reviewHref } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
 
-interface RecentRun {
+interface RecentTest {
   id: string;
   title: string;
   segments: Segment[];
@@ -30,10 +30,10 @@ const ghost = (
   </ul>
 );
 
-export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
+export function RecentTests({ tests }: { tests?: RecentTest[] }) {
   const t = useTranslations("Stats");
   const home = useTranslations("Home");
-  const done = runs ?? [];
+  const done = tests ?? [];
   const repeated = [...new Set(done.flatMap((r) => r.misses))]
     .filter((n) => done.filter((r) => r.misses.includes(n)).length > 1)
     .sort((a, b) => a - b);
@@ -49,28 +49,28 @@ export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
           {t("all")}
         </Link>
       </CardHeader>
-      {!runs ? (
+      {!tests ? (
         ghost
-      ) : runs.length === 0 ? (
+      ) : tests.length === 0 ? (
         <EmptyNote
-          text={t("noRuns")}
+          text={t("noTests")}
           href="/daily"
           action={home("playDaily")}
         />
       ) : (
         <ul className="flex flex-col gap-1 text-sm">
-          {runs.map((run) => (
-            <li key={run.id}>
+          {tests.map((test) => (
+            <li key={test.id}>
               <Link
-                href={reviewHref(run.id)}
+                href={reviewHref(test.id)}
                 className={cn(row, "rounded-lg py-1.5 hover:bg-muted/50")}
               >
-                <span className="truncate font-semibold">{run.title}</span>
+                <span className="truncate font-semibold">{test.title}</span>
                 <VariantStrip
-                  segments={run.segments}
-                  label={t("score", { score: run.score })}
+                  segments={test.segments}
+                  label={t("score", { score: test.score })}
                 />
-                <b className="text-right font-semibold">{run.score}</b>
+                <b className="text-right font-semibold">{test.score}</b>
               </Link>
             </li>
           ))}

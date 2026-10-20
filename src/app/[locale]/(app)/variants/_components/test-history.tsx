@@ -3,17 +3,17 @@
 import { useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { LoadMore } from "@/components/load-more";
-import type { RunPage } from "@/features/exam/run-feed";
-import type { RunSummary } from "@/features/exam/run-summaries";
-import { useRunFeed } from "@/features/exam/use-run-feed";
+import type { TestPage } from "@/features/exam/test-feed";
+import type { TestSummary } from "@/features/exam/test-summaries";
+import { useTestFeed } from "@/features/exam/use-test-feed";
 import { ExamRow } from "./exam-row";
 import { TestsTable } from "./tests-table";
 
-export function RunHistory({ first }: { first: RunPage }) {
+export function TestHistory({ first }: { first: TestPage }) {
   const t = useTranslations("Variants");
   const home = useTranslations("Home");
 
-  if (first.runs.length === 0) {
+  if (first.tests.length === 0) {
     return (
       <EmptyNote
         text={t("historyEmpty")}
@@ -23,23 +23,23 @@ export function RunHistory({ first }: { first: RunPage }) {
     );
   }
 
-  return <RunFeed first={first} />;
+  return <TestFeed first={first} />;
 }
 
-function HistoryRow({ run }: { run: RunSummary }) {
+function HistoryRow({ test }: { test: TestSummary }) {
   const t = useTranslations("Variants");
 
   return (
     <ExamRow
-      title={t("runTitle", { kind: run.kind, title: run.title })}
-      kind={t("runKind", { kind: run.kind, count: run.segments.length })}
-      href={`/variants/${run.variantId}`}
-      run={run}
+      title={t("testTitle", { kind: test.kind, title: test.title })}
+      kind={t("testKind", { kind: test.kind, count: test.segments.length })}
+      href={`/variants/${test.variantId}`}
+      test={test}
     />
   );
 }
 
-function RunFeed({ first }: { first: RunPage }) {
+function TestFeed({ first }: { first: TestPage }) {
   const t = useTranslations("Bank");
   const {
     data,
@@ -47,15 +47,15 @@ function RunFeed({ first }: { first: RunPage }) {
     isFetchingNextPage,
     isFetchNextPageError,
     fetchNextPage,
-  } = useRunFeed(first);
+  } = useTestFeed(first);
 
   return (
     <>
       <TestsTable first="attempt">
         {data.pages
-          .flatMap((page) => page.runs)
-          .map((run) => (
-            <HistoryRow key={run.id} run={run} />
+          .flatMap((page) => page.tests)
+          .map((test) => (
+            <HistoryRow key={test.id} test={test} />
           ))}
       </TestsTable>
       {hasNextPage && (

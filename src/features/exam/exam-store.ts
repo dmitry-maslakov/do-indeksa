@@ -3,15 +3,15 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Visit } from "./test-draft";
 
-interface RunMeta {
+interface TestMeta {
   title: string;
   minutes: number;
   timed: boolean;
   tasks: { number: number; topic: string; parts: number }[];
 }
 
-export interface ExamRun extends Omit<RunMeta, "tasks"> {
-  runId: string;
+export interface LocalTest extends Omit<TestMeta, "tasks"> {
+  testId: string;
   tasks: { number: number; topic: string }[];
   startedAt: number;
   updatedAt: number;
@@ -27,37 +27,42 @@ const visit = (task: number, now: number): Visit => ({
   endedAt: now,
 });
 
-export const visitsAt = (run: ExamRun, now: number) =>
-  run.visits.map((v, i) =>
-    i === run.visits.length - 1 ? { ...v, endedAt: now } : v,
+export const visitsAt = (test: LocalTest, now: number) =>
+  test.visits.map((v, i) =>
+    i === test.visits.length - 1 ? { ...v, endedAt: now } : v,
   );
 
 interface ExamState {
-  runs: Record<string, ExamRun>;
-  start: (variantId: string, meta: RunMeta) => void;
+  tests: Record<string, LocalTest>;
+  start: (variantId: string, meta: TestMeta) => void;
   answer: (variantId: string, part: number, value: string) => void;
   go: (variantId: string, index: number) => void;
-  restore: (variantId: string, run: ExamRun) => void;
+  restore: (variantId: string, test: LocalTest) => void;
   clear: (variantId: string) => void;
 }
 
 export const useExamStore = create<ExamState>()(
   persist(
     (set) => {
-      const update = (variantId: string, change: (run: ExamRun) => ExamRun) =>
+      const update = (
+        variantId: string,
+        change: (test: LocalTest) => LocalTest,
+      ) =>
         set((s) => {
-          const run = s.runs[variantId];
-          return run ? { runs: { ...s.runs, [variantId]: change(run) } } : s;
+          const test = s.tests[variantId];
+          return test
+            ? { tests: { ...s.tests, [variantId]: change(test) } }
+            : s;
         });
 
       return {
-        runs: {},
+        tests: {},
         start: (variantId, { title, minutes, timed, tasks }) =>
           set((s) => {
-            if (s.runs[variantId]) return s;
+            if (s.tests[variantId]) return s;
             const now = Date.now();
-            const run: ExamRun = {
-              runId: crypto.randomUUID(),
+            const test: LocalTest = {
+              testId: crypto.randomUUID(),
               title,
               minutes,
               timed,
@@ -70,48 +75,50 @@ export const useExamStore = create<ExamState>()(
               ),
               visits: [visit(0, now)],
             };
-            return { runs: { ...s.runs, [variantId]: run } };
+            return { tests: { ...s.tests, [variantId]: test } };
           }),
         answer: (variantId, part, value) =>
-          update(variantId, (run) => ({
-            ...run,
+          update(variantId, (test) => ({
+            ...test,
             updatedAt: Date.now(),
-            answers: run.answers.map((a, i) =>
-              i === run.current ? a.map((v, j) => (j === part ? value : v)) : a,
+            answers: test.answers.map((a, i) =>
+              i === test.current
+                ? a.map((v, j) => (j === part ? value : v))
+                : a,
             ),
           })),
         go: (variantId, index) =>
-          update(variantId, (run) => {
+          update(variantId, (test) => {
             const now = Date.now();
             return {
-              ...run,
+              ...test,
               current: index,
               updatedAt: now,
-              visits: [...visitsAt(run, now), visit(index, now)],
+              visits: [...visitsAt(test, now), visit(index, now)],
             };
           }),
-        restore: (variantId, run) =>
+        restore: (variantId, test) =>
           set((s) => {
-            const local = s.runs[variantId];
-            if (local && local.updatedAt >= run.updatedAt) return s;
+            const local = s.tests[variantId];
+            if (local && local.updatedAt >= test.updatedAt) return s;
             const now = Date.now();
             const resumed = {
-              ...run,
-              visits: [...run.visits, visit(run.current, now)],
+              ...test,
+              visits: [...test.visits, visit(test.current, now)],
             };
-            return { runs: { ...s.runs, [variantId]: resumed } };
+            return { tests: { ...s.tests, [variantId]: resumed } };
           }),
         clear: (variantId) =>
           set((s) => {
-            const { [variantId]: _, ...runs } = s.runs;
-            return { runs };
+            const { [variantId]: _, ...tests } = s.tests;
+            return { tests };
           }),
       };
     },
     {
       name: "do-indeksa-exam",
-      version: 3,
-      migrate: () => ({ runs: {} }),
+      version: 4,
+      migrate: () => ({ tests: {} }),
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
     },

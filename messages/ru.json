@@ -144,8 +144,8 @@
     },
     "weeklyReview": "Разбор →",
     "weeklyNext": "Новый вариант через {days, plural, one {# день} few {# дня} other {# дней}}",
-    "runTitle": "{kind, select, weekly {Вариант недели} custom {Свой вариант} daily {Вариант дня} other {{title}}}",
-    "runKind": "{kind, select, official {Вступительный экзамен} curated {Наш вариант} weekly {Задание недели} other {{count, plural, one {# задача} few {# задачи} other {# задач}}}}"
+    "testTitle": "{kind, select, weekly {Вариант недели} custom {Свой вариант} daily {Вариант дня} other {{title}}}",
+    "testKind": "{kind, select, official {Вступительный экзамен} curated {Наш вариант} weekly {Задание недели} other {{count, plural, one {# задача} few {# задачи} other {# задач}}}}"
   },
   "Exam": {
     "timeLeft": "Осталось",
@@ -217,7 +217,7 @@
     "inNorm": "В среднем ни одна задача не занимает больше {minutes, number} мин.",
     "solved": "задач решено",
     "firstTry": "верно с первой попытки",
-    "runs": "вариантов пройдено",
+    "tests": "вариантов пройдено",
     "spent": "за всё время",
     "hours": "{hours, number} ч",
     "bank": "Банк задач",
@@ -227,7 +227,7 @@
     "bankNew": "без попыток",
     "recent": "Последние варианты",
     "all": "все →",
-    "noRuns": "Пока нет завершённых вариантов.",
+    "noTests": "Пока нет завершённых вариантов.",
     "score": "{score, number} баллов",
     "repeated": "{count, plural, one {Ошибки повторяются в задаче {numbers}.} other {Ошибки повторяются в задачах {numbers}.}}"
   },

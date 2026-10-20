@@ -13,15 +13,15 @@ import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import {
-  type ExamRun,
+  type LocalTest,
   useExamHydrated,
   useExamStore,
   visitsAt,
 } from "./exam-store";
 import { ExamTask } from "./exam-task";
-import { nextIndex } from "./run";
 import { saveTest, submitTest } from "./test-actions";
 import type { UnfinishedTest } from "./test-sessions";
+import { nextIndex } from "./test-state";
 import type { ExamTask as Task } from "./variants";
 
 interface ExamRunnerProps {
@@ -34,12 +34,12 @@ interface ExamRunnerProps {
   fallback?: ComposeMode;
 }
 
-const payload = (variantId: string, run: ExamRun) => ({
-  id: run.runId,
+const payload = (variantId: string, test: LocalTest) => ({
+  id: test.testId,
   variantId,
-  timed: run.timed,
-  startedAt: run.startedAt,
-  draft: { answers: run.answers, visits: visitsAt(run, Date.now()) },
+  timed: test.timed,
+  startedAt: test.startedAt,
+  draft: { answers: test.answers, visits: visitsAt(test, Date.now()) },
 });
 
 export function ExamRunner({
@@ -53,7 +53,7 @@ export function ExamRunner({
 }: ExamRunnerProps) {
   const hydrated = useExamHydrated();
   const router = useRouter();
-  const run = useExamStore((s) => s.runs[variantId]);
+  const test = useExamStore((s) => s.tests[variantId]);
   const { start, answer, go, restore, clear } = useExamStore.getState();
   const t = useTranslations("Exam");
   const errorText = useErrorText();
@@ -80,11 +80,11 @@ export function ExamRunner({
     [title, minutes, tasks],
   );
   const resumed = useMemo(
-    (): ExamRun | undefined =>
+    (): LocalTest | undefined =>
       saved?.variantId === variantId
         ? {
             ...meta,
-            runId: saved.id,
+            testId: saved.id,
             timed: saved.timed,
             startedAt: saved.startedAt,
             updatedAt: saved.updatedAt,
@@ -100,18 +100,18 @@ export function ExamRunner({
     if (hydrated && resumed) restore(variantId, resumed);
   }, [hydrated, resumed, restore, variantId]);
   useEffect(() => {
-    if (!run || run.updatedAt <= synced) return;
+    if (!test || test.updatedAt <= synced) return;
     const id = setTimeout(() => {
-      saveTest(payload(variantId, run)).catch(() => undefined);
+      saveTest(payload(variantId, test)).catch(() => undefined);
     }, 1500);
     return () => clearTimeout(id);
-  }, [run, synced, variantId]);
+  }, [test, synced, variantId]);
   const onAnswer = useCallback(
     (part: number, value: string) => answer(variantId, part, value),
     [answer, variantId],
   );
 
-  if (hydrated && !run && !resumed) {
+  if (hydrated && !test && !resumed) {
     return (
       <ExamIntro
         title={title}
@@ -124,18 +124,18 @@ export function ExamRunner({
     );
   }
 
-  const task = run && tasks[run.current];
-  if (!run || !task) {
+  const task = test && tasks[test.current];
+  if (!test || !task) {
     return <ExamGhost />;
   }
 
-  const finish = () => submit(payload(variantId, run));
+  const finish = () => submit(payload(variantId, test));
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
       <FocusMode mode="exam" />
       <ExamRail
-        run={run}
+        test={test}
         tasks={tasks}
         minutes={minutes}
         pending={pending}
@@ -144,12 +144,12 @@ export function ExamRunner({
       />
       <ExamTask
         task={task}
-        answers={run.answers[run.current] ?? []}
-        first={run.current === 0}
-        last={run.current === tasks.length - 1}
+        answers={test.answers[test.current] ?? []}
+        first={test.current === 0}
+        last={test.current === tasks.length - 1}
         onAnswer={onAnswer}
-        onPrev={() => go(variantId, run.current - 1)}
-        onNext={() => go(variantId, run.current + 1)}
+        onPrev={() => go(variantId, test.current - 1)}
+        onNext={() => go(variantId, test.current + 1)}
       />
     </div>
   );

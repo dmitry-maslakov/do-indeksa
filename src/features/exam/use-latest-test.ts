@@ -9,11 +9,11 @@ interface Resumable {
   updatedAt: number;
 }
 
-export function useLatestRun(saved?: UnfinishedTest) {
+export function useLatestTest(saved?: UnfinishedTest) {
   const hydrated = useExamHydrated();
-  const runs = useExamStore((s) => s.runs);
+  const tests = useExamStore((s) => s.tests);
   const candidates: Resumable[] = hydrated
-    ? Object.entries(runs).map(([variantId, run]) => ({ variantId, ...run }))
+    ? Object.entries(tests).map(([variantId, test]) => ({ variantId, ...test }))
     : [];
   if (saved) candidates.push({ ...saved, answers: saved.draft.answers });
   return maxBy(candidates, (c) => c.updatedAt);

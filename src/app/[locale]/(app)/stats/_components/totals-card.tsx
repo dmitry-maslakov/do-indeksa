@@ -5,10 +5,10 @@ import type { totals } from "@/features/progress/stats";
 
 interface TotalsCardProps {
   totals?: ReturnType<typeof totals>;
-  runs?: number;
+  tests?: number;
 }
 
-export function TotalsCard({ totals, runs }: TotalsCardProps) {
+export function TotalsCard({ totals, tests }: TotalsCardProps) {
   const t = useTranslations("Stats");
   const items = [
     [totals && String(totals.solved), t("solved")],
@@ -16,7 +16,7 @@ export function TotalsCard({ totals, runs }: TotalsCardProps) {
       totals && (totals.firstTryPct === null ? "—" : `${totals.firstTryPct}%`),
       t("firstTry"),
     ],
-    [runs?.toString(), t("runs")],
+    [tests?.toString(), t("tests")],
     [
       totals && t("hours", { hours: Math.round(totals.spentMs / 3_600_000) }),
       t("spent"),

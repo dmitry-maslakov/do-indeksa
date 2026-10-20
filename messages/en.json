@@ -144,8 +144,8 @@
     },
     "weeklyReview": "Review →",
     "weeklyNext": "New variant in {days, plural, one {# day} other {# days}}",
-    "runTitle": "{kind, select, weekly {Variant of the week} custom {Own test} daily {Daily test} other {{title}}}",
-    "runKind": "{kind, select, official {Entrance exam} curated {Our test} weekly {Weekly challenge} other {{count, plural, one {# task} other {# tasks}}}}"
+    "testTitle": "{kind, select, weekly {Variant of the week} custom {Own test} daily {Daily test} other {{title}}}",
+    "testKind": "{kind, select, official {Entrance exam} curated {Our test} weekly {Weekly challenge} other {{count, plural, one {# task} other {# tasks}}}}"
   },
   "Exam": {
     "timeLeft": "Time left",
@@ -217,7 +217,7 @@
     "inNorm": "On average no task takes over {minutes, number} min.",
     "solved": "tasks solved",
     "firstTry": "right on the first try",
-    "runs": "tests finished",
+    "tests": "tests finished",
     "spent": "in total",
     "hours": "{hours, number} h",
     "bank": "Task bank",
@@ -227,7 +227,7 @@
     "bankNew": "not tried",
     "recent": "Recent tests",
     "all": "all →",
-    "noRuns": "No finished tests yet.",
+    "noTests": "No finished tests yet.",
     "score": "{score, number} points",
     "repeated": "{count, plural, one {Mistakes repeat in task {numbers}.} other {Mistakes repeat in tasks {numbers}.}}"
   },

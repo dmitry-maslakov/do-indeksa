@@ -21,7 +21,7 @@ import { decidesStatus } from "./decides-status";
 import { accuracyDays } from "./stats";
 import { taskStats } from "./task-stats";
 
-const runIdStartingWith = (code: string) =>
+const testIdStartingWith = (code: string) =>
   between(
     testSessions.id,
     `${code}-0000-0000-0000-000000000000`,
@@ -34,20 +34,20 @@ const sessionMs = sql`extract(epoch from ${taskSessions.lastSeenAt} - ${taskSess
 
 const attemptSession = alias(taskSessions, "attempt_session");
 
-const runTaskMs = sql<number>`(
+const testTaskMs = sql<number>`(
   select coalesce(sum(${sessionMs}), 0) from ${taskSessions}
   where ${taskSessions.testSessionId} = ${testSessions.id}
     and ${taskSessions.taskId} = ${attempts.taskId}
 )`.mapWith(Number);
 
-const runAttempts = <T extends SelectedFields>(columns: T) =>
+const testAttempts = <T extends SelectedFields>(columns: T) =>
   db
-    .select({ ...columns, durationMs: runTaskMs })
+    .select({ ...columns, durationMs: testTaskMs })
     .from(attempts)
     .innerJoin(attemptSession, eq(attemptSession.id, attempts.sessionId))
     .innerJoin(testSessions, eq(testSessions.id, attemptSession.testSessionId));
 
-const runColumns = {
+const testColumns = {
   id: testSessions.id,
   variantId: testSessions.variantId,
   taskIds: testSessions.taskIds,
@@ -56,58 +56,60 @@ const runColumns = {
   ),
 };
 
-export const getRun = cache(async (profileId: string, key?: string) => {
+export const getTest = cache(async (profileId: string, key?: string) => {
   const id = z.uuid().safeParse(key);
   const code = z
     .string()
     .regex(/^[0-9a-f]{8}$/)
     .safeParse(key);
   if (key !== undefined && !id.success && !code.success) return undefined;
-  const [run] = await db
-    .select(runColumns)
+  const [test] = await db
+    .select(testColumns)
     .from(testSessions)
     .where(
       and(
         eq(testSessions.profileId, profileId),
         finished,
         id.success ? eq(testSessions.id, id.data) : undefined,
-        code.success ? runIdStartingWith(code.data) : undefined,
+        code.success ? testIdStartingWith(code.data) : undefined,
       ),
     )
     .orderBy(desc(testSessions.finishedAt))
     .limit(1);
-  if (!run) return undefined;
-  const rows = await runAttempts({
+  if (!test) return undefined;
+  const rows = await testAttempts({
     taskId: attempts.taskId,
     answers: attempts.answers,
     outcomes: attempts.outcomes,
     correct: attempts.correct,
-  }).where(and(eq(attempts.profileId, profileId), eq(testSessions.id, run.id)));
-  return { run, attempts: rows };
+  }).where(
+    and(eq(attempts.profileId, profileId), eq(testSessions.id, test.id)),
+  );
+  return { test, attempts: rows };
 });
 
-export const getRunAttempts = (profileId: string, runIds: string[]) =>
-  runAttempts({
+export const getTestAttempts = (profileId: string, testIds: string[]) =>
+  testAttempts({
     taskId: attempts.taskId,
-    runId: testSessions.id,
+    testId: testSessions.id,
     outcomes: attempts.outcomes,
     correct: attempts.correct,
   }).where(
-    and(eq(attempts.profileId, profileId), inArray(testSessions.id, runIds)),
+    and(eq(attempts.profileId, profileId), inArray(testSessions.id, testIds)),
   );
 
-export const getRuns = (profileId: string, limit: number, offset = 0) =>
+export const getTests = (profileId: string, limit: number, offset = 0) =>
   db
-    .select(runColumns)
+    .select(testColumns)
     .from(testSessions)
     .where(and(eq(testSessions.profileId, profileId), finished))
     .orderBy(desc(testSessions.finishedAt), desc(testSessions.id))
     .limit(limit)
     .offset(offset);
 
-export const getLatestRuns = (profileId: string, variantIds: string[]) =>
+export const getLatestTests = (profileId: string, variantIds: string[]) =>
   db
-    .selectDistinctOn([testSessions.variantId], runColumns)
+    .selectDistinctOn([testSessions.variantId], testColumns)
     .from(testSessions)
     .where(
       and(
@@ -118,7 +120,7 @@ export const getLatestRuns = (profileId: string, variantIds: string[]) =>
     )
     .orderBy(testSessions.variantId, desc(testSessions.finishedAt));
 
-export const countRuns = (profileId: string) =>
+export const countTests = (profileId: string) =>
   db.$count(testSessions, and(eq(testSessions.profileId, profileId), finished));
 
 const countWhere = (condition: SQL) =>

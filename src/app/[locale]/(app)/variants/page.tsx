@@ -6,18 +6,21 @@ import { Await } from "@/components/await";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { durationHours, maxPoints, positions } from "@/features/exam/exam";
-import { runPage } from "@/features/exam/run-feed";
-import { type RunSummary, summarizeRuns } from "@/features/exam/run-summaries";
+import { testPage } from "@/features/exam/test-feed";
+import {
+  summarizeTests,
+  type TestSummary,
+} from "@/features/exam/test-summaries";
 import { curatedVariants, officialVariants } from "@/features/exam/variants";
 import { weeklyVariant } from "@/features/exam/weekly";
-import { getLatestRuns, getTaskStats } from "@/features/progress/history";
+import { getLatestTests, getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/auth";
 import { ComposeCard } from "./_components/compose-card";
 import { ExamRow } from "./_components/exam-row";
-import { RunHistory } from "./_components/run-history";
+import { TestHistory } from "./_components/test-history";
 import { TestsTable } from "./_components/tests-table";
 import { WeekCard } from "./_components/week-card";
 
@@ -35,15 +38,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function loadLatest(ids: string[]) {
   const profileId = await getProfileId();
-  return summarizeRuns(
+  return summarizeTests(
     profileId,
-    await getLatestRuns(profileId, ids),
+    await getLatestTests(profileId, ids),
     await getLocale(),
   );
 }
 
 async function loadHistory() {
-  return runPage(await getProfileId(), 0, await getLocale());
+  return testPage(await getProfileId(), 0, await getLocale());
 }
 
 async function loadWeak() {
@@ -111,11 +114,11 @@ async function Weekly() {
   await connection();
   const weekly = weeklyVariant();
   if (!weekly) return null;
-  const runs = await loadLatest([weekly.id]);
-  const run = runs.find(
+  const tests = await loadLatest([weekly.id]);
+  const test = tests.find(
     (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
   );
-  return <WeekCard {...weekly} run={run} />;
+  return <WeekCard {...weekly} test={test} />;
 }
 
 async function CatalogTab({
@@ -128,7 +131,7 @@ async function CatalogTab({
     return (
       <Suspense fallback={<TestsTable first="attempt">{null}</TestsTable>}>
         <Await promise={loadHistory()}>
-          {(first) => <RunHistory first={first} />}
+          {(first) => <TestHistory first={first} />}
         </Await>
       </Suspense>
     );
@@ -137,7 +140,7 @@ async function CatalogTab({
   return (
     <Suspense fallback={<VariantTable tab={tab} pending />}>
       <Await promise={loadLatest(variantsOf(tab).map((v) => v.id))}>
-        {(runs) => <VariantTable tab={tab} runs={runs} />}
+        {(tests) => <VariantTable tab={tab} tests={tests} />}
       </Await>
     </Suspense>
   );
@@ -148,11 +151,11 @@ const variantsOf = (tab: Exclude<Tab, "history">) =>
 
 function VariantTable({
   tab,
-  runs = [],
+  tests = [],
   pending,
 }: {
   tab: Exclude<Tab, "history">;
-  runs?: RunSummary[];
+  tests?: TestSummary[];
   pending?: boolean;
 }) {
   return (
@@ -162,7 +165,7 @@ function VariantTable({
           key={v.id}
           title={v.title}
           href={`/variants/${v.id}`}
-          run={runs.find((r) => r.variantId === v.id)}
+          test={tests.find((r) => r.variantId === v.id)}
           pending={pending}
         />
       ))}

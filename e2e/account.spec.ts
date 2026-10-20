@@ -26,7 +26,7 @@ test("a user deletes the account", async ({ page, auth }) => {
   await page.addInitScript(() =>
     localStorage.setItem(
       "do-indeksa-exam",
-      JSON.stringify({ state: { runs: { seeded: {} } }, version: 3 }),
+      JSON.stringify({ state: { tests: { seeded: {} } }, version: 4 }),
     ),
   );
   await page.goto("/privacy");
@@ -47,7 +47,7 @@ test("a user deletes the account", async ({ page, auth }) => {
   expect(
     await page.evaluate(
       () =>
-        JSON.parse(localStorage.getItem("do-indeksa-exam") ?? "").state.runs,
+        JSON.parse(localStorage.getItem("do-indeksa-exam") ?? "").state.tests,
     ),
   ).toEqual({});
 });
