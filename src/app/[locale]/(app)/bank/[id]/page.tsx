@@ -3,29 +3,25 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
-import { PageTitle } from "@/components/page-title";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { filterLabel } from "@/features/bank/label";
+import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
+import { hasFilters, loadQueue, poolFilters } from "@/features/bank/queue";
+import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { FavoriteToggle } from "@/features/tasks/favorite-toggle";
-import { HintsProvider } from "@/features/tasks/hints";
-import { taskMeta } from "@/features/tasks/level";
+import { HelpProvider } from "@/features/tasks/help";
+import { HelpPanel } from "@/features/tasks/help-panel";
+import { levelOf } from "@/features/tasks/level";
 import { ReportTask } from "@/features/tasks/report-task";
-import { Reveal } from "@/features/tasks/reveal";
-import {
-  getTask,
-  renderTask,
-  siblings,
-  summarize,
-  tasks,
-  taskTitle,
-} from "@/features/tasks/tasks";
-import { topicName } from "@/features/tasks/topics";
+import { getTask, renderTask, tasks, taskTitle } from "@/features/tasks/tasks";
+import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
-import { SolveRail } from "./_components/solve-rail";
-import { StatusRail } from "./_components/status-rail";
+import { getSession } from "@/server/auth";
+import { PhoneBar } from "./_components/phone-bar";
+import { Rail } from "./_components/rail";
+import { TaskMeta } from "./_components/task-meta";
 
 export const instant = false;
 
@@ -49,87 +45,86 @@ export async function generateMetadata({
 
 export default async function SolvePage({
   params,
+  searchParams,
 }: PageProps<"/[locale]/bank/[id]">) {
   const { id } = await params;
   const task = getTask(id);
   if (!task) notFound();
 
-  const t = await getTranslations("Solve");
-  const bank = await getTranslations("Bank");
-  const locale = await getLocale();
-  const summary = summarize(task);
-  const html = await renderTask(id);
+  const [filters, session, locale, html, bank] = await Promise.all([
+    loadBankFilters(searchParams),
+    getSession(),
+    getLocale(),
+    renderTask(id),
+    getTranslations("Bank"),
+  ]);
   if (!html) notFound();
-  const rail = siblings(task);
-  const hintNumbers = task.hints.map((_, i) => i + 1);
-  const next = rail[(rail.findIndex((s) => s.id === id) + 1) % rail.length];
 
-  const railProps = {
+  const queue = await loadQueue({
+    topic: task.topic,
+    filters,
+    userId: session?.user.id,
+    current: id,
+    locale,
+  });
+  const query = serializeBankFilters(filters);
+  const topic = topicName(task.topic, locale);
+  const rail = {
     current: id,
     topic: task.topic,
-    rail: rail.map((s) => ({
-      id: s.id,
-      preview: s.preview,
-      meta: taskMeta(s, bank),
+    topics: positions.map((p) => ({
+      id: p.topic,
+      name: topicName(p.topic, locale),
     })),
-    topics: positions.flatMap((p) => {
-      const first = tasks.find((x) => x.topic === p.topic);
-      return first
-        ? {
-            id: p.topic,
-            name: topicName(p.topic, locale),
-            first: first.id,
-          }
-        : [];
-    }),
+    query,
+    listQuery: serializeBankFilters(poolFilters(task.topic, filters)),
+    scope: hasFilters(filters) ? filterLabel(filters, bank, locale) : null,
+    queue,
   };
 
   return (
-    <main className="px-4 pb-9 md:px-9">
-      <PageTitle>{bank("title")}</PageTitle>
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:has-data-[rail=collapsed]:grid-cols-[56px_minmax(0,1fr)]">
-        <Suspense fallback={<SolveRail {...railProps} />}>
-          <StatusRail {...railProps} />
-        </Suspense>
-        <HintsProvider>
-          <Card className="gap-6 md:p-9">
-            <div className="flex items-start justify-between gap-2 text-sm text-subtle">
-              <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <Badge variant="tint" className="max-w-full whitespace-normal">
-                  {topicName(task.topic, locale)}
-                </Badge>
-                <span>
-                  {taskMeta(summary, bank)} · {task.source}
-                </span>
-              </div>
-              <Suspense fallback={<FavoriteButton taskId={task.id} pending />}>
-                <FavoriteToggle taskId={task.id} />
+    <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
+      <h1 className="sr-only">{bank("title")}</h1>
+      <PhoneBar key={id} title={topic} look={topicLook(task.topic)} {...rail} />
+      <div className="flex items-start gap-14">
+        <aside
+          aria-label={bank("all")}
+          className="sticky top-3 hidden h-rail w-80 shrink-0 flex-col overflow-hidden rounded-3xl bg-muted pt-4 md:flex"
+        >
+          <Rail {...rail} />
+        </aside>
+        <HelpProvider key={id}>
+          <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
+            <div className="flex min-h-10 items-start justify-between gap-4 md:items-center">
+              <TaskMeta
+                topic={topic}
+                exam={examSource(task.source)}
+                level={levelOf(task.difficulty)}
+                before={queue.before}
+              />
+              <Suspense
+                fallback={<FavoriteButton taskId={id} pending compact />}
+              >
+                <FavoriteToggle taskId={id} />
               </Suspense>
             </div>
             <MathHtml
               html={html.statement}
-              className="font-semibold text-lg tracking-tight md:text-task-lg"
+              className="mt-3 overflow-x-auto text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
             />
             <AnswerForm
-              taskId={task.id}
-              labels={html.labels}
-              skip={next && next.id !== id ? `/bank/${next.id}` : undefined}
+              taskId={id}
+              parts={html.parts}
+              unchecked={html.unchecked}
+              next={queue.next && `/bank/${queue.next}${query}`}
+              fallback={`/bank${query}`}
             />
-            <div className="flex flex-col gap-2">
-              {hintNumbers.map((n) => (
-                <Reveal
-                  key={n}
-                  label={t("hint", { number: n })}
-                  taskId={task.id}
-                  part={n - 1}
-                />
-              ))}
-              <Reveal label={t("answer")} taskId={task.id} part="answer" />
-              <Reveal label={t("solution")} taskId={task.id} part="solution" />
+            <HelpPanel taskId={id} hintCount={html.hints.length} />
+            <div className="mt-6">
+              <ReportTask taskId={id} />
             </div>
-            <ReportTask taskId={task.id} />
-          </Card>
-        </HintsProvider>
+          </article>
+        </HelpProvider>
       </div>
     </main>
   );

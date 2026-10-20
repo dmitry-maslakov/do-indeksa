@@ -4,6 +4,9 @@
 
 @theme inline {
   --font-sans: var(--font-sans);
+  --font-math: KaTeX_Main, "Times New Roman", serif;
+  --spacing-rail: calc(100dvh - 6rem);
+  --container-task: 45rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -96,6 +99,7 @@
 
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(20 20 30 / 0.05);
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-current: inset 3px 0 0 var(--foreground);
   --shadow-sheet: 0 -10px 40px rgb(17 20 24 / 0.15);
 }
 
@@ -211,13 +215,9 @@
 @layer components {
   math-field {
     font-size: 1.125rem;
-    &::part(menu-toggle) {
+    &::part(menu-toggle),
+    &::part(virtual-keyboard-toggle) {
       display: none;
-    }
-    @media (pointer: fine) {
-      &::part(virtual-keyboard-toggle) {
-        display: none;
-      }
     }
   }
 }
