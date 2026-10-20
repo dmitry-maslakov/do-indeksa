@@ -10,12 +10,12 @@ import { useBankFilters } from "./use-bank-filters";
 type FilterSearchProps = Omit<
   ComponentProps<typeof Input>,
   "name" | "type" | "value" | "defaultValue" | "onChange"
->;
+> & { variant?: "muted" | "card" };
 
 const field =
   "h-10 pl-10 font-medium placeholder:font-normal [&::-webkit-search-cancel-button]:hidden";
 
-function UrlSearch(props: FilterSearchProps) {
+function UrlSearch({ variant, ...props }: FilterSearchProps) {
   const [{ q }, setFilters] = useBankFilters();
 
   return (
@@ -25,7 +25,7 @@ function UrlSearch(props: FilterSearchProps) {
       name="q"
       value={q ?? ""}
       enterKeyHint="search"
-      className={field}
+      className={cn(field, variant === "card" && "bg-card")}
       onChange={(e) =>
         setFilters(
           { q: e.currentTarget.value || null },
@@ -36,7 +36,11 @@ function UrlSearch(props: FilterSearchProps) {
   );
 }
 
-export function FilterSearch({ className, ...props }: FilterSearchProps) {
+export function FilterSearch({
+  className,
+  variant,
+  ...props
+}: FilterSearchProps) {
   return (
     <div className={cn("relative", className)}>
       <SearchIcon
@@ -44,9 +48,16 @@ export function FilterSearch({ className, ...props }: FilterSearchProps) {
         className="pointer-events-none absolute top-3 left-3 z-10 size-4 text-subtle"
       />
       <Suspense
-        fallback={<Input {...props} type="search" name="q" className={field} />}
+        fallback={
+          <Input
+            {...props}
+            type="search"
+            name="q"
+            className={cn(field, variant === "card" && "bg-card")}
+          />
+        }
       >
-        <UrlSearch {...props} />
+        <UrlSearch {...props} variant={variant} />
       </Suspense>
     </div>
   );

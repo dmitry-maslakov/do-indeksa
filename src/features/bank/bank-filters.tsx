@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
+import type { NativeSelect } from "@/components/ui/native-select";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { SignedIn } from "@/features/account/signed-in";
 import { positions } from "@/features/exam/exam";
@@ -11,16 +12,17 @@ import { sources, statusFilters } from "./params";
 
 interface BankFiltersProps {
   signedIn?: boolean;
+  variant?: ComponentProps<typeof NativeSelect>["variant"];
   children?: ReactNode;
 }
 
-export function BankFilters({ signedIn, children }: BankFiltersProps) {
+export function BankFilters({ signedIn, variant, children }: BankFiltersProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
 
   return (
     <>
-      <FilterSelect name="topic" label={t("topic")}>
+      <FilterSelect name="topic" label={t("topic")} variant={variant}>
         <NativeSelectOption value="">{t("allTopics")}</NativeSelectOption>
         {topics.map((topic) => (
           <NativeSelectOption key={topic.id} value={topic.id}>
@@ -29,7 +31,7 @@ export function BankFilters({ signedIn, children }: BankFiltersProps) {
         ))}
       </FilterSelect>
       {children}
-      <FilterSelect name="number" label={t("number")}>
+      <FilterSelect name="number" label={t("number")} variant={variant}>
         <NativeSelectOption value="">{t("any")}</NativeSelectOption>
         {positions.map((p) => (
           <NativeSelectOption key={p.number} value={p.number}>
@@ -37,7 +39,7 @@ export function BankFilters({ signedIn, children }: BankFiltersProps) {
           </NativeSelectOption>
         ))}
       </FilterSelect>
-      <FilterSelect name="source" label={t("source")}>
+      <FilterSelect name="source" label={t("source")} variant={variant}>
         <NativeSelectOption value="">{t("allSources")}</NativeSelectOption>
         {sources.map((source) => (
           <NativeSelectOption key={source} value={source}>
@@ -45,7 +47,7 @@ export function BankFilters({ signedIn, children }: BankFiltersProps) {
           </NativeSelectOption>
         ))}
       </FilterSelect>
-      <FilterSelect name="level" label={t("level")}>
+      <FilterSelect name="level" label={t("level")} variant={variant}>
         <NativeSelectOption value="">{t("anyLevel")}</NativeSelectOption>
         {levels.map((level) => (
           <NativeSelectOption key={level} value={level}>
@@ -54,7 +56,7 @@ export function BankFilters({ signedIn, children }: BankFiltersProps) {
         ))}
       </FilterSelect>
       <SignedIn signedIn={signedIn}>
-        <FilterSelect name="status" label={t("status")}>
+        <FilterSelect name="status" label={t("status")} variant={variant}>
           <NativeSelectOption value="">{t("allStatuses")}</NativeSelectOption>
           {statusFilters.map((status) => (
             <NativeSelectOption key={status} value={status}>

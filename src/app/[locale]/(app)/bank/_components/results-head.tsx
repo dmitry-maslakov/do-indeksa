@@ -14,7 +14,7 @@ export function ResultsHead({ count, label, pending }: ResultsHeadProps) {
       {pending ? (
         <Skeleton className="my-1 h-4 w-24" />
       ) : (
-        <span className="shrink-0 font-semibold text-base lg:font-normal lg:text-base">
+        <span className="shrink-0 font-semibold text-base lg:font-normal">
           {t("count", { count })}
         </span>
       )}
