@@ -1,25 +1,11 @@
 import type { Client } from "pg";
-import { answer, expect, test } from "./fixtures";
-
-const attempt = (
-  db: Client,
-  profileId: string,
-  taskId: string,
-  correct: boolean,
-  hoursAgo: number,
-) =>
-  db.query(
-    `insert into attempts (profile_id, task_id, answers, outcomes, correct, duration_ms, created_at)
-     values ($1, $2, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
-       now() - $4::int * interval '1 hour')`,
-    [profileId, taskId, correct, hoursAgo],
-  );
+import { answer, expect, seedAttempt, test } from "./fixtures";
 
 async function seed(db: Client, profileId: string) {
-  await attempt(db, profileId, "eks-001", false, 3);
-  await attempt(db, profileId, "eks-001", true, 1);
-  await attempt(db, profileId, "fun-002", true, 3);
-  await attempt(db, profileId, "fun-002", false, 1);
+  await seedAttempt(db, profileId, "eks-001", false, 3);
+  await seedAttempt(db, profileId, "eks-001", true, 1);
+  await seedAttempt(db, profileId, "fun-002", true, 3);
+  await seedAttempt(db, profileId, "fun-002", false, 1);
 }
 
 test("the bank filters tasks by their latest attempt", async ({

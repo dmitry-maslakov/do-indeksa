@@ -42,14 +42,15 @@ export function RevealContent({ taskId, part, className }: RevealContentProps) {
 interface RevealProps {
   label: string;
   taskId: string;
+  runId: string;
   part: RevealPart;
 }
 
-export function Reveal({ label, taskId, part }: RevealProps) {
+export function Reveal({ label, taskId, runId, part }: RevealProps) {
   const [requested, setRequested] = useState(false);
 
   function open() {
-    if (!requested) saveReveal({ taskId, part }).catch(noop);
+    if (!requested) saveReveal({ taskId, part, owner: { runId } }).catch(noop);
     setRequested(true);
   }
 

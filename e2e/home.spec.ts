@@ -1,20 +1,5 @@
 import type { Page } from "@playwright/test";
-import type { Client } from "pg";
-import { expect, test } from "./fixtures";
-
-const attempt = (
-  db: Client,
-  profileId: string,
-  taskId: string,
-  correct: boolean,
-  hoursAgo: number,
-) =>
-  db.query(
-    `insert into attempts (profile_id, task_id, answers, outcomes, correct, duration_ms, created_at)
-     values ($1, $2, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
-       now() - $4::int * interval '1 hour')`,
-    [profileId, taskId, correct, hoursAgo],
-  );
+import { expect, seedAttempt, test } from "./fixtures";
 
 async function expectFirstVisit(page: Page) {
   await page.goto("/");
@@ -53,10 +38,10 @@ test("the home page suggests a topic and maps progress", async ({
   auth,
 }) => {
   const { profileId: id } = await auth.signIn();
-  await attempt(auth.db, id, "plan-001", false, 240);
-  await attempt(auth.db, id, "fun-002", true, 3);
-  await attempt(auth.db, id, "eks-001", false, 2);
-  await attempt(auth.db, id, "eks-001", false, 1);
+  await seedAttempt(auth.db, id, "plan-001", false, 240);
+  await seedAttempt(auth.db, id, "fun-002", true, 3);
+  await seedAttempt(auth.db, id, "eks-001", false, 2);
+  await seedAttempt(auth.db, id, "eks-001", false, 1);
   await page.goto("/");
 
   await expect(

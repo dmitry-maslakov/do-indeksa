@@ -4,18 +4,19 @@ import { hourMs } from "@/lib/dates";
 import { gradeParts } from "@/lib/math";
 import { isRight } from "@/lib/part-outcome";
 import { db } from "@/server/db";
+import type { SessionInput } from "./session-input";
+import { openSessionIn } from "./sessions";
 import { getTask } from "./tasks";
 
 interface Answer {
   taskId: string;
   answers: string[];
-  startedAt: number;
-  hintsUsed: number;
+  session: SessionInput;
 }
 
 export async function submitAnswer(
   profileId: string,
-  { taskId, answers, startedAt, hintsUsed }: Answer,
+  { taskId, answers, session }: Answer,
 ) {
   const task = getTask(taskId);
   if (!task) throw new Error(`unknown task ${taskId}`);
@@ -26,14 +27,18 @@ export async function submitAnswer(
   );
   const correct = outcomes.every(isRight);
 
-  await db.insert(attempts).values({
-    profileId,
-    taskId,
-    answers,
-    outcomes,
-    correct,
-    hintsUsed,
-    durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
+  const now = Date.now();
+  await db.transaction(async (tx) => {
+    await openSessionIn(tx, profileId, taskId, session);
+    await tx.insert(attempts).values({
+      profileId,
+      taskId,
+      sessionId: session.id,
+      answers,
+      outcomes,
+      correct,
+      durationMs: Math.min(Math.max(now - session.startedAt, 0), hourMs),
+    });
   });
   return { outcomes, correct };
 }

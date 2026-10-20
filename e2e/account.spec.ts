@@ -1,5 +1,5 @@
 import type { Client } from "pg";
-import { expect, test } from "./fixtures";
+import { expect, seedAttempt, test } from "./fixtures";
 
 const day = 24 * 60 * 60 * 1000;
 
@@ -76,11 +76,7 @@ test("a stale session signs in again before deleting", async ({
 
 test("signing out hides the account statistics", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
-  await auth.db.query(
-    `insert into attempts (profile_id, task_id, answers, outcomes, correct, duration_ms)
-     values ($1, 'eks-001', '{2}', '{right}', true, 1000)`,
-    [profileId],
-  );
+  await seedAttempt(auth.db, profileId, "eks-001", true);
   await page.goto("/stats");
   await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
 

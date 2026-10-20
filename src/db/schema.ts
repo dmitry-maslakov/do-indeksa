@@ -1,13 +1,14 @@
-import { isNull } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
+  foreignKey,
   index,
   integer,
   jsonb,
   pgEnum,
   pgTable,
   primaryKey,
-  smallint,
   text,
   timestamp,
   unique,
@@ -54,10 +55,29 @@ export const runs = pgTable(
     overtime: boolean(),
     durationsMs: integer().array().notNull(),
   },
-  (t) => [index().on(t.profileId, t.finishedAt.desc())],
+  (t) => [
+    unique().on(t.id, t.profileId),
+    index().on(t.profileId, t.finishedAt.desc()),
+  ],
 );
 
 export const partOutcome = pgEnum("part_outcome", partOutcomes);
+
+export const taskSessions = pgTable(
+  "task_sessions",
+  {
+    id: uuid().primaryKey(),
+    profileId: uuid()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    taskId: text().notNull(),
+    startedAt: timestamp({ withTimezone: true }).notNull(),
+  },
+  (t) => [
+    unique().on(t.id, t.profileId, t.taskId),
+    index().on(t.profileId, t.taskId, t.startedAt.desc()),
+  ],
+);
 
 export const attempts = pgTable(
   "attempts",
@@ -68,17 +88,30 @@ export const attempts = pgTable(
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     runId: uuid().references(() => runs.id, { onDelete: "cascade" }),
+    sessionId: uuid(),
     answers: text().array().notNull(),
     outcomes: partOutcome().array().notNull(),
     correct: boolean().notNull(),
-    hintsUsed: smallint().notNull().default(0),
     durationMs: integer().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index().on(t.profileId, t.createdAt.desc()),
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
+    index().on(t.sessionId),
     unique().on(t.runId, t.taskId),
+    foreignKey({
+      columns: [t.sessionId, t.profileId, t.taskId],
+      foreignColumns: [
+        taskSessions.id,
+        taskSessions.profileId,
+        taskSessions.taskId,
+      ],
+    }).onDelete("cascade"),
+    check(
+      "attempts_one_owner",
+      sql`num_nonnulls(${t.runId}, ${t.sessionId}) = 1`,
+    ),
   ],
 );
 
@@ -134,10 +167,32 @@ export const reveals = pgTable(
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
+    sessionId: uuid(),
+    runId: uuid(),
     part: revealPart().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index().on(t.profileId, t.taskId, t.createdAt.desc())],
+  (t) => [
+    index().on(t.profileId, t.taskId, t.createdAt.desc()),
+    index().on(t.sessionId),
+    index().on(t.runId),
+    foreignKey({
+      columns: [t.sessionId, t.profileId, t.taskId],
+      foreignColumns: [
+        taskSessions.id,
+        taskSessions.profileId,
+        taskSessions.taskId,
+      ],
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [t.runId, t.profileId],
+      foreignColumns: [runs.id, runs.profileId],
+    }).onDelete("cascade"),
+    check(
+      "reveals_one_owner",
+      sql`num_nonnulls(${t.runId}, ${t.sessionId}) = 1`,
+    ),
+  ],
 );
 
 export const reportKind = pgEnum("report_kind", reportKinds);

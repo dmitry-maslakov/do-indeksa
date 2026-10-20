@@ -2,6 +2,7 @@ import "server-only";
 import type { Locale } from "next-intl";
 import { getAttempted } from "@/features/progress/progress";
 import type { Attempted, TaskStatus } from "@/features/progress/status";
+import { getSeen } from "@/features/tasks/sessions";
 import { getTask } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
 import { planQueue } from "./picks";
@@ -34,10 +35,14 @@ interface PoolInput {
 async function plan({ topic, profileId, current }: PoolInput, size = 6) {
   const ids = findTasks({ topic }).map((t) => t.id);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
-  const attempts = await getAttempted(profileId, asked);
+  const [attempts, seen] = await Promise.all([
+    getAttempted(profileId, asked),
+    getSeen(profileId, ids),
+  ]);
   const queue = planQueue({
     pool: ids.map((id) => ({ id, exam: examYear(id) !== null })),
     attempts,
+    seen,
     current,
     size,
   });

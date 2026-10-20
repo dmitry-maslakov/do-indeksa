@@ -4,10 +4,10 @@ import { cn } from "cn";
 import { noop, range } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
-import { useHelp } from "./help";
 import { RevealContent } from "./reveal";
 import { saveReveal } from "./reveal-action";
 import type { RevealPart } from "./reveal-part";
+import { useTaskSession } from "./task-session";
 
 interface HelpPanelProps {
   taskId: string;
@@ -37,10 +37,10 @@ function Chip({ label, onClick }: { label: string; onClick: () => void }) {
 
 export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
   const t = useTranslations("Solve");
-  const { hints, solution, showHint, showSolution } = useHelp();
+  const { session, hints, solution, showHint, showSolution } = useTaskSession();
   const [answer, setAnswer] = useState(false);
   const open = (part: RevealPart, show: () => void) => () => {
-    saveReveal({ taskId, part }).catch(noop);
+    saveReveal({ taskId, part, owner: { session } }).catch(noop);
     show();
   };
   const content = (part: RevealPart) => (
