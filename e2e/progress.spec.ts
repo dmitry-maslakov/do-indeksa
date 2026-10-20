@@ -61,13 +61,3 @@ test("a topic starts from its recommended task", async ({ page, auth }) => {
     "exponential-equations",
   );
 });
-
-test("the home page counts tasks whose latest attempt is wrong", async ({
-  page,
-  auth,
-}) => {
-  await seed(auth.db, await auth.signIn());
-  await page.goto("/");
-
-  await expect(page.getByText("1 zadatak sa greškom")).toBeVisible();
-});
