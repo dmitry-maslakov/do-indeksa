@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from "node:crypto";
+import { createHmac, randomInt, randomUUID } from "node:crypto";
 import { test as base, type Page } from "@playwright/test";
 import { Client } from "pg";
 
@@ -11,7 +11,12 @@ interface Auth {
   signIn: (age?: number) => Promise<string>;
 }
 
+const clientIp = () =>
+  ["10", ...Array.from({ length: 3 }, () => randomInt(256))].join(".");
+
 export const test = base.extend<{ auth: Auth; errors: string[] }>({
+  extraHTTPHeaders: async ({ extraHTTPHeaders }, use) =>
+    use({ ...extraHTTPHeaders, "cf-connecting-ip": clientIp() }),
   errors: async ({ page }, use) => {
     const errors: string[] = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
