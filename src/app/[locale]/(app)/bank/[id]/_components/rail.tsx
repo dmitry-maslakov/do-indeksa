@@ -3,14 +3,13 @@
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId } from "react";
+import { LinkTabs } from "@/components/link-tabs";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 import type { Queue } from "@/features/bank/queue";
 import { Link, useRouter } from "@/i18n/navigation";
-import { AllList } from "./all-list";
 import { RecList } from "./rec-list";
 
 export interface RailProps {
@@ -61,16 +60,15 @@ export function Rail({
   const href = (id: string) => `/bank/${id}${query}`;
 
   return (
-    <Tabs
-      defaultValue="recommended"
-      data-variant={variant}
-      className={`group/rail ${panel}`}
-    >
+    <div data-variant={variant} className={`group/rail ${panel}`}>
       <div className="flex flex-col gap-4 px-4 pb-4">
-        <TabsList className="group-data-[variant=sheet]/rail:bg-muted">
-          <TabsTab value="recommended">{bank("recommended")}</TabsTab>
-          <TabsTab value="all">{bank("all")}</TabsTab>
-        </TabsList>
+        <LinkTabs
+          variant="fill"
+          items={[
+            { href: href(current), label: bank("recommended"), active: true },
+            { href: `/bank${listQuery}`, label: bank("all"), active: false },
+          ]}
+        />
         <div className="flex flex-col gap-1">
           <label htmlFor={selectId} className="text-muted-foreground text-xs">
             {bank("topic")}
@@ -92,12 +90,7 @@ export function Rail({
         </div>
         {scope && <Scope label={scope} current={current} />}
       </div>
-      <TabsPanel value="recommended" className={panel}>
-        <RecList key={current} queue={queue} current={current} href={href} />
-      </TabsPanel>
-      <TabsPanel value="all" className={panel}>
-        <AllList search={listQuery} current={current} href={href} />
-      </TabsPanel>
-    </Tabs>
+      <RecList key={current} queue={queue} current={current} href={href} />
+    </div>
   );
 }

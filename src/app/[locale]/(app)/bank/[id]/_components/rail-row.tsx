@@ -2,12 +2,9 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import type { QueueRow } from "@/features/bank/queue";
-import type { ListRow } from "@/features/bank/rail-page";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { Link } from "@/i18n/navigation";
 import { ExamMark } from "./task-meta";
-
-export const rowHeight = 40;
 
 const row =
   "flex w-full gap-2 rounded-lg px-2 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-card aria-[current=page]:font-semibold group-data-[variant=sheet]/rail:aria-[current=page]:bg-muted aria-[current=page]:shadow-current";
@@ -45,29 +42,6 @@ export function QueueLink({ task, href, current, next }: QueueLinkProps) {
           {task.year && <ExamMark year={task.year} />}
         </span>
       </span>
-    </Link>
-  );
-}
-
-interface ListLinkProps {
-  task: ListRow;
-  href: string;
-  current: boolean;
-  number: number;
-}
-
-export function ListLink({ task, href, current, number }: ListLinkProps) {
-  return (
-    <Link
-      href={href}
-      aria-current={current ? "page" : undefined}
-      className={cn(row, "h-10 items-center overflow-hidden")}
-    >
-      <StatusIcon status={task.status} />
-      <span className="w-10 shrink-0 text-subtle text-xs tabular-nums in-aria-[current=page]:text-foreground">
-        {number}
-      </span>
-      <MathHtml as="span" html={task.html} className={preview} />
     </Link>
   );
 }

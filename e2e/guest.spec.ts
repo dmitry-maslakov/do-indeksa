@@ -26,7 +26,10 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   await page.goto("/bank/eks-001");
   await page.getByRole("button", { name: /Eksponencijalne/ }).click();
   const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
-  await sheet.getByRole("tab", { name: "Svi zadaci" }).click();
+  await expect(sheet.getByRole("link", { name: "Svi zadaci" })).toHaveAttribute(
+    "href",
+    /\/bank\?topic=exponential-equations$/,
+  );
   await expect(sheet.locator('a[href$="/bank/eks-001"]')).toBeVisible();
   await sheet.getByLabel("Tema").selectOption("logarithms");
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
