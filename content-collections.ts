@@ -1,5 +1,6 @@
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { z } from "zod";
+import { splitLabel } from "./src/features/tasks/parts";
 import { tones, topicIconSchema } from "./src/features/tasks/topic-look";
 import { routing } from "./src/i18n/routing";
 import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
@@ -57,7 +58,20 @@ const tasks = defineCollection({
     if (!title) throw new Error(`${origin}: statement must start with words`);
     const render = (source: string) => renderMarkdown(source, origin);
     await cache(
-      [content, answer, solution, ...hints, ...check.map((c) => c.label ?? "")],
+      [
+        content,
+        answer,
+        solution,
+        ...hints,
+        ...check.flatMap((c, i, all) => {
+          const { prefix, caption } = splitLabel(
+            c.label ?? null,
+            i,
+            all.length,
+          );
+          return [prefix ?? "", caption ?? ""];
+        }),
+      ],
       (sources) => Promise.all(sources.map(render)).then(() => true),
     );
     return {
