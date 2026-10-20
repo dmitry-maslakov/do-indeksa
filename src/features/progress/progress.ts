@@ -1,9 +1,13 @@
 import "server-only";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
+import { positions } from "@/features/exam/exam";
+import { idsByTopic } from "@/features/tasks/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
+import { getLatestResults, getTaskStats } from "./history";
 import type { Attempted, Progress, TaskStatus } from "./status";
+import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
 const getLatestAttempts = (userId: string, taskIds?: string[]) =>
   db
@@ -55,4 +59,22 @@ export async function getAttempted(userId: string, taskIds: string[]) {
       },
     ]),
   );
+}
+
+const topicTotals = positions.map((p) => ({
+  topic: p.topic,
+  total: idsByTopic.get(p.topic)?.length ?? 0,
+}));
+
+export async function getTopicPlan(userId: string) {
+  const topics = topicProgress(
+    await getTaskStats(userId),
+    topicTotals,
+    Date.now(),
+  );
+  const last = lastPracticed(topics);
+  const latest = last
+    ? await getLatestResults(userId, idsByTopic.get(last.topic) ?? [], 3)
+    : [];
+  return { topics, suggestion: suggest(topics, latest) };
 }
