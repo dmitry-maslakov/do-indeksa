@@ -102,8 +102,6 @@
     "earlier": "Ranije",
     "today": "Danas",
     "upcoming": "Sledeće",
-    "fromList": "Iz liste:",
-    "clearScope": "Prikaži celu temu",
     "back": "Nazad",
     "sheet": "Zadaci teme",
     "before": "{status, select, solved {rešen ranije} other {ranije netačno}}",

@@ -102,8 +102,6 @@
     "earlier": "Earlier",
     "today": "Today",
     "upcoming": "Next",
-    "fromList": "From the list:",
-    "clearScope": "Show the whole topic",
     "back": "Back",
     "sheet": "Topic tasks",
     "before": "{status, select, solved {solved before} other {wrong before}}",

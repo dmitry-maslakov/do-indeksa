@@ -20,7 +20,7 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
     <Drawer>
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
-          href={`/bank${rail.query}`}
+          href={`/bank${rail.listQuery}`}
           aria-label={t("back")}
           className="flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-muted"
         >

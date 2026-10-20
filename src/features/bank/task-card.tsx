@@ -34,11 +34,10 @@ function Source({ exam }: Pick<BankCard, "exam">) {
 
 interface TaskCardProps {
   card: BankCard;
-  search: string;
   signedIn: boolean;
 }
 
-export function TaskCard({ card, search, signedIn }: TaskCardProps) {
+export function TaskCard({ card, signedIn }: TaskCardProps) {
   const t = useTranslations("Bank");
 
   return (
@@ -63,7 +62,7 @@ export function TaskCard({ card, search, signedIn }: TaskCardProps) {
         </div>
       </div>
       <Link
-        href={`/bank/${card.id}${search}`}
+        href={`/bank/${card.id}`}
         className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
       >
         <Markdown
