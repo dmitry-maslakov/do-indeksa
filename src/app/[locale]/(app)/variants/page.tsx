@@ -15,7 +15,7 @@ import { getLatestRuns, getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { ComposeCard } from "./_components/compose-card";
 import { ExamRow } from "./_components/exam-row";
 import { RunHistory } from "./_components/run-history";
@@ -35,23 +35,23 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function loadLatest(ids: string[]) {
-  const session = await getSession();
-  if (!session) return undefined;
+  const profileId = await getProfileId();
+  if (!profileId) return undefined;
   return summarizeRuns(
-    session.user.id,
-    await getLatestRuns(session.user.id, ids),
+    profileId,
+    await getLatestRuns(profileId, ids),
     await getLocale(),
   );
 }
 
 async function loadHistory() {
-  const session = await getSession();
-  return session && runPage(session.user.id, 0, await getLocale());
+  const profileId = await getProfileId();
+  return profileId && runPage(profileId, 0, await getLocale());
 }
 
 async function loadWeak() {
-  const session = await getSession();
-  return session ? weakTopics(await getTaskStats(session.user.id)) : [];
+  const profileId = await getProfileId();
+  return profileId ? weakTopics(await getTaskStats(profileId)) : [];
 }
 
 export default async function VariantsPage({

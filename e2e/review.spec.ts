@@ -21,10 +21,10 @@ async function expectAnswers(page: Page, errors: string[]) {
   expect(errors).toEqual([]);
 }
 
-async function storedRun(db: Client, userId: string) {
+async function storedRun(db: Client, profileId: string) {
   const { rows } = await db.query(
-    "select timed, overtime, durations_ms from runs where user_id = $1",
-    [userId],
+    "select timed, overtime, durations_ms from runs where profile_id = $1",
+    [profileId],
   );
   return rows;
 }
@@ -44,11 +44,11 @@ test("a guest reviews a finished test", { tag: "@responsive" }, async ({
 test("a signed-in user reviews a finished test", {
   tag: "@responsive",
 }, async ({ page, auth, errors }) => {
-  const userId = await auth.signIn();
+  const { profileId } = await auth.signIn();
   await finishSet(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await expectAnswers(page, errors);
-  expect(await storedRun(auth.db, userId)).toEqual([
+  expect(await storedRun(auth.db, profileId)).toEqual([
     { timed: true, overtime: false, durations_ms: [expect.any(Number)] },
   ]);
 });
@@ -57,10 +57,10 @@ test("an untimed test is stored without a time limit", async ({
   page,
   auth,
 }) => {
-  const userId = await auth.signIn();
+  const { profileId } = await auth.signIn();
   await finishSet(page, false);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
-  expect(await storedRun(auth.db, userId)).toEqual([
+  expect(await storedRun(auth.db, profileId)).toEqual([
     { timed: false, overtime: null, durations_ms: [expect.any(Number)] },
   ]);
 });

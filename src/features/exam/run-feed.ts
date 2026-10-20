@@ -11,13 +11,13 @@ export interface RunPage {
 }
 
 export async function runPage(
-  userId: string,
+  profileId: string,
   offset: number,
   locale: Locale,
 ): Promise<RunPage> {
-  const rows = await getRuns(userId, runsPage + 1, offset);
+  const rows = await getRuns(profileId, runsPage + 1, offset);
   return {
-    runs: await summarizeRuns(userId, rows.slice(0, runsPage), locale),
+    runs: await summarizeRuns(profileId, rows.slice(0, runsPage), locale),
     next: rows.length > runsPage ? offset + runsPage : null,
   };
 }

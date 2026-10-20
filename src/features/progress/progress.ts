@@ -11,7 +11,7 @@ import { type TaskStat, weakest } from "./stats";
 import type { Attempted, Progress, TaskStatus } from "./status";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
-const getLatestAttempts = (userId: string, taskIds?: string[]) =>
+const getLatestAttempts = (profileId: string, taskIds?: string[]) =>
   db
     .selectDistinctOn([attempts.taskId], {
       taskId: attempts.taskId,
@@ -21,27 +21,27 @@ const getLatestAttempts = (userId: string, taskIds?: string[]) =>
     .from(attempts)
     .where(
       and(
-        eq(attempts.userId, userId),
+        eq(attempts.profileId, profileId),
         taskIds && inArray(attempts.taskId, taskIds),
         decidesStatus,
       ),
     )
     .orderBy(attempts.taskId, desc(attempts.createdAt));
 
-async function getTaskStatuses(userId: string, taskIds?: string[]) {
-  const rows = await getLatestAttempts(userId, taskIds);
+async function getTaskStatuses(profileId: string, taskIds?: string[]) {
+  const rows = await getLatestAttempts(profileId, taskIds);
   return new Map<string, TaskStatus>(
     rows.map((row) => [row.taskId, row.correct ? "solved" : "wrong"]),
   );
 }
 
-export async function getProgress(userId: string): Promise<Progress> {
+export async function getProgress(profileId: string): Promise<Progress> {
   const [statuses, starred] = await Promise.all([
-    getTaskStatuses(userId),
+    getTaskStatuses(profileId),
     db
       .select({ taskId: favorites.taskId })
       .from(favorites)
-      .where(eq(favorites.userId, userId)),
+      .where(eq(favorites.profileId, profileId)),
   ]);
   return {
     statuses,
@@ -49,9 +49,9 @@ export async function getProgress(userId: string): Promise<Progress> {
   };
 }
 
-export async function getAttempted(userId: string, taskIds: string[]) {
+export async function getAttempted(profileId: string, taskIds: string[]) {
   const today = belgradeDate();
-  const rows = await getLatestAttempts(userId, taskIds);
+  const rows = await getLatestAttempts(profileId, taskIds);
   return new Map<string, Attempted>(
     rows.map((row) => [
       row.taskId,
@@ -69,16 +69,16 @@ const topicTotals = positions.map((p) => ({
   total: idsByTopic.get(p.topic)?.length ?? 0,
 }));
 
-export async function getTopicPlan(userId?: string) {
+export async function getTopicPlan(profileId?: string) {
   const topics = topicProgress(
-    userId ? await getTaskStats(userId) : [],
+    profileId ? await getTaskStats(profileId) : [],
     topicTotals,
     Date.now(),
   );
   const last = lastPracticed(topics);
   const latest =
-    userId && last
-      ? await getLatestResults(userId, idsByTopic.get(last.topic) ?? [], 3)
+    profileId && last
+      ? await getLatestResults(profileId, idsByTopic.get(last.topic) ?? [], 3)
       : [];
   return { topics, suggestion: suggest(topics, latest) };
 }

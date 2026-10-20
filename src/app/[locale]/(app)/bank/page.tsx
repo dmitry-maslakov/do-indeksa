@@ -17,7 +17,7 @@ import { getProgress } from "@/features/progress/progress";
 import type { Progress } from "@/features/progress/status";
 import type { TaskSummary } from "@/features/tasks/tasks";
 import { alternates } from "@/i18n/alternates";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { EmptyResults } from "./_components/empty-results";
 import { ResultsHead } from "./_components/results-head";
 import { ResultsSkeleton } from "./_components/results-skeleton";
@@ -55,13 +55,13 @@ async function Bank({
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
   const tasks = findTasks(filters);
-  const session = await getSession();
+  const profileId = await getProfileId();
 
-  return session ? (
+  return profileId ? (
     <Suspense
       fallback={<BankResults filters={filters} tasks={tasks} signedIn />}
     >
-      <Await promise={getProgress(session.user.id)}>
+      <Await promise={getProgress(profileId)}>
         {(progress) => (
           <BankResults
             filters={filters}

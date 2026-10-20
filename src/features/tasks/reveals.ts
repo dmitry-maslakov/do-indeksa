@@ -14,11 +14,11 @@ function storedPart(taskId: string, part: RevealPart) {
 }
 
 export async function recordReveal(
-  userId: string,
+  profileId: string,
   taskId: string,
   part: RevealPart,
 ) {
   const stored = storedPart(taskId, part);
   if (!stored) return;
-  await db.insert(reveals).values({ userId, taskId, part: stored });
+  await db.insert(reveals).values({ profileId, taskId, part: stored });
 }

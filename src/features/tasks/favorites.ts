@@ -3,27 +3,30 @@ import { and, eq } from "drizzle-orm";
 import { favorites } from "@/db/schema";
 import { db } from "@/server/db";
 
-const byUser = (userId: string, taskId: string) =>
-  and(eq(favorites.userId, userId), eq(favorites.taskId, taskId));
+const byProfile = (profileId: string, taskId: string) =>
+  and(eq(favorites.profileId, profileId), eq(favorites.taskId, taskId));
 
-export async function isFavorite(userId: string, taskId: string) {
+export async function isFavorite(profileId: string, taskId: string) {
   const [row] = await db
     .select({ taskId: favorites.taskId })
     .from(favorites)
-    .where(byUser(userId, taskId))
+    .where(byProfile(profileId, taskId))
     .limit(1);
   return row !== undefined;
 }
 
 export async function setTaskFavorite(
-  userId: string,
+  profileId: string,
   taskId: string,
   favorite: boolean,
 ) {
   if (favorite) {
-    await db.insert(favorites).values({ userId, taskId }).onConflictDoNothing();
+    await db
+      .insert(favorites)
+      .values({ profileId, taskId })
+      .onConflictDoNothing();
   } else {
-    await db.delete(favorites).where(byUser(userId, taskId));
+    await db.delete(favorites).where(byProfile(profileId, taskId));
   }
   return favorite;
 }

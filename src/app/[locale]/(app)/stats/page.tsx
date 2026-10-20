@@ -14,7 +14,7 @@ import {
 } from "@/features/progress/stats";
 import { tasks } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
 import { RecentRuns } from "./_components/recent-runs";
@@ -29,18 +29,17 @@ export async function generateMetadata(): Promise<Metadata> {
 const recentRunCount = 5;
 
 async function loadStats() {
-  const session = await getSession();
-  if (!session) return undefined;
-  const userId = session.user.id;
+  const profileId = await getProfileId();
+  if (!profileId) return undefined;
   const [byTask, recent, runCount] = await Promise.all([
-    getTaskStats(userId),
-    getRuns(userId, recentRunCount),
-    countRuns(userId),
+    getTaskStats(profileId),
+    getRuns(profileId, recentRunCount),
+    countRuns(profileId),
   ]);
   return {
     byTask,
     runCount,
-    runs: await summarizeRuns(userId, recent, await getLocale()),
+    runs: await summarizeRuns(profileId, recent, await getLocale()),
   };
 }
 

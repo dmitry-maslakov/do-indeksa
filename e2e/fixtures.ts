@@ -8,7 +8,7 @@ const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
 interface Auth {
   db: Client;
-  signIn: (age?: number) => Promise<string>;
+  signIn: (age?: number) => Promise<{ userId: string; profileId: string }>;
 }
 
 const clientIp = () =>
@@ -44,6 +44,10 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
            values ($1, $2, $3, $4, now(), now() + interval '1 day')`,
           [randomUUID(), token, userId, new Date(Date.now() - age)],
         );
+        const { rows } = await db.query(
+          `insert into profiles (user_id) values ($1) returning id`,
+          [userId],
+        );
         const signature = createHmac("sha256", BETTER_AUTH_SECRET)
           .update(token)
           .digest("base64");
@@ -54,7 +58,7 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
             url: test.info().project.use.baseURL,
           },
         ]);
-        return userId;
+        return { userId, profileId: rows[0].id };
       },
     });
 

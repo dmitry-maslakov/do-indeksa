@@ -5,7 +5,7 @@ import { Await } from "@/components/await";
 import { getCurrentRun } from "@/features/exam/current-run";
 import { getTopicPlan } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { Home } from "./_components/home";
 import { HomeSkeleton } from "./_components/home-skeleton";
 
@@ -19,10 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function loadHome() {
-  const userId = (await getSession())?.user.id;
+  const profileId = await getProfileId();
   const [plan, current] = await Promise.all([
-    getTopicPlan(userId),
-    userId ? getCurrentRun(userId) : undefined,
+    getTopicPlan(profileId),
+    profileId ? getCurrentRun(profileId) : undefined,
   ]);
   return { ...plan, current };
 }

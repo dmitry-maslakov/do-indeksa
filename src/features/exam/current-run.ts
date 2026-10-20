@@ -14,13 +14,13 @@ export interface CurrentRun {
 }
 
 export const getCurrentRun = cache(
-  async (userId: string): Promise<CurrentRun | undefined> => {
+  async (profileId: string): Promise<CurrentRun | undefined> => {
     const [row] = await db
       .select()
       .from(currentRuns)
       .where(
         and(
-          eq(currentRuns.userId, userId),
+          eq(currentRuns.profileId, profileId),
           gt(currentRuns.startedAt, new Date(Date.now() - dayMs)),
           notExists(
             db
@@ -51,16 +51,16 @@ interface SavedRun {
 }
 
 export async function saveCurrentRun(
-  userId: string,
+  profileId: string,
   { runId, variantId, startedAt, run }: SavedRun,
 ) {
   if (!getVariant(variantId) || !withinDay(startedAt)) return;
   const row = { runId, variantId, startedAt: new Date(startedAt), run };
   await db
     .insert(currentRuns)
-    .values({ userId, ...row })
+    .values({ profileId, ...row })
     .onConflictDoUpdate({
-      target: currentRuns.userId,
+      target: currentRuns.profileId,
       set: { ...row, updatedAt: new Date() },
     });
 }

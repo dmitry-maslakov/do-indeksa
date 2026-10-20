@@ -32,12 +32,12 @@ export interface RunSummary {
 }
 
 export async function summarizeRuns(
-  userId: string,
+  profileId: string,
   runs: RunRow[],
   locale: Locale,
 ): Promise<RunSummary[]> {
   const attempts = await getRunAttempts(
-    userId,
+    profileId,
     runs.map((run) => run.id),
   );
   const byRun = Map.groupBy(attempts, (a) => a.runId);

@@ -5,13 +5,13 @@ import { expect, test } from "./fixtures";
 
 test.use({ viewport: { width: 1280, height: 400 } });
 
-const seedRuns = (db: Client, userId: string, count: number) =>
+const seedRuns = (db: Client, profileId: string, count: number) =>
   db.query(
-    `insert into runs (id, user_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
-     select gen_random_uuid(), $1::text, 'daily'::run_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
+    `insert into runs (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
+     select gen_random_uuid(), $1::uuid, 'daily'::run_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
        '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour', false, '{}'
      from generate_series(1, $2::int) n`,
-    [userId, count],
+    [profileId, count],
   );
 
 const feed = async (page: Page) =>
@@ -22,7 +22,7 @@ test("the run history loads older runs while scrolling", async ({
   auth,
   errors,
 }) => {
-  await seedRuns(auth.db, await auth.signIn(), 25);
+  await seedRuns(auth.db, (await auth.signIn()).profileId, 25);
   await page.goto("/variants?tab=history");
   const rows = page.getByRole("img", { name: "0 od 0 tačno" });
   const more = page.getByRole("button", { name: "Prikaži još" });
@@ -38,15 +38,15 @@ test("a finished variant shows its result in the catalog", async ({
   page,
   auth,
 }) => {
-  const userId = await auth.signIn();
+  const { profileId } = await auth.signIn();
   await page.goto("/variants");
   const first = page.getByRole("link", { name: /Počni →/ }).first();
   const href = (await first.getAttribute("href")) ?? "";
   const runId = randomUUID();
   await auth.db.query(
-    `insert into runs (id, user_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
+    `insert into runs (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
      values ($1, $2, 'official', $3, '{}', now(), now(), false, '{}')`,
-    [runId, userId, href.split("/").at(-1)],
+    [runId, profileId, href.split("/").at(-1)],
   );
   await page.reload();
   const row = page.locator(`a[href="/review/${runId.slice(0, 8)}"]`);
@@ -56,7 +56,7 @@ test("a finished variant shows its result in the catalog", async ({
 });
 
 test("the run feed returns only the caller's runs", async ({ page, auth }) => {
-  await seedRuns(auth.db, await auth.signIn(), 3);
+  await seedRuns(auth.db, (await auth.signIn()).profileId, 3);
   expect((await feed(page)).runs).toHaveLength(3);
 
   await auth.signIn();

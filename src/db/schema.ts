@@ -21,6 +21,14 @@ import { user } from "./auth-schema";
 
 export * from "./auth-schema";
 
+export const profiles = pgTable("profiles", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: text()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
 export const runKind = pgEnum("run_kind", [
   "official",
   "curated",
@@ -33,9 +41,9 @@ export const runs = pgTable(
   "runs",
   {
     id: uuid().primaryKey(),
-    userId: text()
+    profileId: uuid()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => profiles.id, { onDelete: "cascade" }),
     kind: runKind().notNull(),
     variantId: text().notNull(),
     taskIds: text().array().notNull(),
@@ -45,7 +53,7 @@ export const runs = pgTable(
     overtime: boolean(),
     durationsMs: integer().array().notNull(),
   },
-  (t) => [index().on(t.userId, t.finishedAt.desc())],
+  (t) => [index().on(t.profileId, t.finishedAt.desc())],
 );
 
 export const partOutcome = pgEnum("part_outcome", partOutcomes);
@@ -54,9 +62,9 @@ export const attempts = pgTable(
   "attempts",
   {
     id: uuid().primaryKey().defaultRandom(),
-    userId: text()
+    profileId: uuid()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     runId: uuid().references(() => runs.id, { onDelete: "cascade" }),
     answers: text().array().notNull(),
@@ -67,16 +75,16 @@ export const attempts = pgTable(
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    index().on(t.userId, t.createdAt.desc()),
-    index().on(t.userId, t.taskId, t.createdAt.desc()),
+    index().on(t.profileId, t.createdAt.desc()),
+    index().on(t.profileId, t.taskId, t.createdAt.desc()),
     unique().on(t.runId, t.taskId),
   ],
 );
 
 export const currentRuns = pgTable("current_runs", {
-  userId: text()
+  profileId: uuid()
     .primaryKey()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => profiles.id, { onDelete: "cascade" }),
   runId: uuid().notNull(),
   variantId: text().notNull(),
   startedAt: timestamp({ withTimezone: true }).notNull(),
@@ -89,13 +97,13 @@ export const currentRuns = pgTable("current_runs", {
 export const favorites = pgTable(
   "favorites",
   {
-    userId: text()
+    profileId: uuid()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.taskId] })],
+  (t) => [primaryKey({ columns: [t.profileId, t.taskId] })],
 );
 
 export const sets = pgTable(
@@ -121,14 +129,14 @@ export const reveals = pgTable(
   "reveals",
   {
     id: uuid().primaryKey().defaultRandom(),
-    userId: text()
+    profileId: uuid()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     part: revealPart().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index().on(t.userId, t.taskId, t.createdAt.desc())],
+  (t) => [index().on(t.profileId, t.taskId, t.createdAt.desc())],
 );
 
 export const reportKind = pgEnum("report_kind", reportKinds);
@@ -138,6 +146,6 @@ export const reports = pgTable("reports", {
   taskId: text().notNull(),
   kind: reportKind().notNull(),
   message: text().notNull(),
-  userId: text().references(() => user.id, { onDelete: "set null" }),
+  profileId: uuid().references(() => profiles.id, { onDelete: "set null" }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
