@@ -98,11 +98,12 @@ function BankResults({
 
   return (
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex [&_input]:bg-card [&_select]:bg-card">
+      <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
         <BankTabs />
-        <BankFilters signedIn={signedIn}>
+        <BankFilters signedIn={signedIn} variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
+              variant="card"
               aria-label={t("search")}
               placeholder={t("searchPlaceholder")}
             />
@@ -110,10 +111,11 @@ function BankResults({
         </BankFilters>
       </aside>
       <section className="flex min-w-0 flex-col gap-3">
-        <div className="flex flex-col gap-3 px-1 lg:hidden [&_input]:bg-card">
+        <div className="flex flex-col gap-3 px-1 lg:hidden">
           <BankTabs />
           <div className="flex gap-2">
             <FilterSearch
+              variant="card"
               aria-label={t("search")}
               placeholder={t("searchPlaceholder")}
               className="flex-1"

@@ -3,12 +3,14 @@ import { ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
 
 type NativeSelectProps = Omit<React.ComponentProps<"select">, "size"> & {
-  size?: "sm" | "default";
+  size?: "sm" | "md" | "default";
+  variant?: "muted" | "card";
 };
 
 function NativeSelect({
   className,
   size = "default",
+  variant = "muted",
   ...props
 }: NativeSelectProps) {
   return (
@@ -23,11 +25,12 @@ function NativeSelect({
       <select
         data-slot="native-select"
         data-size={size}
-        className="h-11 w-full min-w-0 appearance-none rounded-lg bg-muted pr-9 pl-3.5 font-medium text-sm transition-[background-color,box-shadow] outline-none focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:pointer-events-none data-[size=sm]:h-9"
+        data-variant={variant}
+        className="h-11 w-full min-w-0 appearance-none rounded-lg bg-muted pr-9 pl-3.5 font-medium text-sm transition-[background-color,box-shadow] outline-none focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:pointer-events-none data-[size=md]:h-10 data-[size=sm]:h-9 data-[variant=card]:bg-card"
         {...props}
       />
       <ChevronDownIcon
-        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-subtle select-none"
+        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground select-none"
         aria-hidden="true"
         data-slot="native-select-icon"
       />

@@ -38,7 +38,8 @@ export function FilterSelect({
   const styled = {
     ...props,
     "aria-label": label,
-    className: cn("w-full [&>select]:h-10", className),
+    size: "md" as const,
+    className: cn("w-full", className),
   };
   return (
     <FilterLabel text={label}>
