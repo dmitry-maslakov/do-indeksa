@@ -1,7 +1,7 @@
 # 7. A sitting is a task session
 
-One visit to a bank task is a task session: the page makes its id and start time and stores it once loaded. Attempts and reveals on that page belong to it; on the test review they belong to the run. Each row has exactly one owner, enforced by the database.
+One continuous visit to a bank task is a task session, kept only by the server. The page sends a keep-alive every 30 seconds while visible, and every attempt and reveal carries the session id it last got back. Within 45 seconds of the last signal the server extends the session; after a longer pause it opens a new one and returns its id. Time on a task is `last_seen_at − started_at`, on the database clock.
 
-A session without an attempt means the task was seen; the queue offers tasks never seen first, then the ones seen longest ago.
+Attempts and reveals on the task page belong to the session; on the test review they belong to the run, whose `durations_ms` holds test time. Each row has exactly one owner, and events keep only their creation time.
 
-Crawlers are told apart by User-Agent (`isbot`) in the action client, so no action gives them a profile or a session.
+A session without an attempt means the task was seen; the queue offers tasks never seen first, then the ones seen longest ago. Crawlers are refused by User-Agent (`isbot`) in the action client, so they get no profile or session.
