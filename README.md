@@ -22,10 +22,11 @@ Google sign-in needs `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; everything e
 
 ```sh
 pnpm lint && pnpm typecheck && pnpm knip && pnpm i18n && pnpm test
-pnpm e2e  # against a running app, BASE_URL defaults to http://localhost:3000
+pnpm build && pnpm start  # e2e run against a production build, as in CI
+pnpm e2e  # BASE_URL defaults to http://localhost:3000
 ```
 
-e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both or `@mobile` for mobile only. Signed-in specs use the `auth` fixture from `e2e/fixtures.ts` and skip unless `DATABASE_URL` and `BETTER_AUTH_SECRET` are exported.
+e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both or `@mobile` for mobile only. Signed-in specs use the `auth` fixture from `e2e/fixtures.ts` and skip unless `DATABASE_URL` and `BETTER_AUTH_SECRET` are exported. Each test sends its own `cf-connecting-ip`, so the auth rate limit treats tests as separate clients.
 
 ## Layout
 
