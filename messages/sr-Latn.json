@@ -144,8 +144,8 @@
     },
     "weeklyReview": "Pregled →",
     "weeklyNext": "Nova varijanta za {days, plural, one {# dan} few {# dana} other {# dana}}",
-    "runTitle": "{kind, select, weekly {Varijanta nedelje} custom {Svoj test} daily {Test dana} other {{title}}}",
-    "runKind": "{kind, select, official {Prijemni ispit} curated {Naš test} weekly {Nedeljni izazov} other {{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}}}"
+    "testTitle": "{kind, select, weekly {Varijanta nedelje} custom {Svoj test} daily {Test dana} other {{title}}}",
+    "testKind": "{kind, select, official {Prijemni ispit} curated {Naš test} weekly {Nedeljni izazov} other {{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}}}"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",
@@ -217,7 +217,7 @@
     "inNorm": "U proseku nijedan zadatak ne traje duže od {minutes, number} min.",
     "solved": "zadataka rešeno",
     "firstTry": "tačno iz prvog puta",
-    "runs": "testova završeno",
+    "tests": "testova završeno",
     "spent": "ukupno vremena",
     "hours": "{hours, number} h",
     "bank": "Banka zadataka",
@@ -227,7 +227,7 @@
     "bankNew": "bez pokušaja",
     "recent": "Poslednji testovi",
     "all": "svi →",
-    "noRuns": "Još nema završenih testova.",
+    "noTests": "Još nema završenih testova.",
     "score": "{score, number} bodova",
     "repeated": "{count, plural, one {Greške se ponavljaju u zadatku {numbers}.} other {Greške se ponavljaju u zadacima {numbers}.}}"
   },

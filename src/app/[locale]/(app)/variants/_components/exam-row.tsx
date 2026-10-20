@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { RunSummary } from "@/features/exam/run-summaries";
+import type { TestSummary } from "@/features/exam/test-summaries";
 import { reviewHref } from "@/features/review/review";
 import { TopicGlyph } from "@/features/tasks/topic-icon";
 import { Link } from "@/i18n/navigation";
@@ -17,30 +17,30 @@ interface ExamRowProps {
   title: string;
   href: string;
   kind?: string;
-  run?: RunSummary;
+  test?: TestSummary;
   pending?: boolean;
 }
 
-export function ExamRow({ title, href, kind, run, pending }: ExamRowProps) {
+export function ExamRow({ title, href, kind, test, pending }: ExamRowProps) {
   const t = useTranslations("Variants");
   const format = useFormatter();
   const date =
-    run &&
-    format.dateTime(run.finishedAt, {
+    test &&
+    format.dateTime(test.finishedAt, {
       day: "numeric",
       month: "short",
-      year: thisYear(run.finishedAt) ? undefined : "numeric",
+      year: thisYear(test.finishedAt) ? undefined : "numeric",
     });
-  const segments = run?.segments ?? [];
+  const segments = test?.segments ?? [];
 
   return (
     <li className="border-b last:border-b-0">
       <Link
-        href={run ? reviewHref(run.id) : href}
+        href={test ? reviewHref(test.id) : href}
         className={cn(
           "group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-4 text-sm hover:bg-muted/50 md:py-0",
           tableGrid,
-          run ? "md:min-h-18" : "md:min-h-14",
+          test ? "md:min-h-18" : "md:min-h-14",
         )}
       >
         <div className="flex flex-col gap-1 md:block">
@@ -59,7 +59,7 @@ export function ExamRow({ title, href, kind, run, pending }: ExamRowProps) {
             </small>
           )}
         </div>
-        {run ? (
+        {test ? (
           <span
             role="img"
             aria-label={t("cellsLabel", {
@@ -68,7 +68,7 @@ export function ExamRow({ title, href, kind, run, pending }: ExamRowProps) {
             })}
             className="col-span-2 row-start-2 grid grid-cols-10 gap-1 md:col-span-1 md:row-start-auto"
           >
-            {run.looks
+            {test.looks
               .map((look, i) => ({ look, position: i + 1 }))
               .map(({ look, position }) => (
                 <span
@@ -85,12 +85,12 @@ export function ExamRow({ title, href, kind, run, pending }: ExamRowProps) {
         ) : (
           <span className="max-md:hidden" />
         )}
-        {run ? (
+        {test ? (
           <span className="text-right font-bold text-base tabular-nums">
-            {run.score}
+            {test.score}
             <small className="font-medium text-subtle text-xs">
               {" "}
-              / {run.max}
+              / {test.max}
             </small>
           </span>
         ) : (
@@ -100,10 +100,10 @@ export function ExamRow({ title, href, kind, run, pending }: ExamRowProps) {
           <span
             className={cn(
               "inline-flex h-8 items-center justify-self-end whitespace-nowrap rounded-lg bg-muted px-4 font-semibold text-sm group-hover:bg-untouched md:h-9",
-              run && "max-md:hidden",
+              test && "max-md:hidden",
             )}
           >
-            {run ? t("review") : t("go")}
+            {test ? t("review") : t("go")}
           </span>
         )}
       </Link>

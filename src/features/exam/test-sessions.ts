@@ -6,8 +6,8 @@ import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { getTask } from "@/features/tasks/tasks";
 import { db } from "@/server/db";
 import { gradeTest } from "./grade";
-import { overtimeAt } from "./run";
 import type { TestDraft, Visit } from "./test-draft";
+import { overtimeAt } from "./test-state";
 import { variantTitle } from "./variant-title";
 import { getVariant, minutesOf, pointsOf } from "./variants";
 

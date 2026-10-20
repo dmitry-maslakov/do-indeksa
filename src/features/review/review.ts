@@ -42,7 +42,7 @@ export interface Review<A extends ReviewAttempt = ReviewAttempt> {
   lost: { topic: string | null; points: number }[];
 }
 
-export const reviewHref = (runId: string) => `/review/${runId.slice(0, 8)}`;
+export const reviewHref = (testId: string) => `/review/${testId.slice(0, 8)}`;
 
 export const creditOf = (outcomes: PartOutcome[], points: number) =>
   outcomes.length === 0

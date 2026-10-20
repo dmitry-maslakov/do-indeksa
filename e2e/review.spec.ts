@@ -21,7 +21,7 @@ async function expectAnswers(page: Page, errors: string[]) {
   expect(errors).toEqual([]);
 }
 
-async function storedRun(db: Client, profileId: string) {
+async function storedTest(db: Client, profileId: string) {
   const { rows } = await db.query(
     `select t.timed, t.overtime, count(s.id)::int as visits
      from test_sessions t join task_sessions s on s.test_session_id = t.id
@@ -52,7 +52,7 @@ test("a signed-in user reviews a finished test", {
   await finishSet(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await expectAnswers(page, errors);
-  expect(await storedRun(auth.db, profileId)).toEqual([
+  expect(await storedTest(auth.db, profileId)).toEqual([
     { timed: true, overtime: false, visits: 1 },
   ]);
 });
@@ -64,7 +64,7 @@ test("an untimed test is stored without a time limit", async ({
   const { profileId } = await auth.signIn();
   await finishSet(page, false);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
-  expect(await storedRun(auth.db, profileId)).toEqual([
+  expect(await storedTest(auth.db, profileId)).toEqual([
     { timed: false, overtime: null, visits: 1 },
   ]);
 });

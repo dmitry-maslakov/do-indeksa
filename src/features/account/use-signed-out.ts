@@ -5,7 +5,7 @@ export function useSignedOut() {
   const router = useRouter();
 
   return () => {
-    useExamStore.setState({ runs: {} });
+    useExamStore.setState({ tests: {} });
     router.refresh();
   };
 }

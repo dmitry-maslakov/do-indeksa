@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { type ExamRun, useExamStore } from "./exam-store";
+import { type LocalTest, useExamStore } from "./exam-store";
 
 const meta = {
   title: "2026",
@@ -11,8 +11,8 @@ const meta = {
   ],
 };
 
-const saved: ExamRun = {
-  runId: "00000000-0000-4000-8000-000000000000",
+const saved: LocalTest = {
+  testId: "00000000-0000-4000-8000-000000000000",
   title: "2026",
   minutes: 48,
   timed: true,
@@ -32,7 +32,7 @@ const saved: ExamRun = {
 };
 
 const store = () => useExamStore.getState();
-const run = () => store().runs.v;
+const test = () => store().tests.v;
 
 afterEach(() => {
   store().clear("v");
@@ -40,13 +40,13 @@ afterEach(() => {
 });
 
 describe("exam store", () => {
-  it("starts a run once with empty answers", () => {
+  it("starts a test once with empty answers", () => {
     store().start("v", meta);
-    const first = run()?.runId;
+    const first = test()?.testId;
     store().start("v", meta);
-    expect(run()?.runId).toBe(first);
-    expect(run()?.answers).toEqual([["", ""], [""]]);
-    expect(run()?.tasks).toEqual([
+    expect(test()?.testId).toBe(first);
+    expect(test()?.answers).toEqual([["", ""], [""]]);
+    expect(test()?.tasks).toEqual([
       { number: 1, topic: "a" },
       { number: 2, topic: "b" },
     ]);
@@ -55,7 +55,7 @@ describe("exam store", () => {
   it("answers parts of the current task", () => {
     store().start("v", meta);
     store().answer("v", 1, "x");
-    expect(run()?.answers).toEqual([["", "x"], [""]]);
+    expect(test()?.answers).toEqual([["", "x"], [""]]);
   });
 
   it("records each visit to a task", () => {
@@ -66,7 +66,7 @@ describe("exam store", () => {
     vi.setSystemTime(120_000);
     store().go("v", 0);
     expect(
-      run()?.visits.map(({ task, startedAt, endedAt }) => ({
+      test()?.visits.map(({ task, startedAt, endedAt }) => ({
         task,
         startedAt,
         endedAt,
@@ -76,44 +76,44 @@ describe("exam store", () => {
       { task: 1, startedAt: 90_000, endedAt: 120_000 },
       { task: 0, startedAt: 120_000, endedAt: 120_000 },
     ]);
-    expect(run()?.current).toBe(0);
+    expect(test()?.current).toBe(0);
   });
 
-  it("restores a run for a variant without one and opens a new visit", () => {
+  it("restores a test for a variant without one and opens a new visit", () => {
     store().restore("v", saved);
-    expect(run()?.answers).toEqual(saved.answers);
-    expect(run()?.visits.slice(0, 1)).toEqual(saved.visits);
-    expect(run()?.visits).toHaveLength(2);
+    expect(test()?.answers).toEqual(saved.answers);
+    expect(test()?.visits.slice(0, 1)).toEqual(saved.visits);
+    expect(test()?.visits).toHaveLength(2);
   });
 
-  it("keeps a newer local run when restoring", () => {
+  it("keeps a newer local test when restoring", () => {
     store().start("v", meta);
     store().answer("v", 0, "x");
-    const local = run();
+    const local = test();
     store().restore("v", saved);
-    expect(run()).toBe(local);
+    expect(test()).toBe(local);
   });
 
-  it("replaces an older local run when restoring", () => {
+  it("replaces an older local test when restoring", () => {
     store().start("v", meta);
     const newer = { ...saved, updatedAt: Date.now() + 1 };
     store().restore("v", newer);
-    expect(run()?.runId).toBe(newer.runId);
+    expect(test()?.testId).toBe(newer.testId);
   });
 
-  it("clears a run", () => {
+  it("clears a test", () => {
     store().start("v", meta);
     store().clear("v");
-    expect(run()).toBeUndefined();
+    expect(test()).toBeUndefined();
   });
 });
 
-describe("persisted runs", () => {
-  it("drops runs stored in an older shape", async () => {
+describe("persisted tests", () => {
+  it("drops tests stored in an older shape", async () => {
     const items = new Map([
       [
         "do-indeksa-exam",
-        JSON.stringify({ state: { runs: { v: saved } }, version: 2 }),
+        JSON.stringify({ state: { tests: { v: saved } }, version: 2 }),
       ],
     ]);
     vi.stubGlobal("localStorage", {
@@ -124,7 +124,7 @@ describe("persisted runs", () => {
     vi.resetModules();
     const { useExamStore: persisted } = await import("./exam-store");
     await persisted.persist.rehydrate();
-    expect(persisted.getState().runs).toEqual({});
+    expect(persisted.getState().tests).toEqual({});
     vi.unstubAllGlobals();
   });
 });

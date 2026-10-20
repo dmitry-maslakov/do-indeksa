@@ -5,8 +5,8 @@ import {
   minutesLeft,
   nextIndex,
   overtimeAt,
-  runSegments,
-} from "./run";
+  testSegments,
+} from "./test-state";
 
 const run = { current: 1, answers: [["2", ""], [""], ["", ""], ["x"]] };
 
@@ -16,7 +16,7 @@ describe("run progress", () => {
   });
 
   it("marks the current task over its answer state", () => {
-    expect(runSegments(run)).toEqual(["done", "current", "none", "done"]);
+    expect(testSegments(run)).toEqual(["done", "current", "none", "done"]);
   });
 
   it("builds a blank strip", () => {

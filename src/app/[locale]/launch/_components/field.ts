@@ -356,7 +356,7 @@ export function startField(
   ])
     .catch(() => {})
     .then(() => {
-      if (!stopped) stop = run(canvas, text, events, style);
+      if (!stopped) stop = test(canvas, text, events, style);
     });
   return () => {
     stopped = true;
@@ -364,7 +364,7 @@ export function startField(
   };
 }
 
-function run(
+function test(
   canvas: HTMLCanvasElement,
   text: HTMLElement,
   { onReady, onFallback }: Events,

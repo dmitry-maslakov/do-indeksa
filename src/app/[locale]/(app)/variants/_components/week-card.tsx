@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import type { RunSummary } from "@/features/exam/run-summaries";
+import type { TestSummary } from "@/features/exam/test-summaries";
 import type { WeeklyVariant } from "@/features/exam/weekly";
 import { WeeklyWave } from "@/features/exam/weekly-wave";
 import { reviewHref } from "@/features/review/review";
@@ -19,7 +19,7 @@ const chipTone: Record<Result, string> = {
 };
 
 interface WeekCardProps extends WeeklyVariant {
-  run?: RunSummary;
+  test?: TestSummary;
 }
 
 export function WeekCard({
@@ -29,7 +29,7 @@ export function WeekCard({
   hours,
   points,
   daysLeft,
-  run,
+  test,
 }: WeekCardProps) {
   const home = useTranslations("Home");
   const t = useTranslations("Variants");
@@ -40,20 +40,20 @@ export function WeekCard({
       <h2 className="relative font-semibold text-xl tracking-tight">
         {home("weekly")}
       </h2>
-      {run ? (
+      {test ? (
         <>
           <p className="relative mt-2 tabular-nums">
-            <b className="font-bold text-4xl tracking-tight">{run.score}</b>
-            <span className="font-semibold text-lime-text"> / {run.max}</span>
+            <b className="font-bold text-4xl tracking-tight">{test.score}</b>
+            <span className="font-semibold text-lime-text"> / {test.max}</span>
           </p>
           <Chips
-            chips={run.looks.map((look, i) => ({
+            chips={test.looks.map((look, i) => ({
               look,
-              tone: chipTone[resultOf(run.segments[i] ?? "none")],
+              tone: chipTone[resultOf(test.segments[i] ?? "none")],
             }))}
           />
           <div className="relative flex flex-wrap items-center gap-3">
-            <Link href={reviewHref(run.id)} className={button}>
+            <Link href={reviewHref(test.id)} className={button}>
               {t("weeklyReview")}
             </Link>
             <span className="text-lime-text text-xs">

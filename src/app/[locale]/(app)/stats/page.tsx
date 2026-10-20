@@ -4,8 +4,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { minutesAt, positions } from "@/features/exam/exam";
-import { summarizeRuns } from "@/features/exam/run-summaries";
-import { countRuns, getRuns, getTaskStats } from "@/features/progress/history";
+import { summarizeTests } from "@/features/exam/test-summaries";
+import {
+  countTests,
+  getTaskStats,
+  getTests,
+} from "@/features/progress/history";
 import {
   accuracyBy,
   meanTimeByNumber,
@@ -16,7 +20,7 @@ import { topicName } from "@/features/tasks/topics";
 import { getProfileId } from "@/server/auth";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
-import { RecentRuns } from "./_components/recent-runs";
+import { RecentTests } from "./_components/recent-tests";
 import { TimeBars } from "./_components/time-bars";
 import { TotalsCard } from "./_components/totals-card";
 
@@ -25,19 +29,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-const recentRunCount = 5;
+const recentTestCount = 5;
 
 async function loadStats() {
   const profileId = await getProfileId();
-  const [byTask, recent, runCount] = await Promise.all([
+  const [byTask, recent, testCount] = await Promise.all([
     getTaskStats(profileId),
-    getRuns(profileId, recentRunCount),
-    countRuns(profileId),
+    getTests(profileId, recentTestCount),
+    countTests(profileId),
   ]);
   return {
     byTask,
-    runCount,
-    runs: await summarizeRuns(profileId, recent, await getLocale()),
+    testCount,
+    tests: await summarizeTests(profileId, recent, await getLocale()),
   };
 }
 
@@ -101,9 +105,9 @@ function StatsCards({
         />
       </div>
       <div className="flex flex-col gap-5">
-        <TotalsCard totals={summary} runs={stats?.runCount} />
+        <TotalsCard totals={summary} tests={stats?.testCount} />
         <BankCard totals={summary} size={tasks.length} />
-        <RecentRuns runs={stats?.runs} />
+        <RecentTests tests={stats?.tests} />
       </div>
     </div>
   );

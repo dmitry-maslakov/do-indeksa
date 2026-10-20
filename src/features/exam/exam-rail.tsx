@@ -3,14 +3,14 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
-import type { ExamRun } from "./exam-store";
+import type { LocalTest } from "./exam-store";
 import { ExamTimer } from "./exam-timer";
 import { FinishDialog } from "./finish-dialog";
-import { answeredCount, isAnswered } from "./run";
+import { answeredCount, isAnswered } from "./test-state";
 import type { ExamTask } from "./variants";
 
 interface ExamRailProps {
-  run: ExamRun;
+  test: LocalTest;
   tasks: ExamTask[];
   minutes: number;
   pending: boolean;
@@ -19,7 +19,7 @@ interface ExamRailProps {
 }
 
 export function ExamRail({
-  run,
+  test,
   tasks,
   minutes,
   pending,
@@ -27,14 +27,14 @@ export function ExamRail({
   onFinish,
 }: ExamRailProps) {
   const t = useTranslations("Exam");
-  const done = answeredCount(run);
+  const done = answeredCount(test);
 
   return (
     <Card size="sm" className="gap-4">
       <ExamTimer
-        startedAt={run.startedAt}
+        startedAt={test.startedAt}
         minutes={minutes}
-        timed={run.timed}
+        timed={test.timed}
       />
       <nav aria-label={t("tasks")} className="grid grid-cols-5 gap-2">
         {tasks.map((task, i) => (
@@ -42,12 +42,12 @@ export function ExamRail({
             key={task.id}
             type="button"
             onClick={() => onGo(i)}
-            aria-current={i === run.current ? "step" : undefined}
+            aria-current={i === test.current ? "step" : undefined}
             aria-label={t("task", { number: task.number })}
             className={cn(
               "flex h-10 items-center justify-center rounded-lg bg-muted font-semibold text-sm text-subtle outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-              isAnswered(run.answers[i] ?? []) && "bg-data-tint text-data",
-              i === run.current && "bg-primary text-primary-foreground",
+              isAnswered(test.answers[i] ?? []) && "bg-data-tint text-data",
+              i === test.current && "bg-primary text-primary-foreground",
             )}
           >
             {task.number}

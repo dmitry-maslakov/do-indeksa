@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { variantTitle } from "@/features/exam/variant-title";
 import { getVariant, tasksFor } from "@/features/exam/variants";
-import { getRun } from "@/features/progress/history";
+import { getTest } from "@/features/progress/history";
 import { outcomesOf } from "@/features/review/outcomes";
 import { PracticeLinks } from "@/features/review/practice-links";
 import { review } from "@/features/review/review";
@@ -40,9 +40,9 @@ export default function ReviewPage({ params, searchParams }: ReviewProps) {
 
 async function ReviewView({ params, searchParams }: ReviewProps) {
   const t = await getTranslations("Review");
-  const [{ code }, { run }] = await Promise.all([params, searchParams]);
-  const key = code ?? (typeof run === "string" ? run : undefined);
-  const found = await getRun(await getProfileId(), key);
+  const [{ code }, { test }] = await Promise.all([params, searchParams]);
+  const key = code ?? (typeof test === "string" ? test : undefined);
+  const found = await getTest(await getProfileId(), key);
 
   return (
     <>
@@ -57,7 +57,7 @@ async function ReviewView({ params, searchParams }: ReviewProps) {
           </Button>
         </Card>
       ) : (
-        <RunReview found={found} />
+        <TestReview found={found} />
       )}
     </>
   );
@@ -92,35 +92,35 @@ function ReviewGhost() {
   );
 }
 
-async function RunReview({
+async function TestReview({
   found,
 }: {
-  found: NonNullable<Awaited<ReturnType<typeof getRun>>>;
+  found: NonNullable<Awaited<ReturnType<typeof getTest>>>;
 }) {
   const locale = await getLocale();
-  const tasks = await tasksFor(found.run.taskIds, locale);
+  const tasks = await tasksFor(found.test.taskIds, locale);
   const result = review(
     tasks.map((task) => ({ ...task, taskId: task.id })),
     found.attempts,
   );
-  const variant = getVariant(found.run.variantId);
+  const variant = getVariant(found.test.variantId);
 
   return (
     <div className="flex flex-col gap-6 pt-2.5">
       <ReviewSummary
         review={result}
-        variantId={found.run.variantId}
+        variantId={found.test.variantId}
         title={
-          variant ? await variantTitle(variant, locale) : found.run.variantId
+          variant ? await variantTitle(variant, locale) : found.test.variantId
         }
-        finishedAt={found.run.finishedAt}
+        finishedAt={found.test.finishedAt}
       />
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <ReviewRows
           review={result}
           tasks={tasks}
           outcomes={outcomesOf(found.attempts)}
-          testSessionId={found.run.id}
+          testSessionId={found.test.id}
         />
         <div className="flex flex-col gap-5">
           <LostPoints

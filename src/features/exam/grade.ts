@@ -1,7 +1,7 @@
 import { creditOf } from "@/features/review/review";
 import { gradeParts } from "@/lib/math";
 import { isRight } from "@/lib/part-outcome";
-import { isAnswered } from "./run";
+import { isAnswered } from "./test-state";
 
 interface GradedTask {
   taskId: string;

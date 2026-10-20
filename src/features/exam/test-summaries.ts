@@ -1,6 +1,6 @@
 import "server-only";
 import type { Locale } from "next-intl";
-import { getRunAttempts } from "@/features/progress/history";
+import { getTestAttempts } from "@/features/progress/history";
 import { review } from "@/features/review/review";
 import type { TopicLook } from "@/features/tasks/topic-look";
 import { topicLook } from "@/features/tasks/topics";
@@ -9,19 +9,19 @@ import { variantTitle } from "./variant-title";
 import { type ExamVariant, getVariant, reviewTasks } from "./variants";
 import { weeklyVariant } from "./weekly";
 
-export interface RunRow {
+export interface TestRow {
   id: string;
   variantId: string;
   taskIds: string[];
   finishedAt: Date;
 }
 
-type RunKind = ExamVariant["kind"] | "weekly";
+type TestKind = ExamVariant["kind"] | "weekly";
 
-export interface RunSummary {
+export interface TestSummary {
   id: string;
   variantId: string;
-  kind: RunKind;
+  kind: TestKind;
   title: string;
   finishedAt: number;
   segments: Segment[];
@@ -31,27 +31,30 @@ export interface RunSummary {
   max: number;
 }
 
-export async function summarizeRuns(
+export async function summarizeTests(
   profileId: string,
-  runs: RunRow[],
+  tests: TestRow[],
   locale: Locale,
-): Promise<RunSummary[]> {
-  const attempts = await getRunAttempts(
+): Promise<TestSummary[]> {
+  const attempts = await getTestAttempts(
     profileId,
-    runs.map((run) => run.id),
+    tests.map((test) => test.id),
   );
-  const byRun = Map.groupBy(attempts, (a) => a.runId);
+  const byTest = Map.groupBy(attempts, (a) => a.testId);
   return Promise.all(
-    runs.map(async (run) => {
-      const variant = getVariant(run.variantId);
-      const result = review(reviewTasks(run.taskIds), byRun.get(run.id) ?? []);
-      const weekly = weeklyVariant(run.finishedAt)?.id === run.variantId;
+    tests.map(async (test) => {
+      const variant = getVariant(test.variantId);
+      const result = review(
+        reviewTasks(test.taskIds),
+        byTest.get(test.id) ?? [],
+      );
+      const weekly = weeklyVariant(test.finishedAt)?.id === test.variantId;
       return {
-        id: run.id,
-        variantId: run.variantId,
+        id: test.id,
+        variantId: test.variantId,
         kind: weekly ? "weekly" : (variant?.kind ?? "custom"),
-        title: variant ? await variantTitle(variant, locale) : run.variantId,
-        finishedAt: run.finishedAt.getTime(),
+        title: variant ? await variantTitle(variant, locale) : test.variantId,
+        finishedAt: test.finishedAt.getTime(),
         segments: result.rows.map((r) => r.segment),
         looks: result.rows.map((r) => topicLook(r.topic)),
         misses: result.rows
