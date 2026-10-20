@@ -1,12 +1,12 @@
 import "server-only";
 import type { Locale } from "next-intl";
-import { getAttempted, getProgress } from "@/features/progress/progress";
+import { getAttempted } from "@/features/progress/progress";
 import type { Attempted, TaskStatus } from "@/features/progress/status";
 import { getTask } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
 import { planQueue } from "./picks";
 import { examYear, previewHtml } from "./rail-task";
-import { type BankFilters, findTasks } from "./search";
+import { findTasks } from "./search";
 
 export interface QueueRow {
   id: string;
@@ -27,22 +27,12 @@ export interface Queue {
 
 interface PoolInput {
   topic: string;
-  filters: BankFilters;
   userId?: string;
   current?: string;
 }
 
-export const hasFilters = (filters: BankFilters) =>
-  Object.values(filters).some((value) => value != null);
-
-export const poolFilters = (topic: string, filters: BankFilters) =>
-  hasFilters(filters) ? filters : { topic };
-
-async function plan({ topic, filters, userId, current }: PoolInput, size = 6) {
-  const scope = poolFilters(topic, filters);
-  const progress =
-    scope.status && userId ? await getProgress(userId) : undefined;
-  const ids = findTasks(scope, progress).map((t) => t.id);
+async function plan({ topic, userId, current }: PoolInput, size = 6) {
+  const ids = findTasks({ topic }).map((t) => t.id);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
   const attempts = userId
     ? await getAttempted(userId, asked)
@@ -51,14 +41,14 @@ async function plan({ topic, filters, userId, current }: PoolInput, size = 6) {
     pool: ids.map((id) => ({ id, exam: examYear(id) !== null })),
     attempts,
     current,
-    ordered: hasFilters(filters) || !userId,
+    ordered: !userId,
     size,
   });
   return { attempts, queue };
 }
 
 export async function nextTask(topic: string, userId?: string) {
-  const { queue } = await plan({ topic, filters: {}, userId }, 1);
+  const { queue } = await plan({ topic, userId }, 1);
   return queue.upcoming[0]?.id;
 }
 

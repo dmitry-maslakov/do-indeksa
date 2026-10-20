@@ -102,8 +102,6 @@
     "earlier": "Раньше",
     "today": "Сегодня",
     "upcoming": "Дальше",
-    "fromList": "Из списка:",
-    "clearScope": "Показать всю тему",
     "back": "Назад",
     "sheet": "Задачи темы",
     "before": "{status, select, solved {решена раньше} other {раньше неверно}}",

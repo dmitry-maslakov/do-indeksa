@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
-import { filterLabel } from "@/features/bank/label";
-import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
-import { hasFilters, loadQueue, poolFilters } from "@/features/bank/queue";
+import { serializeBankFilters } from "@/features/bank/params";
+import { loadQueue } from "@/features/bank/queue";
 import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
@@ -45,14 +44,12 @@ export async function generateMetadata({
 
 export default async function SolvePage({
   params,
-  searchParams,
 }: PageProps<"/[locale]/bank/[id]">) {
   const { id } = await params;
   const task = getTask(id);
   if (!task) notFound();
 
-  const [filters, session, locale, html, bank] = await Promise.all([
-    loadBankFilters(searchParams),
+  const [session, locale, html, bank] = await Promise.all([
     getSession(),
     getLocale(),
     renderTask(id),
@@ -62,12 +59,10 @@ export default async function SolvePage({
 
   const queue = await loadQueue({
     topic: task.topic,
-    filters,
     userId: session?.user.id,
     current: id,
     locale,
   });
-  const query = serializeBankFilters(filters);
   const topic = topicName(task.topic, locale);
   const rail = {
     current: id,
@@ -76,9 +71,7 @@ export default async function SolvePage({
       id: p.topic,
       name: topicName(p.topic, locale),
     })),
-    query,
-    listQuery: serializeBankFilters(poolFilters(task.topic, filters)),
-    scope: hasFilters(filters) ? filterLabel(filters, bank, locale) : null,
+    listQuery: serializeBankFilters({ topic: task.topic }),
     queue,
   };
 
@@ -116,8 +109,8 @@ export default async function SolvePage({
               taskId={id}
               parts={html.parts}
               unchecked={html.unchecked}
-              next={queue.next && `/bank/${queue.next}${query}`}
-              fallback={`/bank${query}`}
+              next={queue.next && `/bank/${queue.next}`}
+              fallback="/bank"
             />
             <HelpPanel taskId={id} hintCount={html.hints.length} />
             <div className="mt-6">

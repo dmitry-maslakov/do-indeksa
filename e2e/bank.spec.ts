@@ -102,19 +102,13 @@ test("the bank searches while typing and keeps the query in the URL", async ({
   expect(errors).toEqual([]);
 });
 
-test("a task opened from the list keeps the filters", async ({
-  page,
-  errors,
-}) => {
+test("a task opens from the filtered list", async ({ page, errors }) => {
   await open(page, "/bank?topic=logarithms&level=easy");
   const { links } = bank(page);
-  await expect(links.first()).toHaveAttribute(
-    "href",
-    /\/bank\/[\w-]+\?topic=logarithms&level=easy$/,
-  );
+  await expect(links.first()).toHaveAttribute("href", /\/bank\/[\w-]+$/);
 
   await links.first().click();
-  await expect(page).toHaveURL(/\/bank\/[\w-]+\?topic=logarithms&level=easy$/);
+  await expect(page).toHaveURL(/\/bank\/[\w-]+$/);
   expect(errors).toEqual([]);
 });
 

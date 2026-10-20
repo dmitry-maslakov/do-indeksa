@@ -27,12 +27,7 @@ export function BankFeed({ search, first, signedIn }: BankFeedProps) {
       {data.pages
         .flatMap((page) => page.cards)
         .map((card) => (
-          <TaskCard
-            key={card.id}
-            card={card}
-            search={search}
-            signedIn={signedIn}
-          />
+          <TaskCard key={card.id} card={card} signedIn={signedIn} />
         ))}
       {hasNextPage && (
         <LoadMore
