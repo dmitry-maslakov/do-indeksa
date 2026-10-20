@@ -20,7 +20,7 @@ test("checking an answer offline says why it failed", async ({
 test("a hint that fails to load offers a retry", async ({ page, context }) => {
   await page.goto("/bank/eks-001");
   await context.setOffline(true);
-  await page.getByText("Nagoveštaj 1").click();
+  await page.getByRole("button", { name: "Nagoveštaj" }).click();
   await expect(page.getByText(offline)).toBeVisible();
   await context.setOffline(false);
   await page.getByRole("button", { name: "Pokušaj ponovo" }).click();
