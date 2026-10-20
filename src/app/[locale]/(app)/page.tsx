@@ -6,9 +6,8 @@ import { getCurrentRun } from "@/features/exam/current-run";
 import { getTopicPlan } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
-import { GuestHome } from "./_components/guest-home";
+import { Home } from "./_components/home";
 import { HomeSkeleton } from "./_components/home-skeleton";
-import { UserHome } from "./_components/user-home";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -20,11 +19,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function loadHome() {
-  const session = await getSession();
-  if (!session) return undefined;
+  const userId = (await getSession())?.user.id;
   const [plan, current] = await Promise.all([
-    getTopicPlan(session.user.id),
-    getCurrentRun(session.user.id),
+    getTopicPlan(userId),
+    userId ? getCurrentRun(userId) : undefined,
   ]);
   return { ...plan, current };
 }
@@ -32,9 +30,7 @@ async function loadHome() {
 export default function HomePage() {
   return (
     <Suspense fallback={<HomeSkeleton />}>
-      <Await promise={loadHome()}>
-        {(home) => (home ? <UserHome {...home} /> : <GuestHome />)}
-      </Await>
+      <Await promise={loadHome()}>{(home) => <Home {...home} />}</Await>
     </Suspense>
   );
 }

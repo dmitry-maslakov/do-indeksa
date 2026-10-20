@@ -9,11 +9,11 @@ import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
 import { WeeklyCard } from "./weekly-card";
 
-type UserHomeProps = Awaited<ReturnType<typeof getTopicPlan>> & {
+type HomeProps = Awaited<ReturnType<typeof getTopicPlan>> & {
   current?: CurrentRun;
 };
 
-export function UserHome({ topics, suggestion, current }: UserHomeProps) {
+export function Home({ topics, suggestion, current }: HomeProps) {
   const locale = useLocale();
   const weekly = weeklyVariant();
 
