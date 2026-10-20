@@ -149,14 +149,25 @@
   --tone-cyan: #8fe0f3;
   --tone-yellow: #ffe27a;
   --exam: #c3b4ff;
-  --nav-bottom: 3.5rem;
+  --nav-bottom: 4rem;
 }
 
 @custom-variant exam-running (&:where(:root:has([data-exam="running"]) *));
+@custom-variant task-focus (&:where(:root:has([data-task-focus]) *));
+
+@media (width < 48rem) {
+  :root:has([data-task-focus]) {
+    --nav-bottom: 0rem;
+  }
+}
 
 :root:has([data-exam="running"]),
 :root:not(:has([data-bottom-nav])) {
   --nav-bottom: 0rem;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
 }
 
 @layer base {

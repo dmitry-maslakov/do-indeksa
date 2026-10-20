@@ -39,13 +39,12 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="min-w-0 shrink bg-card px-2.5 shadow-raised sm:px-4"
+            className="gap-2 rounded-full bg-muted pr-3 pl-4 font-medium"
           />
         }
       >
-        <span className="truncate sm:hidden">{selected?.faculty}</span>
-        <span className="hidden truncate sm:inline">{selected?.title}</span>
-        <ChevronDownIcon className="shrink-0 text-subtle" />
+        {selected?.title}
+        <ChevronDownIcon />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72 p-2">
         <DropdownMenuRadioGroup value={current}>
@@ -60,7 +59,7 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
                   <DropdownMenuRadioItem
                     key={e.id}
                     value={e.id}
-                    className="flex-col items-start gap-0.5 py-2 data-checked:bg-data-tint data-checked:text-data"
+                    className="flex-col items-start gap-1 py-2 data-checked:bg-muted"
                   >
                     <span className="font-medium">{e.title}</span>
                     <span className="text-subtle text-xs">
@@ -72,7 +71,7 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
           ))}
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
-        <p className="px-2 py-1.5 text-sm text-subtle">{t("more")}</p>
+        <p className="px-2 py-2 text-sm text-subtle">{t("more")}</p>
       </DropdownMenuContent>
     </DropdownMenu>
   );

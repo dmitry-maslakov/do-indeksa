@@ -1,8 +1,20 @@
-export function ProgressBar({ value }: { value: number }) {
+import { cn } from "cn";
+
+interface ProgressBarProps {
+  value: number;
+  tone?: string;
+  className?: string;
+}
+
+export function ProgressBar({
+  value,
+  tone = "bg-data",
+  className,
+}: ProgressBarProps) {
   return (
-    <div className="h-2.5 rounded-full bg-untouched">
+    <div className={cn("h-2.5 rounded-full bg-untouched", className)}>
       <div
-        className="h-full rounded-full bg-data"
+        className={cn("h-full rounded-full", tone)}
         style={{ width: `${Math.min(Math.max(value, 0), 1) * 100}%` }}
       />
     </div>

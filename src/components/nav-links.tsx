@@ -10,7 +10,7 @@ export function NavLinks() {
   const t = useTranslations("Nav");
 
   return (
-    <nav aria-label={t("label")} className="hidden gap-7 lg:flex">
+    <nav aria-label={t("label")} className="hidden gap-6 lg:flex">
       <WithPathname>
         {(pathname) =>
           sections.map(({ href, key }) => {
@@ -21,7 +21,7 @@ export function NavLinks() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "whitespace-nowrap font-medium text-subtle transition-colors hover:text-foreground",
+                  "whitespace-nowrap text-base text-subtle transition-colors hover:text-foreground",
                   active && "font-semibold text-foreground",
                 )}
               >
