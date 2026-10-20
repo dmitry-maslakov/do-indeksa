@@ -4,6 +4,7 @@ import {
   blankSegments,
   minutesLeft,
   nextIndex,
+  overtimeAt,
   runSegments,
 } from "./run";
 
@@ -35,5 +36,12 @@ describe("continue hints", () => {
     expect(minutesLeft(at, 60 * 60_000)).toBe(180);
     expect(minutesLeft(at, 300 * 60_000)).toBe(0);
     expect(minutesLeft({ ...at, timed: false }, 0)).toBeUndefined();
+  });
+
+  it("tells a timed run finished after the limit from one in time", () => {
+    const at = { startedAt: 0, minutes: 240, timed: true };
+    expect(overtimeAt(at, 240 * 60_000)).toBe(false);
+    expect(overtimeAt(at, 240 * 60_000 + 1)).toBe(true);
+    expect(overtimeAt({ ...at, timed: false }, 300 * 60_000)).toBeNull();
   });
 });

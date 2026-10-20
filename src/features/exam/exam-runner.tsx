@@ -125,6 +125,7 @@ export function ExamRunner({
       startedAt: run.startedAt,
       answers: run.answers,
       durations: spentAt(run, Date.now()),
+      timed: run.timed,
     });
 
   return (

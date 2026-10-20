@@ -6,8 +6,9 @@ import type { Outcomes, ReviewAttempt } from "@/features/review/review";
 import { getTask } from "@/features/tasks/tasks";
 import { db } from "@/server/db";
 import { gradeRun } from "./grade";
+import { overtimeAt } from "./run";
 import { withinDay } from "./run-bounds";
-import { getVariant, pointsOf } from "./variants";
+import { getVariant, minutesOf, pointsOf } from "./variants";
 
 export interface GuestResult {
   saved: false;
@@ -23,6 +24,7 @@ interface FinishedRun {
   startedAt: number;
   answers: string[][];
   durations: number[];
+  timed: boolean;
 }
 
 export async function saveFinishedRun(
@@ -52,6 +54,8 @@ export async function saveFinishedRun(
     };
   }
 
+  const now = Date.now();
+
   await db.transaction(async (tx) => {
     const [inserted] = await tx
       .insert(runs)
@@ -62,6 +66,10 @@ export async function saveFinishedRun(
         variantId: variant.id,
         taskIds: variant.taskIds,
         startedAt: new Date(run.startedAt),
+        finishedAt: new Date(now),
+        timed: run.timed,
+        overtime: overtimeAt({ ...run, minutes: minutesOf(variant) }, now),
+        durationsMs: graded.map((g) => g.durationMs),
       })
       .onConflictDoNothing()
       .returning({ id: runs.id });

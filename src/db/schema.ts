@@ -41,6 +41,9 @@ export const runs = pgTable(
     taskIds: text().array().notNull(),
     startedAt: timestamp({ withTimezone: true }).notNull(),
     finishedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    timed: boolean().notNull(),
+    overtime: boolean(),
+    durationsMs: integer().array().notNull(),
   },
   (t) => [index().on(t.userId, t.finishedAt.desc())],
 );
