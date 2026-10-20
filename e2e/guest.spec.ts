@@ -2,6 +2,16 @@ import { randomBytes } from "node:crypto";
 import type { Page } from "@playwright/test";
 import { answer, expect, finish, test } from "./fixtures";
 
+async function openSheet(page: Page, topic: RegExp) {
+  const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
+  await expect(async () => {
+    if (!(await sheet.isVisible()))
+      await page.getByRole("button", { name: topic }).click();
+    await expect(sheet).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  return sheet;
+}
+
 test("a guest checks an answer", async ({ page }) => {
   await page.goto("/bank/eks-001");
   await answer(page, "2");
@@ -47,8 +57,7 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   page,
 }) => {
   await page.goto("/bank/eks-001");
-  await page.getByRole("button", { name: /Eksponencijalne/ }).click();
-  const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
+  const sheet = await openSheet(page, /Eksponencijalne/);
   await expect(sheet.getByRole("link", { name: "Svi zadaci" })).toHaveAttribute(
     "href",
     /\/bank\?topic=exponential-equations$/,
@@ -60,7 +69,8 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   ).toBeVisible();
   await sheet.getByLabel("Tema").selectOption("logarithms");
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
-  await page.getByRole("button", { name: /Logaritmi/ }).click();
+  await expect(sheet).toBeHidden();
+  await openSheet(page, /Logaritmi/);
   await expect(sheet.getByLabel("Tema")).toHaveValue("logarithms");
 });
 
