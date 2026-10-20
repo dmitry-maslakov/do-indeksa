@@ -228,7 +228,11 @@ test("the bank filters open in a sheet on a phone @mobile", async ({
   await topic.selectOption({ label: "Logaritmi" });
   await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
   const shown = page.getByRole("button", { name: /^Prikaži / });
-  await expect(shown).toHaveText(`Prikaži ${await count.textContent()}`);
+  await expect(async () =>
+    expect(await shown.textContent()).toBe(
+      `Prikaži ${await count.textContent()}`,
+    ),
+  ).toPass();
   await shown.click();
   await expect(topic).toBeHidden();
   await expect(page.getByRole("button", { name: "Filteri · 1" })).toBeVisible();
