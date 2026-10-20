@@ -8,7 +8,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install
 
 FROM deps AS migrate
 COPY drizzle ./drizzle
-COPY src/db/migrate.mts ./
+COPY src/db/migrate.mts src/db/cleanup.mts ./
 USER node
 CMD ["node", "migrate.mts"]
 
