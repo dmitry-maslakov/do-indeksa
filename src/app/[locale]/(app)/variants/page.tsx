@@ -98,10 +98,12 @@ export default async function VariantsPage({
             <CatalogTab searchParams={searchParams} />
           </Suspense>
         </section>
-        <aside className="flex flex-col gap-5">
-          <Suspense fallback={<Skeleton className="h-62 rounded-xl" />}>
-            <Weekly />
-          </Suspense>
+        <aside className="contents lg:flex lg:flex-col lg:gap-5">
+          <div className="max-lg:order-first">
+            <Suspense fallback={<Skeleton className="h-62 rounded-xl" />}>
+              <Weekly />
+            </Suspense>
+          </div>
           <ComposeCard topics={topics} weak={loadWeak()} />
         </aside>
       </div>
