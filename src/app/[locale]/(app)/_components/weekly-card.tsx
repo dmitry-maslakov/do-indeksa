@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { WeeklyVariant } from "@/features/exam/weekly";
+import { WeeklyWave } from "@/features/exam/weekly-wave";
 import { TopicIcon } from "@/features/tasks/topic-icon";
 import { topicLook } from "@/features/tasks/topics";
 import { Link } from "@/i18n/navigation";
@@ -16,17 +17,7 @@ export function WeeklyCard({
 
   return (
     <section className="relative flex flex-col items-start overflow-hidden rounded-xl bg-lime px-5 py-6 lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-x-8 lg:gap-y-2 lg:px-8">
-      <svg
-        aria-hidden
-        viewBox="0 0 395 240"
-        preserveAspectRatio="none"
-        className="absolute inset-y-0 right-0 size-full lg:w-1/3"
-      >
-        <path
-          d="M395 63C375 63 360 131 329 131C300 131 290 93 264 93C238 93 240 204 224 204C208 204 190 151 153 151C120 151 100 210 83 240H395Z"
-          className="fill-lime-strong"
-        />
-      </svg>
+      <WeeklyWave className="lg:w-1/3" />
       <h2 className="relative font-semibold text-xl tracking-tight lg:col-start-1 lg:row-start-1">
         {t("weekly")}
       </h2>

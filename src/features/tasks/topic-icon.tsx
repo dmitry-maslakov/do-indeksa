@@ -52,19 +52,25 @@ interface TopicIconProps {
   size?: "sm" | "md" | "lg";
 }
 
+export function TopicGlyph({
+  icon,
+  size = "md",
+}: Omit<TopicIconProps, "tone">) {
+  if ("name" in icon) {
+    const Glyph = glyphs[icon.name];
+    return <Glyph />;
+  }
+  return (
+    <span className={text({ size, long: icon.text.length > 2 })}>
+      {icon.text}
+    </span>
+  );
+}
+
 export function TopicIcon({ icon, tone, size = "md" }: TopicIconProps) {
-  const Glyph = "name" in icon ? glyphs[icon.name] : null;
   return (
     <span aria-hidden="true" className={`${box({ size })} ${tones[tone]}`}>
-      {Glyph ? (
-        <Glyph />
-      ) : (
-        "text" in icon && (
-          <span className={text({ size, long: icon.text.length > 2 })}>
-            {icon.text}
-          </span>
-        )
-      )}
+      <TopicGlyph icon={icon} size={size} />
     </span>
   );
 }
