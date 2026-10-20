@@ -2,6 +2,6 @@
 
 One continuous visit to a bank task is a task session, kept only by the server. The page sends a keep-alive every 30 seconds while visible, and every attempt and reveal carries the session id it last got back. Within 45 seconds of the last signal the server extends the session; after a longer pause it opens a new one and returns its id. Time on a task is `last_seen_at − started_at`, on the database clock.
 
-Attempts and reveals on the task page belong to the session; on the test review they belong to the run, whose `durations_ms` holds test time. Each row has exactly one owner, and events keep only their creation time.
+Attempts and reveals always belong to a task session; in a test every visit to a task is one, linked to its test session. Events keep only their creation time.
 
 A session without an attempt means the task was seen; the queue offers tasks never seen first, then the ones seen longest ago. Crawlers are refused by User-Agent (`isbot`) in the action client, so they get no profile or session.
