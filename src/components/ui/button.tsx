@@ -9,6 +9,8 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground",
         lime: "bg-lime text-foreground hover:bg-lime-strong",
+        quiet:
+          "bg-transparent text-foreground hover:bg-muted hover:brightness-100",
         secondary: "bg-data text-primary-foreground",
         tint: "bg-data-tint text-data",
         destructive: "bg-error-tint text-error-text",
@@ -21,6 +23,7 @@ const buttonVariants = cva(
         sm: "h-9 gap-1.5 px-4 text-sm",
         icon: "size-11",
         "icon-sm": "size-9",
+        pill: "h-12 gap-2 rounded-full px-6 font-medium text-base",
       },
     },
     defaultVariants: {
