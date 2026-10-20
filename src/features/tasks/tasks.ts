@@ -8,6 +8,7 @@ import { z } from "zod";
 import { numberOf } from "@/features/exam/exam";
 import { renderMarkdown } from "@/lib/markdown";
 import { type Level, levelOf } from "./level";
+import { type PartLabel, splitLabel, uncheckedLetters } from "./parts";
 import { topicName } from "./topics";
 
 export interface TaskSummary {
@@ -50,7 +51,8 @@ type RenderedTask = {
   answer: string;
   hints: string[];
   solution: string;
-  labels: (string | null)[];
+  parts: PartLabel[];
+  unchecked: string[];
 };
 
 const rendered = new LRUCache<string, RenderedTask>({
@@ -62,7 +64,7 @@ const rendered = new LRUCache<string, RenderedTask>({
         html.answer,
         html.solution,
         ...html.hints,
-        ...html.labels,
+        ...html.parts.flatMap((p) => [p.prefix, p.caption]),
       ],
       (part) => part?.length ?? 0,
     ) + 1,
@@ -74,28 +76,26 @@ export async function renderTask(id: string) {
   const task = getTask(id);
   if (!task) return null;
   const render = (source: string) => renderMarkdown(source, id);
+  const optional = (source: string | null) => source && render(source);
+  const labels = task.check.map((c, i, all) =>
+    splitLabel(c.label, i, all.length),
+  );
   const html = {
     statement: await render(task.text),
     answer: await render(task.answer),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
-    labels: await Promise.all(
-      task.check.map((c) => (c.label ? render(c.label) : null)),
+    parts: await Promise.all(
+      labels.map(async (p) => ({
+        letter: p.letter,
+        prefix: await optional(p.prefix),
+        caption: await optional(p.caption),
+      })),
     ),
+    unchecked: uncheckedLetters(task.text, labels),
   };
   rendered.set(id, html);
   return html;
-}
-
-export function siblings(task: Task) {
-  return allTasks
-    .filter((t) => t.topic === task.topic)
-    .map(({ id, topic, difficulty, preview }) => ({
-      id,
-      number: numberOf(topic),
-      level: levelOf(difficulty),
-      preview,
-    }));
 }
 
 export function taskTitle(

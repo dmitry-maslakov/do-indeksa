@@ -25,7 +25,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
 
   return (
     <details>
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-subtle hover:text-foreground [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-subtle [&::-webkit-details-marker]:hidden">
         <FlagIcon className="size-4" />
         {t("open")}
       </summary>

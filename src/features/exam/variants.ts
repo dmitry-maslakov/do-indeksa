@@ -1,4 +1,5 @@
 import { orderBy, sumBy } from "es-toolkit";
+import type { PartLabel } from "@/features/tasks/parts";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
@@ -83,7 +84,7 @@ export interface ExamTask {
   points: number;
   minutes: number;
   statement: string;
-  labels: (string | null)[];
+  parts: PartLabel[];
 }
 
 export async function tasksFor(
@@ -103,7 +104,7 @@ export async function tasksFor(
         points: pointsOf(id),
         minutes: positionOf(task.topic)?.minutes ?? 0,
         statement: html.statement,
-        labels: html.labels,
+        parts: html.parts,
       };
     }),
   );

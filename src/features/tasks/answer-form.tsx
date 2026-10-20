@@ -1,37 +1,88 @@
 "use client";
 
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { StatusIcon } from "@/features/progress/status-icon";
+import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
+import { ActionBar } from "./action-bar";
 import { checkAnswer } from "./answer-action";
-import { AnswerField, type AnswerState } from "./answer-field";
-import { useHints } from "./hints";
+import { AnswerField } from "./answer-field";
+import type { AnswerState } from "./answer-state";
+import { useHelp } from "./help";
+import type { PartLabel } from "./parts";
 
 interface AnswerFormProps {
   taskId: string;
-  labels: (string | null)[];
-  skip?: string;
+  parts: PartLabel[];
+  unchecked: string[];
+  next?: string;
+  fallback: string;
 }
 
-export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
+interface Checked {
+  parts: boolean[];
+  correct: boolean;
+}
+
+function Result({ checked }: { checked: Checked }) {
   const t = useTranslations("Solve");
-  const { execute, result, isPending, hasErrored } = useAction(checkAnswer);
+  const right = checked.parts.filter(Boolean).length;
+  return (
+    <span
+      role="status"
+      className={cn(
+        "order-3 flex items-center gap-2 font-semibold text-base",
+        checked.correct ? "text-success-text" : "text-error-text",
+      )}
+    >
+      <StatusIcon
+        status={checked.correct ? "solved" : "wrong"}
+        className="size-5"
+      />
+      {checked.correct ? t("correct") : t("wrong")}
+      {!checked.correct && checked.parts.length > 1 && (
+        <small className="font-normal text-muted-foreground text-sm">
+          {t("partsRight", { right, total: checked.parts.length })}
+        </small>
+      )}
+    </span>
+  );
+}
+
+export function AnswerForm({
+  taskId,
+  parts,
+  unchecked,
+  next,
+  fallback,
+}: AnswerFormProps) {
+  const t = useTranslations("Solve");
+  const router = useRouter();
+  const { execute, result, isPending, hasErrored } = useAction(checkAnswer, {
+    onSuccess: () => router.refresh(),
+  });
   const errorText = useErrorText();
-  const checked = result.data;
+  const help = useHelp();
   const startedAt = useRef(0);
   const [edited, setEdited] = useState(false);
-  const markEdited = useCallback(() => setEdited(true), []);
-  const hints = useHints();
+  const [values, setValues] = useState(() => parts.map(() => ""));
+  const onChange = useCallback((index: number, value: string) => {
+    setEdited(true);
+    setValues((all) => all.with(index, value));
+  }, []);
 
   useEffect(() => {
     startedAt.current = Date.now();
   }, []);
 
+  const checked = edited ? undefined : result.data;
+  const ids = parts.map((_, i) => `answer-${taskId}-${i}`);
+  const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const stateOf = (i: number): AnswerState =>
-    !checked || edited ? "empty" : checked.parts[i] ? "correct" : "wrong";
+    !checked ? "empty" : checked.parts[i] ? "correct" : "wrong";
 
   return (
     <form
@@ -40,53 +91,59 @@ export function AnswerForm({ taskId, labels, skip }: AnswerFormProps) {
         form.set("startedAt", String(startedAt.current));
         execute(form);
       }}
-      className="flex flex-col gap-4"
+      className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
     >
       <input type="hidden" name="taskId" value={taskId} />
-      <input type="hidden" name="hintsUsed" value={hints?.used ?? 0} />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {labels.map((labelHtml, i) => (
+      <input type="hidden" name="hintsUsed" value={Math.min(help.hints, 3)} />
+      <div
+        className={cn("flex flex-col gap-4", grid && "md:grid md:grid-cols-2")}
+      >
+        {parts.map((part, i) => (
           <AnswerField
-            key={labelHtml ?? i}
+            key={ids[i]}
+            id={ids[i] ?? taskId}
+            index={i}
             name="answer"
             label={
-              labels.length === 1
+              parts.length === 1
                 ? t("yourAnswer")
                 : t("answerPart", { number: i + 1 })
             }
-            labelHtml={labelHtml}
+            part={part}
+            variant="solve"
+            placeholder={
+              part.letter || part.prefix
+                ? undefined
+                : `\\text{${t("placeholder")}}`
+            }
             state={stateOf(i)}
-            onEdit={markEdited}
+            onChange={onChange}
           />
         ))}
       </div>
-      <div className="flex items-center gap-4">
-        <Button type="submit" disabled={isPending}>
-          {t("check")}
-        </Button>
+      {unchecked.length > 0 && (
+        <p className="-mt-1 text-subtle text-xs">
+          {t("unchecked", { parts: unchecked.join(", ") })}
+        </p>
+      )}
+      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
+        <ActionBar
+          go={Boolean(checked?.correct) || help.solution}
+          next={next ?? fallback}
+          skip={next}
+          checked={Boolean(checked)}
+          disabled={
+            isPending ||
+            values.every((v) => !v.trim()) ||
+            checked?.correct === false
+          }
+        />
         {hasErrored && (
           <span role="alert" className="text-error-text">
             {errorText(result.serverError)}
           </span>
         )}
-        {checked && !edited && (
-          <span
-            role="status"
-            className={
-              checked.correct ? "text-success-text" : "text-error-text"
-            }
-          >
-            {checked.correct ? t("correct") : t("wrong")}
-          </span>
-        )}
-        {skip && (
-          <Link
-            href={skip}
-            className="ml-auto text-[15px] text-subtle hover:text-foreground"
-          >
-            {t("skip")}
-          </Link>
-        )}
+        {checked && <Result checked={checked} />}
       </div>
     </form>
   );

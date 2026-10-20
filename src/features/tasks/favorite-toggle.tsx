@@ -12,6 +12,7 @@ export async function FavoriteToggle({ taskId }: { taskId: string }) {
       taskId={taskId}
       saved={saved}
       signedIn={Boolean(session)}
+      compact
     />
   );
 }

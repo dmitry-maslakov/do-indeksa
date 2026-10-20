@@ -15,10 +15,9 @@ async function fetchPart(
   return html;
 }
 
-export const useReveal = (taskId: string, part: RevealPart, enabled: boolean) =>
+export const useReveal = (taskId: string, part: RevealPart) =>
   useQuery({
     queryKey: ["reveal", taskId, part],
     queryFn: ({ signal }) => fetchPart(taskId, part, signal),
-    enabled,
     staleTime: Number.POSITIVE_INFINITY,
   });
