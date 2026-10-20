@@ -29,7 +29,9 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   await sheet.getByRole("tab", { name: "Svi zadaci" }).click();
   await expect(sheet.locator('a[href$="/bank/eks-001"]')).toBeVisible();
   await sheet.getByLabel("Tema").selectOption("logarithms");
-  await expect(page).toHaveURL(/\/bank\/log-\d+$/);
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  await page.getByRole("button", { name: /Logaritmi/ }).click();
+  await expect(sheet.getByLabel("Tema")).toHaveValue("logarithms");
 });
 
 test("a guest finishes the daily test", { tag: "@mobile" }, async ({

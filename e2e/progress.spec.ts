@@ -55,7 +55,10 @@ test("the task rail marks the latest attempt", async ({ page, auth }) => {
 test("a topic starts from its recommended task", async ({ page, auth }) => {
   await seed(auth.db, await auth.signIn());
   await page.goto("/bank/start/exponential-equations");
-  await expect(page).toHaveURL(/\/bank\/eks-\d+$/);
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  await expect(page.getByLabel("Tema").filter({ visible: true })).toHaveValue(
+    "exponential-equations",
+  );
 });
 
 test("the home page counts tasks whose latest attempt is wrong", async ({
