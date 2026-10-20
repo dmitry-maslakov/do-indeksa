@@ -115,6 +115,7 @@
   "Variants": {
     "title": "Practice tests",
     "format": "{tasks, plural, one {# task} other {# tasks}} · {minutes, number} min",
+    "original": "Original (PDF) ↗",
     "official": "In the exam format",
     "curated": "Our tests",
     "start": "Start",

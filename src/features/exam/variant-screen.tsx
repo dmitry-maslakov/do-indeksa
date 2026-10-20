@@ -53,6 +53,19 @@ export async function VariantScreen({
         <span className="text-sm text-subtle">
           {t("format", { tasks: tasks.length, minutes })}
           {code && ` · ${t("code", { code })}`}
+          {variant.original && (
+            <>
+              {" · "}
+              <a
+                href={variant.original}
+                target="_blank"
+                rel="noopener"
+                className="underline underline-offset-3 hover:text-foreground"
+              >
+                {t("original")}
+              </a>
+            </>
+          )}
         </span>
       </div>
       <Suspense fallback={<ExamGhost />}>

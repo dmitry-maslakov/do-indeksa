@@ -136,6 +136,7 @@ const variants = defineCollection({
     kind: z.enum(["official", "curated"]),
     year: z.number().int().optional(),
     title: z.string().optional(),
+    original: z.url().optional(),
     taskIds: z.array(z.string()).min(1),
   }),
   transform: (variant, { documents }) => {

@@ -20,7 +20,7 @@ export const contentVariants = [...officialVariants, ...curatedVariants];
 
 export interface ExamVariant
   extends Pick<Variant, "id">,
-    Partial<Pick<Variant, "title" | "year">> {
+    Partial<Pick<Variant, "title" | "year" | "original">> {
   kind: Variant["kind"] | "daily" | "custom";
   taskIds: string[];
 }
