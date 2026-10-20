@@ -45,7 +45,8 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "account": "Account",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "merged": "Progress from this device was merged into your account."
   },
   "Bank": {
     "title": "Task bank",

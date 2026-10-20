@@ -7,6 +7,7 @@ import { io } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { cache } from "react";
 import {
+  adoptGuest,
   createGuestProfile,
   guestProfileOf,
   profileOf,
@@ -54,6 +55,12 @@ const getSession = cache(async () => {
 const profileCookie = "__Host-profile";
 const noProfile = "00000000-0000-0000-0000-000000000000";
 const profileCookieAge = 400 * 24 * 60 * 60;
+const profileCookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  path: "/",
+} as const;
 
 const findProfileId = cache(async () => {
   const session = await getSession();
@@ -69,11 +76,22 @@ export async function ensureProfileId() {
   if (found) return found;
   const { id, token } = await createGuestProfile();
   (await cookies()).set(profileCookie, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+    ...profileCookieOptions,
     maxAge: profileCookieAge,
   });
   return id;
+}
+
+export async function hasGuestToAdopt() {
+  const [session, jar] = await Promise.all([getSession(), cookies()]);
+  return Boolean(session && jar.has(profileCookie));
+}
+
+export async function adoptGuestProfile() {
+  const [session, jar] = await Promise.all([getSession(), cookies()]);
+  const token = jar.get(profileCookie)?.value;
+  if (!session || !token) return false;
+  const merged = await adoptGuest(session.user.id, token);
+  jar.set(profileCookie, "", { ...profileCookieOptions, maxAge: 0 });
+  return merged;
 }
