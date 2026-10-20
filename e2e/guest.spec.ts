@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import type { Page } from "@playwright/test";
 import { answer, expect, finish, test } from "./fixtures";
 
 test("a guest checks an answer", async ({ page }) => {
@@ -68,16 +69,26 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   ).toBeVisible();
 });
 
-test("a guest composes an untimed test from a topic", async ({
+const composer = (page: Page) =>
+  page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "Sastavi svoj test" }) });
+
+test("a guest composes a short untimed test without a topic", async ({
   page,
   context,
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/variants");
-  await page.getByText("Izaberi teme").click();
-  await page.getByRole("button", { name: "Logaritmi" }).click();
-  await page.getByRole("button", { name: "Sastavi", exact: true }).click();
+  const card = composer(page);
+  const topic = card.getByRole("button", { name: "Logaritmi" });
+  await expect(topic).toHaveAttribute("aria-pressed", "true");
+  await topic.click();
+  await expect(topic).toHaveAttribute("aria-pressed", "false");
+  await card.getByRole("button", { name: "5", exact: true }).click();
+  await card.getByRole("button", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+  await expect(page.getByText(/^5 zadataka/)).toBeVisible();
   await page.getByRole("button", { name: "Podeli" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     page.url(),
@@ -108,19 +119,22 @@ test("an old test link opens the test under its short code", async ({
   }
 });
 
-test("a guest sees personal compose modes need sign-in", async ({ page }) => {
+test("a guest cannot compose a test without topics", async ({ page }) => {
   await page.goto("/variants");
+  const card = composer(page);
+  const all = card.getByRole("button", { name: "Sve teme" });
+  await expect(all).toHaveAttribute("aria-pressed", "true");
   await expect(
-    page.getByRole("radio", { name: "Iz mojih slabijih tema" }),
-  ).toBeDisabled();
-  await expect(
-    page.getByRole("radio", { name: "Samo nerešeni" }),
-  ).toBeDisabled();
-  const aside = page.locator("aside");
-  await expect(
-    aside.getByText("Slabije teme i nerešeni zadaci", { exact: false }),
-  ).toBeVisible();
-  await expect(aside.getByRole("button", { name: "Prijavi se" })).toBeVisible();
+    card.getByRole("button", { name: "Samo slabije teme" }),
+  ).toHaveCount(0);
+  const topics = card.locator("button[title]");
+  for (const topic of await topics.all()) await topic.click();
+  await expect(card.getByRole("button", { name: "Počni →" })).toBeDisabled();
+  await all.click();
+  await expect(topics.and(page.locator('[aria-pressed="true"]'))).toHaveCount(
+    await topics.count(),
+  );
+  await expect(card.getByRole("button", { name: "Počni →" })).toBeEnabled();
 });
 
 test("a guest is told when a personal mode falls back", async ({ page }) => {

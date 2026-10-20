@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import { expect, test } from "./fixtures";
@@ -23,7 +24,7 @@ test("the run history loads older runs while scrolling", async ({
 }) => {
   await seedRuns(auth.db, await auth.signIn(), 25);
   await page.goto("/variants?tab=history");
-  const rows = page.getByRole("img", { name: "Test od 0 zadataka" });
+  const rows = page.getByRole("img", { name: "0 od 0 tačno" });
   const more = page.getByRole("button", { name: "Prikaži još" });
   await expect(rows).toHaveCount(20);
 
@@ -31,6 +32,27 @@ test("the run history loads older runs while scrolling", async ({
   await expect(rows).toHaveCount(25);
   await expect(more).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test("a finished variant shows its result in the catalog", async ({
+  page,
+  auth,
+}) => {
+  const userId = await auth.signIn();
+  await page.goto("/variants");
+  const first = page.getByRole("link", { name: /Počni →/ }).first();
+  const href = (await first.getAttribute("href")) ?? "";
+  const runId = randomUUID();
+  await auth.db.query(
+    `insert into runs (id, user_id, kind, variant_id, task_ids, started_at, finished_at)
+     values ($1, $2, 'official', $3, '{}', now(), now())`,
+    [runId, userId, href.split("/").at(-1)],
+  );
+  await page.reload();
+  const row = page.locator(`a[href="/review/${runId.slice(0, 8)}"]`);
+  await expect(row).toContainText("Pregled");
+  await expect(row).toContainText("rešeno");
+  await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
 });
 
 test("the run feed returns only the caller's runs", async ({ page, auth }) => {
