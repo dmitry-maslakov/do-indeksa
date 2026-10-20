@@ -20,6 +20,7 @@ export function weeklyVariant(now = new Date()) {
   if (!variant) return undefined;
   return {
     id: variant.id,
+    week,
     tasks: variant.taskIds.length,
     topics: variant.taskIds.flatMap((id) => {
       const topic = getTask(id)?.topic;

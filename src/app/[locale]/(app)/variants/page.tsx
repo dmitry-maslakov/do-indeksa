@@ -1,25 +1,26 @@
-import { sumBy } from "es-toolkit";
 import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
+import { connection } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
-import { type ReactNode, Suspense } from "react";
+import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SignInCard } from "@/features/account/sign-in-card";
-import { DailyBanner } from "@/features/exam/daily-banner";
-import { positions } from "@/features/exam/exam";
+import { durationHours, maxPoints, positions } from "@/features/exam/exam";
 import { runPage } from "@/features/exam/run-feed";
-import { type RunRow, summarizeRuns } from "@/features/exam/run-summaries";
+import { type RunSummary, summarizeRuns } from "@/features/exam/run-summaries";
 import { curatedVariants, officialVariants } from "@/features/exam/variants";
-import { getLatestRuns, getRuns } from "@/features/progress/history";
-import { topicName } from "@/features/tasks/topics";
+import { weeklyVariant } from "@/features/exam/weekly";
+import { getLatestRuns, getTaskStats } from "@/features/progress/history";
+import { weakTopics } from "@/features/progress/progress";
+import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
 import { ComposeCard } from "./_components/compose-card";
-import { RecentCard } from "./_components/recent-card";
+import { ExamRow } from "./_components/exam-row";
 import { RunHistory } from "./_components/run-history";
-import { VariantList } from "./_components/variant-list";
+import { TestsTable } from "./_components/tests-table";
+import { WeekCard } from "./_components/week-card";
 
 const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
@@ -33,14 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const recentRunCount = 3;
-
-async function loadRuns(read: (userId: string) => PromiseLike<RunRow[]>) {
+async function loadLatest(ids: string[]) {
   const session = await getSession();
-  if (!session) return [];
+  if (!session) return undefined;
   return summarizeRuns(
     session.user.id,
-    await read(session.user.id),
+    await getLatestRuns(session.user.id, ids),
     await getLocale(),
   );
 }
@@ -50,42 +49,75 @@ async function loadHistory() {
   return session && runPage(session.user.id, 0, await getLocale());
 }
 
+async function loadWeak() {
+  const session = await getSession();
+  return session ? weakTopics(await getTaskStats(session.user.id)) : [];
+}
+
 export default async function VariantsPage({
   searchParams,
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
-  const recent = loadRuns((userId) => getRuns(userId, recentRunCount));
   const topics = positions.map((p) => ({
     id: p.topic,
     name: topicName(p.topic, locale),
+    look: topicLook(p.topic),
   }));
+  const counts = {
+    official: officialVariants.length,
+    curated: curatedVariants.length,
+  };
 
   return (
-    <main className="px-4 pb-9 md:px-9">
-      <PageTitle>{t("title")}</PageTitle>
-      <div className="grid grid-cols-1 items-start gap-x-6 gap-y-5 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:grid-rows-[auto_1fr]">
-        <DailyBanner />
-        <Suspense
-          fallback={
-            <Catalog>
-              <RunHistory />
-            </Catalog>
-          }
-        >
-          <CatalogTab searchParams={searchParams} />
-        </Suspense>
-        <aside className="flex flex-col gap-5">
-          <ComposeCard topics={topics} />
-          <Suspense>
-            <Await promise={recent}>
-              {(runs) => runs.length > 0 && <RecentCard runs={runs} />}
-            </Await>
+    <main className="flex flex-col gap-4 px-4 pt-4 pb-6 md:gap-5 md:px-10 md:pt-6 md:pb-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
+        <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
+          {t("title")}
+        </h1>
+        <span className="text-sm text-subtle">
+          {t("meta", {
+            tasks: positions.length,
+            hours: durationHours,
+            points: maxPoints,
+          })}
+        </span>
+      </div>
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_--spacing(85)]">
+        <section className="flex min-w-0 flex-col gap-3">
+          <SearchTabs
+            variant="pill"
+            param="tab"
+            items={tabs.map((x) => ({
+              href: x === "official" ? "/variants" : `/variants?tab=${x}`,
+              label: x === "history" ? t(x) : t(x, { count: counts[x] }),
+              value: x === "official" ? undefined : x,
+            }))}
+          />
+          <Suspense fallback={<VariantTable tab="official" pending />}>
+            <CatalogTab searchParams={searchParams} />
           </Suspense>
+        </section>
+        <aside className="flex flex-col gap-5">
+          <Suspense fallback={<Skeleton className="h-62 rounded-xl" />}>
+            <Weekly />
+          </Suspense>
+          <ComposeCard topics={topics} weak={loadWeak()} />
         </aside>
       </div>
     </main>
   );
+}
+
+async function Weekly() {
+  await connection();
+  const weekly = weeklyVariant();
+  if (!weekly) return null;
+  const runs = await loadLatest([weekly.id]);
+  const run = runs?.find(
+    (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
+  );
+  return <WeekCard {...weekly} run={run} />;
 }
 
 async function CatalogTab({
@@ -94,55 +126,55 @@ async function CatalogTab({
   const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
-  const variants = tab === "official" ? officialVariants : curatedVariants;
-  const ids = variants.map((v) => v.id);
+
+  if (tab === "history") {
+    return (
+      <Suspense fallback={<TestsTable first="attempt">{null}</TestsTable>}>
+        <Await promise={loadHistory()}>
+          {(first) =>
+            first ? (
+              <RunHistory first={first} />
+            ) : (
+              <SignInCard text={t("historyGuest")} />
+            )
+          }
+        </Await>
+      </Suspense>
+    );
+  }
 
   return (
-    <Catalog>
-      {tab === "history" ? (
-        <Suspense fallback={<RunHistory />}>
-          <Await promise={loadHistory()}>
-            {(first) =>
-              first ? (
-                <RunHistory first={first} />
-              ) : (
-                <SignInCard text={t("historyGuest")} />
-              )
-            }
-          </Await>
-        </Suspense>
-      ) : (
-        <Suspense fallback={<VariantList variants={variants} />}>
-          <Await promise={loadRuns((userId) => getLatestRuns(userId, ids))}>
-            {(runs) => <VariantList variants={variants} runs={runs} />}
-          </Await>
-        </Suspense>
-      )}
-    </Catalog>
+    <Suspense fallback={<VariantTable tab={tab} pending />}>
+      <Await promise={loadLatest(variantsOf(tab).map((v) => v.id))}>
+        {(runs) => <VariantTable tab={tab} runs={runs} />}
+      </Await>
+    </Suspense>
   );
 }
 
-function Catalog({ children }: { children: ReactNode }) {
-  const t = useTranslations("Variants");
-  const minutes = sumBy(positions, (p) => p.minutes);
+const variantsOf = (tab: Exclude<Tab, "history">) =>
+  tab === "official" ? officialVariants : curatedVariants;
 
+function VariantTable({
+  tab,
+  runs = [],
+  pending,
+}: {
+  tab: Exclude<Tab, "history">;
+  runs?: RunSummary[];
+  pending?: boolean;
+}) {
   return (
-    <div className="flex flex-col gap-3.5 md:col-start-1 md:row-span-2 md:row-start-1">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-1">
-        <SearchTabs
-          variant="underline"
-          param="tab"
-          items={tabs.map((x) => ({
-            href: x === "official" ? "/variants" : `/variants?tab=${x}`,
-            label: t(x),
-            value: x === "official" ? undefined : x,
-          }))}
+    <TestsTable first={tab === "official" ? "year" : "test"}>
+      {variantsOf(tab).map((v) => (
+        <ExamRow
+          key={v.id}
+          title={v.title}
+          href={`/variants/${v.id}`}
+          run={runs.find((r) => r.variantId === v.id)}
+          pending={pending}
         />
-        <span className="text-[13px] text-subtle">
-          {t("format", { tasks: positions.length, minutes })}
-        </span>
-      </div>
-      {children}
-    </div>
+      ))}
+    </TestsTable>
   );
 }
