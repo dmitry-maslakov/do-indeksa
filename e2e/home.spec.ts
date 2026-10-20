@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import { expect, test } from "./fixtures";
 
@@ -14,8 +15,7 @@ const attempt = (
     [userId, taskId, correct, hoursAgo],
   );
 
-test("a first visit starts with the first topic", async ({ page, auth }) => {
-  await auth.signIn();
+async function expectFirstVisit(page: Page) {
   await page.goto("/");
 
   await expect(page.getByText("Predlog za danas")).toBeVisible();
@@ -34,6 +34,17 @@ test("a first visit starts with the first topic", async ({ page, auth }) => {
     "href",
     "/variants/ftn-p1-2025",
   );
+  await expect(page.locator("#topic-map").getByRole("listitem")).toHaveCount(
+    10,
+  );
+}
+
+test("a guest starts with the first topic", ({ page }) =>
+  expectFirstVisit(page));
+
+test("a first visit starts with the first topic", async ({ page, auth }) => {
+  await auth.signIn();
+  await expectFirstVisit(page);
 });
 
 test("the home page suggests a topic and maps progress", async ({
