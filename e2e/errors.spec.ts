@@ -40,5 +40,5 @@ test("finishing a test offline keeps it open", async ({ page, context }) => {
   await expect(page.getByText("Test nije predat.")).toBeVisible();
   await context.setOffline(false);
   await submit.click();
-  await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
 });

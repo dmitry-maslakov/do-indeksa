@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { FocusMode } from "@/components/focus-mode";
 import { reviewHref } from "@/features/review/review";
@@ -13,10 +13,8 @@ import type { CurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
-import { ExamResult } from "./exam-result";
 import { spentAt, useExamHydrated, useExamStore } from "./exam-store";
 import { ExamTask } from "./exam-task";
-import type { GuestResult } from "./finish-run";
 import { finishRun, saveRun } from "./run-actions";
 import type { ExamTask as Task } from "./variants";
 
@@ -25,8 +23,7 @@ interface ExamRunnerProps {
   tasks: Task[];
   minutes: number;
   title: string;
-  signedIn: boolean;
-  account?: CurrentRun;
+  saved?: CurrentRun;
   swaps?: (string | undefined)[];
   fallback?: ComposeMode;
 }
@@ -36,8 +33,7 @@ export function ExamRunner({
   tasks,
   minutes,
   title,
-  signedIn,
-  account,
+  saved,
   swaps,
   fallback,
 }: ExamRunnerProps) {
@@ -45,18 +41,16 @@ export function ExamRunner({
   const router = useRouter();
   const run = useExamStore((s) => s.runs[variantId]);
   const { start, answer, go, restore, clear } = useExamStore.getState();
-  const [result, setResult] = useState<GuestResult>();
   const t = useTranslations("Exam");
   const errorText = useErrorText();
   const { execute: submit, isPending: pending } = useAction(finishRun, {
-    onSuccess: ({ data, input }) => {
+    onSuccess: ({ input }) => {
       clear(variantId);
-      if (data.saved) router.push(reviewHref(input.runId));
-      else setResult(data);
+      router.push(reviewHref(input.runId));
     },
-    onError: ({ error }) =>
+    onError: () =>
       toast.error(t("finishFailed"), {
-        description: errorText(error.serverError),
+        description: errorText(),
       }),
   });
   const meta = useMemo(
@@ -71,39 +65,28 @@ export function ExamRunner({
     }),
     [title, minutes, tasks],
   );
-  const resumed = account?.variantId === variantId ? account.run : undefined;
-  const synced = account?.run.updatedAt ?? 0;
+  const resumed = saved?.variantId === variantId ? saved.run : undefined;
+  const synced = saved?.run.updatedAt ?? 0;
   useEffect(() => {
     if (hydrated && resumed) restore(variantId, resumed);
   }, [hydrated, resumed, restore, variantId]);
   useEffect(() => {
-    if (!signedIn || !run || run.updatedAt <= synced) return;
+    if (!run || run.updatedAt <= synced) return;
     const id = setTimeout(() => {
       const spent = spentAt(run, Date.now());
       saveRun({ ...run, spent, variantId }).catch(() => undefined);
     }, 1500);
     return () => clearTimeout(id);
-  }, [signedIn, run, synced, variantId]);
+  }, [run, synced, variantId]);
   const onAnswer = useCallback(
     (part: number, value: string) => answer(variantId, part, value),
     [answer, variantId],
   );
 
-  if (result) {
-    return (
-      <ExamResult
-        tasks={tasks}
-        result={result}
-        onRetry={() => setResult(undefined)}
-      />
-    );
-  }
-
   if (hydrated && !run && !resumed) {
     return (
       <ExamIntro
         title={title}
-        signedIn={signedIn}
         tasks={tasks}
         minutes={minutes}
         swaps={swaps}

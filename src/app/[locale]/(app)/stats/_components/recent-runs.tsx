@@ -54,7 +54,6 @@ export function RecentRuns({ runs }: { runs?: RecentRun[] }) {
       ) : runs.length === 0 ? (
         <EmptyNote
           text={t("noRuns")}
-          signedIn
           href="/daily"
           action={home("playDaily")}
         />

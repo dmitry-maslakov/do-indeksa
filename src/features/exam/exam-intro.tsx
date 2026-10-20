@@ -16,7 +16,6 @@ interface ExamIntroProps {
   title: string;
   tasks: ExamTask[];
   minutes: number;
-  signedIn: boolean;
   swaps?: (string | undefined)[];
   fallback?: ComposeMode;
   onStart: (timed: boolean) => void;
@@ -26,14 +25,12 @@ export function ExamIntro({
   title,
   tasks,
   minutes,
-  signedIn,
   swaps,
   fallback,
   onStart,
 }: ExamIntroProps) {
   const t = useTranslations("Exam");
   const variants = useTranslations("Variants");
-  const compose = useTranslations("Compose");
   const [timed, setTimed] = useState(true);
   const timerId = useId();
   const swappable = swaps?.some(Boolean);
@@ -42,9 +39,7 @@ export function ExamIntro({
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
       {fallback && (
         <p className="text-sm md:col-span-2">
-          {signedIn || fallback === "topics"
-            ? t("introFallback", { mode: fallback })
-            : compose("guest")}
+          {t("introFallback", { mode: fallback })}
         </p>
       )}
       <Card size="sm" className="gap-4 max-md:order-1">
@@ -59,7 +54,7 @@ export function ExamIntro({
         <ul className="flex flex-col gap-1.5 px-1 text-[13px] text-subtle">
           <li>{t("introAnswer")}</li>
           <li>{t("introTime")}</li>
-          <li>{signedIn ? t("introSynced") : t("introSaved")}</li>
+          <li>{t("introSaved")}</li>
         </ul>
       </Card>
       <Card className="py-3 md:py-4">

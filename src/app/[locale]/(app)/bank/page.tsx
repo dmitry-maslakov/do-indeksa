@@ -3,7 +3,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
-import { Await } from "@/components/await";
 import { BankFilters } from "@/features/bank/bank-filters";
 import { BankList } from "@/features/bank/bank-list";
 import { BankTabs } from "@/features/bank/bank-tabs";
@@ -54,33 +53,20 @@ async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
-  const tasks = findTasks(filters);
-  const profileId = await getProfileId();
+  const progress = await getProgress(await getProfileId());
 
-  return profileId ? (
-    <Suspense
-      fallback={<BankResults filters={filters} tasks={tasks} signedIn />}
-    >
-      <Await promise={getProgress(profileId)}>
-        {(progress) => (
-          <BankResults
-            filters={filters}
-            tasks={findTasks(filters, progress)}
-            signedIn
-            progress={progress}
-          />
-        )}
-      </Await>
-    </Suspense>
-  ) : (
-    <BankResults filters={filters} tasks={tasks} signedIn={false} />
+  return (
+    <BankResults
+      filters={filters}
+      tasks={findTasks(filters, progress)}
+      progress={progress}
+    />
   );
 }
 
 interface BankResultsProps {
   filters: Filters;
   tasks: TaskSummary[];
-  signedIn?: boolean;
   progress?: Progress;
   pending?: boolean;
 }
@@ -88,9 +74,8 @@ interface BankResultsProps {
 function BankResults({
   filters,
   tasks,
-  signedIn = false,
   progress,
-  pending = signedIn && !progress && Boolean(filters.status),
+  pending = false,
 }: BankResultsProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
@@ -100,7 +85,7 @@ function BankResults({
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
         <BankTabs topic={filters.topic} pending={pending} />
-        <BankFilters signedIn={signedIn} variant="card">
+        <BankFilters variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
               variant="card"
@@ -124,7 +109,7 @@ function BankResults({
               active={activeFilters(filters, t, locale).length}
               count={tasks.length}
             >
-              <BankFilters signedIn={signedIn} />
+              <BankFilters />
             </FiltersSheet>
           </div>
         </div>
@@ -138,12 +123,7 @@ function BankResults({
         ) : tasks.length === 0 ? (
           <EmptyResults />
         ) : (
-          <BankList
-            tasks={tasks}
-            search={search}
-            signedIn={signedIn}
-            progress={progress}
-          />
+          <BankList tasks={tasks} search={search} progress={progress} />
         )}
       </section>
     </div>

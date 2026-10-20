@@ -4,9 +4,13 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { oAuthProxy } from "better-auth/plugins";
 import { io } from "next/cache";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { cache } from "react";
-import { profileOf } from "@/features/account/profiles";
+import {
+  createGuestProfile,
+  guestProfileOf,
+  profileOf,
+} from "@/features/account/profiles";
 import { db } from "./db";
 import { env } from "./env";
 
@@ -42,12 +46,34 @@ export const auth = betterAuth({
   ],
 });
 
-export const getSession = cache(async () => {
+const getSession = cache(async () => {
   await io();
   return auth.api.getSession({ headers: await headers() });
 });
 
-export const getProfileId = cache(async () => {
+const profileCookie = "__Host-profile";
+const noProfile = "00000000-0000-0000-0000-000000000000";
+const profileCookieAge = 400 * 24 * 60 * 60;
+
+const findProfileId = cache(async () => {
   const session = await getSession();
-  return session ? profileOf(session.user.id) : undefined;
+  if (session) return profileOf(session.user.id);
+  const token = (await cookies()).get(profileCookie)?.value;
+  return token ? guestProfileOf(token) : undefined;
 });
+
+export const getProfileId = async () => (await findProfileId()) ?? noProfile;
+
+export async function ensureProfileId() {
+  const found = await findProfileId();
+  if (found) return found;
+  const { id, token } = await createGuestProfile();
+  (await cookies()).set(profileCookie, token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: profileCookieAge,
+  });
+  return id;
+}

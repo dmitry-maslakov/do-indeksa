@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SignInCard } from "@/features/account/sign-in-card";
 import { durationHours, maxPoints, positions } from "@/features/exam/exam";
 import { runPage } from "@/features/exam/run-feed";
 import { type RunSummary, summarizeRuns } from "@/features/exam/run-summaries";
@@ -36,7 +35,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function loadLatest(ids: string[]) {
   const profileId = await getProfileId();
-  if (!profileId) return undefined;
   return summarizeRuns(
     profileId,
     await getLatestRuns(profileId, ids),
@@ -45,13 +43,11 @@ async function loadLatest(ids: string[]) {
 }
 
 async function loadHistory() {
-  const profileId = await getProfileId();
-  return profileId && runPage(profileId, 0, await getLocale());
+  return runPage(await getProfileId(), 0, await getLocale());
 }
 
 async function loadWeak() {
-  const profileId = await getProfileId();
-  return profileId ? weakTopics(await getTaskStats(profileId)) : [];
+  return weakTopics(await getTaskStats(await getProfileId()));
 }
 
 export default async function VariantsPage({
@@ -116,7 +112,7 @@ async function Weekly() {
   const weekly = weeklyVariant();
   if (!weekly) return null;
   const runs = await loadLatest([weekly.id]);
-  const run = runs?.find(
+  const run = runs.find(
     (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
   );
   return <WeekCard {...weekly} run={run} />;
@@ -125,7 +121,6 @@ async function Weekly() {
 async function CatalogTab({
   searchParams,
 }: Pick<PageProps<"/[locale]/variants">, "searchParams">) {
-  const t = await getTranslations("Variants");
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
 
@@ -133,13 +128,7 @@ async function CatalogTab({
     return (
       <Suspense fallback={<TestsTable first="attempt">{null}</TestsTable>}>
         <Await promise={loadHistory()}>
-          {(first) =>
-            first ? (
-              <RunHistory first={first} />
-            ) : (
-              <SignInCard text={t("historyGuest")} />
-            )
-          }
+          {(first) => <RunHistory first={first} />}
         </Await>
       </Suspense>
     );

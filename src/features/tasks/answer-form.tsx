@@ -168,7 +168,7 @@ export function AnswerForm({
         />
         {hasErrored && (
           <span role="alert" className="text-error-text">
-            {errorText(result.serverError)}
+            {errorText()}
           </span>
         )}
         {checked && <Result checked={checked} />}

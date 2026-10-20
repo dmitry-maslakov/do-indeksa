@@ -63,11 +63,11 @@ test("the run feed returns only the caller's runs", async ({ page, auth }) => {
   expect(await feed(page)).toEqual({ runs: [], next: null });
 });
 
-test("the run feed rejects guests and malformed page requests", async ({
+test("the run feed is empty without a profile and rejects malformed pages", async ({
   request,
 }) => {
   const guest = await request.get("/api/runs?offset=0&locale=sr-Latn");
-  expect(guest.status()).toBe(401);
+  expect(await guest.json()).toEqual({ runs: [], next: null });
   const malformed = await request.get("/api/runs?offset=-1&locale=xx");
   expect(malformed.status()).toBe(400);
 });

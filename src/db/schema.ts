@@ -26,6 +26,7 @@ export const profiles = pgTable("profiles", {
   userId: text()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
+  tokenHash: text().unique(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 

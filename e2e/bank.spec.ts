@@ -158,6 +158,7 @@ test("back and forward restore the bank filters", async ({ page }) => {
 test("the bank ignores filters it does not know", async ({ page, errors }) => {
   await page.goto("/bank");
   const { topic, level, source, search, count } = bank(page);
+  await expect(count).toHaveCount(1);
   const all = await count.textContent();
 
   await page.goto(

@@ -9,17 +9,13 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import { authClient } from "@/features/account/auth-client";
-import { SignInButton } from "@/features/account/sign-in-button";
 import { useErrorText } from "@/lib/use-error-text";
 import { reportTask } from "./report-action";
 import { reportKinds } from "./report-kinds";
 
 export function ReportTask({ taskId }: { taskId: string }) {
   const t = useTranslations("Report");
-  const user = useTranslations("UserMenu");
-  const { data: session } = authClient.useSession();
-  const { execute, result, isPending, hasSucceeded, hasErrored } =
+  const { execute, isPending, hasSucceeded, hasErrored } =
     useAction(reportTask);
   const errorText = useErrorText();
 
@@ -29,14 +25,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
         <FlagIcon className="size-4" />
         {t("open")}
       </summary>
-      {!session ? (
-        <div className="mt-3 flex flex-col items-start gap-3 text-sm text-subtle">
-          <p>{t("guest")}</p>
-          <SignInButton size="sm" variant="tint">
-            {user("signIn")}
-          </SignInButton>
-        </div>
-      ) : hasSucceeded ? (
+      {hasSucceeded ? (
         <p role="status" className="mt-3 text-sm text-success-text">
           {t("thanks")}
         </p>
@@ -58,7 +47,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
           />
           {hasErrored && (
             <p role="alert" className="text-sm text-error-text">
-              {errorText(result.serverError)}
+              {errorText()}
             </p>
           )}
           <Button

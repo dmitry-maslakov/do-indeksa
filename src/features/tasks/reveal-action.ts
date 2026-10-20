@@ -16,5 +16,5 @@ const schema = z.object({
 export const saveReveal = actionClient
   .inputSchema(schema)
   .action(async ({ parsedInput: { taskId, part }, ctx: { profileId } }) => {
-    if (profileId) await recordReveal(profileId, taskId, part);
+    await recordReveal(profileId, taskId, part);
   });

@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
   const query = pageQuery.safeParse(Object.fromEntries(searchParams));
   if (!query.success) return new Response(null, { status: 400 });
   const filters = loadBankFilters(searchParams);
-  const profileId = await getProfileId();
-  const progress = profileId ? await getProgress(profileId) : undefined;
+  const progress = await getProgress(await getProfileId());
   const tasks = findTasks(filters, progress);
   return Response.json(
     feedPage(tasks, query.data.offset, query.data.locale, progress),

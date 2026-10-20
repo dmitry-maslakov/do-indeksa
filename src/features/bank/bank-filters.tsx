@@ -2,7 +2,6 @@ import { useLocale, useTranslations } from "next-intl";
 import type { ComponentProps, ReactNode } from "react";
 import type { NativeSelect } from "@/components/ui/native-select";
 import { NativeSelectOption } from "@/components/ui/native-select";
-import { SignedIn } from "@/features/account/signed-in";
 import { positions } from "@/features/exam/exam";
 import { levels } from "@/features/tasks/level";
 import { topics } from "@/features/tasks/topics";
@@ -11,12 +10,11 @@ import { FilterSelect } from "./filter-select";
 import { sources, statusFilters } from "./params";
 
 interface BankFiltersProps {
-  signedIn?: boolean;
   variant?: ComponentProps<typeof NativeSelect>["variant"];
   children?: ReactNode;
 }
 
-export function BankFilters({ signedIn, variant, children }: BankFiltersProps) {
+export function BankFilters({ variant, children }: BankFiltersProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
 
@@ -55,16 +53,14 @@ export function BankFilters({ signedIn, variant, children }: BankFiltersProps) {
           </NativeSelectOption>
         ))}
       </FilterSelect>
-      <SignedIn signedIn={signedIn}>
-        <FilterSelect name="status" label={t("status")} variant={variant}>
-          <NativeSelectOption value="">{t("allStatuses")}</NativeSelectOption>
-          {statusFilters.map((status) => (
-            <NativeSelectOption key={status} value={status}>
-              {t("statuses", { status })}
-            </NativeSelectOption>
-          ))}
-        </FilterSelect>
-      </SignedIn>
+      <FilterSelect name="status" label={t("status")} variant={variant}>
+        <NativeSelectOption value="">{t("allStatuses")}</NativeSelectOption>
+        {statusFilters.map((status) => (
+          <NativeSelectOption key={status} value={status}>
+            {t("statuses", { status })}
+          </NativeSelectOption>
+        ))}
+      </FilterSelect>
       <Link
         href="/bank"
         className="w-fit text-muted-foreground text-sm underline decoration-1 underline-offset-3 hover:text-foreground"

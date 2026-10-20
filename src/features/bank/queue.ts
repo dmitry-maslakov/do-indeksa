@@ -27,27 +27,24 @@ export interface Queue {
 
 interface PoolInput {
   topic: string;
-  profileId?: string;
+  profileId: string;
   current?: string;
 }
 
 async function plan({ topic, profileId, current }: PoolInput, size = 6) {
   const ids = findTasks({ topic }).map((t) => t.id);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
-  const attempts = profileId
-    ? await getAttempted(profileId, asked)
-    : new Map<string, Attempted>();
+  const attempts = await getAttempted(profileId, asked);
   const queue = planQueue({
     pool: ids.map((id) => ({ id, exam: examYear(id) !== null })),
     attempts,
     current,
-    ordered: !profileId,
     size,
   });
   return { attempts, queue };
 }
 
-export async function nextTask(topic: string, profileId?: string) {
+export async function nextTask(topic: string, profileId: string) {
   const { queue } = await plan({ topic, profileId }, 1);
   return queue.upcoming[0]?.id;
 }

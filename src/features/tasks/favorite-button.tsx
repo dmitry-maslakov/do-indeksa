@@ -7,14 +7,12 @@ import { useOptimisticAction } from "next-safe-action/hooks";
 import { type ComponentProps, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { SignInButton } from "@/features/account/sign-in-button";
 import { useErrorText } from "@/lib/use-error-text";
 import { setFavorite } from "./favorite-action";
 
 interface FavoriteButtonProps {
   taskId: string;
   saved?: boolean;
-  signedIn?: boolean;
   pending?: boolean;
   compact?: boolean;
 }
@@ -22,7 +20,6 @@ interface FavoriteButtonProps {
 export function FavoriteButton({
   taskId,
   saved: initial = false,
-  signedIn = false,
   pending = false,
   compact = false,
 }: FavoriteButtonProps) {
@@ -33,7 +30,7 @@ export function FavoriteButton({
     currentState: saved,
     updateFn: (_, { favorite }) => favorite,
     onSuccess: ({ data }) => setSaved(data),
-    onError: ({ error }) => toast.error(errorText(error.serverError)),
+    onError: () => toast.error(errorText()),
   });
   const toggle = () => execute({ taskId, favorite: !shown });
 
@@ -61,8 +58,6 @@ export function FavoriteButton({
       {!compact && <span className="hidden sm:inline">{label}</span>}
     </>
   );
-
-  if (!signedIn) return <SignInButton {...props}>{star}</SignInButton>;
 
   return (
     <Button {...props} onClick={toggle} aria-pressed={shown}>

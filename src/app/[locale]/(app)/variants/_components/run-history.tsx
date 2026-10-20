@@ -17,7 +17,6 @@ export function RunHistory({ first }: { first: RunPage }) {
     return (
       <EmptyNote
         text={t("historyEmpty")}
-        signedIn
         href="/daily"
         action={home("playDaily")}
       />
