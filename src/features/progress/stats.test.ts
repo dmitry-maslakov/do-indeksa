@@ -2,10 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   accuracyBy,
   meanTimeByNumber,
-  streak,
   type TaskStat,
   totals,
-  warming,
   weakest,
 } from "./stats";
 
@@ -26,6 +24,7 @@ const stat = (
   durationMs: 0,
   firstRight: false,
   latestRight: false,
+  lastAt: 0,
   ...extra,
 });
 
@@ -76,28 +75,6 @@ describe("stats", () => {
 });
 
 describe("home folds", () => {
-  const now = new Date("2026-10-07T10:00:00Z");
-
-  it("counts consecutive days up to today or yesterday", () => {
-    expect(
-      streak(["2026-10-07", "2026-10-06", "2026-10-05", "2026-10-03"], now),
-    ).toBe(3);
-    expect(streak(["2026-10-06", "2026-10-05"], now)).toBe(2);
-    expect(streak(["2026-10-04"], now)).toBe(0);
-    expect(streak([], now)).toBe(0);
-  });
-
-  it("counts each day once", () => {
-    expect(streak(["2026-10-07", "2026-10-07", "2026-10-06"], now)).toBe(2);
-  });
-
-  it("steps back by calendar days across a clock change", () => {
-    const late = new Date("2026-10-26T22:30:00Z");
-    expect(streak(["2026-10-26", "2026-10-25", "2026-10-24"], late)).toBe(3);
-    const early = new Date("2026-03-30T22:30:00Z");
-    expect(streak(["2026-03-30", "2026-03-29", "2026-03-28"], early)).toBe(3);
-  });
-
   const recent = (
     taskId: string,
     topic: string,
@@ -117,14 +94,6 @@ describe("home folds", () => {
     expect(weakest(topicRows, ["w", "x", "y", "z"]).map((a) => a.key)).toEqual([
       "x",
       "y",
-    ]);
-  });
-
-  it("lists recent topics below the sample minimum", () => {
-    const rows = [...topicRows, recent("v1", "v", 2, 1)];
-    expect(warming(rows, ["u", "v", "w", "x", "y", "z"])).toEqual([
-      { key: "v", total: 2, pct: null },
-      { key: "z", total: 1, pct: null },
     ]);
   });
 });

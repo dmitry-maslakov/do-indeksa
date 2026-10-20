@@ -14,7 +14,7 @@ import {
 import { cache } from "react";
 import { z } from "zod";
 import { attempts, runs } from "@/db/schema";
-import { dayMs, timeZone } from "@/lib/dates";
+import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import { accuracyDays } from "./stats";
 import { taskStats } from "./task-stats";
@@ -116,6 +116,10 @@ export async function getTaskStats(userId: string) {
       durationMs: sum(attempts.durationMs).mapWith(Number),
       firstRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt}))[1]`,
       latestRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt} desc))[1]`,
+      lastAt:
+        sql`extract(epoch from max(${attempts.createdAt})) * 1000`.mapWith(
+          Number,
+        ),
     })
     .from(attempts)
     .where(eq(attempts.userId, userId))
@@ -123,21 +127,18 @@ export async function getTaskStats(userId: string) {
   return taskStats(rows);
 }
 
-const streakWindowDays = 400;
-
-export async function getRecentAttemptDays(userId: string) {
-  const day = sql<string>`to_char(${attempts.createdAt} at time zone ${timeZone}, 'YYYY-MM-DD')`;
-  const rows = await db
-    .selectDistinct({ day })
-    .from(attempts)
-    .where(
-      and(
-        eq(attempts.userId, userId),
-        gte(
-          attempts.createdAt,
-          new Date(Date.now() - streakWindowDays * dayMs),
-        ),
-      ),
-    );
-  return rows.map((row) => row.day);
-}
+export const getLatestResults = async (
+  userId: string,
+  taskIds: string[],
+  limit: number,
+) =>
+  (
+    await db
+      .select({ correct: attempts.correct })
+      .from(attempts)
+      .where(
+        and(eq(attempts.userId, userId), inArray(attempts.taskId, taskIds)),
+      )
+      .orderBy(desc(attempts.createdAt))
+      .limit(limit)
+  ).map((row) => row.correct);

@@ -1,5 +1,4 @@
 import { sumBy } from "es-toolkit";
-import { belgradeDate, dayMs } from "@/lib/dates";
 
 export interface TaskStat {
   taskId: string;
@@ -12,6 +11,7 @@ export interface TaskStat {
   durationMs: number;
   firstRight: boolean;
   latestRight: boolean;
+  lastAt: number;
 }
 
 export interface Accuracy {
@@ -81,25 +81,4 @@ export function weakest(stats: TaskStat[], topics: string[]) {
   return recentBy(stats, topics)
     .filter((a): a is Accuracy & { pct: number } => a.pct !== null)
     .sort((a, b) => a.pct - b.pct);
-}
-
-export function warming(stats: TaskStat[], topics: string[]) {
-  return recentBy(stats, topics)
-    .filter((a) => a.pct === null && a.total > 0)
-    .sort((a, b) => b.total - a.total);
-}
-
-const dayBefore = (day: string) =>
-  new Date(Date.parse(`${day}T12:00:00Z`) - dayMs).toISOString().slice(0, 10);
-
-export function streak(days: string[], now: Date) {
-  const active = new Set(days);
-  let day = belgradeDate(now);
-  if (!active.has(day)) day = dayBefore(day);
-  let count = 0;
-  while (active.has(day)) {
-    count++;
-    day = dayBefore(day);
-  }
-  return count;
 }
