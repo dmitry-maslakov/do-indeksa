@@ -21,6 +21,12 @@ describe("composeSchema", () => {
     expect(parse({ mode: "weak" }).mode).toBe("weak");
     expect(parse({ mode: "nope" }).mode).toBe("exam");
   });
+
+  it("keeps the count within the exam size", () => {
+    expect(parse({ count: "5" }).count).toBe(5);
+    expect(parse({ count: "0" }).count).toBe(parse({}).count);
+    expect(parse({ count: "99" }).count).toBe(parse({}).count);
+  });
 });
 
 describe("swapHrefs", () => {

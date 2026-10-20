@@ -13,10 +13,11 @@ interface ComposeInput {
   topics: string[];
   weak: string[];
   solved: Set<string>;
+  size?: number;
 }
 
 export function compose(pool: Pool, input: ComposeInput, seed: string) {
-  const size = pool.byPosition.length;
+  const size = input.size ?? pool.byPosition.length;
   const exam = () => pick(pool.byPosition, size, seed);
   const fromTopics = (topics: string[]) =>
     pick(

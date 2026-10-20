@@ -36,6 +36,10 @@ describe("compose", () => {
     );
   });
 
+  it("limits the test to the chosen size", () => {
+    expect(compose(pool, { ...input, size: 2 }, "s").ids).toHaveLength(2);
+  });
+
   it("skips solved tasks", () => {
     const solved = new Set(["a1", "b1", "b2"]);
     const { ids, fallback } = compose(
