@@ -66,12 +66,13 @@ export const partOutcome = pgEnum("part_outcome", partOutcomes);
 export const taskSessions = pgTable(
   "task_sessions",
   {
-    id: uuid().primaryKey(),
+    id: uuid().primaryKey().defaultRandom(),
     profileId: uuid()
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
-    startedAt: timestamp({ withTimezone: true }).notNull(),
+    startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     unique().on(t.id, t.profileId, t.taskId),
@@ -92,7 +93,6 @@ export const attempts = pgTable(
     answers: text().array().notNull(),
     outcomes: partOutcome().array().notNull(),
     correct: boolean().notNull(),
-    durationMs: integer().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
