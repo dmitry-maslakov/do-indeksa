@@ -2,8 +2,8 @@
 
 Code has three layers:
 
-- Adapters: pages, route handlers and `*-action.ts` files. They parse input, take the user from the session and call a service. They never import the database or Drizzle; Biome enforces it.
-- Services: server-only functions in `src/features/*`. They take plain arguments, the user id included, scope every query to that user, run the Drizzle queries and transactions and return plain data.
+- Adapters: pages, route handlers and `*-action.ts` files. They parse input, take the profile from `getProfileId()` and call a service. They never import the database or Drizzle; Biome enforces it.
+- Services: server-only functions in `src/features/*`. They take plain arguments, the profile id included, scope every query to that profile, run the Drizzle queries and transactions and return plain data.
 - Pure functions without I/O hold the domain logic and carry the unit tests.
 
 There is no repository layer: Drizzle already is the typed query layer, and tests that need the database run against Postgres.

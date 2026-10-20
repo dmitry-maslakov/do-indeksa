@@ -6,6 +6,7 @@ import { oAuthProxy } from "better-auth/plugins";
 import { io } from "next/cache";
 import { headers } from "next/headers";
 import { cache } from "react";
+import { profileOf } from "@/features/account/profiles";
 import { db } from "./db";
 import { env } from "./env";
 
@@ -44,4 +45,9 @@ export const auth = betterAuth({
 export const getSession = cache(async () => {
   await io();
   return auth.api.getSession({ headers: await headers() });
+});
+
+export const getProfileId = cache(async () => {
+  const session = await getSession();
+  return session ? profileOf(session.user.id) : undefined;
 });

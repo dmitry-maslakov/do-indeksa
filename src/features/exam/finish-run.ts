@@ -28,7 +28,7 @@ interface FinishedRun {
 }
 
 export async function saveFinishedRun(
-  userId: string | undefined,
+  profileId: string | undefined,
   run: FinishedRun,
 ): Promise<RunResult> {
   const variant = getVariant(run.variantId);
@@ -46,7 +46,7 @@ export async function saveFinishedRun(
   );
   const answered = graded.filter((g) => g.answered);
 
-  if (!userId) {
+  if (!profileId) {
     return {
       saved: false,
       attempts: answered,
@@ -61,7 +61,7 @@ export async function saveFinishedRun(
       .insert(runs)
       .values({
         id: run.runId,
-        userId,
+        profileId,
         kind: variant.kind,
         variantId: variant.id,
         taskIds: variant.taskIds,
@@ -76,12 +76,15 @@ export async function saveFinishedRun(
     await tx
       .delete(currentRuns)
       .where(
-        and(eq(currentRuns.userId, userId), eq(currentRuns.runId, run.runId)),
+        and(
+          eq(currentRuns.profileId, profileId),
+          eq(currentRuns.runId, run.runId),
+        ),
       );
     if (!inserted || answered.length === 0) return;
     await tx
       .insert(attempts)
-      .values(answered.map((g) => ({ ...g, userId, runId: run.runId })));
+      .values(answered.map((g) => ({ ...g, profileId, runId: run.runId })));
   });
   return { saved: true };
 }

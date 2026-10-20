@@ -14,7 +14,7 @@ interface Answer {
 }
 
 export async function submitAnswer(
-  userId: string | undefined,
+  profileId: string | undefined,
   { taskId, answers, startedAt, hintsUsed }: Answer,
 ) {
   const task = getTask(taskId);
@@ -26,9 +26,9 @@ export async function submitAnswer(
   );
   const correct = outcomes.every(isRight);
 
-  if (userId) {
+  if (profileId) {
     await db.insert(attempts).values({
-      userId,
+      profileId,
       taskId,
       answers,
       outcomes,

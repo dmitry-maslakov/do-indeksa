@@ -5,7 +5,7 @@ import { saveSet } from "@/features/exam/sets";
 import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
 import { redirect } from "@/i18n/navigation";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 
 export const instant = false;
 
@@ -15,8 +15,8 @@ export default async function ComposePage({
   await connection();
   const { mode, topic, count } = composeSchema.parse(await searchParams);
   const needsHistory = mode === "weak" || mode === "unsolved";
-  const session = needsHistory ? await getSession() : null;
-  const stats = session ? await getTaskStats(session.user.id) : [];
+  const profileId = needsHistory ? await getProfileId() : undefined;
+  const stats = profileId ? await getTaskStats(profileId) : [];
   const { ids, fallback } = composeTaskIds(
     {
       mode,

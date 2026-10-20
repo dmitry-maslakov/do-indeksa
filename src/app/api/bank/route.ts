@@ -3,7 +3,7 @@ import { feedPage } from "@/features/bank/feed";
 import { loadBankFilters } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
 import { getProgress } from "@/features/progress/progress";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {
@@ -11,8 +11,8 @@ export async function GET(request: NextRequest) {
   const query = pageQuery.safeParse(Object.fromEntries(searchParams));
   if (!query.success) return new Response(null, { status: 400 });
   const filters = loadBankFilters(searchParams);
-  const session = await getSession();
-  const progress = session ? await getProgress(session.user.id) : undefined;
+  const profileId = await getProfileId();
+  const progress = profileId ? await getProgress(profileId) : undefined;
   const tasks = findTasks(filters, progress);
   return Response.json(
     feedPage(tasks, query.data.offset, query.data.locale, progress),

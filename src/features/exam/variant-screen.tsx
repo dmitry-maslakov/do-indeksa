@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
-import { getSession } from "@/server/auth";
+import { getProfileId, getSession } from "@/server/auth";
 import type { ComposeMode } from "./compose";
 import { swapHrefs } from "./compose-set";
 import { getCurrentRun } from "./current-run";
@@ -24,10 +24,13 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
 }
 
 async function loadAccount() {
-  const session = await getSession();
+  const [session, profileId] = await Promise.all([
+    getSession(),
+    getProfileId(),
+  ]);
   return {
     signedIn: Boolean(session),
-    account: session ? await getCurrentRun(session.user.id) : undefined,
+    account: profileId ? await getCurrentRun(profileId) : undefined,
   };
 }
 

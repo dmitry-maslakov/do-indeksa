@@ -35,14 +35,14 @@ export const saveRun = authActionClient
   .action(
     ({
       parsedInput: { runId, variantId, startedAt, ...run },
-      ctx: { userId },
-    }) => saveCurrentRun(userId, { runId, variantId, startedAt, run }),
+      ctx: { profileId },
+    }) => saveCurrentRun(profileId, { runId, variantId, startedAt, run }),
   );
 
 export const finishRun = actionClient
   .inputSchema(finishInput)
-  .action(async ({ parsedInput, ctx: { userId } }) => {
-    const result = await saveFinishedRun(userId, parsedInput);
+  .action(async ({ parsedInput, ctx: { profileId } }) => {
+    const result = await saveFinishedRun(profileId, parsedInput);
     if (result.saved) refresh();
     return result;
   });

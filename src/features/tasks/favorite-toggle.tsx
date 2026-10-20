@@ -1,14 +1,17 @@
-import { getSession } from "@/server/auth";
+import { getProfileId, getSession } from "@/server/auth";
 import { FavoriteButton } from "./favorite-button";
 import { isFavorite } from "./favorites";
 
 export async function FavoriteToggle({ taskId }: { taskId: string }) {
-  const session = await getSession();
-  const saved = session ? await isFavorite(session.user.id, taskId) : false;
+  const [session, profileId] = await Promise.all([
+    getSession(),
+    getProfileId(),
+  ]);
+  const saved = profileId ? await isFavorite(profileId, taskId) : false;
 
   return (
     <FavoriteButton
-      key={session?.user.id}
+      key={profileId}
       taskId={taskId}
       saved={saved}
       signedIn={Boolean(session)}

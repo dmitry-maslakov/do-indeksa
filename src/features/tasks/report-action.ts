@@ -15,6 +15,6 @@ const schema = zfd.formData({
 
 export const reportTask = authActionClient
   .inputSchema(schema)
-  .action(({ parsedInput, ctx: { userId } }) =>
-    saveReport(userId, parsedInput),
+  .action(({ parsedInput, ctx: { profileId } }) =>
+    saveReport(profileId, parsedInput),
   );

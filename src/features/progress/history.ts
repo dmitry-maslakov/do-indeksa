@@ -27,7 +27,7 @@ const runIdStartingWith = (code: string) =>
     `${code}-ffff-ffff-ffff-ffffffffffff`,
   );
 
-export const getRun = cache(async (userId: string, key?: string) => {
+export const getRun = cache(async (profileId: string, key?: string) => {
   const id = z.uuid().safeParse(key);
   const code = z
     .string()
@@ -39,7 +39,7 @@ export const getRun = cache(async (userId: string, key?: string) => {
     .from(runs)
     .where(
       and(
-        eq(runs.userId, userId),
+        eq(runs.profileId, profileId),
         id.success ? eq(runs.id, id.data) : undefined,
         code.success ? runIdStartingWith(code.data) : undefined,
       ),
@@ -56,11 +56,11 @@ export const getRun = cache(async (userId: string, key?: string) => {
       durationMs: attempts.durationMs,
     })
     .from(attempts)
-    .where(and(eq(attempts.userId, userId), eq(attempts.runId, run.id)));
+    .where(and(eq(attempts.profileId, profileId), eq(attempts.runId, run.id)));
   return { run, attempts: rows };
 });
 
-export const getRunAttempts = (userId: string, runIds: string[]) =>
+export const getRunAttempts = (profileId: string, runIds: string[]) =>
   db
     .select({
       taskId: attempts.taskId,
@@ -70,7 +70,9 @@ export const getRunAttempts = (userId: string, runIds: string[]) =>
       durationMs: attempts.durationMs,
     })
     .from(attempts)
-    .where(and(eq(attempts.userId, userId), inArray(attempts.runId, runIds)));
+    .where(
+      and(eq(attempts.profileId, profileId), inArray(attempts.runId, runIds)),
+    );
 
 const runColumns = {
   id: runs.id,
@@ -79,29 +81,31 @@ const runColumns = {
   finishedAt: runs.finishedAt,
 };
 
-export const getRuns = (userId: string, limit: number, offset = 0) =>
+export const getRuns = (profileId: string, limit: number, offset = 0) =>
   db
     .select(runColumns)
     .from(runs)
-    .where(eq(runs.userId, userId))
+    .where(eq(runs.profileId, profileId))
     .orderBy(desc(runs.finishedAt), desc(runs.id))
     .limit(limit)
     .offset(offset);
 
-export const getLatestRuns = (userId: string, variantIds: string[]) =>
+export const getLatestRuns = (profileId: string, variantIds: string[]) =>
   db
     .selectDistinctOn([runs.variantId], runColumns)
     .from(runs)
-    .where(and(eq(runs.userId, userId), inArray(runs.variantId, variantIds)))
+    .where(
+      and(eq(runs.profileId, profileId), inArray(runs.variantId, variantIds)),
+    )
     .orderBy(runs.variantId, desc(runs.finishedAt));
 
-export const countRuns = (userId: string) =>
-  db.$count(runs, eq(runs.userId, userId));
+export const countRuns = (profileId: string) =>
+  db.$count(runs, eq(runs.profileId, profileId));
 
 const countWhere = (condition: SQL) =>
   sql<number>`count(*) filter (where ${condition})`.mapWith(Number);
 
-export async function getTaskStats(userId: string) {
+export async function getTaskStats(profileId: string) {
   const recent = gte(
     attempts.createdAt,
     new Date(Date.now() - accuracyDays * dayMs),
@@ -123,13 +127,13 @@ export async function getTaskStats(userId: string) {
         ),
     })
     .from(attempts)
-    .where(and(eq(attempts.userId, userId), decidesStatus))
+    .where(and(eq(attempts.profileId, profileId), decidesStatus))
     .groupBy(attempts.taskId);
   return taskStats(rows);
 }
 
 export const getLatestResults = async (
-  userId: string,
+  profileId: string,
   taskIds: string[],
   limit: number,
 ) =>
@@ -139,7 +143,7 @@ export const getLatestResults = async (
       .from(attempts)
       .where(
         and(
-          eq(attempts.userId, userId),
+          eq(attempts.profileId, profileId),
           inArray(attempts.taskId, taskIds),
           decidesStatus,
         ),

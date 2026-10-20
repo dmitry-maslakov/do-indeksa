@@ -14,7 +14,7 @@ import { PracticeLinks } from "@/features/review/practice-links";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
-import { getSession } from "@/server/auth";
+import { getProfileId, getSession } from "@/server/auth";
 import { LostPoints } from "./_components/lost-points";
 import { ReviewSummary } from "./_components/review-summary";
 import { TimeSpent } from "./_components/time-spent";
@@ -25,10 +25,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function loadRun(key?: string) {
-  const session = await getSession();
+  const [session, profileId] = await Promise.all([
+    getSession(),
+    getProfileId(),
+  ]);
   return {
     signedIn: Boolean(session),
-    found: session && (await getRun(session.user.id, key)),
+    found: profileId && (await getRun(profileId, key)),
   };
 }
 

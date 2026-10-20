@@ -4,16 +4,16 @@ import { expect, test } from "./fixtures";
 
 const attempt = (
   db: Client,
-  userId: string,
+  profileId: string,
   taskId: string,
   correct: boolean,
   hoursAgo: number,
 ) =>
   db.query(
-    `insert into attempts (user_id, task_id, answers, outcomes, correct, duration_ms, created_at)
+    `insert into attempts (profile_id, task_id, answers, outcomes, correct, duration_ms, created_at)
      values ($1, $2, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
        now() - $4::int * interval '1 hour')`,
-    [userId, taskId, correct, hoursAgo],
+    [profileId, taskId, correct, hoursAgo],
   );
 
 async function expectFirstVisit(page: Page) {
@@ -52,7 +52,7 @@ test("the home page suggests a topic and maps progress", async ({
   page,
   auth,
 }) => {
-  const id = await auth.signIn();
+  const { profileId: id } = await auth.signIn();
   await attempt(auth.db, id, "plan-001", false, 240);
   await attempt(auth.db, id, "fun-002", true, 3);
   await attempt(auth.db, id, "eks-001", false, 2);

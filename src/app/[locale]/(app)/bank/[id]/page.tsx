@@ -18,7 +18,7 @@ import { ReportTask } from "@/features/tasks/report-task";
 import { getTask, renderTask, tasks, taskTitle } from "@/features/tasks/tasks";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { PhoneBar } from "./_components/phone-bar";
 import { Rail } from "./_components/rail";
 import { TaskMeta } from "./_components/task-meta";
@@ -50,8 +50,8 @@ export default async function SolvePage({
   const task = getTask(id);
   if (!task) notFound();
 
-  const [session, locale, html, bank] = await Promise.all([
-    getSession(),
+  const [profileId, locale, html, bank] = await Promise.all([
+    getProfileId(),
     getLocale(),
     renderTask(id),
     getTranslations("Bank"),
@@ -60,7 +60,7 @@ export default async function SolvePage({
 
   const queue = await loadQueue({
     topic: task.topic,
-    userId: session?.user.id,
+    profileId,
     current: id,
     locale,
   });

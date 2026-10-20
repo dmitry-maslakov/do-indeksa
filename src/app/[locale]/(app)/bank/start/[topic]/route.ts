@@ -3,7 +3,7 @@ import { nextTask } from "@/features/bank/queue";
 import { idsByTopic } from "@/features/tasks/tasks";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 
 export async function GET(
   _: Request,
@@ -14,8 +14,7 @@ export async function GET(
   if (!first || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });
   }
-  const session = await getSession();
-  const next = await nextTask(topic, session?.user.id);
+  const next = await nextTask(topic, await getProfileId());
   const href = getPathname({ href: `/bank/${next ?? first}`, locale });
   return new Response(null, { status: 307, headers: { Location: href } });
 }

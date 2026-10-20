@@ -9,6 +9,6 @@ const schema = z.object({ taskId: taskIdSchema, favorite: z.boolean() });
 
 export const setFavorite = authActionClient
   .inputSchema(schema)
-  .action(({ parsedInput: { taskId, favorite }, ctx: { userId } }) =>
-    setTaskFavorite(userId, taskId, favorite),
+  .action(({ parsedInput: { taskId, favorite }, ctx: { profileId } }) =>
+    setTaskFavorite(profileId, taskId, favorite),
   );

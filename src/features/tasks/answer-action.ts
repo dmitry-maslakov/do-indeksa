@@ -14,6 +14,6 @@ const schema = zfd.formData({
 
 export const checkAnswer = actionClient
   .inputSchema(schema)
-  .action(({ parsedInput: { answer, ...input }, ctx: { userId } }) =>
-    submitAnswer(userId, { ...input, answers: answer }),
+  .action(({ parsedInput: { answer, ...input }, ctx: { profileId } }) =>
+    submitAnswer(profileId, { ...input, answers: answer }),
   );
