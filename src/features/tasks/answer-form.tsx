@@ -79,7 +79,10 @@ export function AnswerForm({
   }, []);
 
   const checked = edited ? undefined : result.data;
-  const ids = parts.map((_, i) => `answer-${taskId}-${i}`);
+  const fields = parts.map((part, i) => ({
+    part,
+    id: `answer-${taskId}-${i}`,
+  }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const stateOf = (i: number): AnswerState =>
     !checked ? "empty" : checked.parts[i] ? "correct" : "wrong";
@@ -98,10 +101,10 @@ export function AnswerForm({
       <div
         className={cn("flex flex-col gap-4", grid && "md:grid md:grid-cols-2")}
       >
-        {parts.map((part, i) => (
+        {fields.map(({ part, id }, i) => (
           <AnswerField
-            key={ids[i]}
-            id={ids[i] ?? taskId}
+            key={id}
+            id={id}
             index={i}
             name="answer"
             label={
