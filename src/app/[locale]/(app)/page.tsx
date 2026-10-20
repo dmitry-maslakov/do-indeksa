@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { getCurrentRun } from "@/features/exam/current-run";
+import { getUnfinishedTest } from "@/features/exam/test-sessions";
 import { getTopicPlan } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/auth";
@@ -22,7 +22,7 @@ async function loadHome() {
   const profileId = await getProfileId();
   const [plan, current] = await Promise.all([
     getTopicPlan(profileId),
-    getCurrentRun(profileId),
+    getUnfinishedTest(profileId, await getLocale()),
   ]);
   return { ...plan, current };
 }

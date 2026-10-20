@@ -42,15 +42,16 @@ export function RevealContent({ taskId, part, className }: RevealContentProps) {
 interface RevealProps {
   label: string;
   taskId: string;
-  runId: string;
+  testSessionId: string;
   part: RevealPart;
 }
 
-export function Reveal({ label, taskId, runId, part }: RevealProps) {
+export function Reveal({ label, taskId, testSessionId, part }: RevealProps) {
   const [requested, setRequested] = useState(false);
 
   function open() {
-    if (!requested) saveReveal({ taskId, part, owner: { runId } }).catch(noop);
+    if (!requested)
+      saveReveal({ taskId, part, owner: { testSessionId } }).catch(noop);
     setRequested(true);
   }
 

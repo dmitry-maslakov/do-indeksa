@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { dayMs } from "@/lib/dates";
+import type { Visit } from "./test-draft";
 
 interface RunMeta {
   title: string;
@@ -14,22 +14,23 @@ export interface ExamRun extends Omit<RunMeta, "tasks"> {
   runId: string;
   tasks: { number: number; topic: string }[];
   startedAt: number;
-  enteredAt: number;
   updatedAt: number;
   current: number;
   answers: string[][];
-  spent: number[];
+  visits: Visit[];
 }
 
-const fresh = (runs: Record<string, ExamRun>) => {
-  const cutoff = Date.now() - dayMs;
-  return Object.fromEntries(
-    Object.entries(runs).filter(([, run]) => run.startedAt >= cutoff),
-  );
-};
+const visit = (task: number, now: number): Visit => ({
+  id: crypto.randomUUID(),
+  task,
+  startedAt: now,
+  endedAt: now,
+});
 
-export const spentAt = (run: ExamRun, now: number) =>
-  run.spent.map((ms, i) => (i === run.current ? ms + now - run.enteredAt : ms));
+export const visitsAt = (run: ExamRun, now: number) =>
+  run.visits.map((v, i) =>
+    i === run.visits.length - 1 ? { ...v, endedAt: now } : v,
+  );
 
 interface ExamState {
   runs: Record<string, ExamRun>;
@@ -62,13 +63,12 @@ export const useExamStore = create<ExamState>()(
               timed,
               tasks: tasks.map(({ number, topic }) => ({ number, topic })),
               startedAt: now,
-              enteredAt: now,
               updatedAt: now,
               current: 0,
               answers: tasks.map((t) =>
                 Array.from({ length: t.parts }, () => ""),
               ),
-              spent: tasks.map(() => 0),
+              visits: [visit(0, now)],
             };
             return { runs: { ...s.runs, [variantId]: run } };
           }),
@@ -86,17 +86,20 @@ export const useExamStore = create<ExamState>()(
             return {
               ...run,
               current: index,
-              enteredAt: now,
               updatedAt: now,
-              spent: spentAt(run, now),
+              visits: [...visitsAt(run, now), visit(index, now)],
             };
           }),
         restore: (variantId, run) =>
           set((s) => {
             const local = s.runs[variantId];
-            return local && local.updatedAt >= run.updatedAt
-              ? s
-              : { runs: { ...s.runs, [variantId]: run } };
+            if (local && local.updatedAt >= run.updatedAt) return s;
+            const now = Date.now();
+            const resumed = {
+              ...run,
+              visits: [...run.visits, visit(run.current, now)],
+            };
+            return { runs: { ...s.runs, [variantId]: resumed } };
           }),
         clear: (variantId) =>
           set((s) => {
@@ -107,25 +110,8 @@ export const useExamStore = create<ExamState>()(
     },
     {
       name: "do-indeksa-exam",
-      version: 2,
-      migrate: (persisted, version) => {
-        if (version !== 1) return { runs: {} };
-        const { runs } = persisted as Pick<ExamState, "runs">;
-        return {
-          runs: Object.fromEntries(
-            Object.entries(runs).map(([id, run]) => [
-              id,
-              { ...run, updatedAt: run.enteredAt },
-            ]),
-          ),
-        };
-      },
-      merge: (persisted, current) => {
-        const { runs = current.runs } = (persisted ?? {}) as Partial<
-          Pick<ExamState, "runs">
-        >;
-        return { ...current, runs: fresh(runs) };
-      },
+      version: 3,
+      migrate: () => ({ runs: {} }),
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
     },

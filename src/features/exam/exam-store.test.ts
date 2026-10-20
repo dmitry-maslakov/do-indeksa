@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { dayMs } from "@/lib/dates";
 import { type ExamRun, useExamStore } from "./exam-store";
 
 const meta = {
@@ -19,11 +18,17 @@ const saved: ExamRun = {
   timed: true,
   tasks: [{ number: 1, topic: "a" }],
   startedAt: 0,
-  enteredAt: 0,
   updatedAt: 0,
   current: 0,
   answers: [["y"]],
-  spent: [0],
+  visits: [
+    {
+      id: "00000000-0000-4000-8000-000000000001",
+      task: 0,
+      startedAt: 0,
+      endedAt: 5000,
+    },
+  ],
 };
 
 const store = () => useExamStore.getState();
@@ -53,20 +58,32 @@ describe("exam store", () => {
     expect(run()?.answers).toEqual([["", "x"], [""]]);
   });
 
-  it("adds the time spent to the task being left", () => {
+  it("records each visit to a task", () => {
     vi.useFakeTimers({ now: 0 });
     store().start("v", meta);
     vi.setSystemTime(90_000);
     store().go("v", 1);
     vi.setSystemTime(120_000);
     store().go("v", 0);
-    expect(run()?.spent).toEqual([90_000, 30_000]);
+    expect(
+      run()?.visits.map(({ task, startedAt, endedAt }) => ({
+        task,
+        startedAt,
+        endedAt,
+      })),
+    ).toEqual([
+      { task: 0, startedAt: 0, endedAt: 90_000 },
+      { task: 1, startedAt: 90_000, endedAt: 120_000 },
+      { task: 0, startedAt: 120_000, endedAt: 120_000 },
+    ]);
     expect(run()?.current).toBe(0);
   });
 
-  it("restores a run for a variant without one", () => {
+  it("restores a run for a variant without one and opens a new visit", () => {
     store().restore("v", saved);
-    expect(run()).toEqual(saved);
+    expect(run()?.answers).toEqual(saved.answers);
+    expect(run()?.visits.slice(0, 1)).toEqual(saved.visits);
+    expect(run()?.visits).toHaveLength(2);
   });
 
   it("keeps a newer local run when restoring", () => {
@@ -81,7 +98,7 @@ describe("exam store", () => {
     store().start("v", meta);
     const newer = { ...saved, updatedAt: Date.now() + 1 };
     store().restore("v", newer);
-    expect(run()).toBe(newer);
+    expect(run()?.runId).toBe(newer.runId);
   });
 
   it("clears a run", () => {
@@ -92,11 +109,12 @@ describe("exam store", () => {
 });
 
 describe("persisted runs", () => {
-  const storageName = "do-indeksa-exam";
-
-  const open = async (runs: Record<string, ExamRun>) => {
+  it("drops runs stored in an older shape", async () => {
     const items = new Map([
-      [storageName, JSON.stringify({ state: { runs }, version: 2 })],
+      [
+        "do-indeksa-exam",
+        JSON.stringify({ state: { runs: { v: saved } }, version: 2 }),
+      ],
     ]);
     vi.stubGlobal("localStorage", {
       getItem: (key: string) => items.get(key) ?? null,
@@ -106,47 +124,7 @@ describe("persisted runs", () => {
     vi.resetModules();
     const { useExamStore: persisted } = await import("./exam-store");
     await persisted.persist.rehydrate();
-    const stored = () =>
-      Object.keys(JSON.parse(items.get(storageName) ?? "{}").state.runs);
-    return { persisted, stored };
-  };
-
-  const startedAgo = (ms: number) => ({ ...saved, startedAt: Date.now() - ms });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it("drops runs older than a day when hydrating", async () => {
-    const { persisted } = await open({
-      "daily-2026-01-01": startedAgo(dayMs + 1000),
-      "set-a.b": startedAgo(3 * dayMs),
-      "daily-2026-01-03": startedAgo(dayMs - 60_000),
-      "set-c": startedAgo(0),
-    });
-    expect(Object.keys(persisted.getState().runs)).toEqual([
-      "daily-2026-01-03",
-      "set-c",
-    ]);
-  });
-
-  it("keeps a run younger than a day unchanged", async () => {
-    const run = startedAgo(dayMs - 60_000);
-    const { persisted } = await open({ v: run });
-    expect(persisted.getState().runs.v).toEqual(run);
-  });
-
-  it("writes only the kept runs back to storage", async () => {
-    const { persisted, stored } = await open({
-      "daily-2026-01-01": startedAgo(2 * dayMs),
-      "set-c": startedAgo(0),
-    });
-    persisted.getState().answer("set-c", 0, "x");
-    expect(stored()).toEqual(["set-c"]);
-  });
-
-  it("hydrates an empty storage", async () => {
-    const { persisted } = await open({});
     expect(persisted.getState().runs).toEqual({});
+    vi.unstubAllGlobals();
   });
 });

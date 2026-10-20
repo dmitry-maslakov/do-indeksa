@@ -1,9 +1,9 @@
 import "server-only";
-import { and, eq, gt, inArray, max, notExists, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, max, notExists, sql } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
 import { db } from "@/server/db";
 
-type Executor = Pick<typeof db, "insert" | "update">;
+type Executor = Pick<typeof db, "insert" | "update" | "select">;
 
 const alive = sql`now() - interval '45 seconds'`;
 
@@ -31,6 +31,33 @@ export async function liveSession(
   const [created] = await executor
     .insert(taskSessions)
     .values({ profileId, taskId })
+    .returning({ id: taskSessions.id });
+  if (!created) throw new Error("task session was not created");
+  return created.id;
+}
+
+export async function testTaskSession(
+  executor: Executor,
+  profileId: string,
+  taskId: string,
+  testSessionId: string,
+) {
+  const [found] = await executor
+    .select({ id: taskSessions.id })
+    .from(taskSessions)
+    .where(
+      and(
+        eq(taskSessions.profileId, profileId),
+        eq(taskSessions.taskId, taskId),
+        eq(taskSessions.testSessionId, testSessionId),
+      ),
+    )
+    .orderBy(desc(taskSessions.startedAt))
+    .limit(1);
+  if (found) return found.id;
+  const [created] = await executor
+    .insert(taskSessions)
+    .values({ profileId, taskId, testSessionId })
     .returning({ id: taskSessions.id });
   if (!created) throw new Error("task session was not created");
   return created.id;

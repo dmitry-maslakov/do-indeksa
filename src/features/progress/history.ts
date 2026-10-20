@@ -7,12 +7,14 @@ import {
   eq,
   gte,
   inArray,
+  isNotNull,
   type SQL,
   sql,
 } from "drizzle-orm";
+import { alias, type SelectedFields } from "drizzle-orm/pg-core";
 import { cache } from "react";
 import { z } from "zod";
-import { attempts, runs, taskSessions } from "@/db/schema";
+import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import { decidesStatus } from "./decides-status";
@@ -21,15 +23,38 @@ import { taskStats } from "./task-stats";
 
 const runIdStartingWith = (code: string) =>
   between(
-    runs.id,
+    testSessions.id,
     `${code}-0000-0000-0000-000000000000`,
     `${code}-ffff-ffff-ffff-ffffffffffff`,
   );
 
-const runTaskMs =
-  sql<number>`coalesce((${runs.durationsMs})[array_position(${runs.taskIds}, ${attempts.taskId})], 0)`.mapWith(
-    Number,
-  );
+const finished = isNotNull(testSessions.finishedAt);
+
+const sessionMs = sql`extract(epoch from ${taskSessions.lastSeenAt} - ${taskSessions.startedAt}) * 1000`;
+
+const attemptSession = alias(taskSessions, "attempt_session");
+
+const runTaskMs = sql<number>`(
+  select coalesce(sum(${sessionMs}), 0) from ${taskSessions}
+  where ${taskSessions.testSessionId} = ${testSessions.id}
+    and ${taskSessions.taskId} = ${attempts.taskId}
+)`.mapWith(Number);
+
+const runAttempts = <T extends SelectedFields>(columns: T) =>
+  db
+    .select({ ...columns, durationMs: runTaskMs })
+    .from(attempts)
+    .innerJoin(attemptSession, eq(attemptSession.id, attempts.sessionId))
+    .innerJoin(testSessions, eq(testSessions.id, attemptSession.testSessionId));
+
+const runColumns = {
+  id: testSessions.id,
+  variantId: testSessions.variantId,
+  taskIds: testSessions.taskIds,
+  finishedAt: sql<Date>`${testSessions.finishedAt}`.mapWith(
+    testSessions.finishedAt,
+  ),
+};
 
 export const getRun = cache(async (profileId: string, key?: string) => {
   const id = z.uuid().safeParse(key);
@@ -39,74 +64,62 @@ export const getRun = cache(async (profileId: string, key?: string) => {
     .safeParse(key);
   if (key !== undefined && !id.success && !code.success) return undefined;
   const [run] = await db
-    .select()
-    .from(runs)
+    .select(runColumns)
+    .from(testSessions)
     .where(
       and(
-        eq(runs.profileId, profileId),
-        id.success ? eq(runs.id, id.data) : undefined,
+        eq(testSessions.profileId, profileId),
+        finished,
+        id.success ? eq(testSessions.id, id.data) : undefined,
         code.success ? runIdStartingWith(code.data) : undefined,
       ),
     )
-    .orderBy(desc(runs.finishedAt))
+    .orderBy(desc(testSessions.finishedAt))
     .limit(1);
   if (!run) return undefined;
-  const rows = await db
-    .select({
-      taskId: attempts.taskId,
-      answers: attempts.answers,
-      outcomes: attempts.outcomes,
-      correct: attempts.correct,
-      durationMs: runTaskMs,
-    })
-    .from(attempts)
-    .innerJoin(runs, eq(runs.id, attempts.runId))
-    .where(and(eq(attempts.profileId, profileId), eq(attempts.runId, run.id)));
+  const rows = await runAttempts({
+    taskId: attempts.taskId,
+    answers: attempts.answers,
+    outcomes: attempts.outcomes,
+    correct: attempts.correct,
+  }).where(and(eq(attempts.profileId, profileId), eq(testSessions.id, run.id)));
   return { run, attempts: rows };
 });
 
 export const getRunAttempts = (profileId: string, runIds: string[]) =>
-  db
-    .select({
-      taskId: attempts.taskId,
-      runId: attempts.runId,
-      outcomes: attempts.outcomes,
-      correct: attempts.correct,
-      durationMs: runTaskMs,
-    })
-    .from(attempts)
-    .innerJoin(runs, eq(runs.id, attempts.runId))
-    .where(
-      and(eq(attempts.profileId, profileId), inArray(attempts.runId, runIds)),
-    );
-
-const runColumns = {
-  id: runs.id,
-  variantId: runs.variantId,
-  taskIds: runs.taskIds,
-  finishedAt: runs.finishedAt,
-};
+  runAttempts({
+    taskId: attempts.taskId,
+    runId: testSessions.id,
+    outcomes: attempts.outcomes,
+    correct: attempts.correct,
+  }).where(
+    and(eq(attempts.profileId, profileId), inArray(testSessions.id, runIds)),
+  );
 
 export const getRuns = (profileId: string, limit: number, offset = 0) =>
   db
     .select(runColumns)
-    .from(runs)
-    .where(eq(runs.profileId, profileId))
-    .orderBy(desc(runs.finishedAt), desc(runs.id))
+    .from(testSessions)
+    .where(and(eq(testSessions.profileId, profileId), finished))
+    .orderBy(desc(testSessions.finishedAt), desc(testSessions.id))
     .limit(limit)
     .offset(offset);
 
 export const getLatestRuns = (profileId: string, variantIds: string[]) =>
   db
-    .selectDistinctOn([runs.variantId], runColumns)
-    .from(runs)
+    .selectDistinctOn([testSessions.variantId], runColumns)
+    .from(testSessions)
     .where(
-      and(eq(runs.profileId, profileId), inArray(runs.variantId, variantIds)),
+      and(
+        eq(testSessions.profileId, profileId),
+        finished,
+        inArray(testSessions.variantId, variantIds),
+      ),
     )
-    .orderBy(runs.variantId, desc(runs.finishedAt));
+    .orderBy(testSessions.variantId, desc(testSessions.finishedAt));
 
 export const countRuns = (profileId: string) =>
-  db.$count(runs, eq(runs.profileId, profileId));
+  db.$count(testSessions, and(eq(testSessions.profileId, profileId), finished));
 
 const countWhere = (condition: SQL) =>
   sql<number>`count(*) filter (where ${condition})`.mapWith(Number);
@@ -141,29 +154,15 @@ export async function getTaskStats(profileId: string) {
 }
 
 async function getTimeByTask(profileId: string) {
-  const [sessions, tests] = await Promise.all([
-    db
-      .select({
-        taskId: taskSessions.taskId,
-        ms: sql<number>`sum(extract(epoch from ${taskSessions.lastSeenAt} - ${taskSessions.startedAt}) * 1000)`.mapWith(
-          Number,
-        ),
-      })
-      .from(taskSessions)
-      .where(eq(taskSessions.profileId, profileId))
-      .groupBy(taskSessions.taskId),
-    db
-      .select({
-        taskId: sql<string>`unnest(${runs.taskIds})`,
-        ms: sql<number>`unnest(${runs.durationsMs})`.mapWith(Number),
-      })
-      .from(runs)
-      .where(eq(runs.profileId, profileId)),
-  ]);
-  return [...sessions, ...tests].reduce(
-    (all, { taskId, ms }) => all.set(taskId, (all.get(taskId) ?? 0) + ms),
-    new Map<string, number>(),
-  );
+  const rows = await db
+    .select({
+      taskId: taskSessions.taskId,
+      ms: sql<number>`sum(${sessionMs})`.mapWith(Number),
+    })
+    .from(taskSessions)
+    .where(eq(taskSessions.profileId, profileId))
+    .groupBy(taskSessions.taskId);
+  return new Map(rows.map((r) => [r.taskId, r.ms]));
 }
 
 export const getLatestResults = async (

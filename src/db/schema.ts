@@ -1,7 +1,7 @@
-import { isNull, sql } from "drizzle-orm";
+import { isNull } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
-  check,
   foreignKey,
   index,
   integer,
@@ -15,7 +15,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import type { ExamRun } from "@/features/exam/exam-store";
+import type { TestDraft } from "@/features/exam/test-draft";
 import { reportKinds } from "@/features/tasks/report-kinds";
 import { partOutcomes } from "@/lib/part-outcome";
 import { user } from "./auth-schema";
@@ -31,7 +31,7 @@ export const profiles = pgTable("profiles", {
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-export const runKind = pgEnum("run_kind", [
+export const testKind = pgEnum("test_kind", [
   "official",
   "curated",
   "daily",
@@ -39,25 +39,26 @@ export const runKind = pgEnum("run_kind", [
   "custom",
 ]);
 
-export const runs = pgTable(
-  "runs",
+export const testSessions = pgTable(
+  "test_sessions",
   {
     id: uuid().primaryKey(),
     profileId: uuid()
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
-    kind: runKind().notNull(),
+    kind: testKind().notNull(),
     variantId: text().notNull(),
     taskIds: text().array().notNull(),
-    startedAt: timestamp({ withTimezone: true }).notNull(),
-    finishedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     timed: boolean().notNull(),
+    startedAt: timestamp({ withTimezone: true }).notNull(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    finishedAt: timestamp({ withTimezone: true }),
     overtime: boolean(),
-    durationsMs: integer().array().notNull(),
+    draft: jsonb().$type<TestDraft>(),
   },
   (t) => [
     unique().on(t.id, t.profileId),
-    index().on(t.profileId, t.finishedAt.desc()),
+    index().on(t.profileId, t.updatedAt.desc()),
   ],
 );
 
@@ -71,14 +72,34 @@ export const taskSessions = pgTable(
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
+    testSessionId: uuid(),
     startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     lastSeenAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     unique().on(t.id, t.profileId, t.taskId),
     index().on(t.profileId, t.taskId, t.startedAt.desc()),
+    index().on(t.testSessionId),
+    foreignKey({
+      columns: [t.testSessionId, t.profileId],
+      foreignColumns: [testSessions.id, testSessions.profileId],
+    }).onDelete("cascade"),
   ],
 );
+
+const inTaskSession = (t: {
+  sessionId: AnyPgColumn;
+  profileId: AnyPgColumn;
+  taskId: AnyPgColumn;
+}) =>
+  foreignKey({
+    columns: [t.sessionId, t.profileId, t.taskId],
+    foreignColumns: [
+      taskSessions.id,
+      taskSessions.profileId,
+      taskSessions.taskId,
+    ],
+  }).onDelete("cascade");
 
 export const attempts = pgTable(
   "attempts",
@@ -88,8 +109,7 @@ export const attempts = pgTable(
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
-    runId: uuid().references(() => runs.id, { onDelete: "cascade" }),
-    sessionId: uuid(),
+    sessionId: uuid().notNull(),
     answers: text().array().notNull(),
     outcomes: partOutcome().array().notNull(),
     correct: boolean().notNull(),
@@ -99,34 +119,9 @@ export const attempts = pgTable(
     index().on(t.profileId, t.createdAt.desc()),
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
     index().on(t.sessionId),
-    unique().on(t.runId, t.taskId),
-    foreignKey({
-      columns: [t.sessionId, t.profileId, t.taskId],
-      foreignColumns: [
-        taskSessions.id,
-        taskSessions.profileId,
-        taskSessions.taskId,
-      ],
-    }).onDelete("cascade"),
-    check(
-      "attempts_one_owner",
-      sql`num_nonnulls(${t.runId}, ${t.sessionId}) = 1`,
-    ),
+    inTaskSession(t),
   ],
 );
-
-export const currentRuns = pgTable("current_runs", {
-  profileId: uuid()
-    .primaryKey()
-    .references(() => profiles.id, { onDelete: "cascade" }),
-  runId: uuid().notNull(),
-  variantId: text().notNull(),
-  startedAt: timestamp({ withTimezone: true }).notNull(),
-  run: jsonb()
-    .$type<Omit<ExamRun, "runId" | "startedAt" | "enteredAt">>()
-    .notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
 
 export const favorites = pgTable(
   "favorites",
@@ -167,31 +162,14 @@ export const reveals = pgTable(
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
-    sessionId: uuid(),
-    runId: uuid(),
+    sessionId: uuid().notNull(),
     part: revealPart().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
     index().on(t.sessionId),
-    index().on(t.runId),
-    foreignKey({
-      columns: [t.sessionId, t.profileId, t.taskId],
-      foreignColumns: [
-        taskSessions.id,
-        taskSessions.profileId,
-        taskSessions.taskId,
-      ],
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [t.runId, t.profileId],
-      foreignColumns: [runs.id, runs.profileId],
-    }).onDelete("cascade"),
-    check(
-      "reveals_one_owner",
-      sql`num_nonnulls(${t.runId}, ${t.sessionId}) = 1`,
-    ),
+    inTaskSession(t),
   ],
 );
 

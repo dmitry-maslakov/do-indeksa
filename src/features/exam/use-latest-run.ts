@@ -1,16 +1,20 @@
-import type { CurrentRun } from "./current-run";
-import { type ExamRun, useExamHydrated, useExamStore } from "./exam-store";
+import { maxBy } from "es-toolkit";
+import { useExamHydrated, useExamStore } from "./exam-store";
+import type { UnfinishedTest } from "./test-sessions";
 
-type Entry = [variantId: string, run: ExamRun];
+interface Resumable {
+  variantId: string;
+  title: string;
+  answers: string[][];
+  updatedAt: number;
+}
 
-export function useLatestRun(account?: CurrentRun) {
+export function useLatestRun(saved?: UnfinishedTest) {
   const hydrated = useExamHydrated();
   const runs = useExamStore((s) => s.runs);
-  const candidates: Entry[] = hydrated ? Object.entries(runs) : [];
-  if (account) candidates.push([account.variantId, account.run]);
-  return candidates.reduce<Entry | undefined>(
-    (best, candidate) =>
-      !best || candidate[1].updatedAt > best[1].updatedAt ? candidate : best,
-    undefined,
-  );
+  const candidates: Resumable[] = hydrated
+    ? Object.entries(runs).map(([variantId, run]) => ({ variantId, ...run }))
+    : [];
+  if (saved) candidates.push({ ...saved, answers: saved.draft.answers });
+  return maxBy(candidates, (c) => c.updatedAt);
 }
