@@ -2,6 +2,7 @@
 
 import { ChevronDownIcon, ChevronLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { TopicIcon } from "@/features/tasks/topic-icon";
 import type { Tone, TopicIconData } from "@/features/tasks/topic-look";
@@ -15,9 +16,12 @@ interface PhoneBarProps extends RailProps {
 
 export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
   const t = useTranslations("Solve");
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => () => setOpen(false), []);
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
           href={`/bank${rail.listQuery}`}
