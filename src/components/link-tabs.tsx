@@ -7,6 +7,7 @@ const list = cva("flex", {
       underline: "gap-5",
       segmented: "gap-1 rounded-xl bg-muted p-1",
       fill: "gap-1 rounded-xl bg-untouched p-1",
+      pill: "-mx-4 gap-2 overflow-x-auto px-4 scrollbar-none md:mx-0 md:flex-wrap md:px-0",
     },
   },
 });
@@ -19,13 +20,14 @@ const tab = cva("font-medium transition-colors", {
       segmented:
         "rounded-lg px-3 py-2 text-sm data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
       fill: "flex h-8 flex-1 items-center justify-center rounded-md text-sm data-[active=true]:bg-card data-[active=true]:shadow-raised data-[active=false]:text-muted-foreground data-[active=false]:hover:text-foreground",
+      pill: "flex h-9 shrink-0 items-center rounded-full bg-muted px-4 text-muted-foreground text-sm data-[active=true]:bg-data-tint data-[active=true]:font-bold data-[active=true]:text-data",
     },
   },
 });
 
 interface LinkTabsProps {
   items: { href: string; label: string; active: boolean }[];
-  variant: "underline" | "segmented" | "fill";
+  variant: "underline" | "segmented" | "fill" | "pill";
 }
 
 export function LinkTabs({ items, variant }: LinkTabsProps) {

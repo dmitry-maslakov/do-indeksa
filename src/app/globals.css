@@ -48,6 +48,7 @@
   --color-progress-tint: var(--progress-tint);
   --color-lime: var(--lime);
   --color-lime-strong: var(--lime-strong);
+  --color-lime-text: var(--lime-text);
   --color-tone-blue: var(--tone-blue);
   --color-tone-pink: var(--tone-pink);
   --color-tone-orange: var(--tone-orange);
@@ -149,6 +150,7 @@
   --progress-tint: #e6edff;
   --lime: #d4f56e;
   --lime-strong: #c6ec4f;
+  --lime-text: #4a5a17;
   --tone-blue: #9ab8ff;
   --tone-pink: #ffb3df;
   --tone-orange: #ffb882;
