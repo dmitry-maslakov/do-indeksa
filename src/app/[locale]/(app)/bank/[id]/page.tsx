@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { FocusMode } from "@/components/focus-mode";
 import { MathHtml } from "@/components/math-html";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue } from "@/features/bank/queue";
@@ -76,7 +77,8 @@ export default async function SolvePage({
   };
 
   return (
-    <main data-task-focus className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
+    <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
+      <FocusMode mode="task" />
       <h1 className="sr-only">{bank("title")}</h1>
       <PhoneBar key={id} title={topic} look={topicLook(task.topic)} {...rail} />
       <div className="flex items-start gap-14">

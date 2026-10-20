@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { FocusMode } from "@/components/focus-mode";
 import { reviewHref } from "@/features/review/review";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
@@ -126,10 +127,8 @@ export function ExamRunner({
     });
 
   return (
-    <div
-      data-exam="running"
-      className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]"
-    >
+    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
+      <FocusMode mode="exam" />
       <ExamRail
         run={run}
         tasks={tasks}
