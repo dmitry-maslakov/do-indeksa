@@ -11,10 +11,10 @@ import { positions } from "@/features/exam/exam";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { FavoriteToggle } from "@/features/tasks/favorite-toggle";
-import { HelpProvider } from "@/features/tasks/help";
 import { HelpPanel } from "@/features/tasks/help-panel";
 import { levelOf } from "@/features/tasks/level";
 import { ReportTask } from "@/features/tasks/report-task";
+import { TaskSessionProvider } from "@/features/tasks/task-session";
 import { getTask, renderTask, tasks, taskTitle } from "@/features/tasks/tasks";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
@@ -88,7 +88,7 @@ export default async function SolvePage({
         >
           <Rail {...rail} />
         </aside>
-        <HelpProvider key={id}>
+        <TaskSessionProvider key={id} taskId={id}>
           <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
             <div className="flex min-h-10 items-start justify-between gap-4 md:items-center">
               <TaskMeta
@@ -119,7 +119,7 @@ export default async function SolvePage({
               <ReportTask taskId={id} />
             </div>
           </article>
-        </HelpProvider>
+        </TaskSessionProvider>
       </div>
     </main>
   );

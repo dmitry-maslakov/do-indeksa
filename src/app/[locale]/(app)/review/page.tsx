@@ -120,6 +120,7 @@ async function RunReview({
           review={result}
           tasks={tasks}
           outcomes={outcomesOf(found.attempts)}
+          runId={found.run.id}
         />
         <div className="flex flex-col gap-5">
           <LostPoints

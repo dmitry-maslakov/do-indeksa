@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import type { Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
 import { answer, expect, finish, test } from "./fixtures";
 
 async function openSheet(page: Page, topic: RegExp) {
@@ -31,14 +31,46 @@ test("a guest finds a solved task in statistics after a reload", async ({
   await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
 });
 
-test("browsing does not create a profile", async ({ page, context }) => {
-  for (const path of ["/", "/bank", "/bank/eks-001", "/variants", "/stats"]) {
+const profileCookie = async (context: BrowserContext) =>
+  (await context.cookies()).some((c) => c.name === "__Host-profile");
+
+test("a task seen before comes after the ones not seen yet", async ({
+  page,
+  context,
+}) => {
+  const start = "/bank/start/exponential-equations";
+  await page.goto(start);
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  const seen = page.url();
+  await expect.poll(() => profileCookie(context)).toBe(true);
+  await page.goto(start);
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  expect(page.url()).not.toBe(seen);
+});
+
+test("browsing without a task creates no profile", async ({
+  page,
+  context,
+}) => {
+  for (const path of ["/", "/bank", "/variants", "/stats"]) {
     await page.goto(path);
     await expect(page.getByRole("main")).toBeVisible();
   }
-  expect((await context.cookies()).map((c) => c.name)).not.toContain(
-    "__Host-profile",
-  );
+  expect(await profileCookie(context)).toBe(false);
+});
+
+test.describe("a crawler", () => {
+  test.use({
+    userAgent:
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+  });
+
+  test("opens a task without getting a profile", async ({ page, context }) => {
+    await page.goto("/bank/eks-001");
+    await expect(page.getByRole("button", { name: "Proveri" })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    expect(await profileCookie(context)).toBe(false);
+  });
 });
 
 test("a guest opens the solution and moves on", async ({ page }) => {

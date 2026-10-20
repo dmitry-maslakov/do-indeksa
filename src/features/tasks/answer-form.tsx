@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { useRouter } from "@/i18n/navigation";
@@ -13,8 +13,8 @@ import { ActionBar } from "./action-bar";
 import { checkAnswer } from "./answer-action";
 import { AnswerField } from "./answer-field";
 import type { AnswerState } from "./answer-state";
-import { useHelp } from "./help";
 import type { PartLabel } from "./parts";
+import { useTaskSession } from "./task-session";
 
 interface AnswerFormProps {
   taskId: string;
@@ -90,17 +90,12 @@ export function AnswerForm({
     onSuccess: () => router.refresh(),
   });
   const errorText = useErrorText();
-  const help = useHelp();
-  const startedAt = useRef(0);
+  const help = useTaskSession();
   const [edited, setEdited] = useState(false);
   const [values, setValues] = useState(() => parts.map(() => ""));
   const onChange = useCallback((index: number, value: string) => {
     setEdited(true);
     setValues((all) => all.with(index, value));
-  }, []);
-
-  useEffect(() => {
-    startedAt.current = Date.now();
   }, []);
 
   const checked = edited ? undefined : result.data;
@@ -116,13 +111,13 @@ export function AnswerForm({
     <form
       action={(form) => {
         setEdited(false);
-        form.set("startedAt", String(startedAt.current));
         execute(form);
       }}
       className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
     >
       <input type="hidden" name="taskId" value={taskId} />
-      <input type="hidden" name="hintsUsed" value={Math.min(help.hints, 3)} />
+      <input type="hidden" name="sessionId" value={help.session.id} />
+      <input type="hidden" name="startedAt" value={help.session.startedAt} />
       <div
         className={cn("flex flex-col gap-4", grid && "md:grid md:grid-cols-2")}
       >

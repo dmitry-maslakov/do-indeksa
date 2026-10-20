@@ -5,6 +5,11 @@ import { ensureProfileId } from "./auth";
 
 vi.mock("./auth", () => ({ ensureProfileId: vi.fn() }));
 
+let userAgent = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
+vi.mock("next/headers", () => ({
+  headers: async () => new Headers({ "user-agent": userAgent }),
+}));
+
 const input = z.object({ n: z.number() });
 const handler = vi.fn(async ({ ctx }: { ctx: { profileId: string } }) => ({
   profileId: ctx.profileId,
@@ -20,6 +25,14 @@ beforeEach(() => {
 describe("action clients", () => {
   it("passes the profile id to the action", async () => {
     expect(await action({ n: 1 })).toEqual({ data: { profileId: "p1" } });
+  });
+
+  it("refuses a crawler before it gets a profile", async () => {
+    userAgent =
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+    expect(await action({ n: 1 })).toEqual({ serverError: "bot" });
+    expect(ensureProfileId).not.toHaveBeenCalled();
+    userAgent = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
   });
 
   it("logs an unexpected error and returns only its code", async () => {

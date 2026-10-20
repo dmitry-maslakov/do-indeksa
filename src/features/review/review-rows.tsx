@@ -19,12 +19,18 @@ interface ReviewRowsProps {
   review: Review;
   tasks: ExamTask[];
   outcomes: Outcomes;
+  runId: string;
 }
 
 const columns =
   "grid grid-cols-[28px_minmax(0,1fr)_48px] gap-3.5 px-5 md:grid-cols-[44px_minmax(0,1fr)_70px_90px] md:px-6";
 
-export function ReviewRows({ review, tasks, outcomes }: ReviewRowsProps) {
+export function ReviewRows({
+  review,
+  tasks,
+  outcomes,
+  runId,
+}: ReviewRowsProps) {
   const t = useTranslations("Review");
   const missed = review.rows.filter((r) => r.earned < r.points);
   const rest = review.rows.length - missed.length;
@@ -54,6 +60,7 @@ export function ReviewRows({ review, tasks, outcomes }: ReviewRowsProps) {
                 row={row}
                 task={task}
                 outcome={outcomes[row.taskId]}
+                runId={runId}
               />
             )
           );
@@ -72,9 +79,10 @@ interface RowProps {
   row: ReviewRow;
   task: ExamTask;
   outcome?: AnswerOutcome;
+  runId: string;
 }
 
-function Row({ row, task, outcome }: RowProps) {
+function Row({ row, task, outcome, runId }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
   const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
@@ -130,8 +138,18 @@ function Row({ row, task, outcome }: RowProps) {
           </span>
         </summary>
         <div className="flex flex-col gap-2 px-5 pb-4 md:px-6">
-          <Reveal label={solve("answer")} taskId={task.id} part="answer" />
-          <Reveal label={solve("solution")} taskId={task.id} part="solution" />
+          <Reveal
+            label={solve("answer")}
+            taskId={task.id}
+            runId={runId}
+            part="answer"
+          />
+          <Reveal
+            label={solve("solution")}
+            taskId={task.id}
+            runId={runId}
+            part="solution"
+          />
           <Button
             variant="ghost"
             size="sm"

@@ -1,5 +1,7 @@
 import "server-only";
-import { createSafeActionClient } from "next-safe-action";
+import { isbot } from "isbot";
+import { headers } from "next/headers";
+import { createSafeActionClient, returnServerError } from "next-safe-action";
 import type { ServerError } from "@/lib/use-error-text";
 import { ensureProfileId } from "./auth";
 
@@ -8,6 +10,7 @@ export const actionClient = createSafeActionClient({
     console.error(error);
     return "unexpected";
   },
-}).use(async ({ next }) =>
-  next({ ctx: { profileId: await ensureProfileId() } }),
-);
+}).use(async ({ next }) => {
+  if (isbot((await headers()).get("user-agent"))) returnServerError("bot");
+  return next({ ctx: { profileId: await ensureProfileId() } });
+});

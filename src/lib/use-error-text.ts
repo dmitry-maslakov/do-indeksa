@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-export type ServerError = "unexpected";
+export type ServerError = "unexpected" | "bot";
 
 export function useErrorText() {
   const t = useTranslations("Errors");

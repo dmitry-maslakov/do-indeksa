@@ -67,6 +67,26 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
   },
 });
 
+export const seedAttempt = (
+  db: Client,
+  profileId: string,
+  taskId: string,
+  correct: boolean,
+  hoursAgo = 0,
+) =>
+  db.query(
+    `with session as (
+       insert into task_sessions (id, profile_id, task_id, started_at)
+       values (gen_random_uuid(), $1, $2, now() - $4::int * interval '1 hour')
+       returning id
+     )
+     insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct, duration_ms, created_at)
+     select $1, $2, id, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
+       now() - $4::int * interval '1 hour'
+     from session`,
+    [profileId, taskId, correct, hoursAgo],
+  );
+
 export async function answer(page: Page, value: string) {
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").first();

@@ -4,16 +4,26 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { actionClient } from "@/server/action-client";
 import { submitAnswer } from "./answers";
+import { sessionInput } from "./session-input";
+import { taskIdSchema } from "./tasks";
 
 const schema = zfd.formData({
-  taskId: zfd.text(),
+  taskId: zfd.text(taskIdSchema),
   answer: zfd.repeatable(z.array(z.string().max(500)).max(6)),
-  startedAt: zfd.numeric(z.number().int().positive()),
-  hintsUsed: zfd.numeric(z.number().int().min(0).max(3)),
+  sessionId: zfd.text(sessionInput.shape.id),
+  startedAt: zfd.numeric(sessionInput.shape.startedAt),
 });
 
 export const checkAnswer = actionClient
   .inputSchema(schema)
-  .action(({ parsedInput: { answer, ...input }, ctx: { profileId } }) =>
-    submitAnswer(profileId, { ...input, answers: answer }),
+  .action(
+    ({
+      parsedInput: { taskId, answer, sessionId, startedAt },
+      ctx: { profileId },
+    }) =>
+      submitAnswer(profileId, {
+        taskId,
+        answers: answer,
+        session: { id: sessionId, startedAt },
+      }),
   );

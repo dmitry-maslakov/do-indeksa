@@ -21,7 +21,12 @@ describe("planQueue", () => {
       ["c", attempt("solved", 3)],
       ["d", attempt("solved", 4)],
     ]);
-    const queue = planQueue({ pool, attempts, current: "f" });
+    const queue = planQueue({
+      pool,
+      attempts,
+      seen: new Map(),
+      current: "f",
+    });
     expect(queue.earlier).toEqual(["a", "b", "c", "d"]);
     expect(queue.today).toEqual(["f"]);
     expect(queue.upcoming).toEqual([
@@ -38,8 +43,22 @@ describe("planQueue", () => {
       ["b", attempt("wrong", 5, true)],
       ["c", attempt("solved", 3, true)],
     ]);
-    const queue = planQueue({ pool, attempts, current: "c" });
+    const queue = planQueue({
+      pool,
+      attempts,
+      seen: new Map(),
+      current: "c",
+    });
     expect(queue.earlier).toEqual(["a"]);
     expect(queue.today).toEqual(["c", "b"]);
+  });
+
+  it("moves past seen tasks and comes back to the one seen longest ago", () => {
+    const next = (current: string, seen: Map<string, Date>) =>
+      planQueue({ pool, attempts: new Map(), seen, current, size: 1 })
+        .upcoming[0]?.id;
+    expect(next("a", new Map([["a", new Date(1)]]))).toBe("e");
+    const all = new Map(pool.map((t, i) => [t.id, new Date(i + 1)]));
+    expect(next("h", all)).toBe("a");
   });
 });
