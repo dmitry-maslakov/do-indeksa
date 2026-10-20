@@ -69,17 +69,16 @@ const topicTotals = positions.map((p) => ({
   total: idsByTopic.get(p.topic)?.length ?? 0,
 }));
 
-export async function getTopicPlan(profileId?: string) {
+export async function getTopicPlan(profileId: string) {
   const topics = topicProgress(
-    profileId ? await getTaskStats(profileId) : [],
+    await getTaskStats(profileId),
     topicTotals,
     Date.now(),
   );
   const last = lastPracticed(topics);
-  const latest =
-    profileId && last
-      ? await getLatestResults(profileId, idsByTopic.get(last.topic) ?? [], 3)
-      : [];
+  const latest = last
+    ? await getLatestResults(profileId, idsByTopic.get(last.topic) ?? [], 3)
+    : [];
   return { topics, suggestion: suggest(topics, latest) };
 }
 

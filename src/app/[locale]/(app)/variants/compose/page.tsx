@@ -15,8 +15,7 @@ export default async function ComposePage({
   await connection();
   const { mode, topic, count } = composeSchema.parse(await searchParams);
   const needsHistory = mode === "weak" || mode === "unsolved";
-  const profileId = needsHistory ? await getProfileId() : undefined;
-  const stats = profileId ? await getTaskStats(profileId) : [];
+  const stats = needsHistory ? await getTaskStats(await getProfileId()) : [];
   const { ids, fallback } = composeTaskIds(
     {
       mode,

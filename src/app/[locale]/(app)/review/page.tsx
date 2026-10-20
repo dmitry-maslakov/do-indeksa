@@ -5,7 +5,6 @@ import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SignInCard } from "@/features/account/sign-in-card";
 import { variantTitle } from "@/features/exam/variant-title";
 import { getVariant, tasksFor } from "@/features/exam/variants";
 import { getRun } from "@/features/progress/history";
@@ -14,7 +13,7 @@ import { PracticeLinks } from "@/features/review/practice-links";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
-import { getProfileId, getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import { LostPoints } from "./_components/lost-points";
 import { ReviewSummary } from "./_components/review-summary";
 import { TimeSpent } from "./_components/time-spent";
@@ -22,17 +21,6 @@ import { TimeSpent } from "./_components/time-spent";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Review");
   return { title: t("title") };
-}
-
-async function loadRun(key?: string) {
-  const [session, profileId] = await Promise.all([
-    getSession(),
-    getProfileId(),
-  ]);
-  return {
-    signedIn: Boolean(session),
-    found: profileId && (await getRun(profileId, key)),
-  };
 }
 
 interface ReviewProps {
@@ -54,16 +42,14 @@ async function ReviewView({ params, searchParams }: ReviewProps) {
   const t = await getTranslations("Review");
   const [{ code }, { run }] = await Promise.all([params, searchParams]);
   const key = code ?? (typeof run === "string" ? run : undefined);
-  const { signedIn, found } = await loadRun(key);
+  const found = await getRun(await getProfileId(), key);
 
   return (
     <>
       <PageTitle className={found ? "sr-only" : undefined}>
         {t("title")}
       </PageTitle>
-      {!signedIn ? (
-        <SignInCard text={t("guest")} />
-      ) : !found ? (
+      {!found ? (
         <Card className="max-w-xl items-start gap-4">
           <p className="text-subtle">{t("empty")}</p>
           <Button render={<Link href="/variants" />} nativeButton={false}>

@@ -49,7 +49,6 @@ export function TimeBars({
       {!pending && bars.every((b) => b.meanMs === null) ? (
         <EmptyNote
           text={home("timeEmpty")}
-          signedIn
           href="/variants"
           action={home("startTest")}
         />

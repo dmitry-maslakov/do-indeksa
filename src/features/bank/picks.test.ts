@@ -14,29 +14,6 @@ const attempt = (
 ): Attempted => ({ status, at: new Date(minute * 60_000), today });
 
 describe("planQueue", () => {
-  it("keeps bank order for guests", () => {
-    const { upcoming } = planQueue({
-      pool,
-      attempts: new Map(),
-      current: "c",
-      ordered: true,
-      size: 3,
-    });
-    expect(upcoming.map((p) => p.id)).toEqual(["d", "e", "f"]);
-  });
-
-  it("walks a list of solved tasks in order", () => {
-    const attempts = new Map(pool.map((t) => [t.id, attempt("solved", 1)]));
-    const { upcoming } = planQueue({
-      pool,
-      attempts,
-      current: "g",
-      ordered: true,
-      size: 2,
-    });
-    expect(upcoming.map((p) => p.id)).toEqual(["h", "a"]);
-  });
-
   it("prefers exam tasks, then repeats an earlier mistake every fourth pick", () => {
     const attempts = new Map([
       ["a", attempt("wrong", 1)],
@@ -44,7 +21,7 @@ describe("planQueue", () => {
       ["c", attempt("solved", 3)],
       ["d", attempt("solved", 4)],
     ]);
-    const queue = planQueue({ pool, attempts, current: "f", ordered: false });
+    const queue = planQueue({ pool, attempts, current: "f" });
     expect(queue.earlier).toEqual(["a", "b", "c", "d"]);
     expect(queue.today).toEqual(["f"]);
     expect(queue.upcoming).toEqual([
@@ -61,7 +38,7 @@ describe("planQueue", () => {
       ["b", attempt("wrong", 5, true)],
       ["c", attempt("solved", 3, true)],
     ]);
-    const queue = planQueue({ pool, attempts, current: "c", ordered: false });
+    const queue = planQueue({ pool, attempts, current: "c" });
     expect(queue.earlier).toEqual(["a"]);
     expect(queue.today).toEqual(["c", "b"]);
   });

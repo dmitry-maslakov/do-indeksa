@@ -2,7 +2,7 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { actionClient, authActionClient } from "@/server/action-client";
+import { actionClient } from "@/server/action-client";
 import { saveCurrentRun } from "./current-run";
 import { saveFinishedRun } from "./finish-run";
 
@@ -30,7 +30,7 @@ const saveInput = runRef.extend({
   spent: durations,
 });
 
-export const saveRun = authActionClient
+export const saveRun = actionClient
   .inputSchema(saveInput)
   .action(
     ({
@@ -42,7 +42,6 @@ export const saveRun = authActionClient
 export const finishRun = actionClient
   .inputSchema(finishInput)
   .action(async ({ parsedInput, ctx: { profileId } }) => {
-    const result = await saveFinishedRun(profileId, parsedInput);
-    if (result.saved) refresh();
-    return result;
+    await saveFinishedRun(profileId, parsedInput);
+    refresh();
   });

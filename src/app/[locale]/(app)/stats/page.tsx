@@ -3,7 +3,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
-import { SignInCard } from "@/features/account/sign-in-card";
 import { minutesAt, positions } from "@/features/exam/exam";
 import { summarizeRuns } from "@/features/exam/run-summaries";
 import { countRuns, getRuns, getTaskStats } from "@/features/progress/history";
@@ -30,7 +29,6 @@ const recentRunCount = 5;
 
 async function loadStats() {
   const profileId = await getProfileId();
-  if (!profileId) return undefined;
   const [byTask, recent, runCount] = await Promise.all([
     getTaskStats(profileId),
     getRuns(profileId, recentRunCount),
@@ -43,7 +41,7 @@ async function loadStats() {
   };
 }
 
-type Stats = NonNullable<Awaited<ReturnType<typeof loadStats>>>;
+type Stats = Awaited<ReturnType<typeof loadStats>>;
 
 export default async function StatsPage({
   searchParams,
@@ -63,15 +61,8 @@ export default async function StatsPage({
 async function StatsView({
   searchParams,
 }: Pick<PageProps<"/[locale]/stats">, "searchParams">) {
-  const t = await getTranslations("Stats");
   const byNumber = (await searchParams).by === "number";
-  const stats = await loadStats();
-
-  return stats ? (
-    <StatsCards byNumber={byNumber} stats={stats} />
-  ) : (
-    <SignInCard text={t("guest")} />
-  );
+  return <StatsCards byNumber={byNumber} stats={await loadStats()} />;
 }
 
 function StatsCards({

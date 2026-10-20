@@ -7,18 +7,10 @@ import { feedPage } from "./feed";
 interface BankListProps {
   tasks: TaskSummary[];
   search: string;
-  signedIn: boolean;
   progress?: Progress;
 }
 
-export async function BankList({
-  tasks,
-  search,
-  signedIn,
-  progress,
-}: BankListProps) {
+export async function BankList({ tasks, search, progress }: BankListProps) {
   const first = feedPage(tasks, 0, await getLocale(), progress);
-  return (
-    <BankFeed key={search} search={search} first={first} signedIn={signedIn} />
-  );
+  return <BankFeed key={search} search={search} first={first} />;
 }

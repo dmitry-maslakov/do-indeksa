@@ -34,10 +34,9 @@ function Source({ exam }: Pick<BankCard, "exam">) {
 
 interface TaskCardProps {
   card: BankCard;
-  signedIn: boolean;
 }
 
-export function TaskCard({ card, signedIn }: TaskCardProps) {
+export function TaskCard({ card }: TaskCardProps) {
   const t = useTranslations("Bank");
 
   return (
@@ -53,12 +52,7 @@ export function TaskCard({ card, signedIn }: TaskCardProps) {
           <StatusMark status={card.status} />
         </span>
         <div className="ml-auto">
-          <FavoriteButton
-            taskId={card.id}
-            saved={card.favorite}
-            signedIn={signedIn}
-            compact
-          />
+          <FavoriteButton taskId={card.id} saved={card.favorite} compact />
         </div>
       </div>
       <Link

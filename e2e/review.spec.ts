@@ -29,16 +29,18 @@ async function storedRun(db: Client, profileId: string) {
   return rows;
 }
 
-test("a guest reviews a finished test", { tag: "@responsive" }, async ({
-  page,
-  errors,
-}) => {
+test("a guest reviews a finished test and finds it in history", {
+  tag: "@responsive",
+}, async ({ page, errors }) => {
   await finishSet(page);
-  await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
+  const review = new URL(page.url()).pathname;
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
   await expectAnswers(page, errors);
+  await page.goto("/variants?tab=history");
+  await expect(page.locator(`main a[href$="${review}"]`)).toBeVisible();
 });
 
 test("a signed-in user reviews a finished test", {

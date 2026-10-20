@@ -14,7 +14,7 @@ interface Answer {
 }
 
 export async function submitAnswer(
-  profileId: string | undefined,
+  profileId: string,
   { taskId, answers, startedAt, hintsUsed }: Answer,
 ) {
   const task = getTask(taskId);
@@ -26,16 +26,14 @@ export async function submitAnswer(
   );
   const correct = outcomes.every(isRight);
 
-  if (profileId) {
-    await db.insert(attempts).values({
-      profileId,
-      taskId,
-      answers,
-      outcomes,
-      correct,
-      hintsUsed,
-      durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
-    });
-  }
+  await db.insert(attempts).values({
+    profileId,
+    taskId,
+    answers,
+    outcomes,
+    correct,
+    hintsUsed,
+    durationMs: Math.min(Math.max(Date.now() - startedAt, 0), hourMs),
+  });
   return { outcomes, correct };
 }

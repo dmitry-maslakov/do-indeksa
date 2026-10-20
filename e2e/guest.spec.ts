@@ -9,6 +9,28 @@ test("a guest checks an answer", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
+test("a guest finds a solved task in statistics after a reload", async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await answer(page, "2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+  await page.reload();
+  await page.goto("/stats");
+  await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
+});
+
+test("browsing does not create a profile", async ({ page, context }) => {
+  for (const path of ["/", "/bank", "/bank/eks-001", "/variants", "/stats"]) {
+    await page.goto(path);
+    await expect(page.getByRole("main")).toBeVisible();
+  }
+  expect((await context.cookies()).map((c) => c.name)).not.toContain(
+    "__Host-profile",
+  );
+});
+
 test("a guest opens the solution and moves on", async ({ page }) => {
   await page.goto("/bank/eks-001");
   const skip = page.getByRole("link", { name: "Preskoči" });
@@ -49,7 +71,9 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
   await expect(
-    page.getByText("Nedovršen test ostaje u ovom pregledaču", { exact: false }),
+    page.getByText("Nedovršen test i rezultati čuvaju se na ovom uređaju", {
+      exact: false,
+    }),
   ).toBeVisible();
   await expect(bar).toBeVisible();
   await page.getByRole("button", { name: "Počni" }).click();
@@ -59,13 +83,10 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   await page.getByRole("timer").waitFor();
   await expect(bar).toBeHidden();
   await finish(page);
-  await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await expect(bar).toBeVisible();
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Prijavi se" }).last(),
   ).toBeVisible();
 });
 
@@ -141,7 +162,7 @@ test("a guest is told when a personal mode falls back", async ({ page }) => {
   await page.goto("/variants/compose?mode=weak");
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}\?fallback=weak$/);
   await expect(
-    page.getByText("Slabije teme i nerešeni zadaci", { exact: false }),
+    page.getByText("Još nema dovoljno pokušaja po temama", { exact: false }),
   ).toBeVisible();
 });
 
@@ -170,11 +191,6 @@ test("a guest sees why to sign in before google", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(header).toBeFocused();
-
-  await page.getByRole("button", { name: "Sačuvaj" }).click();
-  await expect(dialog).toBeVisible();
-  await dialog.getByRole("button", { name: "Ne sada" }).click();
-  await expect(dialog).toBeHidden();
 
   await header.click();
   const fromDialog = page.waitForRequest("**/api/auth/sign-in/social");

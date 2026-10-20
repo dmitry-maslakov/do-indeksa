@@ -22,7 +22,7 @@ async function loadHome() {
   const profileId = await getProfileId();
   const [plan, current] = await Promise.all([
     getTopicPlan(profileId),
-    profileId ? getCurrentRun(profileId) : undefined,
+    getCurrentRun(profileId),
   ]);
   return { ...plan, current };
 }

@@ -8,9 +8,7 @@ export async function GET(request: NextRequest) {
     Object.fromEntries(request.nextUrl.searchParams),
   );
   if (!query.success) return new Response(null, { status: 400 });
-  const profileId = await getProfileId();
-  if (!profileId) return new Response(null, { status: 401 });
   return Response.json(
-    await runPage(profileId, query.data.offset, query.data.locale),
+    await runPage(await getProfileId(), query.data.offset, query.data.locale),
   );
 }

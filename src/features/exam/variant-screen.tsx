@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
-import { getProfileId, getSession } from "@/server/auth";
+import { getProfileId } from "@/server/auth";
 import type { ComposeMode } from "./compose";
 import { swapHrefs } from "./compose-set";
 import { getCurrentRun } from "./current-run";
@@ -20,17 +20,6 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
       tasks: variant.taskIds.length,
       minutes: minutesOf(variant),
     }),
-  };
-}
-
-async function loadAccount() {
-  const [session, profileId] = await Promise.all([
-    getSession(),
-    getProfileId(),
-  ]);
-  return {
-    signedIn: Boolean(session),
-    account: profileId ? await getCurrentRun(profileId) : undefined,
   };
 }
 
@@ -72,15 +61,14 @@ export async function VariantScreen({
         </span>
       </div>
       <Suspense fallback={<ExamGhost />}>
-        <Await promise={loadAccount()}>
-          {({ signedIn, account }) => (
+        <Await promise={getProfileId().then(getCurrentRun)}>
+          {(saved) => (
             <ExamRunner
               variantId={variant.id}
               tasks={tasks}
               minutes={minutes}
               title={title}
-              signedIn={signedIn}
-              account={account}
+              saved={saved}
               fallback={fallback}
               swaps={
                 variant.kind === "custom"

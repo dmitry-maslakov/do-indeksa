@@ -14,7 +14,6 @@ interface QueueInput {
   pool: PoolTask[];
   attempts: Map<string, Attempted>;
   current?: string;
-  ordered: boolean;
   size?: number;
 }
 
@@ -42,37 +41,12 @@ function pickNext(
   return wrong[0] ? { id: wrong[0].id, repeat: true } : null;
 }
 
-function inOrder(
-  pool: PoolTask[],
-  attempts: Map<string, Attempted>,
-  current: string | undefined,
-  size: number,
-): Pick[] {
-  const start = pool.findIndex((t) => t.id === current) + 1;
-  const rest = [...pool.slice(start), ...pool.slice(0, start)].filter(
-    (t) => t.id !== current,
-  );
-  const open = rest.filter((t) => attempts.get(t.id)?.status !== "solved");
-  return (open.length ? open : rest)
-    .slice(0, size)
-    .map((t) => ({ id: t.id, repeat: false }));
-}
-
-export function planQueue({
-  pool,
-  attempts,
-  current,
-  ordered,
-  size = 6,
-}: QueueInput) {
+export function planQueue({ pool, attempts, current, size = 6 }: QueueInput) {
   const today = byTime(attempts, true);
   if (current && !today.includes(current)) today.push(current);
   const earlier = byTime(attempts, false)
     .filter((id) => id !== current)
     .slice(-4);
-  if (ordered) {
-    return { earlier, today, upcoming: inOrder(pool, attempts, current, size) };
-  }
   const taken = new Set(today);
   const recent = new Set(
     [...byTime(attempts, false), ...byTime(attempts, true)].slice(-3),
