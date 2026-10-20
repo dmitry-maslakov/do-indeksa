@@ -40,13 +40,22 @@ test("the bank filters tasks by their latest attempt", async ({
 test("the task rail marks the latest attempt", async ({ page, auth }) => {
   await seed(auth.db, await auth.signIn());
   const row = (id: string, mark: string) =>
-    page.locator(`a[href$="/bank/${id}"]`).filter({ hasText: mark });
+    page
+      .getByRole("complementary")
+      .locator(`a[href$="/bank/${id}"]`)
+      .getByRole("img", { name: mark, exact: true });
 
   await page.goto("/bank/eks-001");
-  await expect(row("eks-001", "rešen")).toBeVisible();
+  await expect(row("eks-001", "tačno")).toBeVisible();
 
   await page.goto("/bank/fun-002");
-  await expect(row("fun-002", "greška")).toBeVisible();
+  await expect(row("fun-002", "netačno")).toBeVisible();
+});
+
+test("a topic starts from its recommended task", async ({ page, auth }) => {
+  await seed(auth.db, await auth.signIn());
+  await page.goto("/bank/start/exponential-equations");
+  await expect(page).toHaveURL(/\/bank\/eks-\d+$/);
 });
 
 test("the home page counts tasks whose latest attempt is wrong", async ({

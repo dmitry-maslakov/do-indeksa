@@ -8,6 +8,30 @@ test("a guest checks an answer", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
+test("a guest opens the solution and moves on", async ({ page }) => {
+  await page.goto("/bank/eks-001?sort=easy");
+  const skip = page.getByRole("link", { name: "Preskoči" });
+  const next = await skip.getAttribute("href");
+  expect(next).toMatch(/^\/bank\/[a-z]+-\d+\?sort=easy$/);
+  await page.getByRole("button", { name: "Rešenje" }).click();
+  await expect(page.getByRole("heading", { name: "Rešenje" })).toBeVisible();
+  await expect(skip).toBeHidden();
+  await page.getByRole("link", { name: "Sledeći zadatak" }).click();
+  await expect(page).toHaveURL(next ?? "");
+});
+
+test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await page.getByRole("button", { name: /Eksponencijalne/ }).click();
+  const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
+  await sheet.getByRole("tab", { name: "Svi zadaci" }).click();
+  await expect(sheet.locator('a[href$="/bank/eks-001"]')).toBeVisible();
+  await sheet.getByLabel("Tema").selectOption("logarithms");
+  await expect(page).toHaveURL(/\/bank\/log-\d+$/);
+});
+
 test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   page,
 }) => {
