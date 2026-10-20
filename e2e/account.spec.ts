@@ -26,7 +26,7 @@ test("a user deletes the account", async ({ page, auth }) => {
   await page.addInitScript(() =>
     localStorage.setItem(
       "do-indeksa-exam",
-      JSON.stringify({ state: { runs: { seeded: {} } }, version: 2 }),
+      JSON.stringify({ state: { runs: { seeded: {} } }, version: 3 }),
     ),
   );
   await page.goto("/privacy");

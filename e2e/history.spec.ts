@@ -7,9 +7,9 @@ test.use({ viewport: { width: 1280, height: 400 } });
 
 const seedRuns = (db: Client, profileId: string, count: number) =>
   db.query(
-    `insert into runs (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
-     select gen_random_uuid(), $1::uuid, 'daily'::run_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
-       '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour', false, '{}'
+    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
+     select gen_random_uuid(), $1::uuid, 'daily'::test_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
+       '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour', false
      from generate_series(1, $2::int) n`,
     [profileId, count],
   );
@@ -44,8 +44,8 @@ test("a finished variant shows its result in the catalog", async ({
   const href = (await first.getAttribute("href")) ?? "";
   const runId = randomUUID();
   await auth.db.query(
-    `insert into runs (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed, durations_ms)
-     values ($1, $2, 'official', $3, '{}', now(), now(), false, '{}')`,
+    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
+     values ($1, $2, 'official', $3, '{}', now(), now(), false)`,
     [runId, profileId, href.split("/").at(-1)],
   );
   await page.reload();

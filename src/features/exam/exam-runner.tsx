@@ -9,13 +9,19 @@ import { reviewHref } from "@/features/review/review";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import type { ComposeMode } from "./compose";
-import type { CurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
-import { spentAt, useExamHydrated, useExamStore } from "./exam-store";
+import {
+  type ExamRun,
+  useExamHydrated,
+  useExamStore,
+  visitsAt,
+} from "./exam-store";
 import { ExamTask } from "./exam-task";
-import { finishRun, saveRun } from "./run-actions";
+import { nextIndex } from "./run";
+import { saveTest, submitTest } from "./test-actions";
+import type { UnfinishedTest } from "./test-sessions";
 import type { ExamTask as Task } from "./variants";
 
 interface ExamRunnerProps {
@@ -23,10 +29,18 @@ interface ExamRunnerProps {
   tasks: Task[];
   minutes: number;
   title: string;
-  saved?: CurrentRun;
+  saved?: UnfinishedTest;
   swaps?: (string | undefined)[];
   fallback?: ComposeMode;
 }
+
+const payload = (variantId: string, run: ExamRun) => ({
+  id: run.runId,
+  variantId,
+  timed: run.timed,
+  startedAt: run.startedAt,
+  draft: { answers: run.answers, visits: visitsAt(run, Date.now()) },
+});
 
 export function ExamRunner({
   variantId,
@@ -43,10 +57,10 @@ export function ExamRunner({
   const { start, answer, go, restore, clear } = useExamStore.getState();
   const t = useTranslations("Exam");
   const errorText = useErrorText();
-  const { execute: submit, isPending: pending } = useAction(finishRun, {
+  const { execute: submit, isPending: pending } = useAction(submitTest, {
     onSuccess: ({ input }) => {
       clear(variantId);
-      router.push(reviewHref(input.runId));
+      router.push(reviewHref(input.id));
     },
     onError: () =>
       toast.error(t("finishFailed"), {
@@ -65,16 +79,30 @@ export function ExamRunner({
     }),
     [title, minutes, tasks],
   );
-  const resumed = saved?.variantId === variantId ? saved.run : undefined;
-  const synced = saved?.run.updatedAt ?? 0;
+  const resumed = useMemo(
+    (): ExamRun | undefined =>
+      saved?.variantId === variantId
+        ? {
+            ...meta,
+            runId: saved.id,
+            timed: saved.timed,
+            startedAt: saved.startedAt,
+            updatedAt: saved.updatedAt,
+            current:
+              nextIndex({ current: 0, answers: saved.draft.answers }) ?? 0,
+            ...saved.draft,
+          }
+        : undefined,
+    [saved, variantId, meta],
+  );
+  const synced = saved?.updatedAt ?? 0;
   useEffect(() => {
     if (hydrated && resumed) restore(variantId, resumed);
   }, [hydrated, resumed, restore, variantId]);
   useEffect(() => {
     if (!run || run.updatedAt <= synced) return;
     const id = setTimeout(() => {
-      const spent = spentAt(run, Date.now());
-      saveRun({ ...run, spent, variantId }).catch(() => undefined);
+      saveTest(payload(variantId, run)).catch(() => undefined);
     }, 1500);
     return () => clearTimeout(id);
   }, [run, synced, variantId]);
@@ -101,15 +129,7 @@ export function ExamRunner({
     return <ExamGhost />;
   }
 
-  const finish = () =>
-    submit({
-      runId: run.runId,
-      variantId,
-      startedAt: run.startedAt,
-      answers: run.answers,
-      durations: spentAt(run, Date.now()),
-      timed: run.timed,
-    });
+  const finish = () => submit(payload(variantId, run));
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">

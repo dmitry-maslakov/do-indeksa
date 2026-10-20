@@ -23,7 +23,9 @@ async function expectAnswers(page: Page, errors: string[]) {
 
 async function storedRun(db: Client, profileId: string) {
   const { rows } = await db.query(
-    "select timed, overtime, durations_ms from runs where profile_id = $1",
+    `select t.timed, t.overtime, count(s.id)::int as visits
+     from test_sessions t join task_sessions s on s.test_session_id = t.id
+     where t.profile_id = $1 group by t.id`,
     [profileId],
   );
   return rows;
@@ -51,7 +53,7 @@ test("a signed-in user reviews a finished test", {
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await expectAnswers(page, errors);
   expect(await storedRun(auth.db, profileId)).toEqual([
-    { timed: true, overtime: false, durations_ms: [expect.any(Number)] },
+    { timed: true, overtime: false, visits: 1 },
   ]);
 });
 
@@ -63,6 +65,38 @@ test("an untimed test is stored without a time limit", async ({
   await finishSet(page, false);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   expect(await storedRun(auth.db, profileId)).toEqual([
-    { timed: false, overtime: null, durations_ms: [expect.any(Number)] },
+    { timed: false, overtime: null, visits: 1 },
   ]);
+});
+
+test("an unfinished test continues from the server on another device", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await page.goto("/variants/set-eks-001");
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+  const test = page.url();
+  await page.getByRole("button", { name: "Počni" }).click();
+  await answer(page, "7");
+  await expect
+    .poll(async () => {
+      const { rows } = await auth.db.query<{ draft: { answers: string[][] } }>(
+        "select draft from test_sessions where profile_id = $1 and finished_at is null",
+        [profileId],
+      );
+      return rows[0]?.draft.answers;
+    })
+    .toEqual([["7"]]);
+
+  await page.evaluate(() => localStorage.clear());
+  await page.goto(test);
+  await expect
+    .poll(() =>
+      page
+        .locator("math-field")
+        .first()
+        .evaluate((el) => (el as HTMLElement & { value: string }).value),
+    )
+    .toBe("7");
 });

@@ -6,9 +6,9 @@ import { PageTitle } from "@/components/page-title";
 import { getProfileId } from "@/server/auth";
 import type { ComposeMode } from "./compose";
 import { swapHrefs } from "./compose-set";
-import { getCurrentRun } from "./current-run";
 import { ExamGhost } from "./exam-ghost";
 import { ExamRunner } from "./exam-runner";
+import { getUnfinishedTest } from "./test-sessions";
 import { variantTitle } from "./variant-title";
 import { type ExamVariant, minutesOf, tasksFor } from "./variants";
 
@@ -61,7 +61,11 @@ export async function VariantScreen({
         </span>
       </div>
       <Suspense fallback={<ExamGhost />}>
-        <Await promise={getProfileId().then(getCurrentRun)}>
+        <Await
+          promise={getProfileId().then((id) =>
+            getUnfinishedTest(id, locale, variant.id),
+          )}
+        >
           {(saved) => (
             <ExamRunner
               variantId={variant.id}
