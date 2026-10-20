@@ -13,7 +13,7 @@ export function BottomNav() {
     <nav
       aria-label={t("label")}
       data-bottom-nav
-      className="fixed inset-x-0 bottom-0 z-40 flex border-t bg-card pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] lg:hidden exam-running:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 flex border-t bg-card pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] lg:hidden exam-running:hidden max-md:task-focus:hidden"
     >
       <WithPathname>
         {(pathname) =>
@@ -25,11 +25,11 @@ export function BottomNav() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-(--nav-bottom) flex-1 flex-col items-center justify-center gap-1 text-subtle text-xs outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                  active && "font-semibold text-data",
+                  "flex h-(--nav-bottom) flex-1 flex-col items-center justify-center gap-1 text-xs text-subtle outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                  active && "font-semibold text-foreground",
                 )}
               >
-                <Icon className="size-5" />
+                <Icon className="size-6" />
                 {t(key)}
               </Link>
             );

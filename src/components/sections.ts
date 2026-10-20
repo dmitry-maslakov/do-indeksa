@@ -1,5 +1,5 @@
 import {
-  ChartColumnIcon,
+  ChartNoAxesColumnIcon,
   ClipboardListIcon,
   HomeIcon,
   LibraryBigIcon,
@@ -9,7 +9,7 @@ export const sections = [
   { href: "/", key: "home", icon: HomeIcon },
   { href: "/bank", key: "bank", icon: LibraryBigIcon },
   { href: "/variants", key: "variants", icon: ClipboardListIcon },
-  { href: "/stats", key: "stats", icon: ChartColumnIcon },
+  { href: "/stats", key: "stats", icon: ChartNoAxesColumnIcon },
 ] as const;
 
 export function isActive(pathname: string | undefined, href: string) {

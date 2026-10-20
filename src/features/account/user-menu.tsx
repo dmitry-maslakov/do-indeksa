@@ -37,9 +37,9 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full" aria-label={t("account")}>
-        <Avatar className="size-9">
+        <Avatar className="size-9 after:hidden">
           {user.image && <AvatarImage src={user.image} alt="" />}
-          <AvatarFallback className="bg-data-tint text-data">
+          <AvatarFallback className="bg-muted font-semibold text-foreground text-sm">
             {user.name.charAt(0)}
           </AvatarFallback>
         </Avatar>

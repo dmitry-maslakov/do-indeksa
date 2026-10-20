@@ -49,7 +49,9 @@ async function fitsPhone(
 ) {
   await page.goto(path);
   await expect(
-    page.getByRole("banner").getByRole("button", { name: account }),
+    page
+      .locator("[data-task-focus]")
+      .or(page.getByRole("banner").getByRole("button", { name: account })),
   ).toBeVisible();
   await page.waitForFunction(
     () => !document.querySelector("math-field:not(:defined)"),

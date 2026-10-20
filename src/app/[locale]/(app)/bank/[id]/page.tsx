@@ -76,7 +76,7 @@ export default async function SolvePage({
   };
 
   return (
-    <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
+    <main data-task-focus className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
       <h1 className="sr-only">{bank("title")}</h1>
       <PhoneBar key={id} title={topic} look={topicLook(task.topic)} {...rail} />
       <div className="flex items-start gap-14">
