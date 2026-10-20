@@ -26,7 +26,8 @@ test("the bank filters tasks by their latest attempt", async ({
   auth,
 }) => {
   await seed(auth.db, await auth.signIn());
-  const task = (id: string) => page.locator(`a[href*="/bank/${id}?"]`);
+  const task = (id: string) =>
+    page.getByRole("main").locator(`a[href$="/bank/${id}"]`);
 
   await page.goto("/bank?status=solved");
   await expect(task("eks-001").first()).toBeVisible();
