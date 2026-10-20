@@ -240,3 +240,16 @@ test("the bank feed rejects a malformed page request", async ({ request }) => {
   const page = await request.get("/api/bank?offset=-1&locale=xx");
   expect(page.status()).toBe(400);
 });
+
+test("Preporučeno opens the recommended task of the topic", async ({
+  page,
+  errors,
+}) => {
+  await page.goto("/bank?topic=logarithms");
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  await expect(page.getByLabel("Tema").filter({ visible: true })).toHaveValue(
+    "logarithms",
+  );
+  expect(errors).toEqual([]);
+});
