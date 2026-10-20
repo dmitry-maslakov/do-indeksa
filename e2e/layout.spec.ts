@@ -49,9 +49,9 @@ async function fitsPhone(
 ) {
   await page.goto(path);
   await expect(
-    page
-      .locator("[data-task-focus]")
-      .or(page.getByRole("banner").getByRole("button", { name: account })),
+    path.startsWith("/bank/")
+      ? page.getByRole("main")
+      : page.getByRole("banner").getByRole("button", { name: account }),
   ).toBeVisible();
   await page.waitForFunction(
     () => !document.querySelector("math-field:not(:defined)"),
@@ -97,4 +97,19 @@ test("the launch page shows only the logo and the language", {
   expect(
     await page.evaluate(() => getComputedStyle(document.body).paddingBottom),
   ).toBe("0px");
+});
+
+test("the nav comes back after leaving a task on a phone", {
+  tag: "@mobile",
+}, async ({ page }) => {
+  const nav = page.getByRole("navigation", { name: "Glavna navigacija" });
+  await page.goto("/bank");
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  await expect(nav).toBeHidden();
+  await expect(page.getByRole("banner")).toBeHidden();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/bank$/);
+  await expect(nav).toBeVisible();
+  await expect(page.getByRole("banner")).toBeVisible();
 });
