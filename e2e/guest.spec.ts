@@ -30,7 +30,11 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
     "href",
     /\/bank\?topic=exponential-equations$/,
   );
-  await expect(sheet.locator('a[href$="/bank/eks-001"]')).toBeVisible();
+  await expect(
+    sheet
+      .locator('a[href$="/bank/eks-001"]')
+      .filter({ hasNotText: "Preporučeno" }),
+  ).toBeVisible();
   await sheet.getByLabel("Tema").selectOption("logarithms");
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await page.getByRole("button", { name: /Logaritmi/ }).click();
