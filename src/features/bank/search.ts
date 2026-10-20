@@ -34,8 +34,6 @@ const sortedBy = (order: -1 | 0 | 1) =>
 
 const orders = { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };
 
-export const firstTaskId = orders.number[0]?.summary.id;
-
 export function searchBank({
   q,
   number,
