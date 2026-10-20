@@ -99,7 +99,7 @@ function BankResults({
   return (
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
-        <BankTabs topic={filters.topic} />
+        <BankTabs topic={filters.topic} pending={pending} />
         <BankFilters signedIn={signedIn} variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
@@ -112,7 +112,7 @@ function BankResults({
       </aside>
       <section className="flex min-w-0 flex-col gap-3">
         <div className="flex flex-col gap-3 px-1 lg:hidden">
-          <BankTabs topic={filters.topic} />
+          <BankTabs topic={filters.topic} pending={pending} />
           <div className="flex gap-2">
             <FilterSearch
               variant="card"
