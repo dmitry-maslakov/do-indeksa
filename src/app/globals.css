@@ -160,16 +160,16 @@
   --nav-bottom: 4rem;
 }
 
-@custom-variant exam-running (&:where(:root:has([data-exam="running"]) *));
-@custom-variant task-focus (&:where(:root:has([data-task-focus]) *));
+@custom-variant exam-running (&:where([data-focus="exam"] *));
+@custom-variant task-focus (&:where([data-focus="task"] *));
 
 @media (width < 48rem) {
-  :root:has([data-task-focus]) {
+  :root[data-focus="task"] {
     --nav-bottom: 0rem;
   }
 }
 
-:root:has([data-exam="running"]),
+:root[data-focus="exam"],
 :root:not(:has([data-bottom-nav])) {
   --nav-bottom: 0rem;
 }
