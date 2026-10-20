@@ -89,4 +89,11 @@ describe("suggest", () => {
     expect(suggest([topic("a", 20, 1)], [true])?.reason).toBe("started");
     expect(suggest([topic("a", 20, 1)], [false, true])?.reason).toBe("started");
   });
+
+  it("keeps the last topic once every topic is mastered", () => {
+    expect(suggest([topic("a", 80, 1), topic("b", 90)], [true])).toEqual({
+      topic: "a",
+      reason: "done",
+    });
+  });
 });

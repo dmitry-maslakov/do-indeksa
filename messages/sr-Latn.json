@@ -250,7 +250,8 @@
       "stuck": "Ovde je zapelo — bolje sad, dok je sveže.",
       "next": "Prethodna tema je gotova — ovo je sledeća.",
       "almost": "Još malo i tema je gotova.",
-      "started": "Tema je započeta — vredi je završiti pre sledeće."
+      "started": "Tema je započeta — vredi je završiti pre sledeće.",
+      "done": "Sve teme su savladane — kratko ponavljanje ih drži svežim."
     },
     "continueTopic": "Nastavi →",
     "startTopic": "Počni →",

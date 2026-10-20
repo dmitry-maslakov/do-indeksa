@@ -18,7 +18,13 @@ export interface TopicProgress {
   lastAt: number | null;
 }
 
-type SuggestionReason = "first" | "stuck" | "next" | "almost" | "started";
+type SuggestionReason =
+  | "first"
+  | "stuck"
+  | "next"
+  | "almost"
+  | "started"
+  | "done";
 
 export interface Suggestion {
   topic: string;
@@ -77,7 +83,9 @@ export function suggest(
     const next = [...topics.slice(at + 1), ...topics.slice(0, at)].find(
       (t) => t.pct < masteredPct,
     );
-    if (next) return { topic: next.topic, reason: "next" };
+    return next
+      ? { topic: next.topic, reason: "next" }
+      : { topic: last.topic, reason: "done" };
   }
   return {
     topic: last.topic,

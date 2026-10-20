@@ -250,7 +250,8 @@
       "stuck": "This is where it got stuck — better now, while it's fresh.",
       "next": "The previous topic is done — this is the next one.",
       "almost": "A little more and the topic is done.",
-      "started": "The topic is started — worth finishing before the next one."
+      "started": "The topic is started — worth finishing before the next one.",
+      "done": "Every topic is mastered — a quick repeat keeps it fresh."
     },
     "continueTopic": "Continue →",
     "startTopic": "Start →",
