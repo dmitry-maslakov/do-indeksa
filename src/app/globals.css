@@ -43,6 +43,9 @@
   --color-daily: var(--daily);
   --color-daily-muted: var(--daily-muted);
   --color-daily-glyph: var(--daily-glyph);
+  --color-progress: var(--progress);
+  --color-progress-text: var(--progress-text);
+  --color-progress-tint: var(--progress-tint);
   --color-lime: var(--lime);
   --color-lime-strong: var(--lime-strong);
   --color-tone-blue: var(--tone-blue);
@@ -141,6 +144,9 @@
   --daily: #2b2560;
   --daily-muted: #b4b3ba;
   --daily-glyph: #d9d4ff;
+  --progress: #7b9cf0;
+  --progress-text: #3557b7;
+  --progress-tint: #e6edff;
   --lime: #d4f56e;
   --lime-strong: #c6ec4f;
   --tone-blue: #9ab8ff;

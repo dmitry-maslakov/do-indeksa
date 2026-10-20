@@ -3,26 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { getCurrentRun } from "@/features/exam/current-run";
-import { DailyBanner } from "@/features/exam/daily-banner";
-import { minutesAt, positions } from "@/features/exam/exam";
-import { contentVariants, minutesOf } from "@/features/exam/variants";
-import { getTaskStats } from "@/features/progress/history";
-import {
-  meanTimeByNumber,
-  type TaskStat,
-  totals,
-  warming,
-  weakest,
-} from "@/features/progress/stats";
+import { getTopicPlan } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
-import { AccountNote } from "./_components/account-note";
-import { ContinueCard } from "./_components/continue-card";
-import { EntryCards } from "./_components/entry-cards";
-import { Intro } from "./_components/intro";
-import { MistakesCard } from "./_components/mistakes-card";
-import { TimeCard } from "./_components/time-card";
-import { WeakTopics } from "./_components/weak-topics";
+import { GuestHome } from "./_components/guest-home";
+import { HomeSkeleton } from "./_components/home-skeleton";
+import { UserHome } from "./_components/user-home";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -33,106 +19,22 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function loadStats() {
+async function loadHome() {
   const session = await getSession();
-  return {
-    signedIn: Boolean(session),
-    stats: session ? await getTaskStats(session.user.id) : [],
-  };
+  if (!session) return undefined;
+  const [plan, current] = await Promise.all([
+    getTopicPlan(session.user.id),
+    getCurrentRun(session.user.id),
+  ]);
+  return { ...plan, current };
 }
-
-async function loadCurrentRun() {
-  const session = await getSession();
-  return session ? getCurrentRun(session.user.id) : undefined;
-}
-
-const topics = positions.map((p) => p.topic);
-
-const slowest = (stats: TaskStat[]) =>
-  meanTimeByNumber(
-    stats,
-    positions.map((p) => p.number),
-  )
-    .flatMap((row) =>
-      row.meanMs === null
-        ? []
-        : {
-            ...row,
-            meanMs: row.meanMs,
-            normMs: minutesAt(row.number) * 60_000,
-          },
-    )
-    .sort((a, b) => b.meanMs / b.normMs - a.meanMs / a.normMs)
-    .slice(0, 3);
 
 export default function HomePage() {
-  const stats = loadStats();
-  const current = loadCurrentRun();
-  const [first] = contentVariants;
-  if (!first) throw new Error("no tests in the bank");
-  const start = {
-    id: first.id,
-    title: first.title,
-    tasks: first.taskIds.length,
-    minutes: minutesOf(first),
-  };
-
   return (
-    <main className="flex flex-col gap-6 px-4 py-6 pb-9 md:grid md:pt-2.5 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] md:items-start md:px-9">
-      <Intro />
-      <div className="contents md:flex md:flex-col md:gap-6">
-        <div className="max-md:order-2">
-          <Suspense fallback={<ContinueCard start={start} />}>
-            <Await promise={current}>
-              {(account) => <ContinueCard start={start} account={account} />}
-            </Await>
-          </Suspense>
-        </div>
-        <div className="max-md:order-3">
-          <EntryCards />
-        </div>
-        <div className="empty:hidden max-md:order-5">
-          <Suspense fallback={<TimeCard />}>
-            <Await promise={stats}>
-              {(s) =>
-                s.stats.length > 0 && <TimeCard rows={slowest(s.stats)} />
-              }
-            </Await>
-          </Suspense>
-        </div>
-      </div>
-      <div className="contents md:flex md:flex-col md:gap-6">
-        <div className="max-md:order-1">
-          <DailyBanner />
-        </div>
-        <div className="flex flex-col gap-6 max-md:order-4">
-          <Suspense
-            fallback={
-              <>
-                <WeakTopics />
-                <MistakesCard />
-              </>
-            }
-          >
-            <Await promise={stats}>
-              {(s) => {
-                if (!s.signedIn) return <AccountNote />;
-                return (
-                  <>
-                    <WeakTopics
-                      topics={weakest(s.stats, topics)}
-                      warming={warming(s.stats, topics)}
-                    />
-                    {s.stats.length > 0 && (
-                      <MistakesCard count={totals(s.stats).wrong} />
-                    )}
-                  </>
-                );
-              }}
-            </Await>
-          </Suspense>
-        </div>
-      </div>
-    </main>
+    <Suspense fallback={<HomeSkeleton />}>
+      <Await promise={loadHome()}>
+        {(home) => (home ? <UserHome {...home} /> : <GuestHome />)}
+      </Await>
+    </Suspense>
   );
 }

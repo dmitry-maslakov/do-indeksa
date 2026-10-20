@@ -11,3 +11,8 @@ export const topicIconSchema = z.union([
 export type IconName = (typeof iconNames)[number];
 export type Tone = (typeof tones)[number];
 export type TopicIconData = z.infer<typeof topicIconSchema>;
+
+export interface TopicLook {
+  icon: TopicIconData;
+  tone: Tone;
+}
