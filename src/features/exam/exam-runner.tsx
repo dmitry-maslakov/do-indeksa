@@ -64,7 +64,7 @@ export function ExamRunner({
       tasks: tasks.map((task) => ({
         number: task.number,
         topic: task.topicName,
-        parts: task.labels.length,
+        parts: task.parts.length,
       })),
     }),
     [title, minutes, tasks],

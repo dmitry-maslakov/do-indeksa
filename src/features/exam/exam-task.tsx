@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,14 +29,7 @@ export function ExamTask({
 }: ExamTaskProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
-  const fields = useMemo(
-    () =>
-      task.labels.map((labelHtml, i) => ({
-        labelHtml,
-        onEdit: (value: string) => onAnswer(i, value),
-      })),
-    [task, onAnswer],
-  );
+  const ids = task.parts.map((_, i) => `answer-${task.id}-${i}`);
 
   return (
     <Card className="gap-6 md:p-9">
@@ -52,19 +44,21 @@ export function ExamTask({
         className="font-semibold text-lg tracking-tight md:text-task-lg"
       />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {fields.map(({ labelHtml, onEdit }, i) => (
+        {task.parts.map((part, i) => (
           <AnswerField
-            key={`${task.id}-${labelHtml ?? i}`}
+            key={ids[i]}
+            id={ids[i] ?? task.id}
+            index={i}
             name="answer"
             label={
-              task.labels.length === 1
+              task.parts.length === 1
                 ? solve("yourAnswer")
                 : solve("answerPart", { number: i + 1 })
             }
-            labelHtml={labelHtml}
-            state="empty"
+            part={part}
+            variant="exam"
             defaultValue={answers[i]}
-            onEdit={onEdit}
+            onChange={onAnswer}
           />
         ))}
       </div>
