@@ -79,3 +79,9 @@ test("the home page suggests a topic and maps progress", async ({
     rows.filter({ hasText: "Eksponencijalne jednačine i nejednačine" }),
   ).toHaveCount(1);
 });
+
+test("Počni opens the suggested topic", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Počni →" }).click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+});
