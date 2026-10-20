@@ -4,12 +4,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
-import type { CurrentRun } from "@/features/exam/current-run";
-import {
-  type ExamRun,
-  useExamHydrated,
-  useExamStore,
-} from "@/features/exam/exam-store";
 import {
   answeredCount,
   blankSegments,
@@ -17,29 +11,18 @@ import {
   nextIndex,
   runSegments,
 } from "@/features/exam/run";
+import { useLatestRun } from "@/features/exam/use-latest-run";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
 
 interface ContinueCardProps {
   start: { id: string; title: string; tasks: number; minutes: number };
-  account?: CurrentRun;
 }
 
-const newest = (candidates: [string, ExamRun][]) =>
-  candidates.reduce<[string, ExamRun] | undefined>(
-    (best, candidate) =>
-      !best || candidate[1].updatedAt > best[1].updatedAt ? candidate : best,
-    undefined,
-  );
-
-export function ContinueCard({ start, account }: ContinueCardProps) {
+export function ContinueCard({ start }: ContinueCardProps) {
   const t = useTranslations("Home");
   const variants = useTranslations("Variants");
-  const hydrated = useExamHydrated();
-  const runs = useExamStore((s) => s.runs);
-  const candidates: [string, ExamRun][] = hydrated ? Object.entries(runs) : [];
-  if (account) candidates.push([account.variantId, account.run]);
-  const [variantId, run] = newest(candidates) ?? [];
+  const [variantId, run] = useLatestRun() ?? [];
 
   if (!variantId || !run) {
     return (
