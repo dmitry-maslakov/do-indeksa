@@ -22,7 +22,7 @@ export function GoogleSignInButton(props: ComponentProps<typeof Button>) {
   return <Button {...props} onClick={() => signIn(pathname)} />;
 }
 
-export function PrivacyLink({ onClick }: { onClick?: () => void }) {
+function PrivacyLink({ onClick }: { onClick?: () => void }) {
   const t = useTranslations("Account");
 
   return (

@@ -19,7 +19,7 @@ export const positions = exam.positions;
 
 export const maxPoints = sumBy(positions, (p) => p.points);
 
-export const durationMinutes = exam.durationMinutes;
+const durationMinutes = exam.durationMinutes;
 
 export const durationHours = durationMinutes / 60;
 
