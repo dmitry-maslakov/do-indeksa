@@ -1,37 +1,46 @@
 import "server-only";
-import { and, eq, inArray, max, notExists } from "drizzle-orm";
+import { and, eq, gt, inArray, max, notExists, sql } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
-import { hourMs } from "@/lib/dates";
 import { db } from "@/server/db";
-import type { SessionInput } from "./session-input";
 
-type Executor = Pick<typeof db, "insert">;
+type Executor = Pick<typeof db, "insert" | "update">;
 
-export const openSessionIn = (
+const alive = sql`now() - interval '45 seconds'`;
+
+export async function liveSession(
   executor: Executor,
   profileId: string,
   taskId: string,
-  { id, startedAt }: SessionInput,
-) => {
-  const now = Date.now();
-  return executor
+  sessionId?: string,
+) {
+  if (sessionId) {
+    const [kept] = await executor
+      .update(taskSessions)
+      .set({ lastSeenAt: sql`now()` })
+      .where(
+        and(
+          eq(taskSessions.id, sessionId),
+          eq(taskSessions.profileId, profileId),
+          eq(taskSessions.taskId, taskId),
+          gt(taskSessions.lastSeenAt, alive),
+        ),
+      )
+      .returning({ id: taskSessions.id });
+    if (kept) return kept.id;
+  }
+  const [created] = await executor
     .insert(taskSessions)
-    .values({
-      id,
-      profileId,
-      taskId,
-      startedAt: new Date(Math.min(Math.max(startedAt, now - hourMs), now)),
-    })
-    .onConflictDoNothing();
-};
+    .values({ profileId, taskId })
+    .returning({ id: taskSessions.id });
+  if (!created) throw new Error("task session was not created");
+  return created.id;
+}
 
-export async function openSession(
+export const keepSession = (
   profileId: string,
   taskId: string,
-  session: SessionInput,
-) {
-  await openSessionIn(db, profileId, taskId, session);
-}
+  sessionId?: string,
+) => liveSession(db, profileId, taskId, sessionId);
 
 export async function getSeen(profileId: string, taskIds: string[]) {
   const rows = await db

@@ -103,3 +103,35 @@ test("an unreadable answer asks to check the entry and is not a mistake", async 
   await page.goto("/bank?status=wrong");
   await expect(page.locator('a[href$="/bank/eks-001"]')).toHaveCount(0);
 });
+
+test("a task visit is one session and a long pause starts another", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  const sessions = async () =>
+    (
+      await auth.db.query<{ id: string; attempts: number }>(
+        `select s.id, count(a.id)::int as attempts from task_sessions s
+         left join attempts a on a.session_id = s.id
+         where s.profile_id = $1 and s.task_id = 'eks-001'
+         group by s.id order by min(s.started_at)`,
+        [profileId],
+      )
+    ).rows;
+
+  await page.goto("/bank/eks-001");
+  await expect.poll(async () => (await sessions()).length).toBe(1);
+  await answer(page, "2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect
+    .poll(sessions)
+    .toEqual([{ id: expect.any(String), attempts: 1 }]);
+
+  await auth.db.query(
+    "update task_sessions set last_seen_at = now() - interval '1 minute' where profile_id = $1",
+    [profileId],
+  );
+  await page.getByRole("button", { name: "Nagoveštaj" }).click();
+  await expect.poll(async () => (await sessions()).length).toBe(2);
+});

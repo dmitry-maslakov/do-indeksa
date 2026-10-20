@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { noop, range } from "es-toolkit";
+import { range } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { RevealContent } from "./reveal";
@@ -37,10 +37,14 @@ function Chip({ label, onClick }: { label: string; onClick: () => void }) {
 
 export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
   const t = useTranslations("Solve");
-  const { session, hints, solution, showHint, showSolution } = useTaskSession();
+  const { track, hints, solution, showHint, showSolution } = useTaskSession();
   const [answer, setAnswer] = useState(false);
   const open = (part: RevealPart, show: () => void) => () => {
-    saveReveal({ taskId, part, owner: { session } }).catch(noop);
+    track(
+      async (sessionId) =>
+        (await saveReveal({ taskId, part, owner: { sessionId } }))?.data ??
+        undefined,
+    );
     show();
   };
   const content = (part: RevealPart) => (

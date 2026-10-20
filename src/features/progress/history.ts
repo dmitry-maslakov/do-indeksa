@@ -9,11 +9,10 @@ import {
   inArray,
   type SQL,
   sql,
-  sum,
 } from "drizzle-orm";
 import { cache } from "react";
 import { z } from "zod";
-import { attempts, runs } from "@/db/schema";
+import { attempts, runs, taskSessions } from "@/db/schema";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import { decidesStatus } from "./decides-status";
@@ -25,6 +24,11 @@ const runIdStartingWith = (code: string) =>
     runs.id,
     `${code}-0000-0000-0000-000000000000`,
     `${code}-ffff-ffff-ffff-ffffffffffff`,
+  );
+
+const runTaskMs =
+  sql<number>`coalesce((${runs.durationsMs})[array_position(${runs.taskIds}, ${attempts.taskId})], 0)`.mapWith(
+    Number,
   );
 
 export const getRun = cache(async (profileId: string, key?: string) => {
@@ -53,9 +57,10 @@ export const getRun = cache(async (profileId: string, key?: string) => {
       answers: attempts.answers,
       outcomes: attempts.outcomes,
       correct: attempts.correct,
-      durationMs: attempts.durationMs,
+      durationMs: runTaskMs,
     })
     .from(attempts)
+    .innerJoin(runs, eq(runs.id, attempts.runId))
     .where(and(eq(attempts.profileId, profileId), eq(attempts.runId, run.id)));
   return { run, attempts: rows };
 });
@@ -67,9 +72,10 @@ export const getRunAttempts = (profileId: string, runIds: string[]) =>
       runId: attempts.runId,
       outcomes: attempts.outcomes,
       correct: attempts.correct,
-      durationMs: attempts.durationMs,
+      durationMs: runTaskMs,
     })
     .from(attempts)
+    .innerJoin(runs, eq(runs.id, attempts.runId))
     .where(
       and(eq(attempts.profileId, profileId), inArray(attempts.runId, runIds)),
     );
@@ -118,7 +124,6 @@ export async function getTaskStats(profileId: string) {
       right: countWhere(right),
       recentAttempts: countWhere(recent),
       recentRight: countWhere(sql`${recent} and ${right}`),
-      durationMs: sum(attempts.durationMs).mapWith(Number),
       firstRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt}))[1]`,
       latestRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt} desc))[1]`,
       lastAt:
@@ -129,7 +134,36 @@ export async function getTaskStats(profileId: string) {
     .from(attempts)
     .where(and(eq(attempts.profileId, profileId), decidesStatus))
     .groupBy(attempts.taskId);
-  return taskStats(rows);
+  const time = await getTimeByTask(profileId);
+  return taskStats(
+    rows.map((row) => ({ ...row, durationMs: time.get(row.taskId) ?? 0 })),
+  );
+}
+
+async function getTimeByTask(profileId: string) {
+  const [sessions, tests] = await Promise.all([
+    db
+      .select({
+        taskId: taskSessions.taskId,
+        ms: sql<number>`sum(extract(epoch from ${taskSessions.lastSeenAt} - ${taskSessions.startedAt}) * 1000)`.mapWith(
+          Number,
+        ),
+      })
+      .from(taskSessions)
+      .where(eq(taskSessions.profileId, profileId))
+      .groupBy(taskSessions.taskId),
+    db
+      .select({
+        taskId: sql<string>`unnest(${runs.taskIds})`,
+        ms: sql<number>`unnest(${runs.durationsMs})`.mapWith(Number),
+      })
+      .from(runs)
+      .where(eq(runs.profileId, profileId)),
+  ]);
+  return [...sessions, ...tests].reduce(
+    (all, { taskId, ms }) => all.set(taskId, (all.get(taskId) ?? 0) + ms),
+    new Map<string, number>(),
+  );
 }
 
 export const getLatestResults = async (

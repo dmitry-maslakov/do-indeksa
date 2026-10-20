@@ -86,9 +86,12 @@ export function AnswerForm({
 }: AnswerFormProps) {
   const t = useTranslations("Solve");
   const router = useRouter();
-  const { execute, result, isPending, hasErrored } = useAction(checkAnswer, {
-    onSuccess: () => router.refresh(),
-  });
+  const { executeAsync, result, isPending, hasErrored } = useAction(
+    checkAnswer,
+    {
+      onSuccess: () => router.refresh(),
+    },
+  );
   const errorText = useErrorText();
   const help = useTaskSession();
   const [edited, setEdited] = useState(false);
@@ -111,13 +114,14 @@ export function AnswerForm({
     <form
       action={(form) => {
         setEdited(false);
-        execute(form);
+        help.track(async (sessionId) => {
+          if (sessionId) form.set("sessionId", sessionId);
+          return (await executeAsync(form))?.data?.sessionId;
+        });
       }}
       className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
     >
       <input type="hidden" name="taskId" value={taskId} />
-      <input type="hidden" name="sessionId" value={help.session.id} />
-      <input type="hidden" name="startedAt" value={help.session.startedAt} />
       <div
         className={cn("flex flex-col gap-4", grid && "md:grid md:grid-cols-2")}
       >

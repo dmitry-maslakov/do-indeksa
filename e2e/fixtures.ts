@@ -76,12 +76,13 @@ export const seedAttempt = (
 ) =>
   db.query(
     `with session as (
-       insert into task_sessions (id, profile_id, task_id, started_at)
-       values (gen_random_uuid(), $1, $2, now() - $4::int * interval '1 hour')
+       insert into task_sessions (profile_id, task_id, started_at, last_seen_at)
+       values ($1, $2, now() - $4::int * interval '1 hour' - interval '1 second',
+         now() - $4::int * interval '1 hour')
        returning id
      )
-     insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct, duration_ms, created_at)
-     select $1, $2, id, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3, 1000,
+     insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct, created_at)
+     select $1, $2, id, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3,
        now() - $4::int * interval '1 hour'
      from session`,
     [profileId, taskId, correct, hoursAgo],

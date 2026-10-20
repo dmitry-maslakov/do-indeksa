@@ -17,8 +17,6 @@ const schema = z.object({
 
 export const saveReveal = actionClient
   .inputSchema(schema)
-  .action(
-    async ({ parsedInput: { taskId, part, owner }, ctx: { profileId } }) => {
-      await recordReveal(profileId, taskId, part, owner);
-    },
+  .action(({ parsedInput: { taskId, part, owner }, ctx: { profileId } }) =>
+    recordReveal(profileId, taskId, part, owner),
   );
