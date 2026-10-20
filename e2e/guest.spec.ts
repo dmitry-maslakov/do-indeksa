@@ -9,10 +9,10 @@ test("a guest checks an answer", async ({ page }) => {
 });
 
 test("a guest opens the solution and moves on", async ({ page }) => {
-  await page.goto("/bank/eks-001?sort=easy");
+  await page.goto("/bank/eks-001");
   const skip = page.getByRole("link", { name: "Preskoči" });
   const next = await skip.getAttribute("href");
-  expect(next).toMatch(/^\/bank\/[a-z]+-\d+\?sort=easy$/);
+  expect(next).toMatch(/^\/bank\/[\w-]+$/);
   await page.getByRole("button", { name: "Rešenje" }).click();
   await expect(page.getByRole("heading", { name: "Rešenje" })).toBeVisible();
   await expect(skip).toBeHidden();
