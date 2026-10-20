@@ -120,6 +120,13 @@
       "when": 1792537796784,
       "tag": "0016_test_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792539577342,
+      "tag": "0017_cascade_profile_moves",
+      "breakpoints": true
     }
   ]
 }

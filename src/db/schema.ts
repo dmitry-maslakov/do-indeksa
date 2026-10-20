@@ -83,7 +83,9 @@ export const taskSessions = pgTable(
     foreignKey({
       columns: [t.testSessionId, t.profileId],
       foreignColumns: [testSessions.id, testSessions.profileId],
-    }).onDelete("cascade"),
+    })
+      .onDelete("cascade")
+      .onUpdate("cascade"),
   ],
 );
 
@@ -99,7 +101,9 @@ const inTaskSession = (t: {
       taskSessions.profileId,
       taskSessions.taskId,
     ],
-  }).onDelete("cascade");
+  })
+    .onDelete("cascade")
+    .onUpdate("cascade");
 
 export const attempts = pgTable(
   "attempts",
