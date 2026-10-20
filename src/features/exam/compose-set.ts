@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getTask, idsByTopic } from "@/features/tasks/tasks";
 import { topics } from "@/features/tasks/topics";
 import { compose, composeModes, swap } from "./compose";
+import { positions } from "./exam";
 import { setId } from "./variant-id";
 import { byNumber, byPosition } from "./variants";
 
@@ -14,6 +15,12 @@ export const composeSchema = z.object({
     .union([z.string(), z.array(z.string())])
     .optional()
     .transform((t) => topicIds.filter((id) => [t].flat().includes(id))),
+  count: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(positions.length)
+    .catch(positions.length),
 });
 
 export const composeTaskIds = (

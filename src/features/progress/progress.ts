@@ -6,6 +6,7 @@ import { idsByTopic } from "@/features/tasks/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { getLatestResults, getTaskStats } from "./history";
+import { type TaskStat, weakest } from "./stats";
 import type { Attempted, Progress, TaskStatus } from "./status";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
@@ -78,3 +79,13 @@ export async function getTopicPlan(userId: string) {
     : [];
   return { topics, suggestion: suggest(topics, latest) };
 }
+
+const weakCount = 3;
+
+export const weakTopics = (stats: TaskStat[]) =>
+  weakest(
+    stats,
+    positions.map((p) => p.topic),
+  )
+    .slice(0, weakCount)
+    .map((w) => String(w.key));
