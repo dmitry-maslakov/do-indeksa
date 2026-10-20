@@ -115,6 +115,7 @@
   "Variants": {
     "title": "Варианты",
     "format": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {minutes, number} мин",
+    "original": "Оригинал (PDF) ↗",
     "official": "По формату экзамена",
     "curated": "Наши варианты",
     "start": "Начать",

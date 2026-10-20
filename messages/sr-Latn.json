@@ -115,6 +115,7 @@
   "Variants": {
     "title": "Probni testovi",
     "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {minutes, number} min",
+    "original": "Original (PDF) ↗",
     "official": "Po formatu prijemnog",
     "curated": "Naši testovi",
     "start": "Počni",
