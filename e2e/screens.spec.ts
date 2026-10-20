@@ -49,11 +49,7 @@ test("serves robots and sitemap", async ({ request }) => {
 });
 
 const screens = [
-  [
-    "/",
-    "Prijemni iz matematike na FTN-u",
-    "Do indeksa — prijemni iz matematike za FTN",
-  ],
+  ["/", "Predlog za danas", "Do indeksa — prijemni iz matematike za FTN"],
   [
     "/bank",
     "Banka zadataka",

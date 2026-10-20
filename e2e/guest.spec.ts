@@ -192,9 +192,11 @@ test("a guest sees why to sign in before google", async ({ page }) => {
   await expect(dialog).toBeHidden();
   await expect(page.getByRole("heading", { name: "Privatnost" })).toBeVisible();
 
-  await page.goto("/");
   const direct = page.waitForRequest("**/api/auth/sign-in/social");
-  await page.getByRole("button", { name: "Prijavi se preko Google-a" }).click();
+  await page
+    .getByRole("main")
+    .getByRole("button", { name: "Prijavi se preko Google-a" })
+    .click();
   await direct;
   await expect(dialog).toHaveCount(0);
 });
