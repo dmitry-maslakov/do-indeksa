@@ -1,15 +1,16 @@
 import "server-only";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
-import { idsByTopic } from "@/features/tasks/tasks";
+import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
-import type { Progress, TaskStatus } from "./status";
+import type { Attempted, Progress, TaskStatus } from "./status";
 
-async function getTaskStatuses(userId: string, taskIds?: string[]) {
-  const rows = await db
+const getLatestAttempts = (userId: string, taskIds?: string[]) =>
+  db
     .selectDistinctOn([attempts.taskId], {
       taskId: attempts.taskId,
       correct: attempts.correct,
+      createdAt: attempts.createdAt,
     })
     .from(attempts)
     .where(
@@ -19,6 +20,9 @@ async function getTaskStatuses(userId: string, taskIds?: string[]) {
       ),
     )
     .orderBy(attempts.taskId, desc(attempts.createdAt));
+
+async function getTaskStatuses(userId: string, taskIds?: string[]) {
+  const rows = await getLatestAttempts(userId, taskIds);
   return new Map<string, TaskStatus>(
     rows.map((row) => [row.taskId, row.correct ? "solved" : "wrong"]),
   );
@@ -38,10 +42,17 @@ export async function getProgress(userId: string): Promise<Progress> {
   };
 }
 
-export async function getTopicStatuses(
-  userId: string,
-  topic: string,
-): Promise<Record<string, TaskStatus>> {
-  const ids = idsByTopic.get(topic) ?? [];
-  return Object.fromEntries(await getTaskStatuses(userId, ids));
+export async function getAttempted(userId: string, taskIds: string[]) {
+  const today = belgradeDate();
+  const rows = await getLatestAttempts(userId, taskIds);
+  return new Map<string, Attempted>(
+    rows.map((row) => [
+      row.taskId,
+      {
+        status: row.correct ? "solved" : "wrong",
+        at: row.createdAt,
+        today: belgradeDate(row.createdAt) === today,
+      },
+    ]),
+  );
 }

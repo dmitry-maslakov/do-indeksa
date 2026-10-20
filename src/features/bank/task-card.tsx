@@ -1,28 +1,22 @@
 import { cn } from "cn";
-import { CircleCheckIcon, CircleXIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Markdown } from "@/components/markdown";
+import { StatusIcon } from "@/features/progress/status-icon";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { TopicIcon } from "@/features/tasks/topic-icon";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
 
-const marks = {
-  solved: {
-    Icon: CircleCheckIcon,
-    tone: "text-success-text",
-    fill: "fill-success",
-  },
-  wrong: { Icon: CircleXIcon, tone: "text-error-text", fill: "fill-error" },
-};
+const tones = { solved: "text-success-text", wrong: "text-error-text" };
 
 function StatusMark({ status }: { status: BankCard["status"] }) {
   const t = useTranslations("Bank");
   if (status === "new") return null;
-  const { Icon, tone, fill } = marks[status];
   return (
-    <span className={cn("inline-flex items-center gap-1 text-sm", tone)}>
-      <Icon aria-hidden="true" className={cn("size-3 stroke-card", fill)} />
+    <span
+      className={cn("inline-flex items-center gap-1 text-sm", tones[status])}
+    >
+      <StatusIcon status={status} decorative className="size-3" />
       {t("mark", { status })}
     </span>
   );
