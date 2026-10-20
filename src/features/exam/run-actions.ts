@@ -15,7 +15,7 @@ const runRef = z.object({
   startedAt: z.number().int(),
 });
 
-const finishInput = runRef.extend({ answers, durations });
+const finishInput = runRef.extend({ answers, durations, timed: z.boolean() });
 
 const saveInput = runRef.extend({
   title: z.string().max(200),

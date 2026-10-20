@@ -34,3 +34,8 @@ export function minutesLeft(
     0,
   );
 }
+
+export const overtimeAt = (
+  run: { startedAt: number; minutes: number; timed: boolean },
+  now: number,
+) => (run.timed ? now > run.startedAt + run.minutes * 60_000 : null);

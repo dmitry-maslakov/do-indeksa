@@ -49,4 +49,9 @@ describe("gradeRun", () => {
       0,
     ]);
   });
+
+  it("keeps the time spent on a skipped task", () => {
+    const [, skipped] = gradeRun(tasks, [["2"]], [60_000, 20 * 60_000]);
+    expect(skipped).toMatchObject({ answered: false, durationMs: 20 * 60_000 });
+  });
 });
