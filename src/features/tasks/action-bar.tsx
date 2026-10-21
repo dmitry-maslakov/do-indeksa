@@ -30,9 +30,8 @@ function Skip({ href, checked }: { href: string; checked: boolean }) {
         !checked && "md:bg-transparent md:px-3",
       )}
     >
-      <ClockIcon className={cn(!checked && "md:hidden")} />
-      <span className={cn(checked && "md:hidden")}>{t("skip")}</span>
-      {checked && <span className="hidden md:inline">{t("further")}</span>}
+      {!checked && <ClockIcon className="md:hidden" />}
+      <span>{t(checked ? "further" : "skip")}</span>
     </Link>
   );
 }
