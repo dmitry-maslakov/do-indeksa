@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { routing } from "@/i18n/routing";
 import { reportError } from "@/lib/sentry-browser";
@@ -22,11 +21,15 @@ export default function GlobalError({
   return (
     <html lang={routing.defaultLocale}>
       <body>
-        <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-4 text-center">
+        <main className="flex min-h-dvh flex-col items-center justify-center gap-5 px-4 text-center">
           <title>{t.title}</title>
-          <PageTitle className="p-0">{t.title}</PageTitle>
+          <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
+            {t.title}
+          </h1>
           <p className="max-w-md text-subtle">{t.text}</p>
-          <Button onClick={retry}>{t.retry}</Button>
+          <Button variant="lime" onClick={retry}>
+            {t.retry}
+          </Button>
         </main>
       </body>
     </html>
