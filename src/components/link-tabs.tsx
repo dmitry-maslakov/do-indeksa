@@ -37,6 +37,7 @@ export function LinkTabs({ items, variant }: LinkTabsProps) {
         <Link
           key={item.href}
           href={item.href}
+          scroll={false}
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}
           className={tab({ variant })}
