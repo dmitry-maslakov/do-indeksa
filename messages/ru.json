@@ -233,8 +233,6 @@
     "repeated": "{count, plural, one {Ошибки повторяются в задаче {numbers}.} other {Ошибки повторяются в задачах {numbers}.}}"
   },
   "Home": {
-    "continue": "Продолжить",
-    "progress": "{done, number} из {total, number}",
     "playDaily": "Решить вариант дня",
     "timeEmpty": "Реши первый вариант, и здесь появится, на каких задачах уходит больше всего времени.",
     "startTest": "Выбрать вариант",

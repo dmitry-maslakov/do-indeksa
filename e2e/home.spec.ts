@@ -71,3 +71,14 @@ test("Počni opens the suggested topic", async ({ page }) => {
   await page.getByRole("link", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
 });
+
+test("the home page doesn't show an unfinished test", async ({ page }) => {
+  await page.goto("/variants/set-eks-001");
+  await page.getByRole("button", { name: "Počni" }).click();
+  await page.getByRole("timer").waitFor();
+  await page.goto("/");
+  await expect(page.getByText("Predlog za danas")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Nastavi", exact: true }),
+  ).toHaveCount(0);
+});
