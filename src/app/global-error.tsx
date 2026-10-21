@@ -1,13 +1,24 @@
 "use client";
 
+import { useEffect } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { routing } from "@/i18n/routing";
+import { reportError } from "@/lib/sentry-browser";
 import messages from "../../messages/sr-Latn.json";
 import "./globals.css";
 
-export default function GlobalError({ retry }: { retry: () => void }) {
+export default function GlobalError({
+  error,
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
   const t = messages.Errors;
+  useEffect(() => {
+    reportError(error);
+  }, [error]);
   return (
     <html lang={routing.defaultLocale}>
       <body>

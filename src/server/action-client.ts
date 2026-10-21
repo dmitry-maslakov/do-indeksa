@@ -4,10 +4,11 @@ import { headers } from "next/headers";
 import { createSafeActionClient, returnServerError } from "next-safe-action";
 import type { ServerError } from "@/lib/use-error-text";
 import { ensureProfileId } from "./auth";
+import { reportServerError } from "./report";
 
 export const actionClient = createSafeActionClient({
   handleServerError: (error): ServerError => {
-    console.error(error);
+    reportServerError(error);
     return "unexpected";
   },
 }).use(async ({ next }) => {

@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "@/db/schema";
 import { env } from "./env";
+import { reportServerError } from "./report";
 
 const globalForDb = globalThis as unknown as { pool?: Pool };
 
@@ -16,7 +17,7 @@ const pool =
     query_timeout: 10_000,
   });
 
-pool.on("error", (error) => console.error("postgres pool error", error));
+pool.on("error", reportServerError);
 
 if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
 
