@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { allTaskIds } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
@@ -10,7 +11,15 @@ const taskPath = new RegExp(
   `^(?:/(${routing.locales.join("|")}))?/bank/([^/]+)$`,
 );
 
-export default async function proxy(request: NextRequest) {
+function withTraceTiming(response: NextResponse) {
+  const timing = Object.entries(Sentry.getTraceData())
+    .map(([name, value]) => `${name};desc="${value}"`)
+    .join(", ");
+  if (timing) response.headers.append("Server-Timing", timing);
+  return response;
+}
+
+async function respond(request: NextRequest) {
   const gate = await launchGate(
     request.nextUrl,
     request.cookies.get(launchCookie)?.value,
@@ -34,6 +43,10 @@ export default async function proxy(request: NextRequest) {
   return id && !taskIds.has(id)
     ? NextResponse.rewrite(new URL(`/${locale}/404`, request.url))
     : intl(request);
+}
+
+export default async function proxy(request: NextRequest) {
+  return withTraceTiming(await respond(request));
 }
 
 export const config = {
