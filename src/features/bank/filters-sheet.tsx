@@ -26,7 +26,7 @@ export function FiltersSheet({ active, count, children }: FiltersSheetProps) {
         render={
           <Button
             variant="ghost"
-            className="h-11 rounded-xl bg-card px-4 font-medium text-sm"
+            className="h-10 rounded-xl bg-card px-4 font-medium text-sm"
           />
         }
       >
