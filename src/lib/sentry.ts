@@ -1,4 +1,5 @@
 export const sentryOptions = {
+  tracesSampleRate: 1,
   dataCollection: {
     userInfo: false,
     cookies: false,
