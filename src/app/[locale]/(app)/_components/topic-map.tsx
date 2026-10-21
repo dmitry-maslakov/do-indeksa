@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   type TopicState,
   topicStates,
@@ -11,6 +11,8 @@ import { TopicRow, type TopicRowProps } from "./topic-row";
 export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
   const t = useTranslations("Home");
   const [filter, setFilter] = useState<TopicState>();
+  const [minHeight, setMinHeight] = useState(0);
+  const list = useRef<HTMLUListElement>(null);
 
   return (
     <section id="topic-map" className="flex scroll-mt-4 flex-col gap-3">
@@ -21,7 +23,10 @@ export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
             key={state ?? "all"}
             type="button"
             aria-pressed={filter === state}
-            onClick={() => setFilter(state)}
+            onClick={() => {
+              setMinHeight((h) => Math.max(h, list.current?.offsetHeight ?? 0));
+              setFilter(state);
+            }}
             className="h-9 shrink-0 rounded-full bg-muted px-4 font-medium text-muted-foreground text-sm aria-pressed:bg-data-tint aria-pressed:font-bold aria-pressed:text-data"
           >
             {state
@@ -30,7 +35,11 @@ export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
           </button>
         ))}
       </div>
-      <ul className="grid xl:grid-cols-2 xl:gap-x-8">
+      <ul
+        ref={list}
+        style={{ minHeight }}
+        className="grid content-start xl:grid-cols-2 xl:gap-x-8"
+      >
         {rows
           .filter((row) => !filter || row.state === filter)
           .map((row) => (
