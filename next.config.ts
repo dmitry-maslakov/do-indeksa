@@ -44,7 +44,6 @@ export default withContentCollections(
     release: { name: process.env.GIT_SHA },
     sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
     tunnelRoute: "/api/monitoring",
-    suppressOnRouterTransitionStartWarning: true,
     telemetry: false,
     silent: !process.env.CI,
   }),

@@ -14,6 +14,10 @@ export function reportError(error: Error & { digest?: string }) {
   else early.push(error);
 }
 
+export function routerTransitionStart(href: string, type: string) {
+  sentry?.captureRouterTransitionStart(href, type);
+}
+
 export async function startSentry() {
   const loaded = await import("@sentry/nextjs");
   loaded.init({ ...sentryOptions, dsn: process.env.NEXT_PUBLIC_SENTRY_DSN });
