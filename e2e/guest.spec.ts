@@ -48,6 +48,28 @@ test("a task seen before comes after the ones not seen yet", async ({
   expect(page.url()).not.toBe(seen);
 });
 
+test("a skipped task stays in today's list before the current one", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/bank/start/exponential-equations");
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  const skipped = new URL(page.url()).pathname;
+  await expect.poll(() => profileCookie(context)).toBe(true);
+  await page.getByRole("link", { name: "Preskoči" }).click();
+  await expect(page).not.toHaveURL(skipped);
+  const current = new URL(page.url()).pathname;
+  const rail = page
+    .getByRole("complementary")
+    .locator("a[href^='/bank/']:not(nav a)");
+  const order = () =>
+    rail.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  await expect.poll(order).toContain(current);
+  const links = await order();
+  expect(links).toContain(skipped);
+  expect(links.indexOf(skipped)).toBeLessThan(links.indexOf(current));
+});
+
 test("browsing without a task creates no profile", async ({
   page,
   context,

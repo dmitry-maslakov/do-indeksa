@@ -1,6 +1,6 @@
 import "server-only";
-import { and, desc, eq, gt, inArray, max, notExists, sql } from "drizzle-orm";
-import { attempts, taskSessions } from "@/db/schema";
+import { and, desc, eq, gt, inArray, max, sql } from "drizzle-orm";
+import { taskSessions } from "@/db/schema";
 import { db } from "@/server/db";
 
 type Executor = Pick<typeof db, "insert" | "update" | "select">;
@@ -69,22 +69,16 @@ export const keepSession = (
   sessionId?: string,
 ) => liveSession(db, profileId, taskId, sessionId);
 
-export async function getSeen(profileId: string, taskIds: string[]) {
+export async function getLastSeen(profileId: string, taskIds: string[]) {
   const rows = await db
-    .select({ taskId: taskSessions.taskId, at: max(taskSessions.startedAt) })
+    .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
     .from(taskSessions)
     .where(
       and(
         eq(taskSessions.profileId, profileId),
         inArray(taskSessions.taskId, taskIds),
-        notExists(
-          db
-            .select()
-            .from(attempts)
-            .where(eq(attempts.sessionId, taskSessions.id)),
-        ),
       ),
     )
     .groupBy(taskSessions.taskId);
-  return new Map(rows.flatMap((r) => (r.at ? [[r.taskId, r.at]] : [])));
+  return rows.flatMap((r) => (r.at ? [{ taskId: r.taskId, at: r.at }] : []));
 }

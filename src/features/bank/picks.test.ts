@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Attempted } from "@/features/progress/status";
+import type { Touched } from "@/features/progress/status";
 import { planQueue } from "./picks";
 
 const pool = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id) => ({
@@ -7,26 +7,21 @@ const pool = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id) => ({
   exam: id === "e",
 }));
 
-const attempt = (
-  status: Attempted["status"],
+const touch = (
+  status: Touched["status"],
   minute: number,
   today = false,
-): Attempted => ({ status, at: new Date(minute * 60_000), today });
+): Touched => ({ status, at: new Date(minute * 60_000), today });
 
 describe("planQueue", () => {
   it("prefers exam tasks, then repeats an earlier mistake every fourth pick", () => {
-    const attempts = new Map([
-      ["a", attempt("wrong", 1)],
-      ["b", attempt("solved", 2)],
-      ["c", attempt("solved", 3)],
-      ["d", attempt("solved", 4)],
+    const touched = new Map([
+      ["a", touch("wrong", 1)],
+      ["b", touch("solved", 2)],
+      ["c", touch("solved", 3)],
+      ["d", touch("solved", 4)],
     ]);
-    const queue = planQueue({
-      pool,
-      attempts,
-      seen: new Map(),
-      current: "f",
-    });
+    const queue = planQueue({ pool, touched, current: "f" });
     expect(queue.earlier).toEqual(["a", "b", "c", "d"]);
     expect(queue.today).toEqual(["f"]);
     expect(queue.upcoming).toEqual([
@@ -37,28 +32,32 @@ describe("planQueue", () => {
     ]);
   });
 
-  it("splits attempts into earlier and today", () => {
-    const attempts = new Map([
-      ["a", attempt("solved", 1)],
-      ["b", attempt("wrong", 5, true)],
-      ["c", attempt("solved", 3, true)],
+  it("splits touched tasks into earlier and today", () => {
+    const touched = new Map([
+      ["a", touch("solved", 1)],
+      ["b", touch("wrong", 5, true)],
+      ["c", touch("solved", 3, true)],
     ]);
-    const queue = planQueue({
-      pool,
-      attempts,
-      seen: new Map(),
-      current: "c",
-    });
+    const queue = planQueue({ pool, touched, current: "c" });
     expect(queue.earlier).toEqual(["a"]);
     expect(queue.today).toEqual(["c", "b"]);
   });
 
-  it("moves past seen tasks and comes back to the one seen longest ago", () => {
-    const next = (current: string, seen: Map<string, Date>) =>
-      planQueue({ pool, attempts: new Map(), seen, current, size: 1 })
-        .upcoming[0]?.id;
-    expect(next("a", new Map([["a", new Date(1)]]))).toBe("e");
-    const all = new Map(pool.map((t, i) => [t.id, new Date(i + 1)]));
-    expect(next("h", all)).toBe("a");
+  it("keeps tasks seen today in the list without offering them again", () => {
+    const touched = new Map([
+      ["a", touch(undefined, 1, true)],
+      ["e", touch(undefined, 2, true)],
+    ]);
+    const queue = planQueue({ pool, touched, current: "b", size: 2 });
+    expect(queue.today).toEqual(["a", "e", "b"]);
+    expect(queue.upcoming.map((p) => p.id)).toEqual(["c", "d"]);
+  });
+
+  it("comes back to the task seen longest ago once all were seen", () => {
+    const touched = new Map(
+      pool.map((t, i) => [t.id, touch(undefined, i + 1)]),
+    );
+    const queue = planQueue({ pool, touched, current: "h", size: 1 });
+    expect(queue.upcoming[0]?.id).toBe("a");
   });
 });

@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { ExamSource } from "@/features/bank/source";
-import type { Attempted } from "@/features/progress/status";
+import type { Touched } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import type { Level } from "@/features/tasks/level";
 
@@ -8,7 +8,7 @@ interface TaskMetaProps {
   topic: string;
   exam: ExamSource | null;
   level: Level;
-  before?: Attempted["status"];
+  before?: Touched["status"];
 }
 
 function Dot() {
