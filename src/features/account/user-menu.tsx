@@ -27,7 +27,7 @@ export function UserMenu() {
 
   if (!data) {
     return (
-      <SignInButton size="sm" className="px-3 sm:px-4">
+      <SignInButton variant="tint" size="sm" className="px-3 sm:px-4">
         {t("signIn")}
       </SignInButton>
     );
