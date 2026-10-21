@@ -13,7 +13,7 @@ interface ActionBarProps {
 }
 
 const bar =
-  "fixed inset-x-0 bottom-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))] z-30 flex gap-2 border-t bg-card p-3 md:contents";
+  "fixed inset-x-0 bottom-[max(var(--keyboard-height,0px),calc(var(--nav-bottom)+env(safe-area-inset-bottom)))] z-30 flex gap-2 border-t bg-card p-3 md:contents";
 const primary = cn(
   buttonVariants({ variant: "lime", size: "pill" }),
   "order-2 flex-1 md:order-1 md:flex-none",

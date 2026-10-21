@@ -5,6 +5,15 @@ const keyboardGap = 16;
 
 let setup: Promise<unknown> | undefined;
 
+function publishKeyboardHeight() {
+  const keyboard = window.mathVirtualKeyboard;
+  const height = keyboard.visible ? keyboard.boundingRect.height : 0;
+  document.documentElement.style.setProperty(
+    "--keyboard-height",
+    `${height}px`,
+  );
+}
+
 function revealAboveKeyboard() {
   const keyboard = window.mathVirtualKeyboard;
   const active = document.activeElement;
@@ -21,9 +30,10 @@ function loadMathlive() {
     MathfieldElement.soundsDirectory = null;
     MathfieldElement.decimalSeparator = ",";
     for (const event of ["virtual-keyboard-toggle", "geometrychange"])
-      window.mathVirtualKeyboard.addEventListener(event, () =>
-        requestAnimationFrame(revealAboveKeyboard),
-      );
+      window.mathVirtualKeyboard.addEventListener(event, () => {
+        publishKeyboardHeight();
+        requestAnimationFrame(revealAboveKeyboard);
+      });
   });
   return setup;
 }
