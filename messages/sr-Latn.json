@@ -233,8 +233,6 @@
     "repeated": "{count, plural, one {Greške se ponavljaju u zadatku {numbers}.} other {Greške se ponavljaju u zadacima {numbers}.}}"
   },
   "Home": {
-    "continue": "Nastavi",
-    "progress": "{done, number} od {total, number}",
     "playDaily": "Reši test dana",
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",
     "startTest": "Izaberi test",

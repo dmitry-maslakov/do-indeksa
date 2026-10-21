@@ -63,7 +63,7 @@ export async function VariantScreen({
       <Suspense fallback={<ExamGhost />}>
         <Await
           promise={getProfileId().then((id) =>
-            getUnfinishedTest(id, locale, variant.id),
+            getUnfinishedTest(id, variant.id),
           )}
         >
           {(saved) => (

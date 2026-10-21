@@ -233,8 +233,6 @@
     "repeated": "{count, plural, one {Mistakes repeat in task {numbers}.} other {Mistakes repeat in tasks {numbers}.}}"
   },
   "Home": {
-    "continue": "Continue",
-    "progress": "{done, number} of {total, number}",
     "playDaily": "Play the daily test",
     "timeEmpty": "Finish your first test to see which tasks take the most time.",
     "startTest": "Pick a test",

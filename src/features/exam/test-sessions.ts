@@ -1,6 +1,5 @@
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
-import type { Locale } from "next-intl";
 import { cache } from "react";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { getTask } from "@/features/tasks/tasks";
@@ -8,7 +7,6 @@ import { db } from "@/server/db";
 import { gradeTest } from "./grade";
 import type { TestDraft, Visit } from "./test-draft";
 import { overtimeAt } from "./test-state";
-import { variantTitle } from "./variant-title";
 import { getVariant, minutesOf, pointsOf } from "./variants";
 
 export interface TestInput {
@@ -22,7 +20,6 @@ export interface TestInput {
 export interface UnfinishedTest {
   id: string;
   variantId: string;
-  title: string;
   timed: boolean;
   startedAt: number;
   updatedAt: number;
@@ -189,8 +186,7 @@ export async function finishTest(profileId: string, test: TestInput) {
 export const getUnfinishedTest = cache(
   async (
     profileId: string,
-    locale: Locale,
-    variantId?: string,
+    variantId: string,
   ): Promise<UnfinishedTest | undefined> => {
     const [row] = await db
       .select()
@@ -199,17 +195,15 @@ export const getUnfinishedTest = cache(
         and(
           eq(testSessions.profileId, profileId),
           isNull(testSessions.finishedAt),
-          variantId ? eq(testSessions.variantId, variantId) : undefined,
+          eq(testSessions.variantId, variantId),
         ),
       )
       .orderBy(desc(testSessions.updatedAt))
       .limit(1);
-    const variant = row && getVariant(row.variantId);
-    if (!row?.draft || !variant) return undefined;
+    if (!row?.draft) return undefined;
     return {
       id: row.id,
       variantId: row.variantId,
-      title: await variantTitle(variant, locale),
       timed: row.timed,
       startedAt: row.startedAt.getTime(),
       updatedAt: row.updatedAt.getTime(),
