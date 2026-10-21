@@ -11,5 +11,6 @@ export const env = z
     OAUTH_PROXY_URL: z.url().optional(),
     OAUTH_PROXY_SECRET: z.string().min(32).optional(),
     LAUNCH_ACCESS: z.string().min(32).optional(),
+    SENTRY_DSN: z.url().optional(),
   })
   .parse(process.env);

@@ -1,4 +1,5 @@
 import { withContentCollections } from "@content-collections/next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -38,4 +39,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withContentCollections(withNextIntl(nextConfig));
+export default withContentCollections(
+  withSentryConfig(withNextIntl(nextConfig), {
+    release: { name: process.env.GIT_SHA },
+    sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+    tunnelRoute: "/api/monitoring",
+    suppressOnRouterTransitionStartWarning: true,
+    telemetry: false,
+    silent: !process.env.CI,
+  }),
+);

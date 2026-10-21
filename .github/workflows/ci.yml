@@ -126,6 +126,10 @@ jobs:
           BETTER_AUTH_URL: http://localhost:3000
           GOOGLE_CLIENT_ID: build-only
           GOOGLE_CLIENT_SECRET: build-only
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.SENTRY_DSN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ github.event_name != 'pull_request' && secrets.SENTRY_AUTH_TOKEN || '' }}
       - run: |
           base=$(awk '/ AS runner$/ {print $2}' Dockerfile)
           echo "BASE=$base" >> "$GITHUB_ENV"

@@ -1,6 +1,7 @@
 import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { isAPIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { oAuthProxy } from "better-auth/plugins";
 import { io } from "next/cache";
@@ -14,6 +15,7 @@ import {
 } from "@/features/account/profiles";
 import { db } from "./db";
 import { env } from "./env";
+import { reportServerError } from "./report";
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -33,6 +35,12 @@ export const auth = betterAuth({
   user: { deleteUser: { enabled: true } },
   advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
   telemetry: { enabled: false },
+  onAPIError: {
+    onError: (error) => {
+      if (!isAPIError(error) || error.status === "INTERNAL_SERVER_ERROR")
+        reportServerError(error);
+    },
+  },
   plugins: [
     nextCookies(),
     ...(env.OAUTH_PROXY_SECRET
