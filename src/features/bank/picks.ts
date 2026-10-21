@@ -1,4 +1,4 @@
-import type { Attempted } from "@/features/progress/status";
+import type { Touched } from "@/features/progress/status";
 
 interface PoolTask {
   id: string;
@@ -12,63 +12,55 @@ export interface Pick {
 
 interface QueueInput {
   pool: PoolTask[];
-  attempts: Map<string, Attempted>;
-  seen: Map<string, Date>;
+  touched: Map<string, Touched>;
   current?: string;
   size?: number;
 }
 
-const byTime = (attempts: Map<string, Attempted>, today: boolean) =>
-  [...attempts]
-    .filter(([, a]) => a.today === today)
+const byTime = (touched: Map<string, Touched>, today: boolean) =>
+  [...touched]
+    .filter(([, t]) => t.today === today)
     .sort(([, a], [, b]) => a.at.getTime() - b.at.getTime())
     .map(([id]) => id);
 
 function pickNext(
   pool: PoolTask[],
-  attempts: Map<string, Attempted>,
-  seen: Map<string, Date>,
+  touched: Map<string, Touched>,
   taken: Set<string>,
   recent: Set<string>,
 ): Pick | null {
   const open = pool.filter((t) => !taken.has(t.id));
   const wrong = open.filter(
-    (t) => attempts.get(t.id)?.status === "wrong" && !recent.has(t.id),
+    (t) => touched.get(t.id)?.status === "wrong" && !recent.has(t.id),
   );
   if (taken.size % 4 === 3 && wrong[0])
     return { id: wrong[0].id, repeat: true };
-  const untried = open.filter((t) => !attempts.has(t.id));
-  const fresh = untried.filter((t) => !seen.has(t.id));
-  const later = untried
-    .filter((t) => seen.has(t.id))
+  const fresh = open.filter((t) => !touched.has(t.id));
+  const seen = open
+    .filter((t) => touched.has(t.id) && !touched.get(t.id)?.status)
     .sort(
       (a, b) =>
-        (seen.get(a.id)?.getTime() ?? 0) - (seen.get(b.id)?.getTime() ?? 0),
+        (touched.get(a.id)?.at.getTime() ?? 0) -
+        (touched.get(b.id)?.at.getTime() ?? 0),
     );
-  const next = fresh.find((t) => t.exam) ?? fresh[0] ?? later[0];
+  const next = fresh.find((t) => t.exam) ?? fresh[0] ?? seen[0];
   if (next) return { id: next.id, repeat: false };
   return wrong[0] ? { id: wrong[0].id, repeat: true } : null;
 }
 
-export function planQueue({
-  pool,
-  attempts,
-  seen,
-  current,
-  size = 6,
-}: QueueInput) {
-  const today = byTime(attempts, true);
+export function planQueue({ pool, touched, current, size = 6 }: QueueInput) {
+  const today = byTime(touched, true);
   if (current && !today.includes(current)) today.push(current);
-  const earlier = byTime(attempts, false)
+  const earlier = byTime(touched, false)
     .filter((id) => id !== current)
     .slice(-4);
   const taken = new Set(today);
   const recent = new Set(
-    [...byTime(attempts, false), ...byTime(attempts, true)].slice(-3),
+    [...byTime(touched, false), ...byTime(touched, true)].slice(-3),
   );
   const upcoming: Pick[] = [];
   while (upcoming.length < size) {
-    const next = pickNext(pool, attempts, seen, taken, recent);
+    const next = pickNext(pool, touched, taken, recent);
     if (!next) break;
     taken.add(next.id);
     upcoming.push(next);
