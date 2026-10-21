@@ -26,7 +26,12 @@ const tab = cva("font-medium transition-colors", {
 });
 
 interface LinkTabsProps {
-  items: { href: string; label: string; active: boolean }[];
+  items: {
+    href: string;
+    label: string;
+    active: boolean;
+    prefetch?: boolean;
+  }[];
   variant: "underline" | "segmented" | "fill" | "pill";
   scroll?: boolean;
 }
@@ -38,6 +43,7 @@ export function LinkTabs({ items, variant, scroll = false }: LinkTabsProps) {
         <Link
           key={item.href}
           href={item.href}
+          prefetch={item.prefetch}
           scroll={scroll}
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}

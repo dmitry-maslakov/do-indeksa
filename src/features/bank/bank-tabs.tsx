@@ -19,6 +19,7 @@ export function BankTabs({ topic, pending }: BankTabsProps) {
           href: `/bank/start/${topic ?? positions[0]?.topic}`,
           label: t("recommended"),
           active: false,
+          prefetch: false,
         },
         { href: "/bank", label: t("all"), active: true },
       ]}

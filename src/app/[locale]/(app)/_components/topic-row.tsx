@@ -36,6 +36,7 @@ export function TopicRow({ topic, name, look, pct, state }: TopicRowProps) {
     <li>
       <Link
         href={`/bank/start/${topic}`}
+        prefetch={false}
         className="flex items-center gap-3 border-b py-3 text-sm md:gap-4 md:text-base"
       >
         <TopicIcon {...look} size="md" />
