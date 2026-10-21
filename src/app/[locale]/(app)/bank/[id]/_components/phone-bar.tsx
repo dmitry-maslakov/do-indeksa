@@ -36,7 +36,7 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
           <ChevronDownIcon className="size-4 shrink-0" />
         </DrawerTrigger>
       </div>
-      <DrawerContent title={t("sheet")} className="h-3/5">
+      <DrawerContent title={t("sheet")} className="h-full">
         <Rail {...rail} variant="sheet" />
       </DrawerContent>
     </Drawer>
