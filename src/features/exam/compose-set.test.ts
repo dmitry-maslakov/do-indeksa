@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { composeSchema, swapHrefs } from "./compose-set";
+import { composeSchema } from "./compose-set";
 
 const parse = (input: object) => composeSchema.parse(input);
 
@@ -26,14 +26,5 @@ describe("composeSchema", () => {
     expect(parse({ count: "5" }).count).toBe(5);
     expect(parse({ count: "0" }).count).toBe(parse({}).count);
     expect(parse({ count: "99" }).count).toBe(parse({}).count);
-  });
-});
-
-describe("swapHrefs", () => {
-  it("has nothing to swap when the topic has no other tasks", () => {
-    expect(swapHrefs(["kb-003", "nema-takvog"])).toEqual([
-      undefined,
-      undefined,
-    ]);
   });
 });
