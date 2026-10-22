@@ -38,6 +38,7 @@ export function TodayHero({ topic, reason }: Suggestion) {
           <div className="flex flex-wrap items-center gap-5 md:flex-nowrap">
             <Link
               href={`/bank/start/${topic}`}
+              prefetch={false}
               className={buttonVariants({
                 variant: "lime",
                 className: "h-12 rounded-xl px-6 text-base",
