@@ -54,7 +54,7 @@ export default async function StatsPage({
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <PageTitle>{t("title")}</PageTitle>
+      <PageTitle className="pt-4 pb-5">{t("title")}</PageTitle>
       <Suspense fallback={<StatsCards />}>
         <StatsView searchParams={searchParams} />
       </Suspense>

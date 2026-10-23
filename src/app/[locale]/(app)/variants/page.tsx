@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
+import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { durationHours, maxPoints, positions } from "@/features/exam/exam";
@@ -71,9 +72,7 @@ export default async function VariantsPage({
   return (
     <main className="flex flex-col gap-4 px-4 pt-4 pb-6 md:gap-5 md:px-10 md:pt-6 md:pb-8">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
-        <h1 className="font-bold text-2xl tracking-tight md:text-3xl">
-          {t("title")}
-        </h1>
+        <PageTitle>{t("title")}</PageTitle>
         <span className="text-sm text-subtle">
           {t("meta", {
             tasks: positions.length,
