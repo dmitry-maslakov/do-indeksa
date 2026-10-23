@@ -270,6 +270,9 @@
     "later": "Not now",
     "privacy": "What we store and how to delete your account"
   },
+  "Footer": {
+    "privacy": "Privacy and data"
+  },
   "Compose": {
     "title": "Build your own test",
     "hint": "Remove the topics you don't want — we pick the tasks.",
