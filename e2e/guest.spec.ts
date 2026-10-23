@@ -230,46 +230,23 @@ test("a guest is told when a personal mode falls back", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("a guest sees why to sign in before google", async ({ page }) => {
+test("a guest signs in straight with google", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
   await page.goto("/bank/eks-001");
-  const dialog = page.getByRole("alertdialog");
-  const header = page
+
+  const fromHeader = page.waitForRequest("**/api/auth/sign-in/social");
+  await page
     .getByRole("banner")
-    .getByRole("button", { name: "Prijavi se" });
-
-  await header.click();
-  await expect(dialog).toContainText("Nalog nije obavezan");
-  await expect(
-    dialog.getByText("Prijava je samo preko Google-a", { exact: false }),
-  ).toBeVisible();
-  await expect(dialog).toHaveAccessibleDescription(
-    /Prijava je samo preko Google-a/,
-  );
-  await dialog.getByRole("button", { name: "Ne sada" }).click();
-  await expect(dialog).toBeHidden();
-  await expect(header).toBeFocused();
-
-  await header.click();
-  await expect(dialog).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(dialog).toBeHidden();
-  await expect(header).toBeFocused();
-
-  await header.click();
-  const fromDialog = page.waitForRequest("**/api/auth/sign-in/social");
-  await dialog
-    .getByRole("button", { name: "Prijavi se preko Google-a" })
+    .getByRole("button", { name: "Prijavi se" })
     .click();
-  await fromDialog;
+  await fromHeader;
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
 
-  await page.goto("/bank/eks-001");
-  await header.click();
-  await dialog
-    .getByRole("link", { name: "Šta čuvamo i kako obrisati nalog" })
+  await page
+    .getByRole("contentinfo")
+    .getByRole("link", { name: "Privatnost i podaci" })
     .click();
   await expect(page).toHaveURL(/\/privacy$/);
-  await expect(dialog).toBeHidden();
   await expect(page.getByRole("heading", { name: "Privatnost" })).toBeVisible();
 
   const direct = page.waitForRequest("**/api/auth/sign-in/social");
@@ -278,5 +255,4 @@ test("a guest sees why to sign in before google", async ({ page }) => {
     .getByRole("button", { name: "Prijavi se preko Google-a" })
     .click();
   await direct;
-  await expect(dialog).toHaveCount(0);
 });

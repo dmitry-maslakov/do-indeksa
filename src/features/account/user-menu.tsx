@@ -15,7 +15,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { authClient } from "./auth-client";
-import { SignInButton } from "./sign-in-button";
+import { GoogleLogo } from "./google-logo";
+import { GoogleSignInButton } from "./sign-in-button";
 import { useSignedOut } from "./use-signed-out";
 
 export function UserMenu() {
@@ -27,9 +28,10 @@ export function UserMenu() {
 
   if (!data) {
     return (
-      <SignInButton variant="tint" size="sm" className="px-3 sm:px-4">
+      <GoogleSignInButton variant="tint" size="sm" className="px-3 sm:px-4">
+        <GoogleLogo />
         {t("signIn")}
-      </SignInButton>
+      </GoogleSignInButton>
     );
   }
 
