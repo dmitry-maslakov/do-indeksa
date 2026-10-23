@@ -239,7 +239,9 @@ test("a guest signs in straight with google", async ({ page }) => {
     .getByRole("banner")
     .getByRole("button", { name: "Prijavi se" })
     .click();
-  await fromHeader;
+  expect((await fromHeader).postDataJSON().additionalData).toEqual({
+    from: "header",
+  });
   await expect(page.getByRole("alertdialog")).toHaveCount(0);
 
   await page
