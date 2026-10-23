@@ -45,7 +45,7 @@ async function ReviewView({ params, searchParams }: ReviewProps) {
 
   return (
     <>
-      <PageTitle className={found ? "sr-only" : undefined}>
+      <PageTitle className={found ? "sr-only" : "pt-4 pb-5"}>
         {t("title")}
       </PageTitle>
       {!found ? (

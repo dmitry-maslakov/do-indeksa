@@ -24,7 +24,9 @@ export default function TheoryPage() {
 
   return (
     <main className="px-4 pb-9 md:px-10 md:pb-14">
-      <PageTitle className="pb-2 md:pt-6 md:text-4xl">{t("title")}</PageTitle>
+      <PageTitle className="pt-4 pb-2 md:pt-6 md:text-4xl">
+        {t("title")}
+      </PageTitle>
       <p className="pb-6 text-muted-foreground md:pb-7 md:text-[17px]">
         {t("lead")}
       </p>

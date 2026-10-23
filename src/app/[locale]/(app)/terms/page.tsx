@@ -55,7 +55,7 @@ export default function TermsPage() {
 
   return (
     <main className="px-4 pb-9 md:px-9">
-      <PageTitle>{t("title")}</PageTitle>
+      <PageTitle className="pt-4 pb-5">{t("title")}</PageTitle>
       <article className="grid max-w-2xl gap-6 text-sm leading-relaxed">
         <p className="text-subtle">{t("updated")}</p>
         <ol className="grid list-decimal gap-3 pl-5">
