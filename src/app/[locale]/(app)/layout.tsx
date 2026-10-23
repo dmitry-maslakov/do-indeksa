@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { BottomNav } from "@/components/bottom-nav";
+import { Footer } from "@/components/footer";
 import { QueryProvider } from "@/components/query-provider";
 import { TopNav } from "@/components/top-nav";
 import { Toaster } from "@/components/ui/sonner";
@@ -10,6 +11,7 @@ export default function AppLayout({ children }: LayoutProps<"/[locale]">) {
     <QueryProvider>
       <TopNav />
       {children}
+      <Footer />
       <BottomNav />
       <Toaster position="top-center" />
       <Suspense>

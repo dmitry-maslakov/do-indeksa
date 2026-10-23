@@ -270,6 +270,9 @@
     "later": "Ne sada",
     "privacy": "Šta čuvamo i kako obrisati nalog"
   },
+  "Footer": {
+    "privacy": "Privatnost i podaci"
+  },
   "Compose": {
     "title": "Sastavi svoj test",
     "hint": "Skloni teme koje ne želiš — zadatke biramo mi.",
