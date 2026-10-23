@@ -13,6 +13,7 @@ import {
   guestProfileOf,
   profileOf,
 } from "@/features/account/profiles";
+import { signUpSource } from "@/features/account/sign-up-source";
 import { db } from "./db";
 import { env } from "./env";
 import { reportServerError } from "./report";
@@ -32,7 +33,26 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieCache: { enabled: true, maxAge: 300 },
   },
-  user: { deleteUser: { enabled: true } },
+  user: {
+    deleteUser: { enabled: true },
+    additionalFields: {
+      signUpSource: {
+        type: "string",
+        required: false,
+        input: false,
+        returned: false,
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => ({
+          data: { ...user, signUpSource: await signUpSource() },
+        }),
+      },
+    },
+  },
   advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
   telemetry: { enabled: false },
   onAPIError: {

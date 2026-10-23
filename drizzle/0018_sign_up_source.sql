@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "sign_up_source" text;

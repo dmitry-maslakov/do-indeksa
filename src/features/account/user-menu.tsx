@@ -28,7 +28,12 @@ export function UserMenu() {
 
   if (!data) {
     return (
-      <GoogleSignInButton variant="tint" size="sm" className="px-3 sm:px-4">
+      <GoogleSignInButton
+        from="header"
+        variant="tint"
+        size="sm"
+        className="px-3 sm:px-4"
+      >
         <GoogleLogo />
         {t("signIn")}
       </GoogleSignInButton>
