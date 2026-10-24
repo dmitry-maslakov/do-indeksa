@@ -246,7 +246,7 @@ test("a guest signs in straight with google", async ({ page }) => {
 
   await page
     .getByRole("contentinfo")
-    .getByRole("link", { name: "Privatnost i podaci" })
+    .getByRole("link", { name: "Politika privatnosti" })
     .click();
   await expect(page).toHaveURL(/\/privacy$/);
   await expect(

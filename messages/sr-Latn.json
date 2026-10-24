@@ -266,7 +266,10 @@
     "signIn": "Prijavi se preko Google-a"
   },
   "Footer": {
-    "privacy": "Privatnost i podaci"
+    "privacy": "Politika privatnosti",
+    "terms": "Uslovi korišćenja",
+    "source": "Izvorni kod",
+    "unofficial": "Nije zvanični sajt FTN-a"
   },
   "Compose": {
     "title": "Sastavi svoj test",
@@ -322,6 +325,17 @@
     "stale": "Radi zaštite prvo se ponovo prijavi preko Google-a, pa obriši nalog.",
     "error": "Brisanje nije uspelo. Pokušaj ponovo.",
     "deleted": "Nalog i napredak su obrisani."
+  },
+  "Terms": {
+    "title": "Uslovi korišćenja",
+    "updated": "Važe od 24. oktobra 2026.",
+    "service": "Do indeksa (doindeksa.rs) je besplatan sajt za pripremu prijemnog ispita iz matematike. Nije zvanični sajt Fakulteta tehničkih nauka niti je povezan sa nekim fakultetom.",
+    "results": "Sajt proverava samo konačan odgovor. Bodovi i procene služe za vežbu, nisu zvaničan rezultat i ne predviđaju rezultat na prijemnom ispitu. Do indeksa ne garantuje upis.",
+    "account": "Sajt se koristi bez naloga ili sa nalogom preko Google-a. Nalog može da otvori lice sa navršenih 15 godina, a mlađe uz saglasnost roditelja ili staratelja. Nalog se briše na stranici <privacy>Politika privatnosti</privacy>.",
+    "content": "Rešenja i zadaci koje je pripremio Do indeksa objavljeni su pod licencom <cc>CC BY-NC-SA 4.0</cc>, a izvorni kod pod licencom <mit>MIT</mit>. Postavke zadataka sa ranijih prijemnih ispita preuzete su uz navođenje izvora.",
+    "rules": "Zabranjeno je ometati rad sajta, opterećivati ga automatskim zahtevima i pristupati tuđim nalozima.",
+    "liability": "Sajt se pruža bez naknade, u stanju u kakvom jeste. Sadržaj može sadržati greške, a sajt može biti privremeno nedostupan. U meri u kojoj to zakon dozvoljava, Do indeksa ne odgovara za štetu nastalu korišćenjem sajta.",
+    "changes": "Uslovi se mogu menjati, a važeća verzija je na ovoj stranici. Primenjuje se pravo Republike Srbije. Kontakt: <mail>{email}</mail>."
   },
   "Launch": {
     "title": "Priprema za prijemni iz matematike",
