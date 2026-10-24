@@ -266,7 +266,10 @@
     "signIn": "Sign in with Google"
   },
   "Footer": {
-    "privacy": "Privacy and data"
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "source": "Source code",
+    "unofficial": "Not an official FTN website"
   },
   "Compose": {
     "title": "Build your own test",
@@ -322,6 +325,17 @@
     "stale": "For safety, sign in with Google again first, then delete your account.",
     "error": "Deletion failed. Try again.",
     "deleted": "Your account and progress are deleted."
+  },
+  "Terms": {
+    "title": "Terms of use",
+    "updated": "Effective from 24 October 2026.",
+    "service": "Do indeksa (doindeksa.rs) is a free website for preparing for the university entrance exam in mathematics. It is not the official website of the Faculty of Technical Sciences and is not affiliated with any faculty.",
+    "results": "The site checks only the final answer. Points and estimates are for practice, are not an official result and do not predict the entrance exam result. Do indeksa does not guarantee admission.",
+    "account": "The site can be used without an account or with an account through Google. An account may be opened by a person aged 15 or older, and by a younger person with a parent's or guardian's consent. The account is deleted on the <privacy>Privacy policy</privacy> page.",
+    "content": "Solutions and tasks prepared by Do indeksa are published under the <cc>CC BY-NC-SA 4.0</cc> license, and the source code under the <mit>MIT</mit> license. Tasks from past entrance exams are given with their source.",
+    "rules": "It is not allowed to disrupt the site, load it with automated requests or access other people's accounts.",
+    "liability": "The site is provided free of charge, as is. The content may contain errors, and the site may be temporarily unavailable. To the extent permitted by law, Do indeksa is not liable for damage arising from use of the site.",
+    "changes": "These terms may change; the current version is on this page. Serbian law applies. If a translation differs, the Serbian text applies. Contact: <mail>{email}</mail>."
   },
   "Launch": {
     "title": "Maths entrance exam prep",

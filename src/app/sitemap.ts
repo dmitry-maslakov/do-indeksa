@@ -17,6 +17,7 @@ const pages = [
   "/bank",
   "/variants",
   "/privacy",
+  "/terms",
   ...contentVariants.map((v) => `/variants/${v.id}`),
 ];
 

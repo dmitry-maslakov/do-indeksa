@@ -68,6 +68,7 @@ const screens = [
   ["/review", "Analiza", "Analiza · Do indeksa"],
   ["/stats", "Statistika", "Statistika · Do indeksa"],
   ["/privacy", "Šta čuvamo", "Politika privatnosti · Do indeksa"],
+  ["/terms", "Do indeksa ne garantuje upis", "Uslovi korišćenja · Do indeksa"],
   [
     "/launch",
     "Priprema za prijemni iz matematike",
