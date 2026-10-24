@@ -249,7 +249,9 @@ test("a guest signs in straight with google", async ({ page }) => {
     .getByRole("link", { name: "Privatnost i podaci" })
     .click();
   await expect(page).toHaveURL(/\/privacy$/);
-  await expect(page.getByRole("heading", { name: "Privatnost" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Politika privatnosti" }),
+  ).toBeVisible();
 
   const direct = page.waitForRequest("**/api/auth/sign-in/social");
   await page
