@@ -236,7 +236,7 @@
     "playDaily": "Reši test dana",
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",
     "startTest": "Izaberi test",
-    "suggestion": "Predlog za danas",
+    "suggestion": "Predlog za danas: <b>{reason}</b>",
     "reason": {
       "first": "Kreni odavde.",
       "stuck": "Ovde je zapelo — bolje sad, dok je sveže.",
