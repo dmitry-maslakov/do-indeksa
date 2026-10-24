@@ -236,7 +236,7 @@
     "playDaily": "Play the daily test",
     "timeEmpty": "Finish your first test to see which tasks take the most time.",
     "startTest": "Pick a test",
-    "suggestion": "Suggested for today",
+    "suggestion": "Suggested for today: <b>{reason}</b>",
     "reason": {
       "first": "Start here.",
       "stuck": "This is where it got stuck — better now, while it's fresh.",
