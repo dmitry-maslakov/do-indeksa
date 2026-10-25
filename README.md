@@ -16,7 +16,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-Google sign-in needs `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; everything else works as a guest without them.
+Google sign-in needs real `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in place of the `local` placeholders; everything else works as a guest without them.
 
 ## Checks
 
