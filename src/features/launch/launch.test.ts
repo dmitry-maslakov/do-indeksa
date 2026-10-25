@@ -48,12 +48,16 @@ describe("launchGate", () => {
     expect(await target(path)).toBe(result);
   });
 
-  it.each(["/privacy", "/sr-Latn/privacy", "/ru/privacy", "/en/privacy"])(
-    "passes %s without a cookie",
-    async (path) => {
-      expect(await target(path)).toBe("pass");
-    },
-  );
+  it.each([
+    "/privacy",
+    "/sr-Latn/privacy",
+    "/ru/privacy",
+    "/en/privacy",
+    "/terms",
+    "/ru/terms",
+  ])("passes %s without a cookie", async (path) => {
+    expect(await target(path)).toBe("pass");
+  });
 
   it.each(["", "zz", "0".repeat(64)])(
     "rejects the cookie %j",
