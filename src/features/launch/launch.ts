@@ -3,7 +3,7 @@ import { routing } from "@/i18n/routing";
 
 export const launchCookie = "launch-access";
 
-export const launchPages = ["/", "/privacy"];
+export const launchPages = ["/", "/privacy", "/terms"];
 
 type Gate = { redirect: URL; token?: string } | { rewrite: URL };
 
