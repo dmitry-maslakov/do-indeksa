@@ -16,7 +16,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-Za prijavu preko Google naloga potrebni su `GOOGLE_CLIENT_ID` i `GOOGLE_CLIENT_SECRET`; sve ostalo radi i bez prijave.
+Za prijavu preko Google naloga potrebni su pravi `GOOGLE_CLIENT_ID` i `GOOGLE_CLIENT_SECRET` umesto `local`; sve ostalo radi i bez prijave.
 
 ## Licenca
 
