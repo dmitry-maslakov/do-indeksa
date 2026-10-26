@@ -35,9 +35,9 @@ export const composeTaskIds = (
   return { ids: byNumber(ids), fallback };
 };
 
-export const swapHrefs = (ids: string[]) =>
+export const swapIds = (ids: string[]) =>
   ids.map((id, i) => {
     const same = idsByTopic.get(getTask(id)?.topic ?? "") ?? [];
     const swapped = swap(same, ids, i);
-    return swapped && `/variants/${setId(swapped)}`;
+    return swapped && setId(swapped);
   });

@@ -4,7 +4,6 @@ import { type LocalTest, useExamStore } from "./exam-store";
 const meta = {
   title: "2026",
   minutes: 48,
-  timed: true,
   tasks: [
     { number: 1, topic: "a", parts: 2 },
     { number: 2, topic: "b", parts: 1 },
@@ -36,6 +35,7 @@ const test = () => store().tests.v;
 
 afterEach(() => {
   store().clear("v");
+  store().clear("w");
   vi.useRealTimers();
 });
 
@@ -99,6 +99,34 @@ describe("exam store", () => {
     const newer = { ...saved, updatedAt: Date.now() + 1 };
     store().restore("v", newer);
     expect(test()?.testId).toBe(newer.testId);
+  });
+
+  it("starts tests with a time limit", () => {
+    store().start("v", meta);
+    expect(test()?.timed).toBe(true);
+  });
+
+  it("moves a test to the variant with a swapped task", () => {
+    vi.useFakeTimers({ now: 0 });
+    store().start("v", meta);
+    store().answer("v", 0, "x");
+    vi.setSystemTime(60_000);
+    store().go("v", 1);
+    const before = test();
+    store().swap("v", "w");
+    const swapped = store().tests.w;
+    expect(test()).toBeUndefined();
+    expect(swapped?.testId).not.toBe(before?.testId);
+    expect(swapped?.startedAt).toBe(0);
+    expect(swapped?.answers).toEqual([["x", ""], []]);
+    expect(swapped?.visits.map((v) => v.task)).toEqual([0, 1]);
+  });
+
+  it("answers every part of a swapped task", () => {
+    store().start("v", meta);
+    store().swap("v", "w");
+    store().answer("w", 2, "z");
+    expect(store().tests.w?.answers[0]).toEqual(["", "", "z"]);
   });
 
   it("clears a test", () => {

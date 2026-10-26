@@ -33,7 +33,6 @@ test("finishing a test offline keeps it open", async ({ page, context }) => {
     .getByRole("alertdialog")
     .getByRole("button", { name: "Završi test" });
   await page.goto("/daily");
-  await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
   await context.setOffline(true);
   await finish(page);

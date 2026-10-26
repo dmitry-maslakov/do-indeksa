@@ -2,11 +2,9 @@ import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import { answer, expect, finish, test } from "./fixtures";
 
-async function finishSet(page: Page, timed = true) {
+async function finishSet(page: Page) {
   await page.goto("/variants/set-eks-001");
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
-  if (!timed) await page.getByRole("switch").click();
-  await page.getByRole("button", { name: "Počni" }).click();
   await answer(page, "0");
   await finish(page);
 }
@@ -57,18 +55,6 @@ test("a signed-in user reviews a finished test", {
   ]);
 });
 
-test("an untimed test is stored without a time limit", async ({
-  page,
-  auth,
-}) => {
-  const { profileId } = await auth.signIn();
-  await finishSet(page, false);
-  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
-  expect(await storedTest(auth.db, profileId)).toEqual([
-    { timed: false, overtime: null, visits: 1 },
-  ]);
-});
-
 test("an unfinished test continues from the server on another device", async ({
   page,
   auth,
@@ -77,7 +63,6 @@ test("an unfinished test continues from the server on another device", async ({
   await page.goto("/variants/set-eks-001");
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   const test = page.url();
-  await page.getByRole("button", { name: "Počni" }).click();
   await answer(page, "7");
   await expect
     .poll(async () => {

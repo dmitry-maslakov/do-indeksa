@@ -1,18 +1,17 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
 import { reviewHref } from "@/features/review/review";
-import { useRouter } from "@/i18n/navigation";
+import { getPathname, useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import type { ComposeMode } from "./compose";
 import { ExamBar } from "./exam-bar";
 import { ExamGhost } from "./exam-ghost";
-import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
 import {
   type LocalTest,
@@ -23,7 +22,7 @@ import {
 import { ExamTask } from "./exam-task";
 import { saveTest, submitTest } from "./test-actions";
 import type { UnfinishedTest } from "./test-sessions";
-import { nextIndex } from "./test-state";
+import { isAnswered, nextIndex } from "./test-state";
 import type { ExamTask as Task } from "./variants";
 
 interface ExamRunnerProps {
@@ -31,6 +30,7 @@ interface ExamRunnerProps {
   tasks: Task[];
   minutes: number;
   title: string;
+  code?: string;
   saved?: UnfinishedTest;
   swaps?: (string | undefined)[];
   fallback?: ComposeMode;
@@ -49,6 +49,7 @@ export function ExamRunner({
   tasks,
   minutes,
   title,
+  code,
   saved,
   swaps,
   fallback,
@@ -56,8 +57,9 @@ export function ExamRunner({
   const hydrated = useExamHydrated();
   const router = useRouter();
   const test = useExamStore((s) => s.tests[variantId]);
-  const { start, answer, go, restore, clear } = useExamStore.getState();
+  const { start, answer, go, restore, swap, clear } = useExamStore.getState();
   const t = useTranslations("Exam");
+  const locale = useLocale();
   const errorText = useErrorText();
   const { execute: submit, isPending: pending } = useAction(submitTest, {
     onSuccess: ({ input }) => {
@@ -98,11 +100,18 @@ export function ExamRunner({
     [saved, variantId, meta],
   );
   const synced = saved?.updatedAt ?? 0;
+  const opened = useRef(false);
+  useEffect(() => {
+    if (!hydrated || opened.current) return;
+    opened.current = true;
+    if (!resumed) start(variantId, meta);
+  }, [hydrated, resumed, start, variantId, meta]);
   useEffect(() => {
     if (hydrated && resumed) restore(variantId, resumed);
   }, [hydrated, resumed, restore, variantId]);
   useEffect(() => {
-    if (!test || test.updatedAt <= synced) return;
+    if (!test || test.updatedAt <= synced || test.updatedAt === test.startedAt)
+      return;
     const id = setTimeout(() => {
       saveTest(payload(variantId, test)).catch(() => undefined);
     }, 1500);
@@ -113,24 +122,19 @@ export function ExamRunner({
     [answer, variantId],
   );
 
-  if (hydrated && !test && !resumed) {
-    return (
-      <ExamIntro
-        title={title}
-        tasks={tasks}
-        minutes={minutes}
-        swaps={swaps}
-        fallback={fallback}
-        onStart={(timed) => start(variantId, { ...meta, timed })}
-      />
-    );
-  }
-
   const task = test && tasks[test.current];
   if (!test || !task) {
     return <ExamGhost />;
   }
 
+  const answers = test.answers[test.current] ?? [];
+  const swapTo = isAnswered(answers) ? undefined : swaps?.[test.current];
+  const onSwap = swapTo
+    ? () => {
+        swap(variantId, swapTo);
+        location.replace(getPathname({ href: `/variants/${swapTo}`, locale }));
+      }
+    : undefined;
   const rail = {
     test,
     tasks,
@@ -145,17 +149,25 @@ export function ExamRunner({
       <ExamBar {...rail} />
       <div className="flex items-start gap-14">
         <RailPanel label={t("tasks")}>
-          <ExamRail {...rail} />
+          <ExamRail {...rail} code={code} />
         </RailPanel>
-        <ExamTask
-          task={task}
-          answers={test.answers[test.current] ?? []}
-          first={test.current === 0}
-          last={test.current === tasks.length - 1}
-          onAnswer={onAnswer}
-          onPrev={() => go(variantId, test.current - 1)}
-          onNext={() => go(variantId, test.current + 1)}
-        />
+        <div className="flex min-w-0 max-w-task flex-1 flex-col">
+          {fallback && (
+            <p className="pt-4.5 text-sm md:pt-3.5">
+              {t("fallback", { mode: fallback })}
+            </p>
+          )}
+          <ExamTask
+            task={task}
+            answers={answers}
+            first={test.current === 0}
+            last={test.current === tasks.length - 1}
+            onSwap={onSwap}
+            onAnswer={onAnswer}
+            onPrev={() => go(variantId, test.current - 1)}
+            onNext={() => go(variantId, test.current + 1)}
+          />
+        </div>
       </div>
     </>
   );

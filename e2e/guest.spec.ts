@@ -134,13 +134,6 @@ test("a guest finishes the daily test", { tag: "@mobile" }, async ({
   const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
   await page.goto("/daily");
   await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
-  await expect(
-    page.getByText("Nedovršen test i rezultati čuvaju se na ovom uređaju", {
-      exact: false,
-    }),
-  ).toBeVisible();
-  await expect(bar).toBeVisible();
-  await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
   await expect(bar).toBeHidden();
   await page.reload();
@@ -159,11 +152,7 @@ const composer = (page: Page) =>
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Sastavi svoj test" }) });
 
-test("a guest composes a short untimed test without a topic", async ({
-  page,
-  context,
-}) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+test("a guest composes a short test without a topic", async ({ page }) => {
   await page.goto("/variants");
   const card = composer(page);
   const topic = card.getByRole("button", { name: "Logaritmi" });
@@ -173,14 +162,10 @@ test("a guest composes a short untimed test without a topic", async ({
   await card.getByRole("button", { name: "5", exact: true }).click();
   await card.getByRole("button", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
-  await expect(page.getByText(/^5 zadataka/)).toBeVisible();
-  await page.getByRole("button", { name: "Podeli" }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    page.url(),
-  );
-  await page.getByRole("switch", { name: "Tajmer" }).click();
-  await page.getByRole("button", { name: "Počni" }).click();
-  await expect(page.getByText("Proteklo vreme")).toBeVisible();
+  await expect(page.getByText("Preostalo vreme")).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Zadaci" }).getByRole("button"),
+  ).toHaveCount(5);
 });
 
 test("an old test link opens the test under its short code", async ({

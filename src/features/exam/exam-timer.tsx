@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { LocalTest } from "./exam-store";
 
-type Timing = Pick<LocalTest, "startedAt" | "minutes" | "timed">;
+type Timing = Pick<LocalTest, "startedAt" | "minutes">;
 
 const format = (ms: number) => {
   const s = Math.floor(ms / 1000);
@@ -14,7 +14,7 @@ const format = (ms: number) => {
   return `${Math.floor(s / 3600)}:${mm}:${ss}`;
 };
 
-export function useClock({ startedAt, minutes, timed }: Timing) {
+export function useClock({ startedAt, minutes }: Timing) {
   const [now, setNow] = useState(Date.now);
 
   useEffect(() => {
@@ -22,8 +22,8 @@ export function useClock({ startedAt, minutes, timed }: Timing) {
     return () => clearInterval(id);
   }, []);
 
-  const left = timed ? startedAt + minutes * 60_000 - now : now - startedAt;
-  const over = timed && left < 0;
+  const left = startedAt + minutes * 60_000 - now;
+  const over = left < 0;
   return { over, text: `${over ? "+" : ""}${format(Math.abs(left))}` };
 }
 
@@ -46,11 +46,7 @@ export function ExamTimer({ timing }: { timing: Timing }) {
       <div className="flex items-end justify-between gap-3">
         <span className="flex flex-col gap-0.5">
           <span className="font-semibold text-muted-foreground text-xs">
-            {!timing.timed
-              ? t("elapsed")
-              : over
-                ? t("overtime")
-                : t("timeLeft")}
+            {over ? t("overtime") : t("timeLeft")}
           </span>
           {!hidden && (
             <span

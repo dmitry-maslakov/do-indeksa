@@ -6,12 +6,12 @@ import type { Visit } from "./test-draft";
 interface TestMeta {
   title: string;
   minutes: number;
-  timed: boolean;
   tasks: { number: number; topic: string; parts: number }[];
 }
 
 export interface LocalTest extends Omit<TestMeta, "tasks"> {
   testId: string;
+  timed: boolean;
   tasks: { number: number; topic: string }[];
   startedAt: number;
   updatedAt: number;
@@ -27,6 +27,11 @@ const visit = (task: number, now: number): Visit => ({
   endedAt: now,
 });
 
+const withPart = (parts: string[], index: number, value: string) =>
+  Array.from({ length: Math.max(parts.length, index + 1) }, (_, i) =>
+    i === index ? value : (parts[i] ?? ""),
+  );
+
 export const visitsAt = (test: LocalTest, now: number) =>
   test.visits.map((v, i) =>
     i === test.visits.length - 1 ? { ...v, endedAt: now } : v,
@@ -38,6 +43,7 @@ interface ExamState {
   answer: (variantId: string, part: number, value: string) => void;
   go: (variantId: string, index: number) => void;
   restore: (variantId: string, test: LocalTest) => void;
+  swap: (from: string, to: string) => void;
   clear: (variantId: string) => void;
 }
 
@@ -57,7 +63,7 @@ export const useExamStore = create<ExamState>()(
 
       return {
         tests: {},
-        start: (variantId, { title, minutes, timed, tasks }) =>
+        start: (variantId, { title, minutes, tasks }) =>
           set((s) => {
             if (s.tests[variantId]) return s;
             const now = Date.now();
@@ -65,7 +71,7 @@ export const useExamStore = create<ExamState>()(
               testId: crypto.randomUUID(),
               title,
               minutes,
-              timed,
+              timed: true,
               tasks: tasks.map(({ number, topic }) => ({ number, topic })),
               startedAt: now,
               updatedAt: now,
@@ -82,9 +88,7 @@ export const useExamStore = create<ExamState>()(
             ...test,
             updatedAt: Date.now(),
             answers: test.answers.map((a, i) =>
-              i === test.current
-                ? a.map((v, j) => (j === part ? value : v))
-                : a,
+              i === test.current ? withPart(a, part, value) : a,
             ),
           })),
         go: (variantId, index) =>
@@ -107,6 +111,23 @@ export const useExamStore = create<ExamState>()(
               visits: [...test.visits, visit(test.current, now)],
             };
             return { tests: { ...s.tests, [variantId]: resumed } };
+          }),
+        swap: (from, to) =>
+          set((s) => {
+            const { [from]: test, ...tests } = s.tests;
+            if (!test) return s;
+            const now = Date.now();
+            const swapped = {
+              ...test,
+              testId: crypto.randomUUID(),
+              updatedAt: now,
+              answers: test.answers.with(test.current, []),
+              visits: [
+                ...test.visits.filter((v) => v.task !== test.current),
+                visit(test.current, now),
+              ],
+            };
+            return { tests: { ...tests, [to]: swapped } };
           }),
         clear: (variantId) =>
           set((s) => {
