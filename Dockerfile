@@ -6,11 +6,16 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
-FROM deps AS migrate
+FROM deps AS bundle
+COPY src/db/migrate.mts src/db/cleanup.mts ./src/db/
+RUN pnpm db:bundle
+
+FROM node:24-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS migrate
+WORKDIR /app
 COPY drizzle ./drizzle
-COPY src/db/migrate.mts src/db/cleanup.mts ./
+COPY --from=bundle /app/dist ./
 USER node
-CMD ["node", "migrate.mts"]
+CMD ["node", "migrate.mjs"]
 
 FROM node:24-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS runner
 WORKDIR /app
