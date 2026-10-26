@@ -178,7 +178,7 @@ const variants = defineCollection({
   },
 });
 
-const theoryRoot = "content/theory";
+const theoryRoot = `${root}/theory`;
 
 async function inline(url: string, directory: string, origin: string) {
   if (!url.endsWith(".svg"))
