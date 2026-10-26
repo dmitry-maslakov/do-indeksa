@@ -12,7 +12,7 @@ interface ActionBarProps {
   disabled: boolean;
 }
 
-const bar =
+export const phoneBar =
   "fixed inset-x-0 bottom-[max(var(--keyboard-height,0px),calc(var(--nav-bottom)+env(safe-area-inset-bottom)))] z-30 flex gap-2 border-t bg-card p-3 md:contents";
 const primary = cn(
   buttonVariants({ variant: "lime", size: "pill" }),
@@ -45,7 +45,7 @@ export function ActionBar({
 }: ActionBarProps) {
   const t = useTranslations("Solve");
   return (
-    <div className={bar}>
+    <div className={phoneBar}>
       {go ? (
         <Link href={next} className={primary}>
           <span className="md:hidden">{t("next")}</span>

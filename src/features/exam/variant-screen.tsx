@@ -39,8 +39,8 @@ export async function VariantScreen({
   const title = await variantTitle(variant, locale);
 
   return (
-    <main className="px-4 pb-9 md:px-9">
-      <div className="flex flex-wrap items-baseline justify-between gap-2 py-6">
+    <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 py-6 exam-running:sr-only">
         <PageTitle className="p-0">{title}</PageTitle>
         <span className="text-sm text-subtle">
           {t("format", { tasks: tasks.length, minutes })}
