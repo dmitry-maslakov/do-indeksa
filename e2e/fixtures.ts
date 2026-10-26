@@ -76,14 +76,15 @@ export const seedAttempt = (
 ) =>
   db.query(
     `with session as (
-       insert into task_sessions (profile_id, task_id, started_at, last_seen_at)
-       values ($1, $2, now() - $4::int * interval '1 hour' - interval '1 second',
+       insert into task_sessions (profile_id, task_id, kind, started_at, last_seen_at)
+       values ($1, $2, 'first', now() - $4::int * interval '1 hour' - interval '1 second',
          now() - $4::int * interval '1 hour')
        returning id
      )
-     insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct, created_at)
+     insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct,
+       difficulty, key_rev, checker, created_at)
      select $1, $2, id, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3,
-       now() - $4::int * interval '1 hour'
+       2, 'seed', 1, now() - $4::int * interval '1 hour'
      from session`,
     [profileId, taskId, correct, hoursAgo],
   );

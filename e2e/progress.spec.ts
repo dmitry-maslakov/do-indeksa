@@ -135,3 +135,65 @@ test("a task visit is one session and a long pause starts another", async ({
   await page.getByRole("button", { name: "Nagoveštaj" }).click();
   await expect.poll(async () => (await sessions()).length).toBe(2);
 });
+
+test.describe("attempt log", () => {
+  test.use({ timezoneId: "Europe/Belgrade" });
+
+  test("keeps what an attempt needs to be recomputed later", async ({
+    page,
+    auth,
+  }) => {
+    const { profileId } = await auth.signIn();
+    const sessions = async () =>
+      (
+        await auth.db.query<{ kind: string; tz: string | null }>(
+          `select kind, tz from task_sessions
+           where profile_id = $1 and task_id = 'eks-001' order by started_at`,
+          [profileId],
+        )
+      ).rows;
+
+    await page.goto("/bank/eks-001");
+    await answer(page, "5");
+    await page.getByRole("button", { name: "Proveri" }).click();
+    await expect
+      .poll(async () => {
+        const { rows } = await auth.db.query(
+          `select difficulty, length(key_rev) as key_rev, checker from attempts
+           where profile_id = $1 and task_id = 'eks-001'`,
+          [profileId],
+        );
+        return rows;
+      })
+      .toEqual([{ difficulty: expect.any(Number), key_rev: 12, checker: 1 }]);
+    expect(await sessions()).toEqual([
+      { kind: "first", tz: "Europe/Belgrade" },
+    ]);
+
+    await page.getByRole("link", { name: "Dalje" }).click();
+    await expect
+      .poll(async () => {
+        const { rows } = await auth.db.query(
+          "select count(*)::int as n from skips where profile_id = $1 and task_id = 'eks-001'",
+          [profileId],
+        );
+        return rows[0]?.n;
+      })
+      .toBe(1);
+
+    await page.goto("/bank");
+    for (const table of ["attempts", "skips"])
+      await auth.db.query(
+        `update ${table} set created_at = now() - interval '2 hours' where profile_id = $1`,
+        [profileId],
+      );
+    await auth.db.query(
+      "update task_sessions set last_seen_at = now() - interval '2 hours' where profile_id = $1",
+      [profileId],
+    );
+    await page.goto("/bank/eks-001");
+    await expect
+      .poll(async () => (await sessions()).map((s) => s.kind))
+      .toEqual(["first", "retry"]);
+  });
+});

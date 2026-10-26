@@ -1,6 +1,7 @@
 import { maxBy } from "es-toolkit";
 import { dayMs } from "@/lib/dates";
 import type { TaskStat } from "./stats";
+import type { SuggestionReason } from "./suggestion-reasons";
 
 export const topicStates = [
   "mastered",
@@ -17,14 +18,6 @@ export interface TopicProgress {
   state: TopicState;
   lastAt: number | null;
 }
-
-type SuggestionReason =
-  | "first"
-  | "stuck"
-  | "next"
-  | "almost"
-  | "started"
-  | "done";
 
 export interface Suggestion {
   topic: string;

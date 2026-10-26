@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
@@ -9,6 +10,12 @@ import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
 import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
+
+const keyRevOf = (expected: string[]) =>
+  createHash("sha256")
+    .update(JSON.stringify(expected))
+    .digest("hex")
+    .slice(0, 12);
 
 const root = process.env.CONTENT_DIR ?? "content";
 
@@ -92,6 +99,7 @@ const tasks = defineCollection({
         expected,
         label: label ?? null,
       })),
+      keyRev: keyRevOf(check.map((c) => c.expected)),
     };
   },
 });

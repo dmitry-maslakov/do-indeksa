@@ -58,5 +58,7 @@ function gradePart(input: string, expected: string): PartOutcome {
   return isEquivalent(input, expected) ? "right" : "wrong";
 }
 
+export const checkerVersion = 1;
+
 export const gradeParts = (expected: string[], answers: string[]) =>
   expected.map((e, i) => gradePart(answers[i] ?? "", e));

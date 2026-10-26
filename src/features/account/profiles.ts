@@ -6,6 +6,7 @@ import {
   favorites,
   profiles,
   reports,
+  suggestions,
   taskSessions,
   testSessions,
 } from "@/db/schema";
@@ -102,6 +103,10 @@ export async function adoptGuest(userId: string, token: string) {
       .update(reports)
       .set({ profileId: own.id })
       .where(eq(reports.profileId, guest.id));
+    await tx
+      .update(suggestions)
+      .set({ profileId: own.id })
+      .where(eq(suggestions.profileId, guest.id));
     await tx.delete(profiles).where(eq(profiles.id, guest.id));
     return both;
   });

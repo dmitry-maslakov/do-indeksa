@@ -3,7 +3,7 @@ import { z } from "zod";
 import { actionClient } from "./action-client";
 import { ensureProfileId } from "./auth";
 
-vi.mock("./auth", () => ({ ensureProfileId: vi.fn() }));
+vi.mock("./auth", () => ({ ensureProfileId: vi.fn(), findProfileId: vi.fn() }));
 
 let userAgent = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
 vi.mock("next/headers", () => ({

@@ -3,8 +3,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import type { Suggestion } from "@/features/progress/topic-progress";
 import { topicName } from "@/features/tasks/topics";
-import { Link } from "@/i18n/navigation";
 import { HeroBackdrop } from "./hero-backdrop";
+import { SuggestionLink } from "./suggestion-link";
 
 export function TodayHero({ topic, reason }: Suggestion) {
   const t = useTranslations("Home");
@@ -33,8 +33,9 @@ export function TodayHero({ topic, reason }: Suggestion) {
           })}
         </p>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <Link
-            href={`/bank/start/${topic}`}
+          <SuggestionLink
+            topic={topic}
+            reason={reason}
             className={buttonVariants({
               variant: "lime",
               className: "h-12 rounded-xl px-6 font-semibold text-base",
@@ -43,7 +44,7 @@ export function TodayHero({ topic, reason }: Suggestion) {
             {reason === "first" || reason === "next"
               ? t("startTopic")
               : t("continueTopic")}
-          </Link>
+          </SuggestionLink>
           <a
             href="#topic-map"
             className="text-base text-muted-foreground hover:text-foreground"

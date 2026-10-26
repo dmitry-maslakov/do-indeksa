@@ -9,6 +9,7 @@ import {
   pgEnum,
   pgTable,
   primaryKey,
+  smallint,
   text,
   timestamp,
   unique,
@@ -16,7 +17,9 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import type { TestDraft } from "@/features/exam/test-draft";
+import { suggestionReasons } from "@/features/progress/suggestion-reasons";
 import { reportKinds } from "@/features/tasks/report-kinds";
+import { sessionKinds } from "@/features/tasks/session-kind";
 import { partOutcomes } from "@/lib/part-outcome";
 import { user } from "./auth-schema";
 
@@ -64,6 +67,8 @@ export const testSessions = pgTable(
 
 export const partOutcome = pgEnum("part_outcome", partOutcomes);
 
+export const sessionKind = pgEnum("session_kind", sessionKinds);
+
 export const taskSessions = pgTable(
   "task_sessions",
   {
@@ -73,6 +78,8 @@ export const taskSessions = pgTable(
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     testSessionId: uuid(),
+    kind: sessionKind().notNull(),
+    tz: text(),
     startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     lastSeenAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
@@ -114,15 +121,20 @@ export const attempts = pgTable(
       .references(() => profiles.id, { onDelete: "cascade" }),
     taskId: text().notNull(),
     sessionId: uuid().notNull(),
+    clientId: uuid().notNull().defaultRandom(),
     answers: text().array().notNull(),
     outcomes: partOutcome().array().notNull(),
     correct: boolean().notNull(),
+    difficulty: smallint().notNull(),
+    keyRev: text().notNull(),
+    checker: smallint().notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index().on(t.profileId, t.createdAt.desc()),
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
     index().on(t.sessionId),
+    unique().on(t.profileId, t.clientId),
     inTaskSession(t),
   ],
 );
@@ -175,6 +187,41 @@ export const reveals = pgTable(
     index().on(t.sessionId),
     inTaskSession(t),
   ],
+);
+
+export const skips = pgTable(
+  "skips",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    profileId: uuid()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    taskId: text().notNull(),
+    sessionId: uuid().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index().on(t.profileId, t.taskId, t.createdAt.desc()),
+    index().on(t.sessionId),
+    inTaskSession(t),
+  ],
+);
+
+export const suggestionReason = pgEnum("suggestion_reason", suggestionReasons);
+
+export const suggestions = pgTable(
+  "suggestions",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    profileId: uuid()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    topic: text().notNull(),
+    reason: suggestionReason().notNull(),
+    shownAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    openedAt: timestamp({ withTimezone: true }),
+  },
+  (t) => [index().on(t.profileId, t.topic, t.shownAt.desc())],
 );
 
 export const reportKind = pgEnum("report_kind", reportKinds);
