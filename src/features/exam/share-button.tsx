@@ -1,16 +1,21 @@
 "use client";
 
 import { CheckIcon, Share2Icon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getPathname } from "@/i18n/navigation";
 
-export function ShareButton({ title }: { title: string }) {
+export function ShareButton({ title, href }: { title: string; href: string }) {
   const t = useTranslations("Share");
+  const locale = useLocale();
   const [copied, setCopied] = useState(false);
 
   async function share() {
-    const data = { title, url: location.origin + location.pathname };
+    const data = {
+      title,
+      url: location.origin + getPathname({ href, locale }),
+    };
     if (matchMedia("(pointer: coarse)").matches && navigator.canShare?.(data)) {
       await navigator.share(data).catch(() => undefined);
       return;
@@ -21,7 +26,7 @@ export function ShareButton({ title }: { title: string }) {
   }
 
   return (
-    <Button variant="ghost" className="w-full" onClick={share}>
+    <Button variant="ghost" onClick={share}>
       {copied ? <CheckIcon /> : <Share2Icon />}
       {copied ? t("copied") : t("share")}
     </Button>

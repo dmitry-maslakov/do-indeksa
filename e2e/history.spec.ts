@@ -40,7 +40,7 @@ test("a finished variant shows its result in the catalog", async ({
 }) => {
   const { profileId } = await auth.signIn();
   await page.goto("/variants");
-  const first = page.getByRole("link", { name: /Počni →/ }).first();
+  const first = page.locator('main li a[href^="/variants/"]').first();
   const href = (await first.getAttribute("href")) ?? "";
   const testId = randomUUID();
   await auth.db.query(
@@ -49,7 +49,9 @@ test("a finished variant shows its result in the catalog", async ({
     [testId, profileId, href.split("/").at(-1)],
   );
   await page.reload();
-  const row = page.locator(`a[href="/review/${testId.slice(0, 8)}"]`);
+  const row = page
+    .locator("li")
+    .filter({ has: page.locator(`a[href="/review/${testId.slice(0, 8)}"]`) });
   await expect(row).toContainText("Pregled");
   await expect(row).toContainText("rešeno");
   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
