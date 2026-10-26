@@ -28,16 +28,17 @@ const tab = cva("font-medium transition-colors", {
 interface LinkTabsProps {
   items: { href: string; label: string; active: boolean }[];
   variant: "underline" | "segmented" | "fill" | "pill";
+  scroll?: boolean;
 }
 
-export function LinkTabs({ items, variant }: LinkTabsProps) {
+export function LinkTabs({ items, variant, scroll = false }: LinkTabsProps) {
   return (
     <nav className={list({ variant })}>
       {items.map((item) => (
         <Link
           key={item.href}
           href={item.href}
-          scroll={false}
+          scroll={scroll}
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}
           className={tab({ variant })}

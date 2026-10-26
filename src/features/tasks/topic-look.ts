@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { z } from "zod";
 
 const iconNames = ["arrow-up-right", "triangle", "box"] as const;
@@ -16,3 +17,9 @@ export interface TopicLook {
   icon: TopicIconData;
   tone: Tone;
 }
+
+export const toneStyle = (tone: Tone) =>
+  ({
+    "--tone": `var(--tone-${tone})`,
+    "--tint": `var(--tone-${tone}-tint)`,
+  }) as CSSProperties;

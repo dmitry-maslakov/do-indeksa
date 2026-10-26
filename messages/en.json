@@ -9,7 +9,15 @@
     "variantsDescription": "Practice maths entrance exams for FTN Novi Sad: tests in the exam format and our own tests, timed like the real exam.",
     "task": "{topic}: {headline}",
     "launchTitle": "Do indeksa — maths entrance exam prep for FTN Novi Sad",
-    "launchDescription": "Free entrance exam prep for students applying to universities in Serbia. We start with mathematics at FTN Novi Sad: real entrance exams with our own solutions, practice tests and tasks with hints."
+    "launchDescription": "Free entrance exam prep for students applying to universities in Serbia. We start with mathematics at FTN Novi Sad: real entrance exams with our own solutions, practice tests and tasks with hints.",
+    "theoryTitle": "Theory for the FTN math entrance exam",
+    "theoryDescription": "Theory for the FTN math entrance exam by topic: what to know, formulas and solving methods with examples.",
+    "theoryTopic": "{topic}: theory",
+    "theoryTopicDescription": "{topic} for the math entrance exam: {sections}. Formulas, examples and common mistakes.",
+    "theoryMethods": "{topic}: solving methods",
+    "theoryMethodsDescription": "Solving methods for {topic}: {methods}.",
+    "theoryMethod": "{method} · {topic}",
+    "theoryMethodDescription": "When the equation has {when}: steps, an example and a common mistake."
   },
   "NotFound": {
     "title": "Page not found",
@@ -332,5 +340,20 @@
     "title": "Maths entrance exam prep",
     "lead": "Free, for final-year students applying to universities in Serbia.",
     "date": "Coming soon · November 2026"
+  },
+  "Theory": {
+    "title": "Theory",
+    "lead": "What to know for the entrance exam and how each type of task is solved, by topic.",
+    "counts": "{sections, plural, one {# section} other {# sections}} · {methods, plural, one {# method} other {# methods}}",
+    "position": "Task {number, number} on the entrance exam",
+    "topic": "Topic",
+    "theory": "Theory",
+    "methods": "Methods",
+    "methodsCount": "Methods · {count, number}",
+    "when": "When the equation has <hint></hint>",
+    "whenShort": "When you see: <hint></hint>",
+    "zapamti": "Remember",
+    "primer": "Example",
+    "greska": "Common mistake"
   }
 }
