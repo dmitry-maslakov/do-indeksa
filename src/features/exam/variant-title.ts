@@ -13,5 +13,9 @@ export async function variantTitle(variant: ExamVariant, locale: Locale) {
     });
   }
   if (variant.kind === "custom") return t("custom");
+  if (variant.kind === "official" && variant.year) {
+    const solve = await getTranslations({ locale, namespace: "Solve" });
+    return solve("exam", { year: String(variant.year) });
+  }
   return variant.title ?? variant.id;
 }
