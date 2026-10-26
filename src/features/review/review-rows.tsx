@@ -1,12 +1,13 @@
 import { cn } from "cn";
+import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import type { ExamTask } from "@/features/exam/variants";
 import { Reveal } from "@/features/tasks/reveal";
 import { Link } from "@/i18n/navigation";
 import { isRight } from "@/lib/part-outcome";
+import type { Segment } from "@/lib/strip";
 import type {
   AnswerOutcome,
   Outcomes,
@@ -22,8 +23,13 @@ interface ReviewRowsProps {
   testSessionId: string;
 }
 
-const columns =
-  "grid grid-cols-[28px_minmax(0,1fr)_48px] gap-3.5 px-5 md:grid-cols-[44px_minmax(0,1fr)_70px_90px] md:px-6";
+const tones: Record<Segment, string> = {
+  done: "text-success-text",
+  partial: "text-overtime-text",
+  error: "text-error-text",
+  none: "text-subtle",
+  current: "text-subtle",
+};
 
 export function ReviewRows({
   review,
@@ -32,26 +38,12 @@ export function ReviewRows({
   testSessionId,
 }: ReviewRowsProps) {
   const t = useTranslations("Review");
-  const missed = review.rows.filter((r) => r.earned < r.points);
-  const rest = review.rows.length - missed.length;
-
-  if (missed.length === 0) {
-    return (
-      <Card className="px-5 py-4 text-[13px] text-subtle md:px-6">
-        {t("all", { count: rest })}
-      </Card>
-    );
-  }
 
   return (
-    <Card className="gap-0 p-0 py-2 md:p-0 md:py-2">
-      <div className={cn(columns, "py-2.5 text-subtle text-xs")}>
-        <span className="col-span-2">{t("task")}</span>
-        <span>{t("points")}</span>
-        <span className="hidden md:block">{t("time")}</span>
-      </div>
-      <ul className="divide-y divide-subtle/15 border-subtle/15 border-t">
-        {missed.map((row) => {
+    <section className="flex flex-col gap-1">
+      <h2 className="font-semibold text-lg">{t("tasks")}</h2>
+      <ul>
+        {review.rows.map((row) => {
           const task = tasks.find((x) => x.id === row.taskId);
           return (
             task && (
@@ -66,12 +58,7 @@ export function ReviewRows({
           );
         })}
       </ul>
-      {rest > 0 && (
-        <p className="px-5 pt-3.5 pb-2 text-[13px] text-subtle md:px-6">
-          {t("rest", { count: rest })}
-        </p>
-      )}
-    </Card>
+    </section>
   );
 }
 
@@ -88,56 +75,38 @@ function Row({ row, task, outcome, testSessionId }: RowProps) {
   const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
 
   return (
-    <li>
+    <li className="border-b">
       <details className="group/row">
-        <summary
-          className={cn(
-            columns,
-            "cursor-pointer list-none items-center py-3.5 text-sm hover:bg-muted/50 [&::-webkit-details-marker]:hidden",
-          )}
-        >
-          <span
-            className={cn(
-              "flex size-7 items-center justify-center rounded-lg font-semibold text-[13px]",
-              row.attempt
-                ? "border-2 border-error text-error-text"
-                : "bg-untouched text-subtle",
-            )}
-          >
+        <summary className="flex cursor-pointer list-none items-center gap-4 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <span className="w-5.5 shrink-0 font-semibold text-muted-foreground text-sm tabular-nums">
             {row.number}
           </span>
-          <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="flex min-w-0 flex-1 flex-col gap-0.75">
             <MathHtml
               html={task.statement}
-              className="truncate [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline [&>:not(:first-child)]:hidden"
+              className="overflow-hidden whitespace-nowrap text-[15px] leading-normal mask-r-from-85% md:text-base [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline [&>:not(:first-child)]:hidden"
             />
-            <span className="text-subtle text-xs [&_.katex]:text-[1em]">
+            <span className="text-[13px] text-subtle">
               {task.topicName} ·{" "}
-              {row.attempt ? (
-                <Outcome attempt={row.attempt} outcome={outcome} />
-              ) : (
-                t("skipped")
-              )}
+              {row.attempt ? t("minutes", { minutes }) : t("skipped")}
             </span>
           </span>
           <span
             className={cn(
-              "font-semibold",
-              row.attempt ? "text-error-text" : "text-subtle",
+              "w-10 shrink-0 text-right font-semibold text-[15px] tabular-nums",
+              tones[row.segment],
             )}
           >
-            {row.earned} / {row.points}
+            {row.earned}/{row.points}
           </span>
-          <span
-            className={cn(
-              "hidden md:block",
-              row.over ? "font-semibold text-overtime-text" : "text-subtle",
-            )}
-          >
-            {row.attempt ? t("minutes", { minutes }) : "—"}
-          </span>
+          <ChevronRightIcon className="size-4 shrink-0 text-subtle transition-transform group-open/row:rotate-90" />
         </summary>
-        <div className="flex flex-col gap-2 px-5 pb-4 md:px-6">
+        <div className="flex flex-col items-start gap-2 pb-4 pl-9.5">
+          {row.attempt && (
+            <p className="text-[13px] text-subtle [&_.katex]:text-[1em]">
+              <Outcome attempt={row.attempt} outcome={outcome} />
+            </p>
+          )}
           <Reveal
             label={solve("answer")}
             taskId={task.id}
@@ -153,7 +122,6 @@ function Row({ row, task, outcome, testSessionId }: RowProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="self-start"
             render={<Link href={`/bank/${task.id}`} />}
             nativeButton={false}
           >

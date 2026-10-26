@@ -39,7 +39,6 @@ export interface Review<A extends ReviewAttempt = ReviewAttempt> {
   correct: number;
   spentMs: number;
   normMs: number;
-  lost: { topic: string | null; points: number }[];
 }
 
 export const reviewHref = (testId: string) => `/review/${testId.slice(0, 8)}`;
@@ -67,13 +66,6 @@ export function review<A extends ReviewAttempt>(
     };
   });
 
-  const lost = new Map<string | null, number>();
-  for (const row of rows) {
-    if (row.earned === row.points) continue;
-    const key = row.attempt ? row.topic : null;
-    lost.set(key, (lost.get(key) ?? 0) + row.points - row.earned);
-  }
-
   return {
     rows,
     score: Math.round(sumBy(rows, (r) => r.earned) * 10) / 10,
@@ -81,8 +73,5 @@ export function review<A extends ReviewAttempt>(
     correct: rows.filter((r) => r.attempt?.correct).length,
     spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
     normMs: sumBy(rows, (r) => r.minutes * 60_000),
-    lost: [...lost]
-      .map(([topic, points]) => ({ topic, points }))
-      .sort((a, b) => b.points - a.points),
   };
 }

@@ -1,9 +1,8 @@
+import { orderBy } from "es-toolkit";
 import { useTranslations } from "next-intl";
-import { StackBar } from "@/components/stack-bar";
-import { Card, CardTitle } from "@/components/ui/card";
 import type { Review } from "@/features/review/review";
-
-const tones = ["bg-data", "bg-data-soft", "bg-data/40", "bg-data/20"];
+import { TopicIcon } from "@/features/tasks/topic-icon";
+import { topicLook } from "@/features/tasks/topics";
 
 export function LostPoints({
   review,
@@ -13,36 +12,42 @@ export function LostPoints({
   names: Record<string, string>;
 }) {
   const t = useTranslations("Review");
-  const top = review.lost.slice(0, tones.length);
-  if (top.length === 0) return null;
-  const name = (topic: string | null) =>
-    topic ? (names[topic] ?? topic) : t("skippedTopic");
+  const variants = useTranslations("Variants");
+  const lost = orderBy(
+    review.rows.filter((r) => r.earned < r.points),
+    [(r) => r.points - r.earned],
+    ["desc"],
+  ).slice(0, 5);
+  if (lost.length === 0) return null;
 
   return (
-    <Card className="gap-3.5">
-      <CardTitle>{t("lost")}</CardTitle>
-      <StackBar
-        label={t("lost")}
-        parts={top.map((l, i) => ({
-          key: l.topic ?? "skipped",
-          value: l.points,
-          className: tones[i] ?? "",
-        }))}
-      />
-      <ul className="flex flex-col gap-2 text-sm">
-        {top.map((l, i) => (
+    <section className="flex flex-col gap-1">
+      <h2 className="font-semibold text-lg">{t("lost")}</h2>
+      <ul>
+        {lost.map((row) => (
           <li
-            key={l.topic ?? "skipped"}
-            className="flex items-center justify-between gap-3"
+            key={row.taskId}
+            className="flex items-center gap-3 border-b py-2.5"
           >
-            <span className="flex items-center gap-2">
-              <i className={`size-2.5 rounded-full ${tones[i]}`} />
-              {name(l.topic)}
+            <TopicIcon {...topicLook(row.topic)} size="sm" />
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="truncate text-[15px]">
+                {names[row.topic] ?? row.topic}
+              </span>
+              <span className="text-subtle text-xs">
+                {row.segment === "partial"
+                  ? variants("result.part")
+                  : row.attempt
+                    ? variants("result.no")
+                    : t("skipped")}
+              </span>
             </span>
-            <b className="font-semibold">−{l.points}</b>
+            <span className="font-semibold text-[15px] tabular-nums">
+              −{Math.round((row.points - row.earned) * 10) / 10}
+            </span>
           </li>
         ))}
       </ul>
-    </Card>
+    </section>
   );
 }
