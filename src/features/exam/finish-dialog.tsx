@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { ReactElement, ReactNode } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,24 +13,28 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 
 interface FinishDialogProps {
   left: number;
   pending: boolean;
   onFinish: () => void;
+  trigger: ReactElement;
+  children: ReactNode;
 }
 
-export function FinishDialog({ left, pending, onFinish }: FinishDialogProps) {
+export function FinishDialog({
+  left,
+  pending,
+  onFinish,
+  trigger,
+  children,
+}: FinishDialogProps) {
   const t = useTranslations("Exam");
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger
-        render={<Button variant="secondary" className="w-full" />}
-        disabled={pending}
-      >
-        {t("finish")}
+      <AlertDialogTrigger render={trigger} disabled={pending}>
+        {children}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

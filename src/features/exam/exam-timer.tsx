@@ -3,24 +3,18 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import type { LocalTest } from "./exam-store";
 
-const clock = (ms: number) => {
+type Timing = Pick<LocalTest, "startedAt" | "minutes" | "timed">;
+
+const format = (ms: number) => {
   const s = Math.floor(ms / 1000);
   const mm = String(Math.floor(s / 60) % 60).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
   return `${Math.floor(s / 3600)}:${mm}:${ss}`;
 };
 
-export function ExamTimer({
-  startedAt,
-  minutes,
-  timed,
-}: {
-  startedAt: number;
-  minutes: number;
-  timed: boolean;
-}) {
-  const t = useTranslations("Exam");
+export function useClock({ startedAt, minutes, timed }: Timing) {
   const [now, setNow] = useState(Date.now);
 
   useEffect(() => {
@@ -28,31 +22,60 @@ export function ExamTimer({
     return () => clearInterval(id);
   }, []);
 
-  const left = timed ? startedAt + minutes * 60_000 - now : startedAt - now;
+  const left = timed ? startedAt + minutes * 60_000 - now : now - startedAt;
+  const over = timed && left < 0;
+  return { over, text: `${over ? "+" : ""}${format(Math.abs(left))}` };
+}
+
+export function TimeUp({ className }: { className?: string }) {
+  const t = useTranslations("Exam");
+  return (
+    <p role="alert" className={cn("text-[13px] text-overtime-text", className)}>
+      {t("timeUp")}
+    </p>
+  );
+}
+
+export function ExamTimer({ timing }: { timing: Timing }) {
+  const t = useTranslations("Exam");
+  const { over, text } = useClock(timing);
+  const [hidden, setHidden] = useState(false);
 
   return (
-    <div className="flex flex-col gap-0.5 px-1">
-      <span className="text-sm text-subtle">
-        {!timed ? t("elapsed") : left >= 0 ? t("timeLeft") : t("overtime")}
-      </span>
-      <span
-        role="timer"
-        className={cn(
-          "font-semibold text-3xl tabular-nums tracking-tight",
-          timed && left < 0 && "text-overtime-text",
-        )}
-      >
-        {timed && left < 0 && "+"}
-        {clock(Math.abs(left))}
-      </span>
-      {timed && left < 0 && (
-        <p
-          role="alert"
-          className="mt-2 rounded-xl bg-overtime-tint px-3 py-2 text-[13px] text-overtime-text"
+    <div className="flex flex-col gap-2">
+      <div className="flex items-end justify-between gap-3">
+        <span className="flex flex-col gap-0.5">
+          <span className="font-semibold text-muted-foreground text-xs">
+            {!timing.timed
+              ? t("elapsed")
+              : over
+                ? t("overtime")
+                : t("timeLeft")}
+          </span>
+          {!hidden && (
+            <span
+              role="timer"
+              className={cn(
+                "font-semibold text-[34px] leading-[1.1] tabular-nums tracking-tight",
+                over && "text-overtime-text",
+              )}
+            >
+              {text}
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={() => setHidden(!hidden)}
+          className={cn(
+            "rounded-sm text-[13px] text-subtle outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+            !hidden && "mb-2",
+          )}
         >
-          {t("timeUp")}
-        </p>
-      )}
+          {hidden ? t("showTime") : t("hideTime")}
+        </button>
+      </div>
+      {over && <TimeUp />}
     </div>
   );
 }

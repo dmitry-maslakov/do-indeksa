@@ -26,7 +26,7 @@ interface AnswerFieldProps {
 const box = cva("flex items-center transition-colors", {
   variants: {
     variant: {
-      exam: "min-h-12 rounded-xl bg-muted px-4 focus-within:bg-card focus-within:ring-2 focus-within:ring-ring focus-within:ring-inset",
+      exam: "min-h-13 rounded-xl border-[1.5px] border-input bg-card px-3.5 focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
       solve:
         "h-14 rounded-xl border-2 border-input bg-card focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
     },
@@ -43,7 +43,7 @@ const input = cva(
   "min-w-0 flex-1 bg-transparent text-foreground outline-none",
   {
     variants: {
-      variant: { exam: "py-3 text-lg", solve: "h-full pr-4 pl-2 text-xl" },
+      variant: { exam: "py-2.5 text-lg", solve: "h-full pr-4 pl-2 text-xl" },
     },
   },
 );

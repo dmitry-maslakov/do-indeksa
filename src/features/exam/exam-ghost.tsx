@@ -1,14 +1,11 @@
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function ExamGhost() {
   return (
-    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
-      <Card size="sm" className="gap-4 max-md:order-1">
-        <Skeleton className="my-1.5 h-3 w-32" />
-        <Skeleton className="h-11 rounded-lg" />
-      </Card>
-      <Card className="gap-3 md:p-9">
+    <div className="flex items-start gap-14">
+      <div className="sticky top-3 hidden h-rail w-80 shrink-0 rounded-3xl bg-muted md:block" />
+      <div className="flex min-w-0 max-w-task flex-1 flex-col gap-3 pt-4.5 md:pt-3.5">
+        <Skeleton className="mb-3 h-3 w-48" />
         {[100, 90, 60].map((width) => (
           <Skeleton
             key={width}
@@ -16,7 +13,7 @@ export function ExamGhost() {
             style={{ width: `${width}%` }}
           />
         ))}
-      </Card>
+      </div>
     </div>
   );
 }

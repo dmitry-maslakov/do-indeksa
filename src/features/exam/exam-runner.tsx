@@ -5,10 +5,12 @@ import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { FocusMode } from "@/components/focus-mode";
+import { RailPanel } from "@/components/rail";
 import { reviewHref } from "@/features/review/review";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import type { ComposeMode } from "./compose";
+import { ExamBar } from "./exam-bar";
 import { ExamGhost } from "./exam-ghost";
 import { ExamIntro } from "./exam-intro";
 import { ExamRail } from "./exam-rail";
@@ -129,28 +131,32 @@ export function ExamRunner({
     return <ExamGhost />;
   }
 
-  const finish = () => submit(payload(variantId, test));
+  const rail = {
+    test,
+    tasks,
+    pending,
+    onGo: (i: number) => go(variantId, i),
+    onFinish: () => submit(payload(variantId, test)),
+  };
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)]">
+    <>
       <FocusMode mode="exam" />
-      <ExamRail
-        test={test}
-        tasks={tasks}
-        minutes={minutes}
-        pending={pending}
-        onGo={(i) => go(variantId, i)}
-        onFinish={finish}
-      />
-      <ExamTask
-        task={task}
-        answers={test.answers[test.current] ?? []}
-        first={test.current === 0}
-        last={test.current === tasks.length - 1}
-        onAnswer={onAnswer}
-        onPrev={() => go(variantId, test.current - 1)}
-        onNext={() => go(variantId, test.current + 1)}
-      />
-    </div>
+      <ExamBar {...rail} />
+      <div className="flex items-start gap-14">
+        <RailPanel label={t("tasks")}>
+          <ExamRail {...rail} />
+        </RailPanel>
+        <ExamTask
+          task={task}
+          answers={test.answers[test.current] ?? []}
+          first={test.current === 0}
+          last={test.current === tasks.length - 1}
+          onAnswer={onAnswer}
+          onPrev={() => go(variantId, test.current - 1)}
+          onNext={() => go(variantId, test.current + 1)}
+        />
+      </div>
+    </>
   );
 }

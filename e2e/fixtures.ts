@@ -96,7 +96,7 @@ export async function answer(page: Page, value: string) {
 }
 
 export async function finish(page: Page) {
-  await page.getByRole("button", { name: "Završi test" }).click();
+  await page.getByRole("button", { name: /^Završi( test)?$/ }).click();
   await page
     .getByRole("alertdialog")
     .getByRole("button", { name: "Završi test" })
