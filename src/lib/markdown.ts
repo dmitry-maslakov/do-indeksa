@@ -5,17 +5,25 @@ import rehypeStringify from "rehype-stringify";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { unified } from "unified";
+import { type PluggableList, unified } from "unified";
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkMath)
-  .use(remarkRehype)
-  .use(rehypeKatex, { strict: "error" })
-  .use(rehypeStringify);
+export const markdown = (plugins: PluggableList = []) =>
+  unified()
+    .use(remarkParse)
+    .use(remarkMath)
+    .use(plugins)
+    .use(remarkRehype)
+    .use(rehypeKatex, { strict: "error" })
+    .use(rehypeStringify);
 
-export async function renderMarkdown(source: string, origin: string) {
-  const file = await processor.process(source);
+const processor = markdown();
+
+export async function renderMarkdown(
+  source: string,
+  origin: string,
+  renderer = processor,
+) {
+  const file = await renderer.process(source);
   const [problem] = file.messages;
   if (problem) throw new Error(`${origin}: ${problem.reason}`);
   return String(file);
@@ -53,14 +61,18 @@ export function excerpt(source: string) {
   });
 }
 
-export function preview(source: string) {
-  return processor
+const flat = (source: string, math: (value: string) => string) =>
+  processor
     .parse(source)
-    .children.map((node) => flatten(node, (value) => `$${value}$`))
+    .children.map((node) => flatten(node, math))
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
-}
+
+export const preview = (source: string) =>
+  flat(source, (value) => `$${value}$`);
+
+export const plain = (source: string) => flat(source, (value) => value);
 
 const sentences = new Intl.Segmenter("sr", { granularity: "sentence" });
 
