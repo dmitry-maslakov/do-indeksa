@@ -1,15 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="210" viewBox="0 0 300 210">
-<title>Grafici funkcija y = 2ˣ i y = (½)ˣ</title>
-<g stroke="#c8c8c2" stroke-width="1.2"><line x1="8" y1="186" x2="292" y2="186"/><line x1="150" y1="6" x2="150" y2="202"/></g>
-<g font-family="system-ui, sans-serif" font-size="11" fill="#8a8a90"><text x="70" y="202" text-anchor="middle">−2</text><text x="110" y="202" text-anchor="middle">−1</text><text x="190" y="202" text-anchor="middle">1</text><text x="230" y="202" text-anchor="middle">2</text></g>
-<g fill="none" stroke-width="2.4" stroke-linecap="round">
-<path stroke="#3f37a8" d="M14,184.1 L18,184.0 L22,183.8 L26,183.7 L30,183.5 L34,183.3 L38,183.1 L42,182.9 L46,182.7 L50,182.5 L54,182.2 L58,181.9 L62,181.6 L66,181.3 L70,181.0 L74,180.6 L78,180.3 L82,179.8 L86,179.4 L90,178.9 L94,178.4 L98,177.9 L102,177.3 L106,176.7 L110,176.0 L114,175.3 L118,174.5 L122,173.7 L126,172.8 L130,171.9 L134,170.8 L138,169.8 L142,168.6 L146,167.3 L150,166.0 L154,164.6 L158,163.0 L162,161.4 L166,159.6 L170,157.7 L174,155.7 L178,153.5 L182,151.2 L186,148.7 L190,146.0 L194,143.1 L198,140.1 L202,136.8 L206,133.2 L210,129.4 L214,125.4 L218,121.0 L222,116.4 L226,111.4 L230,106.0 L234,100.3 L238,94.1 L242,87.5 L246,80.4 L250,72.9 L254,64.7 L258,56.0 L262,46.7 L266,36.7 L270,26.0 L274,14.5"/>
-<path stroke="#c42b31" stroke-dasharray="6 5" d="M26,14.5 L30,26.0 L34,36.7 L38,46.7 L42,56.0 L46,64.7 L50,72.9 L54,80.4 L58,87.5 L62,94.1 L66,100.3 L70,106.0 L74,111.4 L78,116.4 L82,121.0 L86,125.4 L90,129.4 L94,133.2 L98,136.8 L102,140.1 L106,143.1 L110,146.0 L114,148.7 L118,151.2 L122,153.5 L126,155.7 L130,157.7 L134,159.6 L138,161.4 L142,163.0 L146,164.6 L150,166.0 L154,167.3 L158,168.6 L162,169.8 L166,170.8 L170,171.9 L174,172.8 L178,173.7 L182,174.5 L186,175.3 L190,176.0 L194,176.7 L198,177.3 L202,177.9 L206,178.4 L210,178.9 L214,179.4 L218,179.8 L222,180.3 L226,180.6 L230,181.0 L234,181.3 L238,181.6 L242,181.9 L246,182.2 L250,182.5 L254,182.7 L258,182.9 L262,183.1 L266,183.3 L270,183.5 L274,183.7 L278,183.8 L282,184.0 L286,184.1"/>
-</g>
-<circle cx="150" cy="166" r="4" fill="#111418"/>
-<text x="158" y="182" font-family="system-ui, sans-serif" font-size="12" fill="#111418">(0, 1)</text>
-<g font-family="KaTeX_Main, 'Times New Roman', serif" font-size="14" font-style="italic">
-<text x="242" y="56" text-anchor="end" fill="#3f37a8">y = 2ˣ</text>
-<text x="62" y="56" fill="#c42b31">y = (½)ˣ</text>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120" viewBox="0 0 200 120">
+<title>Primer grafika</title>
+<path d="M10 100 H190 M100 10 V110" stroke="#c8c8c2"/>
+<path d="M10 98 Q130 96 190 12" fill="none" stroke="#3f37a8" stroke-width="2"/>
 </svg>
