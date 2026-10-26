@@ -70,6 +70,9 @@ export function RailHeading({ children }: { children: ReactNode }) {
   );
 }
 
+const row =
+  "flex w-full gap-2 rounded-lg px-2 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current]:bg-card aria-[current]:font-semibold aria-[current]:shadow-current group-data-[variant=sheet]/rail:aria-[current]:bg-muted";
+
 export function RailLink({
   current,
   className,
@@ -78,10 +81,22 @@ export function RailLink({
   return (
     <Link
       aria-current={current ? "page" : undefined}
-      className={cn(
-        "flex w-full gap-2 rounded-lg px-2 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-card aria-[current=page]:font-semibold aria-[current=page]:shadow-current group-data-[variant=sheet]/rail:aria-[current=page]:bg-muted",
-        className,
-      )}
+      className={cn(row, className)}
+      {...props}
+    />
+  );
+}
+
+export function RailButton({
+  current,
+  className,
+  ...props
+}: ComponentProps<"button"> & { current?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-current={current ? "step" : undefined}
+      className={cn(row, className)}
       {...props}
     />
   );
