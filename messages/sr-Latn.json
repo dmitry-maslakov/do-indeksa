@@ -9,7 +9,15 @@
     "variantsDescription": "Probni prijemni iz matematike za FTN u Novom Sadu: testovi po formatu prijemnog i naši testovi, sa merenjem vremena kao na ispitu.",
     "task": "{topic}: {headline}",
     "launchTitle": "Do indeksa — priprema za prijemni iz matematike za FTN",
-    "launchDescription": "Besplatna priprema za prijemni ispit za maturante koji planiraju upis na fakultete u Srbiji. Počinjemo matematikom za FTN u Novom Sadu: pravi prijemni sa našim rešenjima, probni testovi i zadaci sa nagoveštajima."
+    "launchDescription": "Besplatna priprema za prijemni ispit za maturante koji planiraju upis na fakultete u Srbiji. Počinjemo matematikom za FTN u Novom Sadu: pravi prijemni sa našim rešenjima, probni testovi i zadaci sa nagoveštajima.",
+    "theoryTitle": "Teorija za prijemni iz matematike na FTN-u",
+    "theoryDescription": "Teorija za prijemni ispit iz matematike na FTN-u po temama: šta treba znati, formule i metodi rešavanja sa primerima.",
+    "theoryTopic": "{topic}: teorija",
+    "theoryTopicDescription": "{topic} za prijemni iz matematike: {sections}. Formule, primeri i česte greške.",
+    "theoryMethods": "{topic}: metodi rešavanja",
+    "theoryMethodsDescription": "Metodi rešavanja za temu {topic}: {methods}.",
+    "theoryMethod": "{method} · {topic}",
+    "theoryMethodDescription": "Kad u jednačini vidiš {when}: postupak, primer i česta greška."
   },
   "NotFound": {
     "title": "Stranica nije pronađena",
@@ -332,5 +340,20 @@
     "title": "Priprema za prijemni iz matematike",
     "lead": "Besplatno, za maturante koji upisuju fakultete u Srbiji.",
     "date": "Uskoro · novembar 2026"
+  },
+  "Theory": {
+    "title": "Teorija",
+    "lead": "Šta treba znati za prijemni i kako se rešavaju tipovi zadataka, po temama.",
+    "counts": "{sections, plural, one {# tema} few {# teme} other {# tema}} · {methods, plural, one {# metod} few {# metoda} other {# metoda}}",
+    "position": "{number, number}. zadatak na prijemnom",
+    "topic": "Tema",
+    "theory": "Teorija",
+    "methods": "Metodi",
+    "methodsCount": "Metodi · {count, number}",
+    "when": "Kad u jednačini vidiš <hint></hint>",
+    "whenShort": "Kad vidiš: <hint></hint>",
+    "zapamti": "Zapamti",
+    "primer": "Primer",
+    "greska": "Česta greška"
   }
 }

@@ -40,6 +40,10 @@ const routes = [
   "/stats",
   "/privacy",
   "/terms",
+  "/theory",
+  "/theory/exponential-equations",
+  "/theory/exponential-equations/methods",
+  "/theory/exponential-equations/methods/substitution",
 ];
 
 async function fitsPhone(

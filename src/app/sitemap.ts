@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { contentVariants } from "@/features/exam/variants";
 import { launchPages } from "@/features/launch/launch";
 import { tasks } from "@/features/tasks/tasks";
+import { theories, theoryMethods } from "@/features/theory/theory";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -19,6 +20,12 @@ const pages = [
   "/privacy",
   "/terms",
   ...contentVariants.map((v) => `/variants/${v.id}`),
+  "/theory",
+  ...theories.flatMap((t) => [
+    `/theory/${t.topic}`,
+    `/theory/${t.topic}/methods`,
+  ]),
+  ...theoryMethods.map((m) => `/theory/${m.topic}/methods/${m.slug}`),
 ];
 
 const taskPages = chunk(

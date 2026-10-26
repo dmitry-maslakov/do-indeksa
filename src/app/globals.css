@@ -49,6 +49,7 @@
   --color-lime: var(--lime);
   --color-lime-strong: var(--lime-strong);
   --color-lime-text: var(--lime-text);
+  --color-lime-tint: var(--lime-tint);
   --color-tone-blue: var(--tone-blue);
   --color-tone-pink: var(--tone-pink);
   --color-tone-orange: var(--tone-orange);
@@ -151,11 +152,17 @@
   --lime: #d4f56e;
   --lime-strong: #c6ec4f;
   --lime-text: #4a5a17;
+  --lime-tint: #f3fad8;
   --tone-blue: #9ab8ff;
   --tone-pink: #ffb3df;
   --tone-orange: #ffb882;
   --tone-cyan: #8fe0f3;
   --tone-yellow: #ffe27a;
+  --tone-blue-tint: #edf2ff;
+  --tone-pink-tint: #ffedf6;
+  --tone-orange-tint: #fff0e3;
+  --tone-cyan-tint: #e5f7fb;
+  --tone-yellow-tint: #fff7d9;
   --exam: #c3b4ff;
   --nav-bottom: 4rem;
 }
@@ -232,6 +239,45 @@
 }
 
 @layer components {
+  .theory {
+    @apply text-pretty leading-[1.65] md:text-[17px];
+    counter-reset: section;
+    & > * + * {
+      @apply mt-3.5;
+    }
+    & > h2 {
+      @apply clear-both mt-10 flex scroll-mt-6 items-center gap-3 font-semibold text-[22px] leading-tight tracking-[-0.02em];
+    }
+    &[data-variant="method"] > :where(h2, [data-block="greska"]) {
+      @apply mt-7.5;
+    }
+    & > h2:first-child {
+      @apply mt-0;
+    }
+    &[data-variant="topic"] > h2::before {
+      @apply flex size-7.5 shrink-0 items-center justify-center rounded-full bg-(--tone) font-bold text-sm tracking-normal;
+      counter-increment: section;
+      content: counter(section);
+    }
+    & ol > li {
+      @apply relative min-h-7.5 pb-3.5 pl-11;
+    }
+    & ol > li::before {
+      @apply absolute top-0 left-0 flex size-7.5 items-center justify-center rounded-full bg-(--tone) font-bold text-sm leading-none;
+      content: counter(list-item);
+    }
+    & ol > li:not(:last-child)::after {
+      @apply absolute top-8.5 bottom-0 left-3.5 w-0.5 bg-(--tint);
+      content: "";
+    }
+    & > p:has(> img) {
+      @apply w-fit rounded-[20px] p-2.5 ring-[1.5px] ring-border ring-inset md:float-right md:mb-4 md:ml-7;
+    }
+    & .katex-display {
+      @apply my-3 overflow-x-auto overflow-y-hidden py-1;
+    }
+  }
+
   math-field {
     font-size: 1.125rem;
     &::part(menu-toggle),
