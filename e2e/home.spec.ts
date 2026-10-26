@@ -74,7 +74,6 @@ test("Počni opens the suggested topic", async ({ page }) => {
 
 test("the home page doesn't show an unfinished test", async ({ page }) => {
   await page.goto("/variants/set-eks-001");
-  await page.getByRole("button", { name: "Počni" }).click();
   await page.getByRole("timer").waitFor();
   await page.goto("/");
   await expect(page.getByText("Predlog za danas")).toBeVisible();

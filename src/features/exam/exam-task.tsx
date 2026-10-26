@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ interface ExamTaskProps {
   answers: string[];
   first: boolean;
   last: boolean;
+  onSwap?: () => void;
   onAnswer: (part: number, value: string) => void;
   onPrev: () => void;
   onNext: () => void;
@@ -23,6 +24,7 @@ export function ExamTask({
   answers,
   first,
   last,
+  onSwap,
   onAnswer,
   onPrev,
   onNext,
@@ -32,14 +34,24 @@ export function ExamTask({
   const ids = task.parts.map((_, i) => `answer-${task.id}-${i}`);
 
   return (
-    <article className="flex min-w-0 max-w-task flex-1 flex-col pt-4.5 md:pt-3.5">
-      <p className="text-[13px] text-subtle">
+    <article className="flex flex-col pt-4.5 md:pt-3.5">
+      <div className="flex min-h-5 items-center gap-1 text-[13px] text-subtle">
         {t("meta", {
           number: task.number,
           points: task.points,
           topic: task.topicName,
         })}
-      </p>
+        {onSwap && (
+          <button
+            type="button"
+            onClick={onSwap}
+            aria-label={t("swap", { number: task.number })}
+            className="-my-1.5 flex size-8 items-center justify-center rounded-lg outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <RefreshCwIcon className="size-3.5" />
+          </button>
+        )}
+      </div>
       <MathHtml
         html={task.statement}
         className="mt-3 overflow-x-auto text-task md:mt-5.5 md:text-xl md:leading-relaxed [&_strong]:font-semibold"
@@ -63,7 +75,7 @@ export function ExamTask({
           />
         ))}
       </div>
-      <p className="mt-3 text-[13px] text-subtle">{t("introAnswer")}</p>
+      <p className="mt-3 text-[13px] text-subtle">{t("answerHint")}</p>
       <div className="md:mt-8 md:flex md:items-center md:gap-6">
         <div className={phoneBar}>
           <Button

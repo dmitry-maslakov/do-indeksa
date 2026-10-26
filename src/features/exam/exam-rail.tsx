@@ -12,6 +12,7 @@ import type { ExamTask } from "./variants";
 
 interface ExamRailProps {
   test: LocalTest;
+  code?: string;
   tasks: ExamTask[];
   pending: boolean;
   onGo: (index: number) => void;
@@ -20,18 +21,27 @@ interface ExamRailProps {
 
 export function ExamRail({
   test,
+  code,
   tasks,
   pending,
   onGo,
   onFinish,
 }: ExamRailProps) {
   const t = useTranslations("Exam");
+  const variants = useTranslations("Variants");
   const done = answeredCount(test);
 
   return (
     <RailContent>
       <div className="flex flex-col gap-4.5 px-5 pb-3">
-        <span className="font-semibold">{test.title}</span>
+        <span className="flex flex-col gap-0.5">
+          <span className="font-semibold">{test.title}</span>
+          {code && (
+            <span className="text-subtle text-xs">
+              {variants("code", { code })}
+            </span>
+          )}
+        </span>
         <ExamTimer timing={test} />
       </div>
       <nav
