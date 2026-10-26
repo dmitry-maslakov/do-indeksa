@@ -113,6 +113,7 @@ async function TestReview({
         title={
           variant ? await variantTitle(variant, locale) : found.test.variantId
         }
+        original={variant?.original}
         finishedAt={found.test.finishedAt}
       />
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">

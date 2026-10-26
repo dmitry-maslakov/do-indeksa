@@ -31,10 +31,15 @@ async function storedTest(db: Client, profileId: string) {
 
 test("a guest reviews a finished test and finds it in history", {
   tag: "@responsive",
-}, async ({ page, errors }) => {
+}, async ({ page, context, errors }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await finishSet(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   const review = new URL(page.url()).pathname;
+  await page.getByRole("button", { name: "Podeli" }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
+    /\/variants\/set-eks-001$/,
+  );
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();

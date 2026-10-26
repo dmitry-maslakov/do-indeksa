@@ -165,6 +165,7 @@ function VariantTable({
           key={v.id}
           title={v.title}
           href={`/variants/${v.id}`}
+          original={v.original}
           test={tests.find((r) => r.variantId === v.id)}
           pending={pending}
         />

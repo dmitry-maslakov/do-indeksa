@@ -2,6 +2,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { VariantStrip } from "@/components/variant-strip";
+import { ShareButton } from "@/features/exam/share-button";
 import type { Review } from "@/features/review/review";
 import { Link } from "@/i18n/navigation";
 
@@ -9,6 +10,7 @@ interface ReviewSummaryProps {
   review: Review;
   variantId: string;
   title: string;
+  original?: string;
   finishedAt: Date;
 }
 
@@ -16,9 +18,11 @@ export function ReviewSummary({
   review,
   variantId,
   title,
+  original,
   finishedAt,
 }: ReviewSummaryProps) {
   const t = useTranslations("Review");
+  const variants = useTranslations("Variants");
   const format = useFormatter();
   const minutes = Math.round(review.spentMs / 60_000);
   const missed = [
@@ -61,7 +65,18 @@ export function ReviewSummary({
             </span>
           </p>
         </div>
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {original && (
+            <a
+              href={original}
+              target="_blank"
+              rel="noopener"
+              className="text-sm text-subtle underline underline-offset-3 hover:text-foreground"
+            >
+              {variants("original")}
+            </a>
+          )}
+          <ShareButton title={title} href={`/variants/${variantId}`} />
           <Button
             variant="ghost"
             render={<Link href={`/variants/${variantId}`} />}
