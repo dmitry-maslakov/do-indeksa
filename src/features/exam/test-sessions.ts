@@ -3,6 +3,7 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { cache } from "react";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { getTask } from "@/features/tasks/tasks";
+import { checkerVersion } from "@/lib/math";
 import { db } from "@/server/db";
 import { gradeTest } from "./grade";
 import type { TestDraft, Visit } from "./test-draft";
@@ -96,6 +97,7 @@ async function storeAttempts(
   sessions: ReturnType<typeof sessionsOf>,
   answers: string[][],
   now: number,
+  tz: string | undefined,
 ) {
   const graded = gradeTest(
     taskIds.map((taskId) => ({
@@ -115,11 +117,14 @@ async function storeAttempts(
             profileId,
             taskId: g.taskId,
             testSessionId,
+            kind: "mock",
+            tz,
             startedAt: new Date(now),
             lastSeenAt: new Date(now),
           })
           .returning({ id: taskSessions.id });
-    if (!session) continue;
+    const task = getTask(g.taskId);
+    if (!session || !task) continue;
     await tx.insert(attempts).values({
       profileId,
       taskId: g.taskId,
@@ -127,11 +132,18 @@ async function storeAttempts(
       answers: g.answers,
       outcomes: g.outcomes,
       correct: g.correct,
+      difficulty: task.difficulty,
+      keyRev: task.keyRev,
+      checker: checkerVersion,
     });
   }
 }
 
-export async function finishTest(profileId: string, test: TestInput) {
+export async function finishTest(
+  profileId: string,
+  test: TestInput,
+  tz: string | undefined,
+) {
   const variant = variantOf(test.variantId);
   const now = Date.now();
   await db.transaction(async (tx) => {
@@ -165,6 +177,8 @@ export async function finishTest(profileId: string, test: TestInput) {
             profileId,
             taskId: s.taskId,
             testSessionId: test.id,
+            kind: "mock" as const,
+            tz,
             startedAt: new Date(s.start),
             lastSeenAt: new Date(s.end),
           })),
@@ -179,6 +193,7 @@ export async function finishTest(profileId: string, test: TestInput) {
       sessions,
       test.draft.answers,
       now,
+      tz,
     );
   });
 }

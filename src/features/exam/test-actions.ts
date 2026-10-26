@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
+import { timeZoneSchema } from "@/lib/dates";
 import { actionClient } from "@/server/action-client";
 import { testDraft } from "./test-draft";
 import { finishTest, saveDraft } from "./test-sessions";
@@ -21,8 +22,8 @@ export const saveTest = actionClient
   );
 
 export const submitTest = actionClient
-  .inputSchema(testInput)
-  .action(async ({ parsedInput, ctx: { profileId } }) => {
-    await finishTest(profileId, parsedInput);
+  .inputSchema(testInput.extend({ tz: timeZoneSchema }))
+  .action(async ({ parsedInput: { tz, ...test }, ctx: { profileId } }) => {
+    await finishTest(profileId, test, tz);
     refresh();
   });

@@ -1,6 +1,6 @@
 import "server-only";
 import { attempts } from "@/db/schema";
-import { gradeParts } from "@/lib/math";
+import { checkerVersion, gradeParts } from "@/lib/math";
 import { isRight } from "@/lib/part-outcome";
 import { db } from "@/server/db";
 import { liveSession } from "./sessions";
@@ -10,11 +10,12 @@ interface Answer {
   taskId: string;
   answers: string[];
   sessionId?: string;
+  clientId: string;
 }
 
 export async function submitAnswer(
   profileId: string,
-  { taskId, answers, sessionId }: Answer,
+  { taskId, answers, sessionId, clientId }: Answer,
 ) {
   const task = getTask(taskId);
   if (!task) throw new Error(`unknown task ${taskId}`);
@@ -27,14 +28,23 @@ export async function submitAnswer(
 
   const session = await db.transaction(async (tx) => {
     const id = await liveSession(tx, profileId, taskId, sessionId);
-    await tx.insert(attempts).values({
-      profileId,
-      taskId,
-      sessionId: id,
-      answers,
-      outcomes,
-      correct,
-    });
+    await tx
+      .insert(attempts)
+      .values({
+        profileId,
+        taskId,
+        sessionId: id,
+        clientId,
+        answers,
+        outcomes,
+        correct,
+        difficulty: task.difficulty,
+        keyRev: task.keyRev,
+        checker: checkerVersion,
+      })
+      .onConflictDoNothing({
+        target: [attempts.profileId, attempts.clientId],
+      });
     return id;
   });
   return { outcomes, correct, sessionId: session };

@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { useRouter } from "@/i18n/navigation";
@@ -14,6 +14,7 @@ import { checkAnswer } from "./answer-action";
 import { AnswerField } from "./answer-field";
 import type { AnswerState } from "./answer-state";
 import type { PartLabel } from "./parts";
+import { saveSkip } from "./skip-action";
 import { useTaskSession } from "./task-session";
 
 interface AnswerFormProps {
@@ -95,9 +96,11 @@ export function AnswerForm({
   const errorText = useErrorText();
   const help = useTaskSession();
   const [edited, setEdited] = useState(false);
+  const answerId = useRef<string | null>(null);
   const [values, setValues] = useState(() => parts.map(() => ""));
   const onChange = useCallback((index: number, value: string) => {
     setEdited(true);
+    answerId.current = null;
     setValues((all) => all.with(index, value));
   }, []);
 
@@ -114,6 +117,8 @@ export function AnswerForm({
     <form
       action={(form) => {
         setEdited(false);
+        answerId.current ??= crypto.randomUUID();
+        form.set("clientId", answerId.current);
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
           return (await executeAsync(form))?.data?.sessionId;
@@ -158,6 +163,12 @@ export function AnswerForm({
           go={Boolean(checked?.correct) || help.solution}
           next={next ?? fallback}
           skip={next}
+          onSkip={() =>
+            help.track(
+              async (sessionId) =>
+                (await saveSkip({ taskId, sessionId }))?.data,
+            )
+          }
           checked={Boolean(checked)}
           disabled={
             isPending ||

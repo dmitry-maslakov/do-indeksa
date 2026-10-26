@@ -90,7 +90,7 @@ const profileCookieOptions = {
   path: "/",
 } as const;
 
-const findProfileId = cache(async () => {
+export const findProfileId = cache(async () => {
   const session = await getSession();
   if (session) return profileOf(session.user.id);
   const token = (await cookies()).get(profileCookie)?.value;

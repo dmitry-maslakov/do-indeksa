@@ -8,6 +8,7 @@ interface ActionBarProps {
   go: boolean;
   next: string;
   skip?: string;
+  onSkip: () => void;
   checked: boolean;
   disabled: boolean;
 }
@@ -19,11 +20,20 @@ const primary = cn(
   "order-2 flex-1 md:order-1 md:flex-none",
 );
 
-function Skip({ href, checked }: { href: string; checked: boolean }) {
+function Skip({
+  href,
+  checked,
+  onClick,
+}: {
+  href: string;
+  checked: boolean;
+  onClick: () => void;
+}) {
   const t = useTranslations("Solve");
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         buttonVariants({ variant: "ghost", size: "pill" }),
         "order-1 px-4 md:order-2",
@@ -40,6 +50,7 @@ export function ActionBar({
   go,
   next,
   skip,
+  onSkip,
   checked,
   disabled,
 }: ActionBarProps) {
@@ -57,7 +68,7 @@ export function ActionBar({
           {t("check")}
         </Button>
       )}
-      {!go && skip && <Skip href={skip} checked={checked} />}
+      {!go && skip && <Skip href={skip} checked={checked} onClick={onSkip} />}
     </div>
   );
 }

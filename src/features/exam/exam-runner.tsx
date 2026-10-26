@@ -8,6 +8,7 @@ import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
 import { reviewHref } from "@/features/review/review";
 import { getPathname, useRouter } from "@/i18n/navigation";
+import { localTimeZone } from "@/lib/dates";
 import { useErrorText } from "@/lib/use-error-text";
 import type { ComposeMode } from "./compose";
 import { ExamBar } from "./exam-bar";
@@ -140,7 +141,8 @@ export function ExamRunner({
     tasks,
     pending,
     onGo: (i: number) => go(variantId, i),
-    onFinish: () => submit(payload(variantId, test)),
+    onFinish: () =>
+      submit({ ...payload(variantId, test), tz: localTimeZone() }),
   };
 
   return (

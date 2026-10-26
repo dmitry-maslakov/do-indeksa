@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { localTimeZone } from "@/lib/dates";
 import { keepTaskSession } from "./session-action";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
@@ -47,7 +48,8 @@ export function TaskSessionProvider({
       if (document.visibilityState !== "visible") return;
       track(
         async (sessionId) =>
-          (await keepTaskSession({ taskId, sessionId }))?.data,
+          (await keepTaskSession({ taskId, sessionId, tz: localTimeZone() }))
+            ?.data,
       );
     };
     keep();
