@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
+import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue";
 import { QueueLink } from "./rail-row";
 import { centerCurrent } from "./scroll";
@@ -30,9 +31,7 @@ export function RecList({ queue, current, href }: RecListProps) {
       {sections.map((key) =>
         queue[key].length ? (
           <Fragment key={key}>
-            <h3 className="sticky top-0 z-1 bg-muted px-2 group-data-[variant=sheet]/rail:bg-card pt-3 pb-1 font-semibold text-subtle text-xs">
-              {t(key)}
-            </h3>
+            <RailHeading>{t(key)}</RailHeading>
             {queue[key].map((task) => (
               <QueueLink
                 key={task.id}
