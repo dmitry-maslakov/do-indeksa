@@ -30,7 +30,7 @@ e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both o
 
 ## Layout
 
-- `content/` sample topics, exam, tasks and tests. Production content is built in from a separate bank via `CONTENT_DIR`.
+- `content/` sample topics, exam, tasks and tests. Production content is built in from a separate bank via `CONTENT_DIR`; theory is always read from `content/theory`: `<topic>/index.md` with `##` sections and `<topic>/methods/<slug>.md`, with the blocks `:::zapamti`, `:::primer`, `:::greska` and `:::formule`.
 - `messages/` UI strings for `sr-Latn`, `ru` and `en`.
 - `src/app` routes; UI used by one route sits in its `_components`.
 - `src/features/<feature>` everything one feature owns: server-only services, `*-action.ts` server actions, components, `use-*.ts` hooks and its constants.

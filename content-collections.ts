@@ -1,7 +1,11 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
+import { uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { splitLabel } from "./src/features/tasks/parts";
 import { tones, topicIconSchema } from "./src/features/tasks/topic-look";
+import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
 import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
 import { parseMath } from "./src/lib/math";
@@ -174,6 +178,74 @@ const variants = defineCollection({
   },
 });
 
+const theoryRoot = "content/theory";
+
+async function inline(url: string, directory: string, origin: string) {
+  if (!url.endsWith(".svg"))
+    throw new Error(`${origin}: "${url}" is not an svg`);
+  const svg = await readFile(path.join(theoryRoot, directory, url));
+  return [url, `data:image/svg+xml;base64,${svg.toString("base64")}`] as const;
+}
+
+const theories = defineCollection({
+  name: "theories",
+  directory: theoryRoot,
+  include: "*/index.md",
+  schema: z.object({ content: z.string().min(1) }),
+  transform: async (theory, { documents, cache }) => {
+    const { content, _meta } = theory;
+    const origin = _meta.filePath;
+    const topic = _meta.directory;
+    if (!documents(topics).some((t) => t._meta.path === topic)) {
+      throw new Error(`${origin}: unknown topic "${topic}"`);
+    }
+    await cache(content, (source) =>
+      renderMarkdown(source, origin, theoryMarkdown).then(() => true),
+    );
+    const parts = sections(content);
+    if (uniqBy(parts, (p) => p.id).length !== parts.length) {
+      throw new Error(`${origin}: section titles must differ`);
+    }
+    const files = await Promise.all(
+      images(content).map((url) => inline(url, topic, origin)),
+    );
+    return {
+      ...theory,
+      topic,
+      sections: parts,
+      images: Object.fromEntries(files),
+    };
+  },
+});
+
+const methods = defineCollection({
+  name: "methods",
+  directory: theoryRoot,
+  include: "*/methods/*.md",
+  schema: z.object({
+    name: z.string().min(1),
+    when: z.string().min(1),
+    order: z.number().int(),
+    content: z.string().min(1),
+  }),
+  transform: async (method, { documents, cache }) => {
+    const origin = method._meta.filePath;
+    const [topic = "", , slug = ""] = method._meta.path.split("/");
+    if (!documents(theories).some((t) => t._meta.directory === topic)) {
+      throw new Error(`${origin}: no theory for topic "${topic}"`);
+    }
+    await cache([method.name, method.when], (sources) =>
+      Promise.all(sources.map((s) => renderMarkdown(s, origin))).then(
+        () => true,
+      ),
+    );
+    await cache(method.content, (source) =>
+      renderMarkdown(source, origin, theoryMarkdown).then(() => true),
+    );
+    return { ...method, topic, slug };
+  },
+});
+
 export default defineConfig({
-  content: [topics, tasks, taskIds, exams, variants],
+  content: [topics, tasks, taskIds, exams, variants, theories, methods],
 });
