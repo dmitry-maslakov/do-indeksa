@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { FocusMode } from "@/components/focus-mode";
 import { MathHtml } from "@/components/math-html";
+import { RailPanel } from "@/components/rail";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue } from "@/features/bank/queue";
 import { examSource } from "@/features/bank/source";
@@ -82,12 +83,9 @@ export default async function SolvePage({
       <h1 className="sr-only">{bank("title")}</h1>
       <PhoneBar key={id} title={topic} look={topicLook(task.topic)} {...rail} />
       <div className="flex items-start gap-14">
-        <aside
-          aria-label={bank("all")}
-          className="sticky top-3 hidden h-rail w-80 shrink-0 flex-col overflow-hidden rounded-3xl bg-muted pt-4 md:flex"
-        >
+        <RailPanel label={bank("all")}>
           <Rail {...rail} />
-        </aside>
+        </RailPanel>
         <TaskSessionProvider key={id} taskId={id}>
           <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
             <div className="flex min-h-10 items-start justify-between gap-4 md:items-center">

@@ -1,13 +1,11 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
+import { RailLink } from "@/components/rail";
 import type { QueueRow } from "@/features/bank/queue";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { Link } from "@/i18n/navigation";
 import { ExamMark } from "./task-meta";
 
-const row =
-  "flex w-full gap-2 rounded-lg px-2 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-card aria-[current=page]:font-semibold group-data-[variant=sheet]/rail:aria-[current=page]:bg-muted aria-[current=page]:shadow-current";
 const preview = "min-w-0 overflow-hidden whitespace-nowrap mask-r-from-85%";
 
 interface QueueLinkProps {
@@ -20,11 +18,10 @@ interface QueueLinkProps {
 export function QueueLink({ task, href, current, next }: QueueLinkProps) {
   const t = useTranslations("Solve");
   return (
-    <Link
+    <RailLink
       href={href}
-      aria-current={current ? "page" : undefined}
+      current={current}
       className={cn(
-        row,
         "min-h-12 items-start py-2 [&>svg]:mt-1",
         next && "opacity-60 hover:opacity-100",
       )}
@@ -42,6 +39,6 @@ export function QueueLink({ task, href, current, next }: QueueLinkProps) {
           {task.year && <ExamMark year={task.year} />}
         </span>
       </span>
-    </Link>
+    </RailLink>
   );
 }
