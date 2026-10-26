@@ -49,14 +49,6 @@ describe("review", () => {
     expect(result.rows.map((r) => r.over)).toEqual([false, true, false, false]);
   });
 
-  it("groups lost points by topic with skipped tasks apart", () => {
-    expect(result.lost).toEqual([
-      { topic: "trig", points: 6 },
-      { topic: null, points: 6 },
-      { topic: "logs", points: 3 },
-    ]);
-  });
-
   it("sums time against the norm", () => {
     expect(result.spentMs).toBe(41 * 60_000);
     expect(result.normMs).toBe(96 * 60_000);

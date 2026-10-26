@@ -9,7 +9,6 @@ import { variantTitle } from "@/features/exam/variant-title";
 import { getVariant, tasksFor } from "@/features/exam/variants";
 import { getTest } from "@/features/progress/history";
 import { outcomesOf } from "@/features/review/outcomes";
-import { PracticeLinks } from "@/features/review/practice-links";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
@@ -30,7 +29,7 @@ interface ReviewProps {
 
 export default function ReviewPage({ params, searchParams }: ReviewProps) {
   return (
-    <main className="px-4 pb-9 md:px-9">
+    <main className="max-w-300 px-4 pb-10 md:px-10 md:pb-14">
       <Suspense fallback={<ReviewGhost />}>
         <ReviewView params={params} searchParams={searchParams} />
       </Suspense>
@@ -65,28 +64,26 @@ async function ReviewView({ params, searchParams }: ReviewProps) {
 
 function ReviewGhost() {
   return (
-    <div className="flex flex-col gap-6 pt-2.5">
-      <Card size="lg" className="gap-5">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-3">
-            <Skeleton className="h-3 w-64" />
-            <Skeleton className="h-12 w-40 rounded-xl" />
-          </div>
-          <Skeleton className="h-11 w-36 rounded-lg" />
+    <div className="flex flex-col gap-7 pt-2 md:pt-5">
+      <Skeleton className="h-3 w-64" />
+      <div className="grid gap-5.5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-end lg:gap-14">
+        <div className="flex flex-col gap-6">
+          <Skeleton className="h-16 w-48 rounded-xl" />
+          <Skeleton className="h-12 w-72 rounded-xl" />
         </div>
-        <Skeleton className="mb-5 h-3.5" />
-      </Card>
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-        <Card className="gap-5">
+        <Skeleton className="h-2.5" />
+      </div>
+      <div className="grid gap-10 pt-2 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="flex flex-col gap-5">
           {[1, 2, 3, 4, 5].map((n) => (
             <Skeleton key={n} className="h-3.5" />
           ))}
-        </Card>
-        <Card className="gap-4">
+        </div>
+        <div className="flex flex-col gap-4">
           <Skeleton className="h-4 w-36" />
           <Skeleton className="h-2.5" />
           <Skeleton className="h-2.5 w-2/3" />
-        </Card>
+        </div>
       </div>
     </div>
   );
@@ -106,7 +103,7 @@ async function TestReview({
   const variant = getVariant(found.test.variantId);
 
   return (
-    <div className="flex flex-col gap-6 pt-2.5">
+    <div className="flex flex-col gap-10 pt-2 md:gap-12 md:pt-5">
       <ReviewSummary
         review={result}
         variantId={found.test.variantId}
@@ -116,14 +113,14 @@ async function TestReview({
         original={variant?.original}
         finishedAt={found.test.finishedAt}
       />
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
         <ReviewRows
           review={result}
           tasks={tasks}
           outcomes={outcomesOf(found.attempts)}
           testSessionId={found.test.id}
         />
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-10">
           <LostPoints
             review={result}
             names={Object.fromEntries(
@@ -131,12 +128,6 @@ async function TestReview({
             )}
           />
           <TimeSpent review={result} />
-          <PracticeLinks
-            topics={result.lost.flatMap((l) => {
-              const task = tasks.find((x) => x.topic === l.topic);
-              return task ? { id: task.topic, name: task.topicName } : [];
-            })}
-          />
         </div>
       </div>
     </div>

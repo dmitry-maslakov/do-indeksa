@@ -10,11 +10,18 @@ async function finishSet(page: Page) {
 }
 
 async function expectAnswers(page: Page, errors: string[]) {
-  const row = page.locator("summary").filter({ hasText: "odgovor" });
+  await expect(page.getByText("od 6 bodova")).toBeVisible();
+  await expect(page.getByText("Tačno 0 od 1", { exact: false })).toBeVisible();
+  const row = page
+    .locator("details")
+    .filter({ hasText: "Eksponencijalne" })
+    .first();
+  await expect(row.locator("summary").first()).toContainText("0/6");
+  await row.locator("summary").first().click();
+  await expect(row).toContainText("odgovor");
   await expect(row).toContainText("tačno");
-  await row.click();
   await expect(
-    page.getByRole("button", { name: "Otvori zadatak" }),
+    row.getByRole("button", { name: "Otvori zadatak" }),
   ).toHaveAttribute("href", /\/bank\/eks-001$/);
   expect(errors).toEqual([]);
 }

@@ -6,7 +6,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPathname } from "@/i18n/navigation";
 
-export function ShareButton({ title, href }: { title: string; href: string }) {
+interface ShareButtonProps {
+  title: string;
+  href: string;
+  className?: string;
+}
+
+export function ShareButton({ title, href, className }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const [copied, setCopied] = useState(false);
@@ -26,7 +32,7 @@ export function ShareButton({ title, href }: { title: string; href: string }) {
   }
 
   return (
-    <Button variant="ghost" onClick={share}>
+    <Button variant="ghost" className={className} onClick={share}>
       {copied ? <CheckIcon /> : <Share2Icon />}
       {copied ? t("copied") : t("share")}
     </Button>
