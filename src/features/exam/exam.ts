@@ -1,4 +1,3 @@
-import { sumBy } from "es-toolkit";
 import "server-only";
 import { allExams } from "content-collections";
 
@@ -16,12 +15,6 @@ export const examOptions = allExams.map((e) => ({
 }));
 
 export const positions = exam.positions;
-
-export const maxPoints = sumBy(positions, (p) => p.points);
-
-const durationMinutes = exam.durationMinutes;
-
-export const durationHours = durationMinutes / 60;
 
 export const dailySize = exam.daily.size;
 

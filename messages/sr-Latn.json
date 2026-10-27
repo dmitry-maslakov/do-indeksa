@@ -135,7 +135,6 @@
     "review": "Pregled",
     "custom": "Sastavljeni test",
     "code": "Kod {code}",
-    "meta": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · {points, plural, one {# poen} few {# poena} other {# poena}}",
     "year": "Godina",
     "test": "Test",
     "attempt": "Pokušaj",

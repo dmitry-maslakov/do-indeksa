@@ -6,7 +6,7 @@ import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { durationHours, maxPoints, positions } from "@/features/exam/exam";
+import { positions } from "@/features/exam/exam";
 import { testPage } from "@/features/exam/test-feed";
 import {
   summarizeTests,
@@ -71,16 +71,7 @@ export default async function VariantsPage({
 
   return (
     <main className="flex flex-col gap-4 px-4 pt-4 pb-6 md:gap-5 md:px-10 md:pt-6 md:pb-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
-        <PageTitle>{t("title")}</PageTitle>
-        <span className="text-sm text-subtle">
-          {t("meta", {
-            tasks: positions.length,
-            hours: durationHours,
-            points: maxPoints,
-          })}
-        </span>
-      </div>
+      <PageTitle>{t("title")}</PageTitle>
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_--spacing(85)]">
         <section className="flex min-w-0 flex-col gap-3">
           <SearchTabs
