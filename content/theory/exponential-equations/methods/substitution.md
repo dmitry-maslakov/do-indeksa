@@ -9,6 +9,6 @@ order: 2
 1. Prvi korak.
 2. Drugi korak.
 
-:::greska
+:::mistake
 Kratak opis česte greške.
 :::

@@ -2,7 +2,7 @@
 
 Kratak uvodni tekst sa formulom $a^m \cdot a^n = a^{m+n}$.
 
-:::zapamti
+:::remember
 Kratka napomena uz formulu $a^0 = 1$.
 :::
 

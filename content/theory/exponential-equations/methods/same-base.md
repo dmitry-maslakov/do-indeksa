@@ -13,10 +13,10 @@ order: 1
 
 Kratak zadatak.
 
-:::primer
+:::example
 Kratko rešenje: $x = 1$.
 :::
 
-:::greska
+:::mistake
 Kratak opis česte greške.
 :::

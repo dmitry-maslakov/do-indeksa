@@ -7,8 +7,8 @@ const render = (source: string) =>
 
 describe("theory markdown", () => {
   it("marks known blocks", async () => {
-    expect(await render(":::zapamti\nTekst.\n:::")).toBe(
-      '<div data-block="zapamti"><p>Tekst.</p></div>',
+    expect(await render(":::remember\nTekst.\n:::")).toBe(
+      '<div data-block="remember"><p>Tekst.</p></div>',
     );
   });
 

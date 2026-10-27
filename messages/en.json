@@ -351,8 +351,8 @@
     "methodsCount": "Methods · {count, number}",
     "when": "When the equation has <hint></hint>",
     "whenShort": "When you see: <hint></hint>",
-    "zapamti": "Remember",
-    "primer": "Example",
-    "greska": "Common mistake"
+    "remember": "Remember",
+    "example": "Example",
+    "mistake": "Common mistake"
   }
 }

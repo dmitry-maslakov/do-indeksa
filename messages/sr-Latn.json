@@ -351,8 +351,8 @@
     "methodsCount": "Metodi · {count, number}",
     "when": "Kad u jednačini vidiš <hint></hint>",
     "whenShort": "Kad vidiš: <hint></hint>",
-    "zapamti": "Zapamti",
-    "primer": "Primer",
-    "greska": "Česta greška"
+    "remember": "Zapamti",
+    "example": "Primer",
+    "mistake": "Česta greška"
   }
 }
