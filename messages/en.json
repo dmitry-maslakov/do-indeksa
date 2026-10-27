@@ -135,7 +135,6 @@
     "review": "Review",
     "custom": "Custom test",
     "code": "Code {code}",
-    "meta": "{tasks, plural, one {# task} other {# tasks}} · {hours, plural, one {# hour} other {# hours}} · {points, plural, one {# point} other {# points}}",
     "year": "Year",
     "test": "Test",
     "attempt": "Attempt",

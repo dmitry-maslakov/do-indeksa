@@ -135,7 +135,6 @@
     "review": "Разбор",
     "custom": "Собранный вариант",
     "code": "Код {code}",
-    "meta": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {hours, plural, one {# час} few {# часа} other {# часов}} · {points, plural, one {# балл} few {# балла} other {# баллов}}",
     "year": "Год",
     "test": "Вариант",
     "attempt": "Попытка",

@@ -22,15 +22,7 @@ interface WeekCardProps extends WeeklyVariant {
   test?: TestSummary;
 }
 
-export function WeekCard({
-  id,
-  tasks,
-  topics,
-  hours,
-  points,
-  daysLeft,
-  test,
-}: WeekCardProps) {
+export function WeekCard({ id, topics, daysLeft, test }: WeekCardProps) {
   const home = useTranslations("Home");
   const t = useTranslations("Variants");
 
@@ -64,7 +56,7 @@ export function WeekCard({
       ) : (
         <>
           <p className="relative mt-1 text-xs">
-            {home("weeklyMeta", { tasks, hours, points, days: daysLeft })}
+            {t("weeklyNext", { days: daysLeft })}
           </p>
           <Chips
             chips={topics.map(({ topic }) => ({
