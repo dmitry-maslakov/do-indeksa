@@ -6,7 +6,7 @@ import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 import { markdown } from "@/lib/markdown";
 
-const blockNames = new Set(["zapamti", "primer", "greska", "formule"]);
+const blockNames = new Set(["remember", "example", "mistake", "formulas"]);
 
 const isSection = (node: RootContent): node is Heading =>
   node.type === "heading" && node.depth === 2;

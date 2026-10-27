@@ -351,8 +351,8 @@
     "methodsCount": "Методы · {count, number}",
     "when": "Когда в уравнении видишь <hint></hint>",
     "whenShort": "Когда видишь: <hint></hint>",
-    "zapamti": "Запомни",
-    "primer": "Пример",
-    "greska": "Частая ошибка"
+    "remember": "Запомни",
+    "example": "Пример",
+    "mistake": "Частая ошибка"
   }
 }

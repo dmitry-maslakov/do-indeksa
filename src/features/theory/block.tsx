@@ -2,7 +2,7 @@ import { LightbulbIcon, TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-const callouts = { zapamti: LightbulbIcon, greska: TriangleAlertIcon };
+const callouts = { remember: LightbulbIcon, mistake: TriangleAlertIcon };
 
 interface BlockProps {
   name: string;
@@ -13,7 +13,7 @@ interface BlockProps {
 export function Block({ name, tagged, children }: BlockProps) {
   const t = useTranslations("Theory");
 
-  if (name === "zapamti" || name === "greska") {
+  if (name === "remember" || name === "mistake") {
     const Icon = callouts[name];
     return (
       <div
@@ -34,12 +34,12 @@ export function Block({ name, tagged, children }: BlockProps) {
     );
   }
 
-  if (name === "primer") {
+  if (name === "example") {
     return (
       <div className="rounded-2xl px-4 py-3.5 ring-[1.5px] ring-border ring-inset [&_p+p]:mt-2">
         {tagged && (
           <strong className="mb-1.5 flex h-6.5 w-fit items-center rounded-full bg-muted px-2.5 font-semibold text-muted-foreground text-xs">
-            {t("primer")}
+            {t("example")}
           </strong>
         )}
         {children}
