@@ -1,6 +1,7 @@
 import { cn } from "cn";
 import { ArrowRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
@@ -14,6 +15,7 @@ interface ReviewSummaryProps {
   title: string;
   original?: string;
   finishedAt: Date;
+  children?: ReactNode;
 }
 
 const action = "h-12 rounded-xl px-6 text-base max-md:w-full";
@@ -31,6 +33,7 @@ export function ReviewSummary({
   title,
   original,
   finishedAt,
+  children,
 }: ReviewSummaryProps) {
   const t = useTranslations("Review");
   const variants = useTranslations("Variants");
@@ -147,6 +150,7 @@ export function ReviewSummary({
           </p>
         </div>
       </div>
+      {children}
     </section>
   );
 }

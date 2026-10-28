@@ -57,6 +57,12 @@
     "privacy": "Privatnost",
     "merged": "Napredak sa ovog uređaja je spojen sa nalogom."
   },
+  "SignInStrip": {
+    "label": "Sačuvaj napredak",
+    "save": "Sačuvaj",
+    "close": "Zatvori",
+    "result": "Rezultat testa je samo na ovom uređaju"
+  },
   "Bank": {
     "title": "Banka zadataka",
     "search": "Pretraga",

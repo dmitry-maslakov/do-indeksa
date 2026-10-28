@@ -29,6 +29,8 @@
   --color-subtle: var(--subtle);
   --color-untouched: var(--untouched);
   --color-data: var(--data);
+  --color-google-border: var(--google-border);
+  --color-google-text: var(--google-text);
   --color-data-soft: var(--data-soft);
   --color-data-tint: var(--data-tint);
   --color-error: var(--error);
@@ -85,6 +87,17 @@
     }
   }
 
+  --animate-sync: sync 3.6s ease-in-out 1s infinite both;
+
+  @keyframes sync {
+    from {
+      width: 0;
+    }
+    to {
+      width: 62%;
+    }
+  }
+
   --animate-rise: rise 20s linear infinite;
 
   @keyframes rise {
@@ -132,6 +145,8 @@
   --subtle: #8a8a90;
   --untouched: #ebebe7;
   --data: #3f37a8;
+  --google-border: #747775;
+  --google-text: #1f1f1f;
   --data-soft: #8a82e0;
   --data-tint: #efeefe;
   --error: #e0383e;

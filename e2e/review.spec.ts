@@ -55,6 +55,25 @@ test("a guest reviews a finished test and finds it in history", {
   await expect(page.locator(`main a[href$="${review}"]`)).toBeVisible();
 });
 
+test("a guest is offered to save a test result", {
+  tag: "@responsive",
+}, async ({ page, errors }) => {
+  await finishSet(page);
+  const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
+  await expect(strip).toContainText("Rezultat testa je samo na ovom uređaju");
+  await page.route("**/api/auth/sign-in/social", (route) =>
+    route.fulfill({ json: { redirect: false } }),
+  );
+  const signIn = page.waitForRequest("**/api/auth/sign-in/social");
+  await strip.getByRole("button", { name: "Sačuvaj" }).click();
+  expect((await signIn).postDataJSON()).toMatchObject({
+    additionalData: { from: "result" },
+  });
+  await strip.getByRole("button", { name: "Zatvori" }).click();
+  await expect(strip).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
 test("a signed-in user reviews a finished test", {
   tag: "@responsive",
 }, async ({ page, auth, errors }) => {
@@ -62,6 +81,9 @@ test("a signed-in user reviews a finished test", {
   await finishSet(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await expectAnswers(page, errors);
+  await expect(
+    page.getByRole("region", { name: "Sačuvaj napredak" }),
+  ).toHaveCount(0);
   expect(await storedTest(auth.db, profileId)).toEqual([
     { timed: true, overtime: false, visits: 1 },
   ]);

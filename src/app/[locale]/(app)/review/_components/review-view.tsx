@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getTest } from "@/features/tests/finished-tests";
 import { Link } from "@/i18n/navigation";
+import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
 import { TestReview } from "./test-review";
 
@@ -14,6 +15,7 @@ export async function ReviewView({
 }) {
   const t = await getTranslations("Review");
   const found = await getTest(await getProfileId(), (await params)?.code);
+  const session = await getSession();
 
   return (
     <>
@@ -28,7 +30,7 @@ export async function ReviewView({
           </Button>
         </Card>
       ) : (
-        <TestReview found={found} />
+        <TestReview found={found} guest={!session} />
       )}
     </>
   );
