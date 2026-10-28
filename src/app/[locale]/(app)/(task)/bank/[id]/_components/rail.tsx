@@ -33,6 +33,7 @@ export function Rail({
     <RailContent variant={variant}>
       <div className="flex flex-col gap-4 px-4 pb-4">
         <LinkTabs
+          label={bank("title")}
           variant="fill"
           items={[
             { href: href(current), label: bank("recommended"), active: true },

@@ -44,6 +44,7 @@ export function TheoryRail({
           ))}
         </RailSelect>
         <LinkTabs
+          label={t("title")}
           variant="fill"
           scroll
           items={[

@@ -26,6 +26,7 @@ export function PhoneTabs({ topic, methods, active }: PhoneTabsProps) {
   return (
     <div className="md:hidden">
       <LinkTabs
+        label={t("title")}
         variant="fill"
         items={[
           {

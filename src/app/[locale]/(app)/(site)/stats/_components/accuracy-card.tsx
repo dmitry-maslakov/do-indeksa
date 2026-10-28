@@ -18,6 +18,7 @@ export function AccuracyCard({ rows, pending }: AccuracyCardProps) {
       <CardHeader>
         <CardTitle>{t("weaker")}</CardTitle>
         <SearchTabs
+          label={t("weaker")}
           variant="segmented"
           param="by"
           items={[
