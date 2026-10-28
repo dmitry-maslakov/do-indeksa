@@ -1,6 +1,7 @@
 import { sumBy } from "es-toolkit";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { Slot } from "@/features/variants/variants";
+import { minuteMs } from "@/lib/dates";
 import { type Segment, segmentOf } from "@/lib/strip";
 
 export interface ReviewAttempt {
@@ -59,7 +60,7 @@ export function review<T extends Slot, A extends ReviewAttempt>(
       ...task,
       attempt,
       earned: attempt ? creditOf(attempt.outcomes, task.points) : 0,
-      over: (attempt?.durationMs ?? 0) > task.minutes * 60_000,
+      over: (attempt?.durationMs ?? 0) > task.minutes * minuteMs,
       segment: segmentOf(attempt?.outcomes.map(isRight)),
     };
   });
@@ -70,6 +71,6 @@ export function review<T extends Slot, A extends ReviewAttempt>(
     max: sumBy(rows, (r) => r.points),
     correct: rows.filter((r) => r.attempt?.correct).length,
     spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
-    normMs: sumBy(rows, (r) => r.minutes * 60_000),
+    normMs: sumBy(rows, (r) => r.minutes * minuteMs),
   };
 }

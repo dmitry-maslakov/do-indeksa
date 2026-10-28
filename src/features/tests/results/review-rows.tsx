@@ -14,6 +14,7 @@ import type {
 } from "@/features/tests/review";
 import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
+import { toMinutes } from "@/lib/dates";
 import type { Segment } from "@/lib/strip";
 
 interface ReviewRowsProps {
@@ -62,7 +63,7 @@ interface RowProps {
 function Row({ row, outcome, testSessionId }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
-  const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
+  const minutes = toMinutes(row.attempt?.durationMs ?? 0);
 
   return (
     <li className="border-b">

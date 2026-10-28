@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/features/tests/results/share-button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
+import { toMinutes } from "@/lib/dates";
 import type { Segment } from "@/lib/strip";
 
 interface ReviewSummaryProps {
@@ -34,7 +35,7 @@ export function ReviewSummary({
   const t = useTranslations("Review");
   const variants = useTranslations("Variants");
   const format = useFormatter();
-  const minutes = Math.round(review.spentMs / 60_000);
+  const minutes = toMinutes(review.spentMs);
   const missed = [
     ...new Set(
       review.rows.filter((r) => r.earned < r.points).map((r) => r.topic),

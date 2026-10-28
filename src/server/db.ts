@@ -2,6 +2,7 @@ import "server-only";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "@/db/schema";
+import { secondMs } from "@/lib/dates";
 import { env } from "./env";
 import { reportServerError } from "./report";
 
@@ -12,9 +13,9 @@ const pool =
   new Pool({
     connectionString: env.DATABASE_URL,
     max: 5,
-    connectionTimeoutMillis: 5_000,
-    idleTimeoutMillis: 30_000,
-    query_timeout: 10_000,
+    connectionTimeoutMillis: 5 * secondMs,
+    idleTimeoutMillis: 30 * secondMs,
+    query_timeout: 10 * secondMs,
   }).on("error", reportServerError);
 
 if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;

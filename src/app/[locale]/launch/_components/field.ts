@@ -1,3 +1,5 @@
+import { secondMs } from "@/lib/dates";
+
 type Viewport = { width: number; height: number };
 
 type Box = [x: number, y: number, halfWidth: number, halfHeight: number];
@@ -481,7 +483,7 @@ function test(
   };
 
   const loop = (now: number) => {
-    elapsed += Math.min(now - (last || now), 50) / 1000;
+    elapsed += Math.min(now - (last || now), 50) / secondMs;
     last = now;
     draw();
     frame = requestAnimationFrame(loop);

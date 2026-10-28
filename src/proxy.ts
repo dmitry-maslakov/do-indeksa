@@ -3,6 +3,7 @@ import { allTaskIds } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { launchCookie, launchGate } from "@/features/launch/launch";
+import { daySeconds } from "@/lib/dates";
 import { routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
@@ -34,7 +35,7 @@ async function respond(request: NextRequest) {
         secure: true,
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 24 * 365,
+        maxAge: 365 * daySeconds,
       });
     return response;
   }

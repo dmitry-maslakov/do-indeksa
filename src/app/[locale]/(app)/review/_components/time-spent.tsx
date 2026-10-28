@@ -1,14 +1,15 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { Review } from "@/features/tests/review";
+import { minuteMs, toMinutes } from "@/lib/dates";
 
 export function TimeSpent({ review }: { review: Review }) {
   const t = useTranslations("Review");
-  const spent = Math.round(review.spentMs / 60_000);
-  const norm = Math.round(review.normMs / 60_000);
+  const spent = toMinutes(review.spentMs);
+  const norm = toMinutes(review.normMs);
   const over = review.rows.filter((r) => r.over);
   const minutes = review.rows[0]?.minutes ?? 0;
-  const line = minutes * 60_000;
+  const line = minutes * minuteMs;
   const scale = Math.max(
     line * 1.25,
     ...review.rows.map((r) => r.attempt?.durationMs ?? 0),

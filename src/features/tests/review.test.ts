@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { minuteMs } from "@/lib/dates";
 import { creditOf, review, reviewHref } from "./review";
 
 const task = (taskId: string, topic: string) => ({
@@ -22,15 +23,15 @@ describe("review", () => {
       taskId: "a",
       outcomes: ["right"],
       correct: true,
-      durationMs: 10 * 60_000,
+      durationMs: 10 * minuteMs,
     },
     {
       taskId: "b",
       outcomes: ["right", "wrong"],
       correct: false,
-      durationMs: 30 * 60_000,
+      durationMs: 30 * minuteMs,
     },
-    { taskId: "c", outcomes: ["wrong"], correct: false, durationMs: 60_000 },
+    { taskId: "c", outcomes: ["wrong"], correct: false, durationMs: minuteMs },
   ]);
 
   it("credits correct parts", () => {
@@ -50,8 +51,8 @@ describe("review", () => {
   });
 
   it("sums time against the norm", () => {
-    expect(result.spentMs).toBe(41 * 60_000);
-    expect(result.normMs).toBe(96 * 60_000);
+    expect(result.spentMs).toBe(41 * minuteMs);
+    expect(result.normMs).toBe(96 * minuteMs);
   });
 });
 

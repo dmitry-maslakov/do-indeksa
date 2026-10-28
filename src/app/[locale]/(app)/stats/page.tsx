@@ -14,6 +14,7 @@ import {
 } from "@/features/progress/stats";
 import { countTests, getTests } from "@/features/tests/history";
 import { summarizeTests } from "@/features/tests/summaries";
+import { minuteMs } from "@/lib/dates";
 import { getProfileId } from "@/server/profile";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
@@ -96,7 +97,7 @@ function StatsCards({
         <TimeBars
           bars={meanTimeByNumber(byTask, numbers).map((bar) => ({
             ...bar,
-            normMs: minutesAt(bar.number) * 60_000,
+            normMs: minutesAt(bar.number) * minuteMs,
           }))}
           pending={!stats}
         />

@@ -4,12 +4,13 @@ import { and, eq, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { profiles } from "@/db/schema";
+import { daySeconds } from "@/lib/dates";
 import { getSession } from "./auth";
 import { db } from "./db";
 
 const profileCookie = "__Host-profile";
 const noProfile = "00000000-0000-0000-0000-000000000000";
-const profileCookieAge = 400 * 24 * 60 * 60;
+const profileCookieAge = 400 * daySeconds;
 const profileCookieOptions = {
   httpOnly: true,
   secure: true,
