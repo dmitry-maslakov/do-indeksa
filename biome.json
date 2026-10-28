@@ -320,9 +320,9 @@
               "level": "error",
               "options": {
                 "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                  "@/server/db": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "@/db/schema": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "drizzle-orm": "Pages, route handlers and actions call feature functions and never query the database."
                 }
               }
             }
@@ -349,9 +349,9 @@
                   }
                 ],
                 "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                  "@/server/db": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "@/db/schema": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "drizzle-orm": "Pages, route handlers and actions call feature functions and never query the database."
                 }
               }
             }
@@ -379,9 +379,9 @@
                   }
                 ],
                 "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                  "@/server/db": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "@/db/schema": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "drizzle-orm": "Pages, route handlers and actions call feature functions and never query the database."
                 }
               }
             }
@@ -411,9 +411,9 @@
                   }
                 ],
                 "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                  "@/server/db": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "@/db/schema": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "drizzle-orm": "Pages, route handlers and actions call feature functions and never query the database."
                 }
               }
             }
@@ -440,9 +440,9 @@
                   }
                 ],
                 "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                  "@/server/db": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "@/db/schema": "Pages, route handlers and actions call feature functions and never query the database.",
+                  "drizzle-orm": "Pages, route handlers and actions call feature functions and never query the database."
                 }
               }
             }

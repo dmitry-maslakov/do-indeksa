@@ -30,12 +30,7 @@ e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both o
 
 ## Layout
 
-- `content/` sample topics, exam, tasks, tests and theory. Production content is built in from a separate bank via `CONTENT_DIR`. Theory is `theory/<topic>/index.md` with `##` sections and `theory/<topic>/methods/<slug>.md`, with the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`.
-- `messages/` UI strings for `sr-Latn`, `ru` and `en`.
-- `src/app` routes; UI used by one route sits in its `_components`, and the `(app)` shell (navigation, footer, query provider) in `(app)/_components/shell`.
-- `src/features/<feature>` everything one feature owns: server-only services, server actions in `actions.ts`, components, `use-*.ts` hooks and its constants; a large feature groups its UI in subfolders. Features import each other one way only (`catalog` ← `progress` ← `practice` ← `bank`, `catalog` ← `variants` ← `tests`), and Biome checks it.
-- `src/components` UI shared across routes and `src/lib` helpers without domain knowledge; neither imports features. `src/db` holds the schema and the column values, `src/server` the database client, env, auth, profile and the safe action clients.
-- `docs/decisions` short architecture decisions.
+[ARCHITECTURE.md](ARCHITECTURE.md) maps the code and lists the rules it relies on.
 
 ## License
 
