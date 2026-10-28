@@ -5,3 +5,5 @@ name:
 icon:
   text: "∫"
 tone: cyan
+types:
+- asymptotes-and-graph

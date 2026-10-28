@@ -1,5 +1,6 @@
 ---
 topic: combinatorics
+type: independent-choices
 difficulty: 3
 source: Do indeksa
 answer: a) $300$; b) $108$; v) $156$

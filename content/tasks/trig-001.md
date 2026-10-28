@@ -1,5 +1,6 @@
 ---
 topic: trigonometry
+type: roots-in-interval
 difficulty: 2
 source: Do indeksa
 answer: 'na $[0,2\pi)$: $x\in\left\{\frac{\pi}{2},\ \frac{5\pi}{6}\right\}$; u $\left(\frac{2\pi}{3},2\pi\right)$: samo $x=\frac{5\pi}{6}$'

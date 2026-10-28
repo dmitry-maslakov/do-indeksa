@@ -5,3 +5,5 @@ name:
 icon:
   text: "n!"
 tone: yellow
+types:
+- independent-choices

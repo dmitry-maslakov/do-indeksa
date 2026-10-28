@@ -5,3 +5,5 @@ name:
 icon:
   name: "box"
 tone: orange
+types:
+- right-corner-tetrahedron

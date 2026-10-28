@@ -5,3 +5,5 @@ name:
 icon:
   text: "x²"
 tone: blue
+types:
+- symmetric-expressions

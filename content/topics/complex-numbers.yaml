@@ -5,3 +5,5 @@ name:
 icon:
   text: "𝑖"
 tone: blue
+types:
+- modulus-and-argument

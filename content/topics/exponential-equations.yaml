@@ -5,3 +5,6 @@ name:
 icon:
   text: "aˣ"
 tone: blue
+types:
+- same-base
+- substitution

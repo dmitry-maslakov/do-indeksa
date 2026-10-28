@@ -30,6 +30,7 @@ const topics = defineCollection({
     name: localized,
     icon: topicIconSchema,
     tone: z.enum(tones),
+    types: z.array(z.string().regex(/^[a-z]+(-[a-z]+)*$/)).min(1),
   }),
   transform: (topic) => ({ ...topic, id: topic._meta.path }),
 });
@@ -52,14 +53,17 @@ const tasks = defineCollection({
       .max(6),
     hints: z.array(z.string().min(1)).max(3).default([]),
     solution: z.string().min(1),
+    type: z.string().min(1),
   }),
   transform: async (
     { content, answer, check, hints, solution, ...task },
     { documents, cache },
   ) => {
     const origin = task._meta.filePath;
-    if (!documents(topics).some((t) => t._meta.path === task.topic)) {
-      throw new Error(`${origin}: unknown topic "${task.topic}"`);
+    const topic = documents(topics).find((t) => t._meta.path === task.topic);
+    if (!topic) throw new Error(`${origin}: unknown topic "${task.topic}"`);
+    if (!topic.types.includes(task.type)) {
+      throw new Error(`${origin}: unknown type "${task.type}"`);
     }
     const invalid = check.find((c) => !parseMath(c.expected).isValid);
     if (invalid) {
