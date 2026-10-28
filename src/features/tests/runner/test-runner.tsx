@@ -10,7 +10,7 @@ import { saveTest, submitTest } from "@/features/tests/actions";
 import { reviewHref } from "@/features/tests/review";
 import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
-import type { ComposeMode } from "@/features/variants/compose";
+import type { ComposeMode } from "@/features/variants/custom/compose";
 import type { VariantTask as Task } from "@/features/variants/variants";
 import { getPathname, useRouter } from "@/i18n/navigation";
 import { localTimeZone } from "@/lib/time-zone";

@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { TestScreen } from "@/features/tests/runner/test-screen";
-import { composeModes } from "@/features/variants/compose";
-import { findSet } from "@/features/variants/sets";
+import { composeModes } from "@/features/variants/custom/compose";
+import { findSet } from "@/features/variants/custom/sets";
 import { setId } from "@/features/variants/variant-id";
 import { variantMetadata } from "@/features/variants/variant-title";
 import { getVariant } from "@/features/variants/variants";

@@ -2,8 +2,11 @@ import { io } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
-import { composeSchema, composeTaskIds } from "@/features/variants/compose-set";
-import { saveSet } from "@/features/variants/sets";
+import {
+  composeSchema,
+  composeTaskIds,
+} from "@/features/variants/custom/compose-set";
+import { saveSet } from "@/features/variants/custom/sets";
 import { redirect } from "@/i18n/navigation";
 import { getProfileId } from "@/server/profile";
 
