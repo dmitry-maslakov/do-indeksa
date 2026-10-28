@@ -5,13 +5,14 @@ import { TopicGlyph } from "@/features/catalog/topic-icon";
 import { reviewHref } from "@/features/tests/review";
 import type { TestSummary } from "@/features/tests/summaries";
 import { Link } from "@/i18n/navigation";
+import { belgradeDate } from "@/lib/dates";
 import { resultOf, resultTone } from "./results";
 
 export const tableGrid =
   "md:grid-cols-[--spacing(37)_minmax(0,1fr)_--spacing(18)_--spacing(24)] md:gap-5 md:px-6";
 
 const thisYear = (at: number) =>
-  new Date(at).getFullYear() === new Date().getFullYear();
+  belgradeDate(new Date(at)).slice(0, 4) === belgradeDate().slice(0, 4);
 
 interface ExamRowProps {
   title: string;
