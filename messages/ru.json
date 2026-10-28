@@ -164,6 +164,8 @@
     "overtime": "Сверх времени",
     "tasks": "Задачи",
     "task": "Задача {number, number}",
+    "taskState": "Задача {number, number}, {state, select, done {отвечена} other {без ответа}}",
+    "answerState": "{state, select, done {отвечена} other {без ответа}}",
     "answered": "Отвечено {count, number} из {total, number}",
     "meta": "Задача {number, number} · {points, plural, one {# балл} few {# балла} other {# баллов}} · {topic}",
     "prev": "Назад",

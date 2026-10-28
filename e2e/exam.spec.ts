@@ -6,6 +6,7 @@ test("the test rail tracks answers and hides the time", async ({ page }) => {
   await expect(rail.getByText("Prijemni 2025")).toBeVisible();
   await answer(page, "2");
   await expect(rail.getByText("Odgovoreno 1 od 10")).toBeVisible();
+  await expect(rail.getByRole("button", { name: /^odgovoren/ })).toHaveCount(1);
   await rail.getByRole("button", { name: /Logaritmi/ }).click();
   await expect(
     page.getByText("Zadatak 3 · 6 bodova · Logaritmi"),
@@ -28,11 +29,16 @@ test("the phone test bar switches tasks", { tag: "@mobile" }, async ({
   await answer(page, "2");
   await page.getByRole("button", { name: "Sledeći" }).click();
   await expect(page.getByText("Zadatak 2 · 6 bodova")).toBeVisible();
-  await page.getByRole("button", { name: "Zadatak 1", exact: true }).click();
-  await expect(page.getByText("Zadatak 1 · 6 bodova")).toBeVisible();
+  const first = page.getByRole("button", {
+    name: "Zadatak 1, odgovoren",
+    exact: true,
+  });
   await expect(
-    page.getByRole("button", { name: "Zadatak 1", exact: true }),
+    page.getByRole("button", { name: "Zadatak 2, bez odgovora", exact: true }),
   ).toHaveAttribute("aria-current", "step");
+  await first.click();
+  await expect(page.getByText("Zadatak 1 · 6 bodova")).toBeVisible();
+  await expect(first).toHaveAttribute("aria-current", "step");
   await expect(page.getByRole("banner")).toBeHidden();
 });
 

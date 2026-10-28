@@ -164,6 +164,8 @@
     "overtime": "Prekoračenje",
     "tasks": "Zadaci",
     "task": "Zadatak {number, number}",
+    "taskState": "Zadatak {number, number}, {state, select, done {odgovoren} other {bez odgovora}}",
+    "answerState": "{state, select, done {odgovoren} other {bez odgovora}}",
     "answered": "Odgovoreno {count, number} od {total, number}",
     "meta": "Zadatak {number, number} · {points, plural, one {# bod} few {# boda} other {# bodova}} · {topic}",
     "prev": "Prethodni",

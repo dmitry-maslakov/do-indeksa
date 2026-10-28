@@ -164,6 +164,8 @@
     "overtime": "Overtime",
     "tasks": "Tasks",
     "task": "Task {number, number}",
+    "taskState": "Task {number, number}, {state, select, done {answered} other {not answered}}",
+    "answerState": "{state, select, done {answered} other {not answered}}",
     "answered": "{count, number} of {total, number} answered",
     "meta": "Task {number, number} · {points, plural, one {# point} other {# points}} · {topic}",
     "prev": "Previous",
