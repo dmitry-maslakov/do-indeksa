@@ -27,14 +27,23 @@ import {
 
 export * from "./auth-schema";
 
+const stamp = () => timestamp({ withTimezone: true });
+
+const stampNow = () => stamp().notNull().defaultNow();
+
 export const profiles = pgTable("profiles", {
   id: uuid().primaryKey().defaultRandom(),
   userId: text()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
   tokenHash: text().unique(),
-  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  createdAt: stampNow(),
 });
+
+const owner = () =>
+  uuid()
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" });
 
 export const testKind = pgEnum("test_kind", [
   "official",
@@ -48,16 +57,14 @@ export const testSessions = pgTable(
   "test_sessions",
   {
     id: uuid().primaryKey(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     kind: testKind().notNull(),
     variantId: text().notNull(),
     taskIds: text().array().notNull(),
     timed: boolean().notNull(),
-    startedAt: timestamp({ withTimezone: true }).notNull(),
-    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    finishedAt: timestamp({ withTimezone: true }),
+    startedAt: stamp().notNull(),
+    updatedAt: stampNow(),
+    finishedAt: stamp(),
     overtime: boolean(),
     draft: jsonb().$type<TestDraft>(),
   },
@@ -75,15 +82,13 @@ export const taskSessions = pgTable(
   "task_sessions",
   {
     id: uuid().primaryKey().defaultRandom(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     taskId: text().notNull(),
     testSessionId: uuid(),
     kind: sessionKind().notNull(),
     tz: text(),
-    startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    lastSeenAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    startedAt: stampNow(),
+    lastSeenAt: stampNow(),
   },
   (t) => [
     unique().on(t.id, t.profileId, t.taskId),
@@ -118,9 +123,7 @@ export const attempts = pgTable(
   "attempts",
   {
     id: uuid().primaryKey().defaultRandom(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     taskId: text().notNull(),
     sessionId: uuid().notNull(),
     clientId: uuid().notNull().defaultRandom(),
@@ -130,7 +133,7 @@ export const attempts = pgTable(
     difficulty: smallint().notNull(),
     keyRev: text().notNull(),
     checker: smallint().notNull(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    createdAt: stampNow(),
   },
   (t) => [
     index().on(t.profileId, t.createdAt.desc()),
@@ -144,11 +147,9 @@ export const attempts = pgTable(
 export const favorites = pgTable(
   "favorites",
   {
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     taskId: text().notNull(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    createdAt: stampNow(),
   },
   (t) => [primaryKey({ columns: [t.profileId, t.taskId] })],
 );
@@ -159,7 +160,7 @@ export const sets = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     code: text().unique(),
     taskIds: text().array().notNull(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    createdAt: stampNow(),
   },
   (t) => [uniqueIndex().on(t.taskIds).where(isNull(t.code))],
 );
@@ -176,13 +177,11 @@ export const reveals = pgTable(
   "reveals",
   {
     id: uuid().primaryKey().defaultRandom(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     taskId: text().notNull(),
     sessionId: uuid().notNull(),
     part: revealPart().notNull(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    createdAt: stampNow(),
   },
   (t) => [
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
@@ -195,12 +194,10 @@ export const skips = pgTable(
   "skips",
   {
     id: uuid().primaryKey().defaultRandom(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     taskId: text().notNull(),
     sessionId: uuid().notNull(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    createdAt: stampNow(),
   },
   (t) => [
     index().on(t.profileId, t.taskId, t.createdAt.desc()),
@@ -215,13 +212,11 @@ export const suggestions = pgTable(
   "suggestions",
   {
     id: uuid().primaryKey().defaultRandom(),
-    profileId: uuid()
-      .notNull()
-      .references(() => profiles.id, { onDelete: "cascade" }),
+    profileId: owner(),
     topic: text().notNull(),
     reason: suggestionReason().notNull(),
-    shownAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    openedAt: timestamp({ withTimezone: true }),
+    shownAt: stampNow(),
+    openedAt: stamp(),
   },
   (t) => [index().on(t.profileId, t.topic, t.shownAt.desc())],
 );
@@ -234,5 +229,5 @@ export const reports = pgTable("reports", {
   kind: reportKind().notNull(),
   message: text().notNull(),
   profileId: uuid().references(() => profiles.id, { onDelete: "set null" }),
-  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  createdAt: stampNow(),
 });
