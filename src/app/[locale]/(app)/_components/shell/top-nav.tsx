@@ -7,7 +7,7 @@ import { NavLinks } from "./nav-links";
 
 export function TopNav() {
   return (
-    <header className="flex h-14 items-center gap-4 px-4 max-md:task-focus:hidden max-md:exam-running:hidden lg:h-18 lg:gap-7 lg:px-10">
+    <header className="flex h-14 items-center gap-4 px-4 max-md:focused:hidden lg:h-18 lg:gap-7 lg:px-10">
       <Logo />
       <div className="max-lg:hidden">
         <ExamSwitcher exams={examOptions} current={currentExam} />

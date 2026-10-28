@@ -60,7 +60,7 @@ async function fitsPhone(
 ) {
   await page.goto(path);
   await expect(
-    path.startsWith("/bank/")
+    /^\/(bank|theory)\//.test(path)
       ? page.getByRole("main")
       : page.getByRole("banner").getByRole("button", { name: account }),
   ).toBeVisible();
@@ -123,4 +123,17 @@ test("the nav comes back after leaving a task on a phone", {
   await expect(page).toHaveURL(/\/bank$/);
   await expect(nav).toBeVisible();
   await expect(page.getByRole("banner")).toBeVisible();
+});
+
+test("a theory topic keeps only the bottom bar on a phone", {
+  tag: "@mobile",
+}, async ({ page }) => {
+  await page.goto("/theory/exponential-equations");
+  await expect(
+    page.getByRole("main").getByRole("link", { name: "Teorija" }).first(),
+  ).toBeVisible();
+  await expect(page.getByRole("banner")).toBeHidden();
+  await expect(
+    page.getByRole("navigation", { name: "Glavna navigacija" }),
+  ).toBeVisible();
 });
