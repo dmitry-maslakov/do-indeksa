@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { positions } from "@/features/catalog/exams";
+import { tasks } from "@/features/catalog/tasks";
+import { setId } from "./variant-id";
 import { getVariant, officialVariants, slotsOf } from "./variants";
 
 describe("getVariant", () => {
@@ -13,6 +16,13 @@ describe("getVariant", () => {
       "log-001",
     ]);
     expect(getVariant("set-log-001.missing")).toBeUndefined();
+  });
+
+  it("takes a set up to the exam size and no more", () => {
+    expect(tasks.length).toBeGreaterThan(positions.length);
+    const ids = tasks.slice(0, positions.length + 1).map((t) => t.id);
+    expect(getVariant(setId(ids.slice(0, positions.length)))).toBeDefined();
+    expect(getVariant(setId(ids))).toBeUndefined();
   });
 
   it("ignores unknown ids", () => {

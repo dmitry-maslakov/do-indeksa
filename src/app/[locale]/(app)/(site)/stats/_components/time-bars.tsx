@@ -16,19 +16,9 @@ interface Bar {
   normMs: number;
 }
 
-const columns = "grid grid-cols-10 gap-1.5";
+const columns = "grid auto-cols-fr grid-flow-col gap-1.5";
 
-const ghost = (
-  <div className={cn(columns, "h-28 items-end")}>
-    {[45, 70, 35, 85, 55, 40, 65, 30, 75, 50].map((height) => (
-      <Skeleton
-        key={height}
-        className="rounded-t-[4px] rounded-b-[2px]"
-        style={{ height: `${height}%` }}
-      />
-    ))}
-  </div>
-);
+const ghostHeights = [45, 70, 35, 85, 55, 40, 65, 30, 75, 50];
 
 export function TimeBars({
   bars,
@@ -75,7 +65,15 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
   return (
     <>
       {pending ? (
-        ghost
+        <div className={cn(columns, "h-28 items-end")}>
+          {bars.map((bar, i) => (
+            <Skeleton
+              key={bar.number}
+              className="rounded-t-[4px] rounded-b-[2px]"
+              style={{ height: `${ghostHeights[i % ghostHeights.length]}%` }}
+            />
+          ))}
+        </div>
       ) : (
         <div className={cn(columns, "relative h-28 items-end")}>
           <span

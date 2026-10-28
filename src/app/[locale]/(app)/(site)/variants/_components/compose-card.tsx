@@ -1,6 +1,6 @@
 "use client";
 
-import { isEqual } from "es-toolkit";
+import { isEqual, uniq } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { Suspense, use, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,8 @@ import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { useRouter } from "@/i18n/navigation";
 
-const counts = [5, 10];
-
 interface ComposeCardProps {
+  size: number;
   topics: { id: string; name: string; look: TopicLook }[];
   weak: Promise<string[]>;
 }
@@ -18,12 +17,13 @@ interface ComposeCardProps {
 const quick =
   "rounded-sm font-medium text-data focus-visible:outline-2 focus-visible:outline-ring aria-pressed:cursor-default aria-pressed:text-subtle";
 
-export function ComposeCard({ topics, weak }: ComposeCardProps) {
+export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
   const t = useTranslations("Compose");
   const router = useRouter();
   const all = topics.map((topic) => topic.id);
   const [chosen, setChosen] = useState(all);
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(size);
+  const counts = uniq([Math.ceil(size / 2), size]);
   const flip = (id: string) =>
     setChosen((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
   const only = (ids: string[]) => isEqual([...chosen].sort(), [...ids].sort());
