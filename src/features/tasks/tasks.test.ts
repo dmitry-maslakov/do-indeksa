@@ -5,7 +5,6 @@ import { routing } from "@/i18n/routing";
 import en from "../../../messages/en.json";
 import ru from "../../../messages/ru.json";
 import sr from "../../../messages/sr-Latn.json";
-import { taskMeta } from "./level";
 import {
   getTask,
   idsByTopic,
@@ -107,23 +106,4 @@ describe("task numbers", () => {
   it("are missing for topics outside the exam", () => {
     expect(summarize(taskOn("sequences")).number).toBeNull();
   });
-});
-
-describe("task meta", () => {
-  it.each([
-    ["sr-Latn", "Zadatak 3 na ispitu · srednje", "srednje"],
-    ["ru", "Задача 3 на экзамене · средняя", "средняя"],
-    ["en", "Task 3 on the exam · medium", "medium"],
-  ] as const)(
-    "names the exam number only when there is one in %s",
-    (locale, onExam, outside) => {
-      const bank = createTranslator({
-        locale,
-        messages: messages[locale],
-        namespace: "Bank",
-      });
-      expect(taskMeta({ number: 3, level: "medium" }, bank)).toBe(onExam);
-      expect(taskMeta({ number: null, level: "medium" }, bank)).toBe(outside);
-    },
-  );
 });

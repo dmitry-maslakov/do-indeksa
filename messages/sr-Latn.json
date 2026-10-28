@@ -68,7 +68,6 @@
     "count": "{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}",
     "empty": "Nema zadataka za ove filtere.",
     "more": "Prikaži još",
-    "meta": "Zadatak {number, number} na ispitu · {level}",
     "taskLevel": "{level, select, easy {lako} medium {srednje} hard {teško} other {}}",
     "status": "Moj status",
     "statuses": "{status, select, new {Nerešeni} solved {Tačno rešeni} wrong {Greške} favorite {Sačuvani} other {}}",

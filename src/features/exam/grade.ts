@@ -1,4 +1,3 @@
-import { creditOf } from "@/features/review/review";
 import { gradeParts } from "@/lib/math";
 import { isRight } from "@/lib/part-outcome";
 import { isAnswered } from "./test-state";
@@ -6,7 +5,6 @@ import { isAnswered } from "./test-state";
 interface GradedTask {
   taskId: string;
   expected: string[];
-  points: number;
 }
 
 export function gradeTest(tasks: GradedTask[], answers: string[][]) {
@@ -19,7 +17,6 @@ export function gradeTest(tasks: GradedTask[], answers: string[][]) {
       outcomes,
       correct: outcomes.every(isRight),
       answered: isAnswered(given),
-      points: creditOf(outcomes, task.points),
     };
   });
 }

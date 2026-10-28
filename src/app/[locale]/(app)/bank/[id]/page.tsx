@@ -95,9 +95,7 @@ export default async function SolvePage({
                 level={levelOf(task.difficulty)}
                 before={queue.before}
               />
-              <Suspense
-                fallback={<FavoriteButton taskId={id} pending compact />}
-              >
+              <Suspense fallback={<FavoriteButton taskId={id} pending />}>
                 <FavoriteToggle taskId={id} />
               </Suspense>
             </div>

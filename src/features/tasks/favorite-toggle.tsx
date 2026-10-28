@@ -6,7 +6,5 @@ export async function FavoriteToggle({ taskId }: { taskId: string }) {
   const profileId = await getProfileId();
   const saved = await isFavorite(profileId, taskId);
 
-  return (
-    <FavoriteButton key={profileId} taskId={taskId} saved={saved} compact />
-  );
+  return <FavoriteButton key={profileId} taskId={taskId} saved={saved} />;
 }

@@ -68,7 +68,6 @@
     "count": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}}",
     "empty": "Под эти фильтры задач нет.",
     "more": "Показать ещё",
-    "meta": "Задача {number, number} на экзамене · {level}",
     "taskLevel": "{level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}",
     "status": "Мой статус",
     "statuses": "{status, select, new {Нерешённые} solved {Решённые верно} wrong {Ошибки} favorite {Сохранённые} other {}}",

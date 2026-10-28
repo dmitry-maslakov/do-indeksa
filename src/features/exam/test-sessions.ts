@@ -8,7 +8,7 @@ import { db } from "@/server/db";
 import { gradeTest } from "./grade";
 import type { TestDraft, Visit } from "./test-draft";
 import { overtimeAt } from "./test-state";
-import { getVariant, minutesOf, pointsOf } from "./variants";
+import { getVariant, minutesOf } from "./variants";
 
 export interface TestInput {
   id: string;
@@ -103,7 +103,6 @@ async function storeAttempts(
     taskIds.map((taskId) => ({
       taskId,
       expected: getTask(taskId)?.check.map((c) => c.expected) ?? [],
-      points: pointsOf(taskId),
     })),
     answers,
   ).filter((g) => g.answered);

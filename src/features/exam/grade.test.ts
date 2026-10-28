@@ -2,32 +2,30 @@ import { describe, expect, it } from "vitest";
 import { gradeTest } from "./grade";
 
 const tasks = [
-  { taskId: "a", expected: ["2"], points: 6 },
-  { taskId: "b", expected: ["1", "3"], points: 6 },
-  { taskId: "c", expected: ["5"], points: 6 },
+  { taskId: "a", expected: ["2"] },
+  { taskId: "b", expected: ["1", "3"] },
+  { taskId: "c", expected: ["5"] },
 ];
 
 describe("gradeTest", () => {
   const [a, b, c] = gradeTest(tasks, [["2"], ["1", "4"]]);
 
-  it("credits each task by its right parts", () => {
-    expect(a).toMatchObject({ outcomes: ["right"], correct: true, points: 6 });
+  it("grades each part of each task", () => {
+    expect(a).toMatchObject({ outcomes: ["right"], correct: true });
     expect(b).toMatchObject({
       outcomes: ["right", "wrong"],
       correct: false,
-      points: 3,
     });
   });
 
   it("keeps unreadable and empty parts apart from wrong ones", () => {
     const [d] = gradeTest(
-      [{ taskId: "d", expected: ["1", "2", "3"], points: 6 }],
+      [{ taskId: "d", expected: ["1", "2", "3"] }],
       [["1", "\\frac{2", ""]],
     );
     expect(d).toMatchObject({
       outcomes: ["right", "unreadable", "empty"],
       correct: false,
-      points: 2,
     });
   });
 
@@ -37,6 +35,6 @@ describe("gradeTest", () => {
       true,
       false,
     ]);
-    expect(c).toMatchObject({ answers: [], points: 0 });
+    expect(c).toMatchObject({ answers: [] });
   });
 });

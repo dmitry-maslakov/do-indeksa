@@ -68,7 +68,6 @@
     "count": "{count, plural, one {# task} other {# tasks}}",
     "empty": "No tasks match these filters.",
     "more": "Show more",
-    "meta": "Task {number, number} on the exam · {level}",
     "taskLevel": "{level, select, easy {easy} medium {medium} hard {hard} other {}}",
     "status": "My status",
     "statuses": "{status, select, new {Not solved} solved {Solved correctly} wrong {Mistakes} favorite {Saved} other {}}",

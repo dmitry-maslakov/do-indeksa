@@ -22,7 +22,6 @@ const tones: Record<Segment, string> = {
   partial: "bg-overtime",
   error: "bg-error",
   none: "bg-untouched",
-  current: "bg-untouched",
 };
 
 export function ReviewSummary({

@@ -76,11 +76,7 @@ export function ExamRunner({
     () => ({
       title,
       minutes,
-      tasks: tasks.map((task) => ({
-        number: task.number,
-        topic: task.topicName,
-        parts: task.parts.length,
-      })),
+      parts: tasks.map((task) => task.parts.length),
     }),
     [title, minutes, tasks],
   );
@@ -88,7 +84,8 @@ export function ExamRunner({
     (): LocalTest | undefined =>
       saved?.variantId === variantId
         ? {
-            ...meta,
+            title,
+            minutes,
             testId: saved.id,
             timed: saved.timed,
             startedAt: saved.startedAt,
@@ -98,7 +95,7 @@ export function ExamRunner({
             ...saved.draft,
           }
         : undefined,
-    [saved, variantId, meta],
+    [saved, variantId, title, minutes],
   );
   const synced = saved?.updatedAt ?? 0;
   const opened = useRef(false);
