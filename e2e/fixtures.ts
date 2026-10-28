@@ -24,6 +24,10 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
     await use(errors);
   },
   auth: async ({ context }, use) => {
+    if (process.env.CI && (!DATABASE_URL || !BETTER_AUTH_SECRET))
+      throw new Error(
+        "the auth fixture needs DATABASE_URL and BETTER_AUTH_SECRET",
+      );
     test.skip(!DATABASE_URL || !BETTER_AUTH_SECRET, "needs the database");
     const db = new Client({ connectionString: DATABASE_URL });
     await db.connect();
