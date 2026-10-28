@@ -34,7 +34,7 @@
     "home": "Home",
     "bank": "Tasks",
     "variants": "Tests",
-    "stats": "Statistics",
+    "theory": "Theory",
     "label": "Main navigation"
   },
   "LocaleSwitcher": {
@@ -53,6 +53,7 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "account": "Account",
+    "stats": "Statistics",
     "privacy": "Privacy",
     "merged": "Progress from this device was merged into your account."
   },
@@ -249,6 +250,7 @@
     "weeklyMeta": "{tasks, plural, one {# task} other {# tasks}} · {hours, plural, one {# hour} other {# hours}} · {points, plural, one {# point} other {# points}} · {days, plural, one {# day} other {# days}} left",
     "startWeekly": "Start the variant →",
     "topicMap": "Topic map",
+    "stats": "Statistics →",
     "allTopics": "All · {count, number}",
     "state": {
       "mastered": "Mastered",

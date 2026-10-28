@@ -19,7 +19,7 @@ test(
     for (const [name, path] of [
       ["Zadaci", /\/bank$/],
       ["Testovi", /\/variants$/],
-      ["Statistika", /\/stats$/],
+      ["Teorija", /\/theory$/],
     ] as const) {
       const link = nav.getByRole("link", { name });
       await link.click();
