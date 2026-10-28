@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GoogleLogo } from "./google-logo";
+import { nudgeAfterSolved } from "./nudge";
 import { GoogleSignInButton } from "./sign-in-button";
 
-const nudgeAfterSolved = 5;
 const taskStripShown = "sign-in-strip-task";
 
 function Screen({ className, sync }: { className: string; sync?: boolean }) {
