@@ -1,7 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "content-collections.ts!",
+    "src/db/cleanup.mts!",
+    "src/db/migrate.mts!"
+  ],
+  "project": ["src/**/*.{ts,tsx,mts,css}!", "*.ts"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["content-collections"],
   "ignoreIssues": {
     "src/components/ui/**": ["exports", "types"]
-  },
-  "entry": ["content-collections.ts", "src/db/cleanup.mts"]
+  }
 }

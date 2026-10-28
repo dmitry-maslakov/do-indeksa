@@ -9,7 +9,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write",
-    "knip": "knip",
+    "knip": "knip && knip --production",
     "commitlint": "commitlint",
     "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src",
     "db:generate": "drizzle-kit generate",
