@@ -167,6 +167,7 @@
   --nav-bottom: 4rem;
 }
 
+@custom-variant focused (&:where([data-focus] *));
 @custom-variant exam-running (&:where([data-focus="exam"] *));
 @custom-variant task-focus (&:where([data-focus="task"] *));
 
