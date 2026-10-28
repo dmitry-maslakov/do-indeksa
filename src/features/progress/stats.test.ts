@@ -3,7 +3,7 @@ import { minuteMs } from "@/lib/dates";
 import {
   accuracyBy,
   meanTimeByNumber,
-  type TaskStat,
+  type TimedStat,
   totals,
   weakest,
 } from "./stats";
@@ -13,8 +13,8 @@ const minutes = (count: number) => count * minuteMs;
 const stat = (
   taskId: string,
   number: number,
-  extra: Partial<TaskStat> = {},
-): TaskStat => ({
+  extra: Partial<TimedStat> = {},
+): TimedStat => ({
   taskId,
   number,
   topic: `t${number}`,

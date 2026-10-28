@@ -13,7 +13,6 @@ const stat = (topic: string, latestRight: boolean, lastAt = now): TaskStat => ({
   right: latestRight ? 1 : 0,
   recentAttempts: 1,
   recentRight: latestRight ? 1 : 0,
-  durationMs: 0,
   firstRight: latestRight,
   latestRight,
   lastAt,
