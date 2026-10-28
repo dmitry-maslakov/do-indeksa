@@ -17,12 +17,12 @@ import {
   taskTitle,
 } from "@/features/catalog/tasks";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import { AnswerForm } from "@/features/tasks/answer-form";
-import { FavoriteButton } from "@/features/tasks/favorite-button";
-import { FavoriteToggle } from "@/features/tasks/favorite-toggle";
-import { HelpPanel } from "@/features/tasks/help-panel";
-import { ReportTask } from "@/features/tasks/report-task";
-import { TaskSessionProvider } from "@/features/tasks/task-session";
+import { AnswerForm } from "@/features/practice/answer/answer-form";
+import { FavoriteButton } from "@/features/practice/favorite-button";
+import { FavoriteToggle } from "@/features/practice/favorite-toggle";
+import { ReportTask } from "@/features/practice/report-task";
+import { HelpPanel } from "@/features/practice/reveal/help-panel";
+import { TaskSessionProvider } from "@/features/practice/session/task-session";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
 import { PhoneBar } from "./_components/phone-bar";

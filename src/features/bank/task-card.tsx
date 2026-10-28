@@ -2,8 +2,8 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Markdown } from "@/components/markdown";
 import { TopicIcon } from "@/features/catalog/topic-icon";
+import { FavoriteButton } from "@/features/practice/favorite-button";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
 

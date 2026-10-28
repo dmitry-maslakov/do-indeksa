@@ -7,8 +7,8 @@ import { useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { saveReveal } from "@/features/practice/reveal-action";
 import { useErrorText } from "@/lib/use-error-text";
-import { saveReveal } from "./reveal-action";
 import type { RevealPart } from "./reveal-part";
 import { useReveal } from "./use-reveal";
 

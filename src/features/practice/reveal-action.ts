@@ -2,9 +2,9 @@
 
 import { z } from "zod";
 import { taskIdSchema } from "@/features/catalog/tasks";
+import { revealOwner } from "@/features/practice/reveal/reveal-owner";
+import { recordReveal } from "@/features/practice/reveal/reveals";
 import { actionClient } from "@/server/action-client";
-import { revealOwner } from "./reveal-owner";
-import { recordReveal } from "./reveals";
 
 const schema = z.object({
   taskId: taskIdSchema,

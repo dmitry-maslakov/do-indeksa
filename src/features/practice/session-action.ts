@@ -2,9 +2,9 @@
 
 import { z } from "zod";
 import { taskIdSchema } from "@/features/catalog/tasks";
+import { keepSession } from "@/features/practice/session/sessions";
 import { timeZoneSchema } from "@/lib/dates";
 import { actionClient } from "@/server/action-client";
-import { keepSession } from "./sessions";
 
 export const keepTaskSession = actionClient
   .inputSchema(
