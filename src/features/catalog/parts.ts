@@ -4,8 +4,8 @@ export interface PartLabel {
   caption: string | null;
 }
 
-const asMath = (source: string) =>
-  source.includes("$") ? source : `$${source}$`;
+export const hasBareTex = (label: string) =>
+  /[\^_\\{}]/.test(label.replace(/\$+[^$]*\$+/g, ""));
 
 export function splitLabel(
   label: string | null,
@@ -23,8 +23,7 @@ export function splitLabel(
   if (/=\s*$/.test(rest) && rest.length <= 18) {
     return { letter, prefix: rest, caption: null };
   }
-  const caption = /[_^\\]/.test(rest) ? asMath(rest) : rest;
-  return { letter, prefix: null, caption };
+  return { letter, prefix: null, caption: rest };
 }
 
 export function uncheckedLetters(text: string, parts: PartLabel[]) {

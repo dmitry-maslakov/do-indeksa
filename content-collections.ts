@@ -5,7 +5,7 @@ import { defineCollection, defineConfig } from "@content-collections/core";
 import { uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { parseMath } from "./src/features/catalog/checker";
-import { splitLabel } from "./src/features/catalog/parts";
+import { hasBareTex, splitLabel } from "./src/features/catalog/parts";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
@@ -47,7 +47,13 @@ const tasks = defineCollection({
     answer: z.string().min(1),
     check: z
       .array(
-        z.object({ label: z.string().optional(), expected: z.string().min(1) }),
+        z.object({
+          label: z
+            .string()
+            .refine((label) => !hasBareTex(label), "TeX outside $…$")
+            .optional(),
+          expected: z.string().min(1),
+        }),
       )
       .min(1)
       .max(6),

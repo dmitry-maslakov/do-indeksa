@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitLabel, uncheckedLetters } from "./parts";
+import { hasBareTex, splitLabel, uncheckedLetters } from "./parts";
 
 describe("splitLabel", () => {
   it.each([
@@ -26,6 +26,24 @@ describe("splitLabel", () => {
     ],
   ] as const)("splits %j", (label, index, count, part) => {
     expect(splitLabel(label, index, count)).toEqual(part);
+  });
+});
+
+describe("hasBareTex", () => {
+  it.each([
+    ["b) z^2025", true],
+    ["a) x_1", true],
+    ["\\alpha", true],
+    ["a) {x}", true],
+    ["x $y^2", true],
+    ["$a$ x^2 $b$", true],
+    ["b) $z^{2025}$", false],
+    ["na $[0,2\\pi)$", false],
+    ["$$x_1$$ i $y^2$", false],
+    ["a) arg z", false],
+    ["a) |z|", false],
+  ] as const)("flags %j as %j", (label, bare) => {
+    expect(hasBareTex(label)).toBe(bare);
   });
 });
 
