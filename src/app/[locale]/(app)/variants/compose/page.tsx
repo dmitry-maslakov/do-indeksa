@@ -1,4 +1,4 @@
-import { connection } from "next/server";
+import { io } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
@@ -12,7 +12,7 @@ export const instant = false;
 export default async function ComposePage({
   searchParams,
 }: PageProps<"/[locale]/variants/compose">) {
-  await connection();
+  await io();
   const { mode, topic, count } = composeSchema.parse(await searchParams);
   const needsHistory = mode === "weak" || mode === "unsolved";
   const stats = needsHistory ? await getTaskStats(await getProfileId()) : [];

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { connection } from "next/server";
+import { io } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
@@ -102,7 +102,7 @@ export default async function VariantsPage({
 }
 
 async function Weekly() {
-  await connection();
+  await io();
   const weekly = weeklyVariant();
   if (!weekly) return null;
   const tests = await loadLatest([weekly.id]);
