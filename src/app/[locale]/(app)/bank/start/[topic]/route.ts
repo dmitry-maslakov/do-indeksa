@@ -1,5 +1,5 @@
 import { hasLocale } from "next-intl";
-import { nextTask } from "@/features/bank/queue";
+import { nextTask } from "@/features/bank/queue/queue";
 import { idsByTopic } from "@/features/catalog/tasks";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";

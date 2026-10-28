@@ -30,6 +30,9 @@
             "inputComponents": ["Input", "FilterSearch", "FilterSelect"]
           }
         }
+      },
+      "correctness": {
+        "noUnusedImports": "error"
       }
     },
     "domains": {
@@ -58,7 +61,7 @@
     {
       "includes": [
         "src/components/math-html.tsx",
-        "src/components/json-ld.tsx"
+        "src/app/**/launch/_components/json-ld.tsx"
       ],
       "linter": {
         "rules": {
@@ -69,13 +72,512 @@
       }
     },
     {
-      "includes": ["src/app/**", "src/**/actions.ts"],
+      "includes": [
+        "src/lib/**",
+        "src/db/**",
+        "src/server/**",
+        "src/components/**",
+        "src/i18n/**"
+      ],
       "linter": {
         "rules": {
           "style": {
             "noRestrictedImports": {
               "level": "error",
               "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "@/app/**"],
+                    "message": "lib, db, server and components sit below features and never import them."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/catalog/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "!@/features/catalog/**"],
+                    "message": "catalog may import only no other feature; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/progress/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/progress/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "progress may import only catalog; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/practice/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/practice/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**"
+                    ],
+                    "message": "practice may import only catalog, progress; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/variants/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/variants/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "variants may import only catalog; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/tests/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/tests/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**",
+                      "!@/features/practice/**",
+                      "!@/features/variants/**"
+                    ],
+                    "message": "tests may import only catalog, progress, practice, variants; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/bank/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/bank/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**",
+                      "!@/features/practice/**"
+                    ],
+                    "message": "bank may import only catalog, progress, practice; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/theory/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/theory/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "theory may import only catalog; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/account/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/account/**",
+                      "!@/features/tests/**"
+                    ],
+                    "message": "account may import only tests; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/launch/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "!@/features/launch/**"],
+                    "message": "launch may import only no other feature; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/app/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/catalog/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "!@/features/catalog/**"],
+                    "message": "catalog may import only no other feature; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/progress/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/progress/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "progress may import only catalog; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/practice/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/practice/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**"
+                    ],
+                    "message": "practice may import only catalog, progress; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/variants/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/variants/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "variants may import only catalog; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/tests/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/tests/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**",
+                      "!@/features/practice/**",
+                      "!@/features/variants/**"
+                    ],
+                    "message": "tests may import only catalog, progress, practice, variants; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/bank/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/bank/**",
+                      "!@/features/catalog/**",
+                      "!@/features/progress/**",
+                      "!@/features/practice/**"
+                    ],
+                    "message": "bank may import only catalog, progress, practice; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/theory/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/theory/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "theory may import only catalog; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/account/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/account/**",
+                      "!@/features/tests/**"
+                    ],
+                    "message": "account may import only tests; features form a DAG."
+                  }
+                ],
+                "paths": {
+                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
+                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/features/launch/actions.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "!@/features/launch/**"],
+                    "message": "launch may import only no other feature; features form a DAG."
+                  }
+                ],
                 "paths": {
                   "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
                   "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",

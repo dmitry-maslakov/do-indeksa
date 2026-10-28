@@ -6,7 +6,7 @@ import { FocusMode } from "@/components/focus-mode";
 import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
 import { serializeBankFilters } from "@/features/bank/params";
-import { loadQueue } from "@/features/bank/queue";
+import { loadQueue } from "@/features/bank/queue/queue";
 import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";

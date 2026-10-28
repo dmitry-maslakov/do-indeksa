@@ -3,8 +3,8 @@
 import { cn } from "cn";
 import { type ComponentProps, Suspense } from "react";
 import { NativeSelect } from "@/components/ui/native-select";
+import { bankParsers } from "@/features/bank/params";
 import { FilterLabel } from "./filter-label";
-import { bankParsers } from "./params";
 import { useBankFilters } from "./use-bank-filters";
 
 type FilterSelectProps = ComponentProps<typeof NativeSelect> & {

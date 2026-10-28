@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
-import { JsonLd } from "@/components/json-ld";
+import { JsonLd } from "@/app/[locale]/launch/_components/json-ld";
 import { alternates } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
 import { repoUrl, siteUrl } from "@/lib/site";

@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { testPage } from "@/features/tests/feed";
+import { pageQuery } from "@/lib/page-query";
 import { getProfileId } from "@/server/profile";
-import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {
   const query = pageQuery.safeParse(
