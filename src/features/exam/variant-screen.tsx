@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import type { ComposeMode } from "./compose";
 import { swapIds } from "./compose-set";
 import { ExamGhost } from "./exam-ghost";

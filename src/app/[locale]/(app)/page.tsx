@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { getTopicPlan } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { Home } from "./_components/home";
 import { HomeSkeleton } from "./_components/home-skeleton";
 

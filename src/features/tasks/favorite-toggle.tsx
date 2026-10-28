@@ -1,4 +1,4 @@
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { FavoriteButton } from "./favorite-button";
 import { isFavorite } from "./favorites";
 

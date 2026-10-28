@@ -1,12 +1,12 @@
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { cache } from "react";
+import type { TestDraft, Visit } from "@/db/columns";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { getTask } from "@/features/tasks/tasks";
 import { checkerVersion } from "@/lib/math";
-import { db } from "@/server/db";
+import { db, type Tx } from "@/server/db";
 import { gradeTest } from "./grade";
-import type { TestDraft, Visit } from "./test-draft";
 import { overtimeAt } from "./test-state";
 import { getVariant, minutesOf } from "./variants";
 
@@ -26,8 +26,6 @@ export interface UnfinishedTest {
   updatedAt: number;
   draft: TestDraft;
 }
-
-type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 function variantOf(variantId: string) {
   const variant = getVariant(variantId);

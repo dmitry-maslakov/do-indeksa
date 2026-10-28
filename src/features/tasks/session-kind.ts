@@ -1,8 +1,5 @@
+import type { SessionKind } from "@/db/columns";
 import { hourMs } from "@/lib/dates";
-
-export const sessionKinds = ["first", "retry", "mock"] as const;
-
-export type SessionKind = (typeof sessionKinds)[number];
 
 export const attemptGapMs = hourMs;
 

@@ -1,4 +1,4 @@
-import { hasGuestToAdopt } from "@/server/auth";
+import { hasGuestToAdopt } from "./adopt";
 import { GuestAdoption } from "./guest-adoption";
 
 export async function AdoptGuest() {

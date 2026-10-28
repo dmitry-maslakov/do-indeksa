@@ -12,7 +12,7 @@ import { outcomesOf } from "@/features/review/outcomes";
 import { review } from "@/features/review/review";
 import { ReviewRows } from "@/features/review/review-rows";
 import { Link } from "@/i18n/navigation";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { LostPoints } from "./_components/lost-points";
 import { ReviewSummary } from "./_components/review-summary";
 import { TimeSpent } from "./_components/time-spent";

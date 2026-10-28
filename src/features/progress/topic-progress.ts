@@ -1,7 +1,7 @@
 import { maxBy } from "es-toolkit";
+import type { SuggestionReason } from "@/db/columns";
 import { dayMs } from "@/lib/dates";
 import type { TaskStat } from "./stats";
-import type { SuggestionReason } from "./suggestion-reasons";
 
 export const topicStates = [
   "mastered",

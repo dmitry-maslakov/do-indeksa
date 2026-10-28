@@ -1,5 +1,5 @@
 import { sumBy } from "es-toolkit";
-import { isRight, type PartOutcome } from "@/lib/part-outcome";
+import { isRight, type PartOutcome } from "@/db/columns";
 import { type Segment, segmentOf } from "@/lib/strip";
 
 export interface ReviewTask {

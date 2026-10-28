@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { reportKinds } from "@/db/columns";
 import { actionClient } from "@/server/action-client";
-import { reportKinds } from "./report-kinds";
 import { saveReport } from "./reports";
 import { taskIdSchema } from "./tasks";
 

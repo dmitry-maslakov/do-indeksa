@@ -3,7 +3,7 @@ import { nextTask } from "@/features/bank/queue";
 import { idsByTopic } from "@/features/tasks/tasks";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 
 export async function GET(
   _: Request,

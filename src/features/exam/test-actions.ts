@@ -2,9 +2,9 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
+import { testDraft } from "@/db/columns";
 import { timeZoneSchema } from "@/lib/dates";
 import { actionClient } from "@/server/action-client";
-import { testDraft } from "./test-draft";
 import { finishTest, saveDraft } from "./test-sessions";
 
 const testInput = z.object({

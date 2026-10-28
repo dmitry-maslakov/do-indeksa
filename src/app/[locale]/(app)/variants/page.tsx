@@ -18,7 +18,7 @@ import { getLatestTests, getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { ComposeCard } from "./_components/compose-card";
 import { ExamRow } from "./_components/exam-row";
 import { TestHistory } from "./_components/test-history";

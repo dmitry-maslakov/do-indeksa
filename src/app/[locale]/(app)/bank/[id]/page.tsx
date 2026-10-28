@@ -19,7 +19,7 @@ import { TaskSessionProvider } from "@/features/tasks/task-session";
 import { getTask, renderTask, tasks, taskTitle } from "@/features/tasks/tasks";
 import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { PhoneBar } from "./_components/phone-bar";
 import { Rail } from "./_components/rail";
 import { TaskMeta } from "./_components/task-meta";

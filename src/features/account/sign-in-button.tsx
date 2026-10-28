@@ -3,8 +3,8 @@
 import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "@/i18n/navigation";
+import type { SignInSource } from "@/server/sign-up-source";
 import { signIn } from "./auth-client";
-import type { SignInSource } from "./sign-up-source";
 
 interface GoogleSignInButtonProps extends ComponentProps<typeof Button> {
   from?: SignInSource;

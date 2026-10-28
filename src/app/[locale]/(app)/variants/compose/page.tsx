@@ -5,7 +5,7 @@ import { saveSet } from "@/features/exam/sets";
 import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
 import { redirect } from "@/i18n/navigation";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 
 export const instant = false;
 

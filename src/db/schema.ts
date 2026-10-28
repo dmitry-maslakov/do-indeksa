@@ -16,12 +16,14 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import type { TestDraft } from "@/features/exam/test-draft";
-import { suggestionReasons } from "@/features/progress/suggestion-reasons";
-import { reportKinds } from "@/features/tasks/report-kinds";
-import { sessionKinds } from "@/features/tasks/session-kind";
-import { partOutcomes } from "@/lib/part-outcome";
 import { user } from "./auth-schema";
+import {
+  partOutcomes,
+  reportKinds,
+  sessionKinds,
+  suggestionReasons,
+  type TestDraft,
+} from "./columns";
 
 export * from "./auth-schema";
 

@@ -5,18 +5,12 @@ import { isAPIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { oAuthProxy } from "better-auth/plugins";
 import { io } from "next/cache";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { cache } from "react";
-import {
-  adoptGuest,
-  createGuestProfile,
-  guestProfileOf,
-  profileOf,
-} from "@/features/account/profiles";
-import { signUpSource } from "@/features/account/sign-up-source";
 import { db } from "./db";
 import { env } from "./env";
 import { reportServerError } from "./report";
+import { signUpSource } from "./sign-up-source";
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -75,51 +69,7 @@ export const auth = betterAuth({
   ],
 });
 
-const getSession = cache(async () => {
+export const getSession = cache(async () => {
   await io();
   return auth.api.getSession({ headers: await headers() });
 });
-
-const profileCookie = "__Host-profile";
-const noProfile = "00000000-0000-0000-0000-000000000000";
-const profileCookieAge = 400 * 24 * 60 * 60;
-const profileCookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "lax",
-  path: "/",
-} as const;
-
-export const findProfileId = cache(async () => {
-  const session = await getSession();
-  if (session) return profileOf(session.user.id);
-  const token = (await cookies()).get(profileCookie)?.value;
-  return token ? guestProfileOf(token) : undefined;
-});
-
-export const getProfileId = async () => (await findProfileId()) ?? noProfile;
-
-export async function ensureProfileId() {
-  const found = await findProfileId();
-  if (found) return found;
-  const { id, token } = await createGuestProfile();
-  (await cookies()).set(profileCookie, token, {
-    ...profileCookieOptions,
-    maxAge: profileCookieAge,
-  });
-  return id;
-}
-
-export async function hasGuestToAdopt() {
-  const [session, jar] = await Promise.all([getSession(), cookies()]);
-  return Boolean(session && jar.has(profileCookie));
-}
-
-export async function adoptGuestProfile() {
-  const [session, jar] = await Promise.all([getSession(), cookies()]);
-  const token = jar.get(profileCookie)?.value;
-  if (!session || !token) return false;
-  const merged = await adoptGuest(session.user.id, token);
-  jar.set(profileCookie, "", { ...profileCookieOptions, maxAge: 0 });
-  return merged;
-}
