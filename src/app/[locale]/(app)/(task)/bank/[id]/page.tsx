@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
@@ -18,8 +17,6 @@ import {
 } from "@/features/catalog/tasks";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { AnswerForm } from "@/features/practice/answer/answer-form";
-import { FavoriteButton } from "@/features/practice/favorite-button";
-import { FavoriteToggle } from "@/features/practice/favorite-toggle";
 import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
@@ -97,16 +94,13 @@ export default async function SolvePage({
         </RailPanel>
         <TaskSessionProvider key={id} taskId={id}>
           <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
-            <div className="flex min-h-10 items-start justify-between gap-4 md:items-center">
+            <div className="flex min-h-10 items-start md:items-center">
               <TaskMeta
                 topic={topic}
                 exam={examSource(task.source)}
                 level={levelOf(task.difficulty)}
                 before={queue.before}
               />
-              <Suspense fallback={<FavoriteButton taskId={id} pending />}>
-                <FavoriteToggle taskId={id} />
-              </Suspense>
             </div>
             <MathHtml
               html={html.statement}

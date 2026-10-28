@@ -8,7 +8,6 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  primaryKey,
   smallint,
   text,
   timestamp,
@@ -142,16 +141,6 @@ export const attempts = pgTable(
     unique().on(t.profileId, t.clientId),
     inTaskSession(t),
   ],
-);
-
-export const favorites = pgTable(
-  "favorites",
-  {
-    profileId: owner(),
-    taskId: text().notNull(),
-    createdAt: stampNow(),
-  },
-  (t) => [primaryKey({ columns: [t.profileId, t.taskId] })],
 );
 
 export const sets = pgTable(

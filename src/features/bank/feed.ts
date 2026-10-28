@@ -4,7 +4,7 @@ import type { Level } from "@/features/catalog/level";
 import { getTask, type TaskSummary } from "@/features/catalog/tasks";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import type { Progress, TaskStatus } from "@/features/progress/status";
+import type { TaskStatus, TaskStatuses } from "@/features/progress/status";
 import type { Page } from "@/lib/use-feed";
 import { type ExamSource, examSource } from "./source";
 
@@ -15,7 +15,6 @@ export interface BankCard {
   level: Level;
   statement: string;
   status: TaskStatus;
-  favorite: boolean;
 }
 
 const pageSize = 30;
@@ -23,7 +22,7 @@ const pageSize = 30;
 function cardOf(
   task: TaskSummary,
   locale: Locale,
-  progress?: Progress,
+  statuses?: TaskStatuses,
 ): BankCard {
   const content = getTask(task.id);
   return {
@@ -36,8 +35,7 @@ function cardOf(
     exam: content ? examSource(content.source) : null,
     level: task.level,
     statement: content?.text ?? "",
-    status: progress?.statuses.get(task.id) ?? "new",
-    favorite: progress?.favorites.has(task.id) ?? false,
+    status: statuses?.get(task.id) ?? "new",
   };
 }
 
@@ -45,13 +43,13 @@ export function bankPage(
   tasks: TaskSummary[],
   offset: number,
   locale: Locale,
-  progress?: Progress,
+  statuses?: TaskStatuses,
 ): Page<BankCard> {
   const end = offset + pageSize;
   return {
     items: tasks
       .slice(offset, end)
-      .map((task) => cardOf(task, locale, progress)),
+      .map((task) => cardOf(task, locale, statuses)),
     next: end < tasks.length ? end : null,
   };
 }

@@ -6,7 +6,4 @@ export interface Touched {
   today: boolean;
 }
 
-export interface Progress {
-  statuses: Map<string, TaskStatus>;
-  favorites: Set<string>;
-}
+export type TaskStatuses = Map<string, TaskStatus>;

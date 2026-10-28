@@ -14,15 +14,9 @@ const count = async (db: Client, table: string, column: string, id: string) =>
 const userExists = async (db: Client, id: string) =>
   (await db.query(`select 1 from "user" where id = $1`, [id])).rowCount;
 
-const favorite = (db: Client, id: string) =>
-  db.query(
-    `insert into favorites (profile_id, task_id) values ($1, 'eks-001')`,
-    [id],
-  );
-
 test("a user deletes the account", async ({ page, auth }) => {
   const { userId, profileId } = await auth.signIn();
-  await favorite(auth.db, profileId);
+  await seedAttempt(auth.db, profileId, "eks-001", true);
   await page.addInitScript(() =>
     localStorage.setItem(
       "do-indeksa-exam",
@@ -43,7 +37,7 @@ test("a user deletes the account", async ({ page, auth }) => {
   expect(await userExists(auth.db, userId)).toBe(0);
   expect(await count(auth.db, "session", "user_id", userId)).toBe(0);
   expect(await count(auth.db, "profiles", "id", profileId)).toBe(0);
-  expect(await count(auth.db, "favorites", "profile_id", profileId)).toBe(0);
+  expect(await count(auth.db, "attempts", "profile_id", profileId)).toBe(0);
   expect(
     await page.evaluate(
       () =>
@@ -58,7 +52,7 @@ test("a stale session signs in again before deleting", async ({
 }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
   const { userId, profileId } = await auth.signIn(2 * dayMs);
-  await favorite(auth.db, profileId);
+  await seedAttempt(auth.db, profileId, "eks-001", true);
   await page.goto("/privacy");
   await page.getByRole("button", { name: "Obriši nalog" }).click();
   const dialog = page.getByRole("alertdialog");
@@ -71,7 +65,7 @@ test("a stale session signs in again before deleting", async ({
     .click();
   await signInRequest;
   expect(await userExists(auth.db, userId)).toBe(1);
-  expect(await count(auth.db, "favorites", "profile_id", profileId)).toBe(1);
+  expect(await count(auth.db, "attempts", "profile_id", profileId)).toBe(1);
 });
 
 test("signing out hides the account statistics", async ({ page, auth }) => {

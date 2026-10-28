@@ -35,7 +35,7 @@ describe("bankParsers", () => {
   it("drops empty and unknown values", () => {
     expect(
       load(
-        "?q=%20&number=-1&topic=&source=book&level=bogus&sort=up&status=old",
+        "?q=%20&number=-1&topic=&source=book&level=bogus&sort=up&status=favorite",
       ),
     ).toEqual(none);
     expect(load("?number=0")).toEqual(none);

@@ -1,8 +1,7 @@
 import "server-only";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import {
   attempts,
-  favorites,
   profiles,
   reports,
   suggestions,
@@ -14,9 +13,7 @@ import { db, type Tx } from "@/server/db";
 import { forgetGuest, guestToken, tokenHashOf } from "@/server/profile";
 
 const hasProgress = async (tx: Tx, profileId: string) =>
-  (await tx.$count(attempts, eq(attempts.profileId, profileId))) +
-    (await tx.$count(favorites, eq(favorites.profileId, profileId))) >
-  0;
+  (await tx.$count(attempts, eq(attempts.profileId, profileId))) > 0;
 
 async function mergeGuest(userId: string, token: string) {
   return db.transaction(async (tx) => {
@@ -52,19 +49,6 @@ async function mergeGuest(userId: string, token: string) {
       .update(taskSessions)
       .set({ profileId: own.id })
       .where(eq(taskSessions.profileId, guest.id));
-    await tx
-      .insert(favorites)
-      .select(
-        tx
-          .select({
-            profileId: sql`${own.id}::uuid`.as("profile_id"),
-            taskId: favorites.taskId,
-            createdAt: favorites.createdAt,
-          })
-          .from(favorites)
-          .where(eq(favorites.profileId, guest.id)),
-      )
-      .onConflictDoNothing();
     await tx
       .update(reports)
       .set({ profileId: own.id })

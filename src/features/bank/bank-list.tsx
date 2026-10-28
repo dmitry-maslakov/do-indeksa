@@ -1,16 +1,16 @@
 import { getLocale } from "next-intl/server";
 import type { TaskSummary } from "@/features/catalog/tasks";
-import type { Progress } from "@/features/progress/status";
+import type { TaskStatuses } from "@/features/progress/status";
 import { BankFeed } from "./bank-feed";
 import { bankPage } from "./feed";
 
 interface BankListProps {
   tasks: TaskSummary[];
   search: string;
-  progress?: Progress;
+  statuses?: TaskStatuses;
 }
 
-export async function BankList({ tasks, search, progress }: BankListProps) {
-  const first = bankPage(tasks, 0, await getLocale(), progress);
+export async function BankList({ tasks, search, statuses }: BankListProps) {
+  const first = bankPage(tasks, 0, await getLocale(), statuses);
   return <BankFeed key={search} search={search} first={first} />;
 }
