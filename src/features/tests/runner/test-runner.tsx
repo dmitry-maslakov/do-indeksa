@@ -26,6 +26,8 @@ import {
 } from "./test-store";
 import { TestTask } from "./test-task";
 
+const { start, answer, go, restore, swap, clear } = useTestStore.getState();
+
 interface TestRunnerProps {
   variantId: string;
   tasks: Task[];
@@ -58,7 +60,6 @@ export function TestRunner({
   const hydrated = useTestHydrated();
   const router = useRouter();
   const test = useTestStore((s) => s.tests[variantId]);
-  const { start, answer, go, restore, swap, clear } = useTestStore.getState();
   const t = useTranslations("Exam");
   const locale = useLocale();
   const errorText = useErrorText();
@@ -103,10 +104,10 @@ export function TestRunner({
     if (!hydrated || opened.current) return;
     opened.current = true;
     if (!resumed) start(variantId, meta);
-  }, [hydrated, resumed, start, variantId, meta]);
+  }, [hydrated, resumed, variantId, meta]);
   useEffect(() => {
     if (hydrated && resumed) restore(variantId, resumed);
-  }, [hydrated, resumed, restore, variantId]);
+  }, [hydrated, resumed, variantId]);
   useEffect(() => {
     if (!test || test.updatedAt <= synced || test.updatedAt === test.startedAt)
       return;
@@ -117,7 +118,7 @@ export function TestRunner({
   }, [test, synced, variantId]);
   const onAnswer = useCallback(
     (part: number, value: string) => answer(variantId, part, value),
-    [answer, variantId],
+    [variantId],
   );
 
   const task = test && tasks[test.current];

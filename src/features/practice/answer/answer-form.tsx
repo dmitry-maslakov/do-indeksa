@@ -101,7 +101,7 @@ export function AnswerForm({
     <form
       action={(form) => {
         setEdited(false);
-        answerId.current ??= crypto.randomUUID();
+        if (!answerId.current) answerId.current = crypto.randomUUID();
         form.set("clientId", answerId.current);
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
