@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
@@ -83,11 +83,11 @@ export function AnswerForm({
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
   const [values, setValues] = useState(() => parts.map(() => ""));
-  const onChange = useCallback((index: number, value: string) => {
+  const onChange = (index: number, value: string) => {
     setEdited(true);
     answerId.current = null;
     setValues((all) => all.with(index, value));
-  }, []);
+  };
 
   const checked = edited ? undefined : result.data;
   const fields = parts.map((part, i) => ({

@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
   deploymentId: process.env.GIT_SHA,
   agentRules: false,
   cacheComponents: true,
+  reactCompiler: { panicThreshold: "all_errors" },
   cacheMaxMemorySize: 0,
   partialPrefetching: true,
   serverExternalPackages: ["@cortex-js/compute-engine"],

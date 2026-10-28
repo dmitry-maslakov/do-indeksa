@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
@@ -116,10 +116,8 @@ export function TestRunner({
     }, 1500);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
-  const onAnswer = useCallback(
-    (part: number, value: string) => answer(variantId, part, value),
-    [variantId],
-  );
+  const onAnswer = (part: number, value: string) =>
+    answer(variantId, part, value);
 
   const task = test && tasks[test.current];
   if (!test || !task) {

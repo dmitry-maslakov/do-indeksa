@@ -1,7 +1,6 @@
 "use client";
 
 import { cva } from "class-variance-authority";
-import { useCallback } from "react";
 import { MathHtml } from "@/components/math-html";
 import type { PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
@@ -95,10 +94,7 @@ export function AnswerField({
   placeholder,
   onChange,
 }: AnswerFieldProps) {
-  const onEdit = useCallback(
-    (value: string) => onChange(index, value),
-    [index, onChange],
-  );
+  const onEdit = (value: string) => onChange(index, value);
   const { field, value } = useMathField(defaultValue, onEdit);
 
   return (
