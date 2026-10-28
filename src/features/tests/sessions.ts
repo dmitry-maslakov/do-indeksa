@@ -1,3 +1,4 @@
+import { clamp } from "es-toolkit";
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { cache } from "react";
@@ -81,8 +82,8 @@ function sessionsOf(
   return visits.flatMap((visit) => {
     const taskId = taskIds[visit.task];
     if (!taskId) return [];
-    const start = Math.min(Math.max(visit.startedAt, startedAt), now);
-    const end = Math.min(Math.max(visit.endedAt, start), now);
+    const start = clamp(visit.startedAt, startedAt, now);
+    const end = clamp(visit.endedAt, start, now);
     return [{ ...visit, taskId, start, end }];
   });
 }

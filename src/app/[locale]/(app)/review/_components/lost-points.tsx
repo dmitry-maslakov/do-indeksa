@@ -1,4 +1,4 @@
-import { orderBy } from "es-toolkit";
+import { orderBy, round } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { topicLook } from "@/features/catalog/topics";
@@ -43,7 +43,7 @@ export function LostPoints({
               </span>
             </span>
             <span className="font-semibold text-[15px] tabular-nums">
-              −{Math.round((row.points - row.earned) * 10) / 10}
+              −{round(row.points - row.earned, 1)}
             </span>
           </li>
         ))}
