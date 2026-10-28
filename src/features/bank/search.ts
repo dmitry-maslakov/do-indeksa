@@ -1,4 +1,4 @@
-import { orderBy } from "es-toolkit";
+import { deburr, orderBy } from "es-toolkit";
 import "server-only";
 import type { inferParserType } from "nuqs/server";
 import { summarize, type TaskSummary, tasks } from "@/features/catalog/tasks";
@@ -10,8 +10,7 @@ export const bankPage = 30;
 
 export type BankFilters = Partial<inferParserType<typeof bankParsers>>;
 
-const fold = (s: string) =>
-  s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+const fold = (s: string) => deburr(s).toLowerCase();
 
 interface Entry {
   summary: TaskSummary;

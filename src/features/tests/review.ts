@@ -1,4 +1,4 @@
-import { sumBy } from "es-toolkit";
+import { round, sumBy } from "es-toolkit";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { Slot } from "@/features/variants/variants";
 import { minuteMs } from "@/lib/dates";
@@ -67,7 +67,10 @@ export function review<T extends Slot, A extends ReviewAttempt>(
 
   return {
     rows,
-    score: Math.round(sumBy(rows, (r) => r.earned) * 10) / 10,
+    score: round(
+      sumBy(rows, (r) => r.earned),
+      1,
+    ),
     max: sumBy(rows, (r) => r.points),
     correct: rows.filter((r) => r.attempt?.correct).length,
     spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
