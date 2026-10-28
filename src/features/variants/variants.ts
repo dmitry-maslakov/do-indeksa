@@ -1,7 +1,6 @@
-import { orderBy, sumBy } from "es-toolkit";
-import type { PartLabel } from "@/features/catalog/parts";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
+import { orderBy, sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import {
   dailySize,
@@ -9,6 +8,7 @@ import {
   positionOf,
   positions,
 } from "@/features/catalog/exams";
+import type { PartLabel } from "@/features/catalog/parts";
 import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import { pick } from "./pick";

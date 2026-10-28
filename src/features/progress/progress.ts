@@ -5,9 +5,9 @@ import { positions } from "@/features/catalog/exams";
 import { idsByTopic } from "@/features/catalog/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
-import { decidesStatus, getLatestResults, getTaskStats } from "./history";
 import { type TaskStat, weakest } from "./stats";
 import type { Progress, TaskStatus, Touched } from "./status";
+import { decidesStatus, getLatestResults, getTaskStats } from "./task-stats";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
 async function getLastSeen(profileId: string, taskIds: string[]) {

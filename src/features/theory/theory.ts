@@ -1,6 +1,6 @@
-import { sortBy } from "es-toolkit";
 import "server-only";
 import { allMethods, allTheories } from "content-collections";
+import { sortBy } from "es-toolkit";
 import { numberOf } from "@/features/catalog/exams";
 
 export const theories = sortBy(allTheories, [

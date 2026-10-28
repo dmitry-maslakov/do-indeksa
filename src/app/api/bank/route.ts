@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { feedPage } from "@/features/bank/feed";
+import { bankPage } from "@/features/bank/feed";
 import { loadBankFilters } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
 import { getProgress } from "@/features/progress/progress";
@@ -14,6 +14,6 @@ export async function GET(request: NextRequest) {
   const progress = await getProgress(await getProfileId());
   const tasks = findTasks(filters, progress);
   return Response.json(
-    feedPage(tasks, query.data.offset, query.data.locale, progress),
+    bankPage(tasks, query.data.offset, query.data.locale, progress),
   );
 }

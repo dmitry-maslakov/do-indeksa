@@ -2,13 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { LoadMore } from "@/components/load-more";
-import { useFeed } from "@/lib/use-feed";
-import type { FeedPage } from "./feed";
+import { type Page, useFeed } from "@/lib/use-feed";
+import type { BankCard } from "./feed";
 import { TaskCard } from "./task-card";
 
 interface BankFeedProps {
   search: string;
-  first: FeedPage;
+  first: Page<BankCard>;
 }
 
 export function BankFeed({ search, first }: BankFeedProps) {
@@ -18,7 +18,7 @@ export function BankFeed({ search, first }: BankFeedProps) {
   return (
     <>
       {feed.data.pages
-        .flatMap((page) => page.cards)
+        .flatMap((page) => page.items)
         .map((card) => (
           <TaskCard key={card.id} card={card} />
         ))}

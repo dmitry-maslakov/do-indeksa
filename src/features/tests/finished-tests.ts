@@ -4,7 +4,7 @@ import { alias, type SelectedFields } from "drizzle-orm/pg-core";
 import { cache } from "react";
 import { z } from "zod";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
-import { sessionMs } from "@/features/progress/history";
+import { sessionMs } from "@/features/progress/task-stats";
 import { db } from "@/server/db";
 
 const testIdStartingWith = (code: string) =>

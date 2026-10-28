@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
-import { getUnfinishedTest } from "@/features/tests/sessions";
+import { getUnfinishedTest } from "@/features/tests/test-sessions";
 import type { ComposeMode } from "@/features/variants/compose";
 import { swapIds } from "@/features/variants/compose-set";
 import { variantTitle } from "@/features/variants/variant-title";
@@ -14,17 +13,6 @@ import {
 import { getProfileId } from "@/server/profile";
 import { TestGhost } from "./test-ghost";
 import { TestRunner } from "./test-runner";
-
-export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
-  const t = await getTranslations("Variants");
-  return {
-    title: await variantTitle(variant, await getLocale()),
-    description: t("format", {
-      tasks: variant.taskIds.length,
-      minutes: minutesOf(variant),
-    }),
-  };
-}
 
 export async function TestScreen({
   variant,

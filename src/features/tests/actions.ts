@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
-import { finishTest, saveDraft, testInput } from "./sessions";
+import { finishTest, saveDraft, testInput } from "./test-sessions";
 
 export const saveTest = actionClient
   .inputSchema(testInput)

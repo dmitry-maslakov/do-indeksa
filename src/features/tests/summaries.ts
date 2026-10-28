@@ -10,7 +10,8 @@ import {
 } from "@/features/variants/variants";
 import { weeklyVariant } from "@/features/variants/weekly";
 import type { Segment } from "@/lib/strip";
-import { getTestAttempts } from "./history";
+import type { Page } from "@/lib/use-feed";
+import { getTestAttempts, getTests } from "./finished-tests";
 import { review } from "./review";
 
 export interface TestRow {
@@ -66,4 +67,18 @@ export async function summarizeTests(
       };
     }),
   );
+}
+
+const pageSize = 20;
+
+export async function testPage(
+  profileId: string,
+  offset: number,
+  locale: Locale,
+): Promise<Page<TestSummary>> {
+  const rows = await getTests(profileId, pageSize + 1, offset);
+  return {
+    items: await summarizeTests(profileId, rows.slice(0, pageSize), locale),
+    next: rows.length > pageSize ? offset + pageSize : null,
+  };
 }

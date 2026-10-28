@@ -1,7 +1,7 @@
 import { io } from "next/cache";
 import { getLocale } from "next-intl/server";
-import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
+import { getTaskStats } from "@/features/progress/task-stats";
 import { composeSchema, composeTaskIds } from "@/features/variants/compose-set";
 import { saveSet } from "@/features/variants/sets";
 import { redirect } from "@/i18n/navigation";

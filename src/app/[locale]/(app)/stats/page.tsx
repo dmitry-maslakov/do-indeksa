@@ -6,13 +6,13 @@ import { PageTitle } from "@/components/page-title";
 import { minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import { getTaskStats, getTaskTimes } from "@/features/progress/history";
 import {
   accuracyBy,
   meanTimeByNumber,
   totals,
 } from "@/features/progress/stats";
-import { countTests, getTests } from "@/features/tests/history";
+import { getTaskStats, getTaskTimes } from "@/features/progress/task-stats";
+import { countTests, getTests } from "@/features/tests/finished-tests";
 import { summarizeTests } from "@/features/tests/summaries";
 import { minuteMs } from "@/lib/dates";
 import { getProfileId } from "@/server/profile";

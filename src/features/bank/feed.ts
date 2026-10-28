@@ -5,7 +5,7 @@ import { getTask, type TaskSummary } from "@/features/catalog/tasks";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { Progress, TaskStatus } from "@/features/progress/status";
-import { bankPage } from "./search";
+import type { Page } from "@/lib/use-feed";
 import { type ExamSource, examSource } from "./source";
 
 export interface BankCard {
@@ -18,10 +18,7 @@ export interface BankCard {
   favorite: boolean;
 }
 
-export interface FeedPage {
-  cards: BankCard[];
-  next: number | null;
-}
+const pageSize = 30;
 
 function cardOf(
   task: TaskSummary,
@@ -44,15 +41,15 @@ function cardOf(
   };
 }
 
-export function feedPage(
+export function bankPage(
   tasks: TaskSummary[],
   offset: number,
   locale: Locale,
   progress?: Progress,
-): FeedPage {
-  const end = offset + bankPage;
+): Page<BankCard> {
+  const end = offset + pageSize;
   return {
-    cards: tasks
+    items: tasks
       .slice(offset, end)
       .map((task) => cardOf(task, locale, progress)),
     next: end < tasks.length ? end : null,
