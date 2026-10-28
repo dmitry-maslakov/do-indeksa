@@ -2,7 +2,7 @@
 
 Do indeksa is one Next.js app. Pages render on the server and call feature code directly, writes go through server actions, and the few reads the client drives go through GET route handlers. Postgres holds only what students do. Topics, exams, tasks, variants and theory are Markdown files compiled into the build.
 
-Filters, sort and search live in the URL through nuqs. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page.
+Filters, sort and search live in the URL through nuqs. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page. Bank cards carry their statement as HTML from the server renderer, so the browser has no Markdown stack.
 
 ## Code map
 

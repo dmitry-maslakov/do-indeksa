@@ -14,6 +14,6 @@ export async function GET(request: NextRequest) {
   const statuses = await getTaskStatuses(await getProfileId());
   const tasks = findTasks(filters, statuses);
   return Response.json(
-    bankPage(tasks, query.data.offset, query.data.locale, statuses),
+    await bankPage(tasks, query.data.offset, query.data.locale, statuses),
   );
 }

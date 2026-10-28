@@ -1,18 +1,25 @@
 import type { Task } from "content-collections";
 import { createTranslator } from "next-intl";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { routing } from "@/i18n/routing";
+import { renderMarkdown } from "@/lib/markdown";
 import en from "../../../messages/en.json";
 import ru from "../../../messages/ru.json";
 import sr from "../../../messages/sr-Latn.json";
 import {
   getTask,
   idsByTopic,
+  renderStatement,
   summarize,
   taskIdSchema,
   tasks,
   taskTitle,
 } from "./tasks";
+
+vi.mock("@/lib/markdown", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/markdown")>();
+  return { ...actual, renderMarkdown: vi.fn(actual.renderMarkdown) };
+});
 
 const messages = { "sr-Latn": sr, ru, en };
 
@@ -40,6 +47,18 @@ describe("task index", () => {
     expect([...idsByTopic.values()].flat().sort()).toEqual(
       tasks.map((t) => t.id).sort(),
     );
+  });
+});
+
+describe("task statements", () => {
+  it("render once and then come from the cache", async () => {
+    for (const task of tasks.slice(0, 3)) {
+      vi.mocked(renderMarkdown).mockClear();
+      const html = await renderStatement(task);
+      expect(html).toMatch(/^</);
+      expect(await renderStatement(task)).toBe(html);
+      expect(renderMarkdown).toHaveBeenCalledTimes(1);
+    }
   });
 });
 
