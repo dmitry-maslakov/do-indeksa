@@ -1,10 +1,10 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { ExamMark } from "@/components/exam-mark";
 import { MathHtml } from "@/components/math-html";
 import { RailLink } from "@/components/rail";
 import type { QueueRow } from "@/features/bank/queue/queue";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { ExamMark } from "./task-meta";
 
 const preview = "min-w-0 overflow-hidden whitespace-nowrap mask-r-from-85%";
 
@@ -36,7 +36,9 @@ export function QueueLink({ task, href, current, next }: QueueLinkProps) {
             </span>
           )}
           <span className="min-w-0 max-w-full truncate">{task.topic}</span>
-          {task.year && <ExamMark year={task.year} />}
+          {task.year && (
+            <ExamMark>{t("exam", { year: String(task.year) })}</ExamMark>
+          )}
         </span>
       </span>
     </RailLink>
