@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
 import { comparisonsOf } from "@/features/tests/comparisons";
 import type { getTest } from "@/features/tests/finished-tests";
@@ -18,6 +18,7 @@ export async function TestReview({
   guest: boolean;
 }) {
   const locale = await getLocale();
+  const strip = await getTranslations("SignInStrip");
   const tasks = await tasksFor(found.test.taskIds, locale);
   const result = review(tasks, found.attempts);
   const variant = getVariant(found.test.variantId);
@@ -33,7 +34,7 @@ export async function TestReview({
         original={variant?.original}
         finishedAt={found.test.finishedAt}
       >
-        {guest && <SignInStrip from="result" />}
+        {guest && <SignInStrip from="result">{strip("result")}</SignInStrip>}
       </ReviewSummary>
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
         <ReviewRows

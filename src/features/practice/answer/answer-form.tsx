@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
@@ -20,6 +20,7 @@ interface AnswerFormProps {
   unchecked: string[];
   next?: string;
   fallback: string;
+  afterCorrect?: ReactNode;
 }
 
 interface Checked {
@@ -74,6 +75,7 @@ export function AnswerForm({
   unchecked,
   next,
   fallback,
+  afterCorrect,
 }: AnswerFormProps) {
   const t = useTranslations("Solve");
   const { executeAsync, result, isPending, hasErrored } =
@@ -167,6 +169,7 @@ export function AnswerForm({
         )}
         {checked && <Result checked={checked} />}
       </div>
+      {checked?.correct && afterCorrect}
     </form>
   );
 }

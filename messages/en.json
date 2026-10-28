@@ -62,7 +62,8 @@
     "save": "Save",
     "close": "Close",
     "result": "This test result is only on this device",
-    "stats": "These statistics are only on this device"
+    "stats": "These statistics are only on this device",
+    "task": "{count, plural, one {# solved task is} other {# solved tasks are}} only on this device"
   },
   "Bank": {
     "title": "Task bank",

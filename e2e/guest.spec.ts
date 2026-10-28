@@ -1,6 +1,6 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import type { BrowserContext, Page } from "@playwright/test";
-import { answer, expect, finish, test } from "./fixtures";
+import { answer, expect, finish, seedAttempt, test } from "./fixtures";
 
 async function openSheet(page: Page, topic: RegExp) {
   const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
@@ -32,6 +32,48 @@ test("a guest finds a solved task in statistics after a reload", async ({
   await expect(
     page.getByRole("region", { name: "Sačuvaj napredak" }),
   ).toContainText("Statistika je samo na ovom uređaju");
+});
+
+async function solveFirst(page: Page) {
+  await page.goto("/bank/eks-001");
+  await answer(page, "2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+}
+
+test("a guest with five solved tasks is offered to save them once a visit", async ({
+  page,
+  context,
+  auth,
+}) => {
+  const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
+  await solveFirst(page);
+  await expect(strip).toHaveCount(0);
+
+  const token = (await context.cookies()).find(
+    (c) => c.name === "__Host-profile",
+  )?.value;
+  const { rows } = await auth.db.query(
+    "select id from profiles where token_hash = $1",
+    [createHash("sha256").update(String(token)).digest("base64url")],
+  );
+  for (const taskId of ["eks-002", "kb-003", "log-001", "trig-001"])
+    await seedAttempt(auth.db, rows[0].id, taskId, true);
+
+  await solveFirst(page);
+  await expect(strip).toContainText(
+    "5 rešenih zadataka je samo na ovom uređaju",
+  );
+  await strip.getByRole("button", { name: "Zatvori" }).click();
+  await expect(strip).toBeHidden();
+  await solveFirst(page);
+  await expect(strip).toHaveCount(0);
+
+  const next = await context.newPage();
+  await solveFirst(next);
+  await expect(
+    next.getByRole("region", { name: "Sačuvaj napredak" }),
+  ).toBeVisible();
 });
 
 const profileCookie = async (context: BrowserContext) =>
