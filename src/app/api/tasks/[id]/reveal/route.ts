@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { revealPart } from "@/features/tasks/reveal-part";
+import { revealPart } from "@/features/practice/reveal/reveal-part";
 
 const partSchema = z.union([
   z.enum(["answer", "solution"]),

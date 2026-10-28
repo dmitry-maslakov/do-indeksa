@@ -5,7 +5,7 @@ import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
 import type { ExamTask } from "@/features/exam/variants";
-import { Reveal } from "@/features/tasks/reveal";
+import { Reveal } from "@/features/practice/reveal/reveal";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
 import type {

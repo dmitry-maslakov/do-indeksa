@@ -9,8 +9,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { keepTaskSession } from "@/features/practice/session-action";
 import { localTimeZone } from "@/lib/dates";
-import { keepTaskSession } from "./session-action";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
 

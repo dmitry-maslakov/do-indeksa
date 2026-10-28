@@ -4,8 +4,8 @@ import { ArrowRightIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
-import { phoneBar } from "@/features/tasks/action-bar";
-import { AnswerField } from "@/features/tasks/answer-field";
+import { phoneBar } from "@/features/practice/answer/action-bar";
+import { AnswerField } from "@/features/practice/answer/answer-field";
 import type { ExamTask as Task } from "./variants";
 
 interface ExamTaskProps {

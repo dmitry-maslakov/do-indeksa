@@ -4,10 +4,10 @@ import { cn } from "cn";
 import { range } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
+import { saveReveal } from "@/features/practice/reveal-action";
+import { useTaskSession } from "@/features/practice/session/task-session";
 import { RevealContent } from "./reveal";
-import { saveReveal } from "./reveal-action";
 import type { RevealPart } from "./reveal-part";
-import { useTaskSession } from "./task-session";
 
 interface HelpPanelProps {
   taskId: string;

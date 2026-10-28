@@ -6,16 +6,16 @@ import { useAction } from "next-safe-action/hooks";
 import { useCallback, useRef, useState } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
+import { checkAnswer } from "@/features/practice/answer-action";
+import { useTaskSession } from "@/features/practice/session/task-session";
+import { saveSkip } from "@/features/practice/skip-action";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
-import { checkAnswer } from "./answer-action";
 import { AnswerField } from "./answer-field";
 import type { AnswerState } from "./answer-state";
-import { saveSkip } from "./skip-action";
-import { useTaskSession } from "./task-session";
 
 interface AnswerFormProps {
   taskId: string;
