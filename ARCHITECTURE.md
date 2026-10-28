@@ -18,7 +18,7 @@ A weekly variant is `variants/nedelja-<Monday>.yaml` with tasks `nedelja-<Monday
 
 - `catalog` reads content: exams, topics, tasks and the answer checker.
 - `progress` turns attempts into task status, topic progress and statistics.
-- `practice` is working on one task: the answer field, hints and solutions, task sessions, favorites and reports.
+- `practice` is working on one task: the answer field, hints and solutions, task sessions and reports.
 - `bank` is the task list with filters, search and the queue of what to solve next.
 - `variants` lists exam variants, the weekly one and variants composed from chosen topics.
 - `tests` runs a variant as a test, grades it and shows the review.
@@ -40,11 +40,11 @@ A task page gets the statement and the part labels. A server action checks answe
 
 ### Everything belongs to a profile
 
-A profile is the student, and the better-auth user is only how they sign in. Task and test sessions, attempts, reveals, skips, favorites, suggestions and reports all point at `profiles.id`. A guest gets a profile on their first action, keyed by a random token in an httpOnly `__Host-profile` cookie whose hash is stored. That cookie never opens a profile that has a user.
+A profile is the student, and the better-auth user is only how they sign in. Task and test sessions, attempts, reveals, skips, suggestions and reports all point at `profiles.id`. A guest gets a profile on their first action, keyed by a random token in an httpOnly `__Host-profile` cookie whose hash is stored. That cookie never opens a profile that has a user.
 
 Feature functions take the profile id as an argument and scope every query to it. The id comes from `src/server/profile.ts`, from the session or the cookie, never from request input.
 
-When someone signs in while holding a guest cookie, the account takes over the guest profile. If the account already has a profile, the guest's sessions, favorites, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts, favorites or tests.
+When someone signs in while holding a guest cookie, the account takes over the guest profile. If the account already has a profile, the guest's sessions, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts or tests.
 
 ### A sitting on a task is a task session
 

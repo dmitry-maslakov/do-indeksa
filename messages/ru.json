@@ -79,7 +79,7 @@
     "more": "Показать ещё",
     "taskLevel": "{level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}",
     "status": "Мой статус",
-    "statuses": "{status, select, new {Нерешённые} solved {Решённые верно} wrong {Ошибки} favorite {Сохранённые} other {}}",
+    "statuses": "{status, select, new {Нерешённые} solved {Решённые верно} wrong {Ошибки} other {}}",
     "searchPlaceholder": "Текст, формула, год…",
     "position": "{number, number}-я задача",
     "anyLevel": "Любая",
@@ -94,7 +94,7 @@
     "exam": "Экзамен {year} · {position, number}-я задача",
     "mark": "{status, select, solved {верно} wrong {неверно} other {}}",
     "labelSource": "{source, select, exam {экзамен FTN} ours {Do indeksa} other {}}",
-    "labelStatus": "{status, select, new {нерешённые} solved {верные} wrong {ошибки} favorite {сохранённые} other {}}",
+    "labelStatus": "{status, select, new {нерешённые} solved {верные} wrong {ошибки} other {}}",
     "labelQuery": "«{query}»"
   },
   "Solve": {
@@ -108,8 +108,6 @@
     "incomplete": "Заполни все пункты.",
     "answerPart": "Ответ {number, number}",
     "yourAnswer": "Твой ответ",
-    "save": "Сохранить задачу",
-    "saved": "Убрать из сохранённых",
     "list": "Список",
     "solve": "Решать",
     "skip": "Пропустить",

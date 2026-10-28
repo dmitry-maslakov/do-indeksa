@@ -1,12 +1,12 @@
 import "server-only";
 import { and, desc, eq, inArray, max } from "drizzle-orm";
-import { attempts, favorites, taskSessions } from "@/db/schema";
+import { attempts, taskSessions } from "@/db/schema";
 import { positions } from "@/features/catalog/exams";
 import { idsByTopic } from "@/features/catalog/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { type TaskStat, weakest } from "./stats";
-import type { Progress, TaskStatus, Touched } from "./status";
+import type { TaskStatus, TaskStatuses, Touched } from "./status";
 import { decidesStatus, getLatestResults, getTaskStats } from "./task-stats";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
@@ -41,25 +41,14 @@ const getLatestAttempts = (profileId: string, taskIds?: string[]) =>
     )
     .orderBy(attempts.taskId, desc(attempts.createdAt));
 
-async function getTaskStatuses(profileId: string, taskIds?: string[]) {
+export async function getTaskStatuses(
+  profileId: string,
+  taskIds?: string[],
+): Promise<TaskStatuses> {
   const rows = await getLatestAttempts(profileId, taskIds);
   return new Map<string, TaskStatus>(
     rows.map((row) => [row.taskId, row.correct ? "solved" : "wrong"]),
   );
-}
-
-export async function getProgress(profileId: string): Promise<Progress> {
-  const [statuses, starred] = await Promise.all([
-    getTaskStatuses(profileId),
-    db
-      .select({ taskId: favorites.taskId })
-      .from(favorites)
-      .where(eq(favorites.profileId, profileId)),
-  ]);
-  return {
-    statuses,
-    favorites: new Set(starred.map((f) => f.taskId)),
-  };
 }
 
 export async function getTouched(profileId: string, taskIds: string[]) {

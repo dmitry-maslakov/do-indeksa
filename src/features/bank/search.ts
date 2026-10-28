@@ -2,8 +2,8 @@ import "server-only";
 import { deburr, orderBy } from "es-toolkit";
 import type { inferParserType } from "nuqs/server";
 import { summarize, type TaskSummary, tasks } from "@/features/catalog/tasks";
-import type { Progress } from "@/features/progress/status";
-import type { bankParsers, statusFilters } from "./params";
+import type { TaskStatuses } from "@/features/progress/status";
+import type { bankParsers } from "./params";
 import { examSource } from "./source";
 
 export type BankQuery = Partial<inferParserType<typeof bankParsers>>;
@@ -52,23 +52,14 @@ export function searchBank({
     .map(({ summary }) => summary);
 }
 
-function matchesStatus(
-  filter: (typeof statusFilters)[number],
-  id: string,
-  progress: Progress,
-) {
-  if (filter === "favorite") return progress.favorites.has(id);
-  return (progress.statuses.get(id) ?? "new") === filter;
-}
-
 export function filterByStatus(
   found: TaskSummary[],
   status: BankQuery["status"],
-  progress?: Progress,
+  statuses?: TaskStatuses,
 ) {
-  if (!status || !progress) return found;
-  return found.filter((t) => matchesStatus(status, t.id, progress));
+  if (!status || !statuses) return found;
+  return found.filter((t) => (statuses.get(t.id) ?? "new") === status);
 }
 
-export const findTasks = (filters: BankQuery, progress?: Progress) =>
-  filterByStatus(searchBank(filters), filters.status, progress);
+export const findTasks = (filters: BankQuery, statuses?: TaskStatuses) =>
+  filterByStatus(searchBank(filters), filters.status, statuses);

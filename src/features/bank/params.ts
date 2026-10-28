@@ -8,7 +8,7 @@ import { levels } from "@/features/catalog/level";
 
 const sorts = ["easy", "hard"] as const;
 
-export const statusFilters = ["new", "solved", "wrong", "favorite"] as const;
+export const statusFilters = ["new", "solved", "wrong"] as const;
 
 export const sources = ["exam", "ours"] as const;
 

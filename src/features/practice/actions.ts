@@ -9,7 +9,6 @@ import { keepSession } from "@/features/practice/session/task-sessions";
 import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
 import { submitAnswer } from "./answer/answers";
-import { setTaskFavorite } from "./favorites";
 import { saveReport } from "./reports";
 import { recordReveal, revealOwner, revealPartSchema } from "./reveal/reveals";
 import { recordSkip } from "./session/skips";
@@ -69,12 +68,6 @@ export const saveSkip = actionClient
   )
   .action(({ parsedInput: { taskId, sessionId }, ctx: { profileId } }) =>
     recordSkip(profileId, taskId, sessionId),
-  );
-
-export const setFavorite = actionClient
-  .inputSchema(z.object({ taskId: taskIdSchema, favorite: z.boolean() }))
-  .action(({ parsedInput: { taskId, favorite }, ctx: { profileId } }) =>
-    setTaskFavorite(profileId, taskId, favorite),
   );
 
 export const reportTask = actionClient

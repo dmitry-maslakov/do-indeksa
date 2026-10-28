@@ -77,22 +77,18 @@ describe("searchBank", () => {
 
 describe("filterByStatus", () => {
   const found = searchBank({});
-  const [first, second] = found.map((t) => t.id);
-  const progress = {
-    statuses: new Map([[String(first), "solved" as const]]),
-    favorites: new Set([String(second)]),
-  };
+  const [first] = found.map((t) => t.id);
+  const statuses = new Map([[String(first), "solved" as const]]);
   const idsBy = (status: Parameters<typeof filterByStatus>[1]) =>
-    filterByStatus(found, status, progress).map((t) => t.id);
+    filterByStatus(found, status, statuses).map((t) => t.id);
 
   it("keeps tasks with the status", () => {
     expect(idsBy("solved")).toEqual([first]);
-    expect(idsBy("favorite")).toEqual([second]);
     expect(idsBy("new")).not.toContain(first);
   });
 
-  it("ignores the status without progress", () => {
+  it("ignores the status without statuses", () => {
     expect(filterByStatus(found, "solved")).toBe(found);
-    expect(filterByStatus(found, null, progress)).toBe(found);
+    expect(filterByStatus(found, null, statuses)).toBe(found);
   });
 });

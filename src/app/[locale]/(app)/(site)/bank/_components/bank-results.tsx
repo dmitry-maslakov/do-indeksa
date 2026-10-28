@@ -9,8 +9,8 @@ import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
 import { type BankQuery, findTasks } from "@/features/bank/search";
 import type { TaskSummary } from "@/features/catalog/tasks";
-import { getProgress } from "@/features/progress/progress";
-import type { Progress } from "@/features/progress/status";
+import { getTaskStatuses } from "@/features/progress/progress";
+import type { TaskStatuses } from "@/features/progress/status";
 import { getProfileId } from "@/server/profile";
 import { EmptyResults } from "./empty-results";
 import { ResultsHead } from "./results-head";
@@ -20,13 +20,13 @@ export async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
-  const progress = await getProgress(await getProfileId());
+  const statuses = await getTaskStatuses(await getProfileId());
 
   return (
     <BankResults
       filters={filters}
-      tasks={findTasks(filters, progress)}
-      progress={progress}
+      tasks={findTasks(filters, statuses)}
+      statuses={statuses}
     />
   );
 }
@@ -34,14 +34,14 @@ export async function Bank({
 interface BankResultsProps {
   filters: BankQuery;
   tasks: TaskSummary[];
-  progress?: Progress;
+  statuses?: TaskStatuses;
   pending?: boolean;
 }
 
 export function BankResults({
   filters,
   tasks,
-  progress,
+  statuses,
   pending = false,
 }: BankResultsProps) {
   const t = useTranslations("Bank");
@@ -90,7 +90,7 @@ export function BankResults({
         ) : tasks.length === 0 ? (
           <EmptyResults />
         ) : (
-          <BankList tasks={tasks} search={search} progress={progress} />
+          <BankList tasks={tasks} search={search} statuses={statuses} />
         )}
       </section>
     </div>

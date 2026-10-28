@@ -1,7 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { TopicIcon } from "@/features/catalog/topic-icon";
-import { FavoriteButton } from "@/features/practice/favorite-button";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
@@ -52,9 +51,6 @@ export function TaskCard({ card }: TaskCardProps) {
           <span>{t("taskLevel", { level: card.level })}</span>
           <StatusMark status={card.status} />
         </span>
-        <div className="ml-auto">
-          <FavoriteButton taskId={card.id} saved={card.favorite} />
-        </div>
       </div>
       <Link
         href={`/bank/${card.id}`}

@@ -79,7 +79,7 @@
     "more": "Prikaži još",
     "taskLevel": "{level, select, easy {lako} medium {srednje} hard {teško} other {}}",
     "status": "Moj status",
-    "statuses": "{status, select, new {Nerešeni} solved {Tačno rešeni} wrong {Greške} favorite {Sačuvani} other {}}",
+    "statuses": "{status, select, new {Nerešeni} solved {Tačno rešeni} wrong {Greške} other {}}",
     "searchPlaceholder": "Tekst, formula, godina…",
     "position": "{number, number}. zadatak",
     "anyLevel": "Bilo koja",
@@ -94,7 +94,7 @@
     "exam": "Prijemni {year} · {position, number}. zadatak",
     "mark": "{status, select, solved {tačno} wrong {netačno} other {}}",
     "labelSource": "{source, select, exam {prijemni FTN} ours {Do indeksa} other {}}",
-    "labelStatus": "{status, select, new {nerešeni} solved {tačni} wrong {greške} favorite {sačuvani} other {}}",
+    "labelStatus": "{status, select, new {nerešeni} solved {tačni} wrong {greške} other {}}",
     "labelQuery": "„{query}”"
   },
   "Solve": {
@@ -108,8 +108,6 @@
     "incomplete": "Popuni sve delove.",
     "answerPart": "Odgovor {number, number}",
     "yourAnswer": "Tvoj odgovor",
-    "save": "Sačuvaj zadatak",
-    "saved": "Ukloni iz sačuvanih",
     "list": "Lista",
     "solve": "Reši",
     "skip": "Preskoči",

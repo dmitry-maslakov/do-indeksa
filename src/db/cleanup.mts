@@ -14,7 +14,6 @@ const stale = sql`
       (select max(t.updated_at) from test_sessions t where t.profile_id = p.id)
     ) < now() - case
       when exists (select 1 from attempts a where a.profile_id = p.id)
-        or exists (select 1 from favorites f where f.profile_id = p.id)
         or exists (select 1 from test_sessions t where t.profile_id = p.id)
       then interval '400 days'
       else interval '30 days'
