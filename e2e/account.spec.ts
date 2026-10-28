@@ -1,8 +1,7 @@
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
+import { dayMs } from "../src/lib/dates";
 import { answer, expect, seedAttempt, test } from "./fixtures";
-
-const day = 24 * 60 * 60 * 1000;
 
 const count = async (db: Client, table: string, column: string, id: string) =>
   (
@@ -58,7 +57,7 @@ test("a stale session signs in again before deleting", async ({
   auth,
 }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
-  const { userId, profileId } = await auth.signIn(2 * day);
+  const { userId, profileId } = await auth.signIn(2 * dayMs);
   await favorite(auth.db, profileId);
   await page.goto("/privacy");
   await page.getByRole("button", { name: "Obriši nalog" }).click();

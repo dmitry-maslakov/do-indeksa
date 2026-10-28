@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { minuteMs } from "@/lib/dates";
 import {
   accuracyBy,
   meanTimeByNumber,
@@ -7,7 +8,7 @@ import {
   weakest,
 } from "./stats";
 
-const minutes = (count: number) => count * 60_000;
+const minutes = (count: number) => count * minuteMs;
 
 const stat = (
   taskId: string,

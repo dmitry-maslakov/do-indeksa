@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { totals } from "@/features/progress/stats";
+import { hourMs } from "@/lib/dates";
 
 interface TotalsCardProps {
   totals?: ReturnType<typeof totals>;
@@ -18,7 +19,7 @@ export function TotalsCard({ totals, tests }: TotalsCardProps) {
     ],
     [tests?.toString(), t("tests")],
     [
-      totals && t("hours", { hours: Math.round(totals.spentMs / 3_600_000) }),
+      totals && t("hours", { hours: Math.round(totals.spentMs / hourMs) }),
       t("spent"),
     ],
   ];

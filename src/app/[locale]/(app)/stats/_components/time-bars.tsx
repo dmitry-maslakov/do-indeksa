@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { minuteMs, toMinutes } from "@/lib/dates";
 
 interface Bar {
   number: number;
@@ -38,7 +39,7 @@ export function TimeBars({
 }) {
   const t = useTranslations("Stats");
   const home = useTranslations("Home");
-  const norm = Math.round((bars[0]?.normMs ?? 0) / 60_000);
+  const norm = toMinutes(bars[0]?.normMs ?? 0);
 
   return (
     <Card size="lg" className="gap-4">
@@ -79,7 +80,7 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
         <div className={cn(columns, "relative h-28 items-end")}>
           <span
             className="absolute inset-x-0 h-px bg-foreground/35"
-            style={{ bottom: `${((norm * 60_000) / top) * 100}%` }}
+            style={{ bottom: `${((norm * minuteMs) / top) * 100}%` }}
           />
           {bars.map((bar) => (
             <span
@@ -87,7 +88,7 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
               title={
                 bar.meanMs === null
                   ? undefined
-                  : t("minutes", { minutes: Math.round(bar.meanMs / 60_000) })
+                  : t("minutes", { minutes: toMinutes(bar.meanMs) })
               }
               className={cn(
                 "rounded-t-[4px] rounded-b-[2px]",

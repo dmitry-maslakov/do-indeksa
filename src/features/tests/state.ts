@@ -1,3 +1,5 @@
+import { minuteMs } from "@/lib/dates";
+
 interface TestProgress {
   current: number;
   answers: string[][];
@@ -17,4 +19,4 @@ export function nextIndex(test: TestProgress) {
 export const overtimeAt = (
   test: { startedAt: number; minutes: number; timed: boolean },
   now: number,
-) => (test.timed ? now > test.startedAt + test.minutes * 60_000 : null);
+) => (test.timed ? now > test.startedAt + test.minutes * minuteMs : null);

@@ -7,6 +7,7 @@ import { oAuthProxy } from "better-auth/plugins";
 import { io } from "next/cache";
 import { headers } from "next/headers";
 import { cache } from "react";
+import { daySeconds } from "@/lib/dates";
 import { db } from "./db";
 import { env } from "./env";
 import { reportServerError } from "./report";
@@ -23,8 +24,8 @@ export const auth = betterAuth({
     },
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 30,
-    updateAge: 60 * 60 * 24,
+    expiresIn: 30 * daySeconds,
+    updateAge: daySeconds,
     cookieCache: { enabled: true, maxAge: 300 },
   },
   user: {

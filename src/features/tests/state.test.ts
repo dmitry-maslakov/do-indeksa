@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { minuteMs } from "@/lib/dates";
 import { answeredCount, nextIndex, overtimeAt } from "./state";
 
 const run = { current: 1, answers: [["2", ""], [""], ["", ""], ["x"]] };
@@ -18,8 +19,8 @@ describe("continue hints", () => {
 
   it("tells a timed run finished after the limit from one in time", () => {
     const at = { startedAt: 0, minutes: 240, timed: true };
-    expect(overtimeAt(at, 240 * 60_000)).toBe(false);
-    expect(overtimeAt(at, 240 * 60_000 + 1)).toBe(true);
-    expect(overtimeAt({ ...at, timed: false }, 300 * 60_000)).toBeNull();
+    expect(overtimeAt(at, 240 * minuteMs)).toBe(false);
+    expect(overtimeAt(at, 240 * minuteMs + 1)).toBe(true);
+    expect(overtimeAt({ ...at, timed: false }, 300 * minuteMs)).toBeNull();
   });
 });

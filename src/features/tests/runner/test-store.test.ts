@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { minuteMs } from "@/lib/dates";
 import { type LocalTest, useTestStore } from "./test-store";
 
 const meta = {
@@ -102,7 +103,7 @@ describe("exam store", () => {
     vi.useFakeTimers({ now: 0 });
     store().start("v", meta);
     store().answer("v", 0, "x");
-    vi.setSystemTime(60_000);
+    vi.setSystemTime(minuteMs);
     store().go("v", 1);
     const before = test();
     store().swap("v", "w");

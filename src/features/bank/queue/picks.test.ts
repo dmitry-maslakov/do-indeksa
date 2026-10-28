@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Touched } from "@/features/progress/status";
+import { minuteMs } from "@/lib/dates";
 import { planQueue } from "./picks";
 
 const pool = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id) => ({
@@ -11,7 +12,7 @@ const touch = (
   status: Touched["status"],
   minute: number,
   today = false,
-): Touched => ({ status, at: new Date(minute * 60_000), today });
+): Touched => ({ status, at: new Date(minute * minuteMs), today });
 
 describe("planQueue", () => {
   it("prefers exam tasks, then repeats an earlier mistake every fourth pick", () => {

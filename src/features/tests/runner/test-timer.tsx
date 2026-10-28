@@ -3,12 +3,13 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { minuteMs, secondMs } from "@/lib/dates";
 import type { LocalTest } from "./test-store";
 
 type Timing = Pick<LocalTest, "startedAt" | "minutes">;
 
 const format = (ms: number) => {
-  const s = Math.floor(ms / 1000);
+  const s = Math.floor(ms / secondMs);
   const mm = String(Math.floor(s / 60) % 60).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
   return `${Math.floor(s / 3600)}:${mm}:${ss}`;
@@ -22,7 +23,7 @@ export function useClock({ startedAt, minutes }: Timing) {
     return () => clearInterval(id);
   }, []);
 
-  const left = startedAt + minutes * 60_000 - now;
+  const left = startedAt + minutes * minuteMs - now;
   const over = left < 0;
   return { over, text: `${over ? "+" : ""}${format(Math.abs(left))}` };
 }
