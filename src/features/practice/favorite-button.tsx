@@ -8,7 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useErrorText } from "@/lib/use-error-text";
-import { setFavorite } from "./favorite-action";
+import { setFavorite } from "./actions";
 
 interface FavoriteButtonProps {
   taskId: string;

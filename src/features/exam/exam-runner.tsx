@@ -10,6 +10,7 @@ import { reviewHref } from "@/features/review/review";
 import { getPathname, useRouter } from "@/i18n/navigation";
 import { localTimeZone } from "@/lib/dates";
 import { useErrorText } from "@/lib/use-error-text";
+import { saveTest, submitTest } from "./actions";
 import type { ComposeMode } from "./compose";
 import { ExamBar } from "./exam-bar";
 import { ExamGhost } from "./exam-ghost";
@@ -21,7 +22,6 @@ import {
   visitsAt,
 } from "./exam-store";
 import { ExamTask } from "./exam-task";
-import { saveTest, submitTest } from "./test-actions";
 import type { UnfinishedTest } from "./test-sessions";
 import { isAnswered, nextIndex } from "./test-state";
 import type { ExamTask as Task } from "./variants";

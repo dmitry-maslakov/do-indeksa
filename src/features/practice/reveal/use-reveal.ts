@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { RevealPart } from "./reveal-part";
+import type { RevealPart } from "./reveals";
 
 async function fetchPart(
   taskId: string,

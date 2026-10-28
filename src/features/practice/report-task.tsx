@@ -11,7 +11,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { reportKinds } from "@/db/columns";
 import { useErrorText } from "@/lib/use-error-text";
-import { reportTask } from "./report-action";
+import { reportTask } from "./actions";
 
 export function ReportTask({ taskId }: { taskId: string }) {
   const t = useTranslations("Report");

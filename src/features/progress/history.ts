@@ -8,6 +8,7 @@ import {
   gte,
   inArray,
   isNotNull,
+  or,
   type SQL,
   sql,
 } from "drizzle-orm";
@@ -15,11 +16,27 @@ import { alias, type SelectedFields } from "drizzle-orm/pg-core";
 import { cache } from "react";
 import { z } from "zod";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
+import { numberOf } from "@/features/catalog/exams";
+import { getTask } from "@/features/catalog/tasks";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
-import { decidesStatus } from "./decides-status";
-import { accuracyDays } from "./stats";
-import { taskStats } from "./task-stats";
+import { accuracyDays, type TaskStat } from "./stats";
+
+export const decidesStatus = or(
+  eq(attempts.correct, true),
+  sql`'wrong' = any(${attempts.outcomes})`,
+);
+
+type TaskTotals = Omit<TaskStat, "number" | "topic">;
+
+function taskStats(rows: TaskTotals[]): TaskStat[] {
+  return rows.flatMap((row) => {
+    const task = getTask(row.taskId);
+    return task
+      ? { ...row, topic: task.topic, number: numberOf(task.topic) }
+      : [];
+  });
+}
 
 const testIdStartingWith = (code: string) =>
   between(
