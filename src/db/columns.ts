@@ -30,15 +30,21 @@ export const reportKinds = [
 
 const visit = z.object({
   id: z.uuid(),
-  task: z.number().int().min(0).max(9),
+  task: z.number().int().min(0),
   startedAt: z.number().int(),
   endedAt: z.number().int(),
 });
 
-export const testDraft = z.object({
-  answers: z.array(z.array(z.string().max(500)).max(6)).max(10),
-  visits: z.array(visit).max(500),
-});
+interface DraftLimits {
+  tasks: number;
+  parts: number;
+}
+
+export const testDraft = ({ tasks, parts }: DraftLimits) =>
+  z.object({
+    answers: z.array(z.array(z.string().max(500)).max(parts)).max(tasks),
+    visits: z.array(visit.refine((v) => v.task < tasks)).max(500),
+  });
 
 export type Visit = z.infer<typeof visit>;
-export type TestDraft = z.infer<typeof testDraft>;
+export type TestDraft = z.infer<ReturnType<typeof testDraft>>;
