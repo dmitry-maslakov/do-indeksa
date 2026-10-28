@@ -70,7 +70,11 @@ export default async function VariantsPage({
               <Weekly />
             </Suspense>
           </div>
-          <ComposeCard topics={topics} weak={loadWeak()} />
+          <ComposeCard
+            size={positions.length}
+            topics={topics}
+            weak={loadWeak()}
+          />
         </aside>
       </div>
     </main>

@@ -35,6 +35,7 @@ export function getVariant(id: string): ExamVariant | undefined {
   const parsed = parseVariantId(id);
   if (
     parsed?.kind === "custom" &&
+    parsed.taskIds.length <= positions.length &&
     parsed.taskIds.every((taskId) => getTask(taskId))
   ) {
     return { id, kind: "custom", taskIds: byNumber(parsed.taskIds) };

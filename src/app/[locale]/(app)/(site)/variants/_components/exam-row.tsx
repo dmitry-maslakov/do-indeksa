@@ -86,7 +86,10 @@ export function ExamRow({
             ok: segments.filter((s) => s === "done").length,
             total: segments.length,
           })}
-          className="col-span-2 row-start-2 grid grid-cols-10 gap-1 md:col-span-1 md:row-start-auto"
+          style={{
+            gridTemplateColumns: `repeat(${test.examTasks}, minmax(0, 1fr))`,
+          }}
+          className="col-span-2 row-start-2 grid gap-1 md:col-span-1 md:row-start-auto"
         >
           {test.looks
             .map((look, i) => ({ look, position: i + 1 }))

@@ -9,15 +9,12 @@ describe("parseVariantId", () => {
     expect(parseVariantId(id)).toEqual(parsed);
   });
 
-  it.each([
-    "daily-2026-10-08",
-    "random-0a1b2c3d",
-    "set-",
-    "set-a.b.c.d.e.f.g.h.i.j.k",
-    "ftn-p1-2025",
-  ])("ignores %s", (id) => {
-    expect(parseVariantId(id)).toBeUndefined();
-  });
+  it.each(["daily-2026-10-08", "random-0a1b2c3d", "set-", "ftn-p1-2025"])(
+    "ignores %s",
+    (id) => {
+      expect(parseVariantId(id)).toBeUndefined();
+    },
+  );
 
   it("round-trips a set", () => {
     expect(parseVariantId(setId(["a-1", "b-2"]))).toEqual({
