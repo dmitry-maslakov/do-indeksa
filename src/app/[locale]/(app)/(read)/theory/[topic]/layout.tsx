@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
@@ -25,7 +24,6 @@ export default async function TopicLayout({
       style={toneStyle(topicLook(topic).tone)}
       className="px-4 pb-12 md:px-10 md:pt-2 md:pb-15"
     >
-      <FocusMode mode="read" />
       <div className="flex items-start gap-14">
         <RailPanel label={t("title")}>
           <TheoryRail

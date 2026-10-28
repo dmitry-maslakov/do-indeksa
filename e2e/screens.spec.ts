@@ -90,6 +90,7 @@ for (const path of ["/bank/unknown", "/review/a/b"]) {
     const res = await page.goto(path);
     expect(res?.status()).toBe(404);
     await expect(page).toHaveTitle("Stranica nije pronađena · Do indeksa");
+    await expect(page.getByRole("banner")).toBeVisible();
   });
 }
 

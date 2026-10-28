@@ -10,7 +10,7 @@ Filters, sort and search live in the URL through nuqs. Lists that grow on the cl
 
 `messages/` has the UI strings for `sr-Latn`, `ru` and `en`.
 
-`src/app` holds routes. A `page.tsx` sets metadata, layout and Suspense boundaries, and whatever loads or renders data for one route sits next to it in `_components`. The app shell, with navigation and footer, is in `(app)/_components/shell`. `src/app/api` has route handlers for auth, the bank feed, the test history, task reveals and the health check.
+`src/app` holds routes. A `page.tsx` sets metadata, layout and Suspense boundaries, and whatever loads or renders data for one route sits next to it in `_components`. The app shell, with navigation and footer, is in `(app)/_components/shell`. Pages sit in route groups by how much of it they show on a phone: `(site)` all of it, `(read)` theory topics without the header, `(task)` a task and `(exam)` a test with neither the header nor the bottom bar. Each group's layout renders the shell for its mode, so the server sends the final chrome. `src/app/api` has route handlers for auth, the bank feed, the test history, task reveals and the health check.
 
 `src/features` has the product code. Each folder owns its server code, one `actions.ts`, its components and its hooks:
 
