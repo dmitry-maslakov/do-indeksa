@@ -1,5 +1,5 @@
 import { orderBy, round } from "es-toolkit";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { topicLook } from "@/features/catalog/topics";
 import type { Review } from "@/features/tests/review";
@@ -13,6 +13,7 @@ export function LostPoints({
 }) {
   const t = useTranslations("Review");
   const variants = useTranslations("Variants");
+  const format = useFormatter();
   const lost = orderBy(
     review.rows.filter((r) => r.earned < r.points),
     [(r) => r.points - r.earned],
@@ -43,7 +44,7 @@ export function LostPoints({
               </span>
             </span>
             <span className="font-semibold text-[15px] tabular-nums">
-              −{round(row.points - row.earned, 1)}
+              −{format.number(round(row.points - row.earned, 1))}
             </span>
           </li>
         ))}

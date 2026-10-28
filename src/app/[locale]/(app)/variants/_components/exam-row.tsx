@@ -107,7 +107,7 @@ export function ExamRow({
       )}
       {test ? (
         <span className="text-right font-bold text-base tabular-nums">
-          {test.score}
+          {format.number(test.score)}
           <small className="font-medium text-subtle text-xs">
             {" "}
             / {test.max}
