@@ -1,7 +1,11 @@
 import type { SessionKind } from "@/db/columns";
-import { hourMs } from "@/lib/dates";
+import { hourMs, secondMs } from "@/lib/dates";
 
 export const attemptGapMs = hourMs;
+
+export const keepAliveMs = 30 * secondMs;
+
+export const sessionLiveMs = 45 * secondMs;
 
 export interface LastEvent {
   kind: SessionKind;
