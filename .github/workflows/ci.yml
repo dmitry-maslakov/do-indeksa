@@ -82,6 +82,9 @@ jobs:
     if: ${{ !cancelled() && needs.bank.outputs.build != 'false' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    permissions:
+      actions: write
+      contents: read
     outputs:
       app: ${{ steps.app.outputs.digest }}
       migrate: ${{ steps.migrate.outputs.digest }}
@@ -204,6 +207,15 @@ jobs:
         with:
           path: ${{ runner.temp }}/build-cache
           key: ${{ steps.cache.outputs.cache-primary-key }}
+      - if: env.TRUSTED == 'true' && github.ref == 'refs/heads/main'
+        name: Keep only the newest build cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEEP: ${{ steps.cache.outputs.cache-primary-key }}
+        run: |
+          gh cache list --ref refs/heads/main --key build- --limit 100 --json id,key --jq '.[] | select(.key != env.KEEP) | .id' \
+            | xargs -r -n1 gh cache delete
 
   image:
     needs: [bank, check, e2e]
