@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPathname } from "@/i18n/navigation";
+import { secondMs } from "@/lib/dates";
 
 interface ShareButtonProps {
   title: string;
@@ -28,7 +29,7 @@ export function ShareButton({ title, href, className }: ShareButtonProps) {
     }
     await navigator.clipboard.writeText(data.url);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 2 * secondMs);
   }
 
   return (
