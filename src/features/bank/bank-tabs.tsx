@@ -13,6 +13,7 @@ export function BankTabs({ topic, pending }: BankTabsProps) {
   if (pending) return <Skeleton className="h-10 rounded-xl" />;
   return (
     <LinkTabs
+      label={t("title")}
       variant="fill"
       items={[
         {

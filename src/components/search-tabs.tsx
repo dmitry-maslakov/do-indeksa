@@ -5,12 +5,12 @@ import { LinkTabs } from "./link-tabs";
 import { WithSearchParams } from "./with-url";
 
 interface SearchTabsProps
-  extends Pick<ComponentProps<typeof LinkTabs>, "variant"> {
+  extends Pick<ComponentProps<typeof LinkTabs>, "label" | "variant"> {
   param: string;
   items: { value?: string; href: string; label: string }[];
 }
 
-export function SearchTabs({ param, items, variant }: SearchTabsProps) {
+export function SearchTabs({ param, items, label, variant }: SearchTabsProps) {
   return (
     <WithSearchParams>
       {(params) => {
@@ -19,6 +19,7 @@ export function SearchTabs({ param, items, variant }: SearchTabsProps) {
           (items.find((item) => item.value === params.get(param)) ?? items[0]);
         return (
           <LinkTabs
+            label={label}
             variant={variant}
             items={items.map((item) => ({ ...item, active: item === current }))}
           />

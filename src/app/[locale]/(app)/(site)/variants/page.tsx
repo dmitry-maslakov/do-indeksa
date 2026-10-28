@@ -52,6 +52,7 @@ export default async function VariantsPage({
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_--spacing(85)]">
         <section className="flex min-w-0 flex-col gap-3">
           <SearchTabs
+            label={t("title")}
             variant="pill"
             param="tab"
             items={tabs.map((x) => ({

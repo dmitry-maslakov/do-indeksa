@@ -61,7 +61,10 @@ export default async function MethodPage({
           })}
         </Hero>
         <TheoryMarkdown source={method.content} variant="method" />
-        <nav className="flex justify-between gap-4 border-t pt-5.5 text-[15px] text-muted-foreground">
+        <nav
+          aria-label={t("methods")}
+          className="flex justify-between gap-4 border-t pt-5.5 text-[15px] text-muted-foreground"
+        >
           {prev && (
             <Link
               href={href(prev.slug)}

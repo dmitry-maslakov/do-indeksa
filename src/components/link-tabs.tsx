@@ -29,13 +29,19 @@ interface LinkTabsProps {
     active: boolean;
     prefetch?: boolean;
   }[];
+  label: string;
   variant: "segmented" | "fill" | "pill";
   scroll?: boolean;
 }
 
-export function LinkTabs({ items, variant, scroll = false }: LinkTabsProps) {
+export function LinkTabs({
+  items,
+  label,
+  variant,
+  scroll = false,
+}: LinkTabsProps) {
   return (
-    <nav className={list({ variant })}>
+    <nav aria-label={label} className={list({ variant })}>
       {items.map((item) => (
         <Link
           key={item.href}
