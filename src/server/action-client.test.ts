@@ -8,7 +8,8 @@ vi.mock("./profile", () => ({
   findProfileId: vi.fn(),
 }));
 
-let userAgent = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
+const browser = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
+let userAgent = browser;
 vi.mock("next/headers", () => ({
   headers: async () => new Headers({ "user-agent": userAgent }),
 }));
@@ -21,6 +22,7 @@ const handler = vi.fn(async ({ ctx }: { ctx: { profileId: string } }) => ({
 const action = actionClient.inputSchema(input).action(handler);
 
 beforeEach(() => {
+  userAgent = browser;
   handler.mockClear();
   vi.mocked(ensureProfileId).mockResolvedValue("p1");
 });
@@ -35,7 +37,6 @@ describe("action clients", () => {
       "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
     expect(await action({ n: 1 })).toEqual({ serverError: "bot" });
     expect(ensureProfileId).not.toHaveBeenCalled();
-    userAgent = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
   });
 
   it("logs an unexpected error and returns only its code", async () => {

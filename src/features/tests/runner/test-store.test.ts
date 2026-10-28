@@ -31,6 +31,7 @@ const store = () => useTestStore.getState();
 const test = () => store().tests.v;
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   store().clear("v");
   store().clear("w");
   vi.useRealTimers();
@@ -146,6 +147,5 @@ describe("persisted tests", () => {
     const { useTestStore: persisted } = await import("./test-store");
     await persisted.persist.rehydrate();
     expect(persisted.getState().tests).toEqual({});
-    vi.unstubAllGlobals();
   });
 });

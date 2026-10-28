@@ -14,7 +14,7 @@ describe("pick", () => {
     const picked = pick(groups, 3, "random-1");
     const indexes = picked.map((p) => groups.findIndex((g) => g.includes(p)));
     expect(picked).toHaveLength(3);
-    expect(indexes).toEqual([...new Set(indexes)].sort());
+    expect(indexes).toEqual([...new Set(indexes)].sort((a, b) => a - b));
   });
 
   it("skips empty groups and caps the size", () => {
