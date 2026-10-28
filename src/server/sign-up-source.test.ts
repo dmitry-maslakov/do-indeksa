@@ -18,6 +18,10 @@ describe("signUpSource", () => {
     expect(await signUpSource()).toBeNull();
   });
 
+  it("marks a One Tap sign-up", async () => {
+    expect(await signUpSource("/one-tap/callback")).toBe("one-tap");
+  });
+
   it("is empty without a source", async () => {
     state(null);
     expect(await signUpSource()).toBeNull();

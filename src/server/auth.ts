@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isAPIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { oAuthProxy } from "better-auth/plugins";
+import { oAuthProxy, oneTap } from "better-auth/plugins";
 import { io } from "next/cache";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -42,8 +42,8 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => ({
-          data: { ...user, signUpSource: await signUpSource() },
+        before: async (user, ctx) => ({
+          data: { ...user, signUpSource: await signUpSource(ctx?.path) },
         }),
       },
     },
@@ -58,6 +58,7 @@ export const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
+    oneTap(),
     ...(env.OAUTH_PROXY_SECRET
       ? [
           oAuthProxy({

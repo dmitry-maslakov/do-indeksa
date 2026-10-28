@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { BrowserContext, Page } from "@playwright/test";
+import type { Client } from "pg";
 import { answer, expect, finish, seedAttempt, test } from "./fixtures";
 
 async function openSheet(page: Page, topic: RegExp) {
@@ -34,6 +35,17 @@ test("a guest finds a solved task in statistics after a reload", async ({
   ).toContainText("Statistika je samo na ovom uređaju");
 });
 
+async function guestProfileId(context: BrowserContext, db: Client) {
+  const token = (await context.cookies()).find(
+    (c) => c.name === "__Host-profile",
+  )?.value;
+  const { rows } = await db.query(
+    "select id from profiles where token_hash = $1",
+    [createHash("sha256").update(String(token)).digest("base64url")],
+  );
+  return rows[0].id;
+}
+
 async function solveFirst(page: Page) {
   await page.goto("/bank/eks-001");
   await answer(page, "2");
@@ -50,15 +62,9 @@ test("a guest with five solved tasks is offered to save them once a visit", asyn
   await solveFirst(page);
   await expect(strip).toHaveCount(0);
 
-  const token = (await context.cookies()).find(
-    (c) => c.name === "__Host-profile",
-  )?.value;
-  const { rows } = await auth.db.query(
-    "select id from profiles where token_hash = $1",
-    [createHash("sha256").update(String(token)).digest("base64url")],
-  );
+  const profileId = await guestProfileId(context, auth.db);
   for (const taskId of ["eks-002", "kb-003", "log-001", "trig-001"])
-    await seedAttempt(auth.db, rows[0].id, taskId, true);
+    await seedAttempt(auth.db, profileId, taskId, true);
 
   await solveFirst(page);
   await expect(strip).toContainText(
@@ -74,6 +80,33 @@ test("a guest with five solved tasks is offered to save them once a visit", asyn
   await expect(
     next.getByRole("region", { name: "Sačuvaj napredak" }),
   ).toBeVisible();
+});
+
+test("a guest back on another day with five solved tasks gets Google One Tap", async ({
+  page,
+  context,
+  auth,
+}) => {
+  const prompts: string[] = [];
+  await context.route("https://accounts.google.com/gsi/client", (route) => {
+    prompts.push(new URL(page.url()).pathname);
+    return route.fulfill({
+      contentType: "text/javascript",
+      body: "window.google = { accounts: { id: { initialize() {}, prompt() {} } } };",
+    });
+  });
+  await solveFirst(page);
+  const profileId = await guestProfileId(context, auth.db);
+  for (const taskId of ["eks-002", "kb-003", "log-001", "trig-001"])
+    await seedAttempt(auth.db, profileId, taskId, true, 30);
+
+  await page.goto("/bank/eks-001");
+  await expect(page.getByRole("button", { name: "Proveri" })).toBeVisible();
+  await page.goto("/");
+  await expect.poll(() => prompts).toEqual(["/"]);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Mapa tema" })).toBeVisible();
+  expect(prompts).toEqual(["/"]);
 });
 
 const profileCookie = async (context: BrowserContext) =>

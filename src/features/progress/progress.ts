@@ -84,9 +84,9 @@ export async function getTouched(profileId: string, taskIds: string[]) {
   return touched;
 }
 
-export async function countSolved(profileId: string, except: string) {
+export async function getSolved(profileId: string) {
   const rows = await getLatestAttempts(profileId);
-  return rows.filter((row) => row.correct && row.taskId !== except).length;
+  return rows.filter((row) => row.correct);
 }
 
 const topicTotals = positions.map((p) => ({

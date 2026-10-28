@@ -24,7 +24,7 @@ import { FavoriteToggle } from "@/features/practice/favorite-toggle";
 import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
-import { countSolved } from "@/features/progress/progress";
+import { getSolved } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
 import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
@@ -68,7 +68,7 @@ export default async function SolvePage({
   if (!html) notFound();
   const solved = (await getSession())
     ? undefined
-    : (await countSolved(profileId, id)) + 1;
+    : (await getSolved(profileId)).filter((s) => s.taskId !== id).length + 1;
 
   const queue = await loadQueue({
     topic: task.topic,
