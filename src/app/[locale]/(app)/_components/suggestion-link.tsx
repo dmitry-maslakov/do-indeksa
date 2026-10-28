@@ -14,7 +14,8 @@ export function SuggestionLink({
   const shown = useRef<Promise<string | undefined> | null>(null);
 
   useEffect(() => {
-    shown.current ??= showSuggestion({ topic, reason }).then((r) => r?.data);
+    if (!shown.current)
+      shown.current = showSuggestion({ topic, reason }).then((r) => r?.data);
   }, [topic, reason]);
 
   return (
