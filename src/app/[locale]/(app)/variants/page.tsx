@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { io } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,27 +8,15 @@ import { positions } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
-import { getLatestTests } from "@/features/tests/finished-tests";
-import {
-  summarizeTests,
-  type TestSummary,
-  testPage,
-} from "@/features/tests/summaries";
 import {
   curatedVariants,
   officialVariants,
 } from "@/features/variants/variants";
-import { weeklyVariant } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
+import { CatalogTab, tabs, VariantTable } from "./_components/catalog-tab";
 import { ComposeCard } from "./_components/compose-card";
-import { ExamRow } from "./_components/exam-row";
-import { TestHistory } from "./_components/test-history";
-import { TestsTable } from "./_components/tests-table";
-import { WeekCard } from "./_components/week-card";
-
-const tabs = ["official", "curated", "history"] as const;
-type Tab = (typeof tabs)[number];
+import { Weekly } from "./_components/weekly";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -39,19 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t("variantsDescription"),
     alternates: alternates("/variants", await getLocale()),
   };
-}
-
-async function loadLatest(ids: string[]) {
-  const profileId = await getProfileId();
-  return summarizeTests(
-    profileId,
-    await getLatestTests(profileId, ids),
-    await getLocale(),
-  );
-}
-
-async function loadHistory() {
-  return testPage(await getProfileId(), 0, await getLocale());
 }
 
 async function loadWeak() {
@@ -101,69 +74,5 @@ export default async function VariantsPage({
         </aside>
       </div>
     </main>
-  );
-}
-
-async function Weekly() {
-  await io();
-  const weekly = weeklyVariant();
-  if (!weekly) return null;
-  const tests = await loadLatest([weekly.id]);
-  const test = tests.find(
-    (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
-  );
-  return <WeekCard {...weekly} test={test} />;
-}
-
-async function CatalogTab({
-  searchParams,
-}: Pick<PageProps<"/[locale]/variants">, "searchParams">) {
-  const { tab: raw } = await searchParams;
-  const tab: Tab = tabs.find((x) => x === raw) ?? "official";
-
-  if (tab === "history") {
-    return (
-      <Suspense fallback={<TestsTable first="attempt">{null}</TestsTable>}>
-        <Await promise={loadHistory()}>
-          {(first) => <TestHistory first={first} />}
-        </Await>
-      </Suspense>
-    );
-  }
-
-  return (
-    <Suspense fallback={<VariantTable tab={tab} pending />}>
-      <Await promise={loadLatest(variantsOf(tab).map((v) => v.id))}>
-        {(tests) => <VariantTable tab={tab} tests={tests} />}
-      </Await>
-    </Suspense>
-  );
-}
-
-const variantsOf = (tab: Exclude<Tab, "history">) =>
-  tab === "official" ? officialVariants : curatedVariants;
-
-function VariantTable({
-  tab,
-  tests = [],
-  pending,
-}: {
-  tab: Exclude<Tab, "history">;
-  tests?: TestSummary[];
-  pending?: boolean;
-}) {
-  return (
-    <TestsTable first={tab === "official" ? "year" : "test"}>
-      {variantsOf(tab).map((v) => (
-        <ExamRow
-          key={v.id}
-          title={v.title}
-          href={`/variants/${v.id}`}
-          original={v.original}
-          test={tests.find((r) => r.variantId === v.id)}
-          pending={pending}
-        />
-      ))}
-    </TestsTable>
   );
 }

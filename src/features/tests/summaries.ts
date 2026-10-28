@@ -11,7 +11,7 @@ import {
 import { weeklyVariant } from "@/features/variants/weekly";
 import type { Segment } from "@/lib/strip";
 import type { Page } from "@/lib/use-feed";
-import { getTestAttempts, getTests } from "./finished-tests";
+import { getLatestTests, getTestAttempts, getTests } from "./finished-tests";
 import { review } from "./review";
 
 export interface TestRow {
@@ -81,4 +81,16 @@ export async function testPage(
     items: await summarizeTests(profileId, rows.slice(0, pageSize), locale),
     next: rows.length > pageSize ? offset + pageSize : null,
   };
+}
+
+export async function summarizeLatest(
+  profileId: string,
+  variantIds: string[],
+  locale: Locale,
+) {
+  return summarizeTests(
+    profileId,
+    await getLatestTests(profileId, variantIds),
+    locale,
+  );
 }
