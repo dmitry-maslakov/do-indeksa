@@ -10,7 +10,6 @@ import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
@@ -77,13 +76,8 @@ export function AnswerForm({
   fallback,
 }: AnswerFormProps) {
   const t = useTranslations("Solve");
-  const router = useRouter();
-  const { executeAsync, result, isPending, hasErrored } = useAction(
-    checkAnswer,
-    {
-      onSuccess: () => router.refresh(),
-    },
-  );
+  const { executeAsync, result, isPending, hasErrored } =
+    useAction(checkAnswer);
   const errorText = useErrorText();
   const help = useTaskSession();
   const [edited, setEdited] = useState(false);
