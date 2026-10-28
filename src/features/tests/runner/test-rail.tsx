@@ -66,7 +66,11 @@ export function TestRail({
                     ? "bg-foreground"
                     : "border-[1.5px] border-subtle/50",
                 )}
-              />
+              >
+                <span className="sr-only">
+                  {t("answerState", { state: answered ? "done" : "open" })}
+                </span>
+              </span>
               <span className="w-4.5 font-semibold tabular-nums">
                 {task.number}
               </span>

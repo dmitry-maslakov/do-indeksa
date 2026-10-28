@@ -76,7 +76,10 @@ export function TestBar({
               type="button"
               onClick={() => onGo(i)}
               aria-current={i === test.current ? "step" : undefined}
-              aria-label={t("task", { number: task.number })}
+              aria-label={t("taskState", {
+                state: answered ? "done" : "open",
+                number: task.number,
+              })}
               className={cn(
                 "flex h-10 w-8 flex-col items-center justify-center gap-0.75 rounded-[10px] bg-muted text-sm tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current]:bg-card aria-[current]:font-bold aria-[current]:text-foreground aria-[current]:ring-[1.5px] aria-[current]:ring-foreground aria-[current]:ring-inset",
                 answered ? "font-semibold" : "text-subtle",
