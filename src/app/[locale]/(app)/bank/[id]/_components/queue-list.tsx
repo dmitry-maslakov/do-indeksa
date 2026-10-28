@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue/queue";
-import { QueueLink } from "./rail-row";
+import { QueueLink } from "./queue-link";
 
-interface RecListProps {
+interface QueueListProps {
   queue: Queue;
   current: string;
   href: (id: string) => string;
@@ -20,7 +20,7 @@ function centerCurrent(list: HTMLElement) {
 
 const sections = ["earlier", "today", "upcoming"] as const;
 
-export function RecList({ queue, current, href }: RecListProps) {
+export function QueueList({ queue, current, href }: QueueListProps) {
   const t = useTranslations("Solve");
   const list = useRef<HTMLDivElement>(null);
 
