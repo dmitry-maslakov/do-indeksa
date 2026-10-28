@@ -108,7 +108,7 @@
                 "patterns": [
                   {
                     "group": ["@/features/**", "!@/features/catalog/**"],
-                    "message": "catalog may import only no other feature; features form a DAG."
+                    "message": "catalog imports no other feature; features form a DAG."
                   }
                 ]
               }
@@ -132,7 +132,7 @@
                       "!@/features/progress/**",
                       "!@/features/catalog/**"
                     ],
-                    "message": "progress may import only catalog; features form a DAG."
+                    "message": "progress imports only catalog; features form a DAG."
                   }
                 ]
               }
@@ -157,7 +157,7 @@
                       "!@/features/catalog/**",
                       "!@/features/progress/**"
                     ],
-                    "message": "practice may import only catalog, progress; features form a DAG."
+                    "message": "practice imports only catalog, progress; features form a DAG."
                   }
                 ]
               }
@@ -181,7 +181,7 @@
                       "!@/features/variants/**",
                       "!@/features/catalog/**"
                     ],
-                    "message": "variants may import only catalog; features form a DAG."
+                    "message": "variants imports only catalog; features form a DAG."
                   }
                 ]
               }
@@ -208,7 +208,7 @@
                       "!@/features/practice/**",
                       "!@/features/variants/**"
                     ],
-                    "message": "tests may import only catalog, progress, practice, variants; features form a DAG."
+                    "message": "tests imports only catalog, progress, practice, variants; features form a DAG."
                   }
                 ]
               }
@@ -234,7 +234,7 @@
                       "!@/features/progress/**",
                       "!@/features/practice/**"
                     ],
-                    "message": "bank may import only catalog, progress, practice; features form a DAG."
+                    "message": "bank imports only catalog, progress, practice; features form a DAG."
                   }
                 ]
               }
@@ -258,7 +258,7 @@
                       "!@/features/theory/**",
                       "!@/features/catalog/**"
                     ],
-                    "message": "theory may import only catalog; features form a DAG."
+                    "message": "theory imports only catalog; features form a DAG."
                   }
                 ]
               }
@@ -282,7 +282,7 @@
                       "!@/features/account/**",
                       "!@/features/tests/**"
                     ],
-                    "message": "account may import only tests; features form a DAG."
+                    "message": "account imports only tests; features form a DAG."
                   }
                 ]
               }
@@ -302,7 +302,7 @@
                 "patterns": [
                   {
                     "group": ["@/features/**", "!@/features/launch/**"],
-                    "message": "launch may import only no other feature; features form a DAG."
+                    "message": "launch imports no other feature; features form a DAG."
                   }
                 ]
               }
@@ -331,31 +331,6 @@
       }
     },
     {
-      "includes": ["src/features/catalog/actions.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": ["@/features/**", "!@/features/catalog/**"],
-                    "message": "catalog may import only no other feature; features form a DAG."
-                  }
-                ],
-                "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/features/progress/actions.ts"],
       "linter": {
         "rules": {
@@ -370,7 +345,7 @@
                       "!@/features/progress/**",
                       "!@/features/catalog/**"
                     ],
-                    "message": "progress may import only catalog; features form a DAG."
+                    "message": "progress imports only catalog; features form a DAG."
                   }
                 ],
                 "paths": {
@@ -400,36 +375,7 @@
                       "!@/features/catalog/**",
                       "!@/features/progress/**"
                     ],
-                    "message": "practice may import only catalog, progress; features form a DAG."
-                  }
-                ],
-                "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/features/variants/actions.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": [
-                      "@/features/**",
-                      "!@/features/variants/**",
-                      "!@/features/catalog/**"
-                    ],
-                    "message": "variants may import only catalog; features form a DAG."
+                    "message": "practice imports only catalog, progress; features form a DAG."
                   }
                 ],
                 "paths": {
@@ -461,67 +407,7 @@
                       "!@/features/practice/**",
                       "!@/features/variants/**"
                     ],
-                    "message": "tests may import only catalog, progress, practice, variants; features form a DAG."
-                  }
-                ],
-                "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/features/bank/actions.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": [
-                      "@/features/**",
-                      "!@/features/bank/**",
-                      "!@/features/catalog/**",
-                      "!@/features/progress/**",
-                      "!@/features/practice/**"
-                    ],
-                    "message": "bank may import only catalog, progress, practice; features form a DAG."
-                  }
-                ],
-                "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/features/theory/actions.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": [
-                      "@/features/**",
-                      "!@/features/theory/**",
-                      "!@/features/catalog/**"
-                    ],
-                    "message": "theory may import only catalog; features form a DAG."
+                    "message": "tests imports only catalog, progress, practice, variants; features form a DAG."
                   }
                 ],
                 "paths": {
@@ -550,32 +436,7 @@
                       "!@/features/account/**",
                       "!@/features/tests/**"
                     ],
-                    "message": "account may import only tests; features form a DAG."
-                  }
-                ],
-                "paths": {
-                  "@/server/db": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "@/db/schema": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md.",
-                  "drizzle-orm": "Adapters call services in src/features; see docs/decisions/0005-one-data-flow.md."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/features/launch/actions.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": ["@/features/**", "!@/features/launch/**"],
-                    "message": "launch may import only no other feature; features form a DAG."
+                    "message": "account imports only tests; features form a DAG."
                   }
                 ],
                 "paths": {
