@@ -6,7 +6,7 @@ import type { Progress } from "@/features/progress/status";
 import type { bankParsers, statusFilters } from "./params";
 import { examSource } from "./source";
 
-export type BankFilters = Partial<inferParserType<typeof bankParsers>>;
+export type BankQuery = Partial<inferParserType<typeof bankParsers>>;
 
 const fold = (s: string) => deburr(s).toLowerCase();
 
@@ -38,7 +38,7 @@ export function searchBank({
   source,
   level,
   sort,
-}: BankFilters) {
+}: BankQuery) {
   const query = q && fold(q);
   return orders[sort ?? "number"]
     .filter(
@@ -63,12 +63,12 @@ function matchesStatus(
 
 export function filterByStatus(
   found: TaskSummary[],
-  status: BankFilters["status"],
+  status: BankQuery["status"],
   progress?: Progress,
 ) {
   if (!status || !progress) return found;
   return found.filter((t) => matchesStatus(status, t.id, progress));
 }
 
-export const findTasks = (filters: BankFilters, progress?: Progress) =>
+export const findTasks = (filters: BankQuery, progress?: Progress) =>
   filterByStatus(searchBank(filters), filters.status, progress);

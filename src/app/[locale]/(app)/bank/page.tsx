@@ -5,13 +5,13 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { BankList } from "@/features/bank/bank-list";
 import { BankTabs } from "@/features/bank/bank-tabs";
+import { activeFilters, filterLabel } from "@/features/bank/filter-summary";
 import { BankFilters } from "@/features/bank/filters/bank-filters";
 import { FilterLabel } from "@/features/bank/filters/filter-label";
 import { FilterSearch } from "@/features/bank/filters/filter-search";
 import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
-import { activeFilters, filterLabel } from "@/features/bank/label";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
-import { type BankFilters as Filters, findTasks } from "@/features/bank/search";
+import { type BankQuery, findTasks } from "@/features/bank/search";
 import type { TaskSummary } from "@/features/catalog/tasks";
 import { getProgress } from "@/features/progress/progress";
 import type { Progress } from "@/features/progress/status";
@@ -65,7 +65,7 @@ async function Bank({
 }
 
 interface BankResultsProps {
-  filters: Filters;
+  filters: BankQuery;
   tasks: TaskSummary[];
   progress?: Progress;
   pending?: boolean;
