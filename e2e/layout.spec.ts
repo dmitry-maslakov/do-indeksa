@@ -26,6 +26,12 @@ test(
       await expect(page).toHaveURL(path);
       await expect(link).toHaveAttribute("aria-current", "page");
     }
+
+    await page.goto("/review");
+    await expect(nav.getByRole("link", { name: "Testovi" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   },
 );
 
