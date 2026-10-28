@@ -1,9 +1,9 @@
 "use server";
 
 import { z } from "zod";
+import { suggestionReasons } from "@/db/columns";
 import { idsByTopic } from "@/features/tasks/tasks";
 import { knownProfileClient } from "@/server/action-client";
-import { suggestionReasons } from "./suggestion-reasons";
 import { recordSuggestion } from "./suggestions";
 
 export const showSuggestion = knownProfileClient

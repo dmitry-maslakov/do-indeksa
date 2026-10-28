@@ -1,7 +1,7 @@
 import "server-only";
+import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
 import { checkerVersion, gradeParts } from "@/lib/math";
-import { isRight } from "@/lib/part-outcome";
 import { db } from "@/server/db";
 import { liveSession } from "./sessions";
 import { getTask } from "./tasks";

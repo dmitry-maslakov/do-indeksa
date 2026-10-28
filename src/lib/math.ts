@@ -4,7 +4,7 @@ import {
   isFunction,
   isSymbol,
 } from "@cortex-js/compute-engine";
-import type { PartOutcome } from "./part-outcome";
+import type { PartOutcome } from "@/db/columns";
 
 const ce = new ComputeEngine();
 

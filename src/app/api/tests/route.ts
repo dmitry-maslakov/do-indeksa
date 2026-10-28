@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { testPage } from "@/features/exam/test-feed";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {

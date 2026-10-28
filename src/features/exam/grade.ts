@@ -1,5 +1,5 @@
+import { isRight } from "@/db/columns";
 import { gradeParts } from "@/lib/math";
-import { isRight } from "@/lib/part-outcome";
 import { isAnswered } from "./test-state";
 
 interface GradedTask {

@@ -17,7 +17,7 @@ import {
 } from "@/features/progress/stats";
 import { tasks } from "@/features/tasks/tasks";
 import { topicName } from "@/features/tasks/topics";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";
 import { RecentTests } from "./_components/recent-tests";

@@ -2,9 +2,10 @@ import "server-only";
 import { isbot } from "isbot";
 import { headers } from "next/headers";
 import { createSafeActionClient, returnServerError } from "next-safe-action";
-import type { ServerError } from "@/lib/use-error-text";
-import { ensureProfileId, findProfileId } from "./auth";
+import { ensureProfileId, findProfileId } from "./profile";
 import { reportServerError } from "./report";
+
+export type ServerError = "unexpected" | "bot";
 
 const baseClient = createSafeActionClient({
   handleServerError: (error): ServerError => {

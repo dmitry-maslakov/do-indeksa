@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { Visit } from "./test-draft";
+import type { Visit } from "@/db/columns";
 
 interface TestMeta {
   title: string;

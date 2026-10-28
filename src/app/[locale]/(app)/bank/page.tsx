@@ -16,7 +16,7 @@ import { getProgress } from "@/features/progress/progress";
 import type { Progress } from "@/features/progress/status";
 import type { TaskSummary } from "@/features/tasks/tasks";
 import { alternates } from "@/i18n/alternates";
-import { getProfileId } from "@/server/auth";
+import { getProfileId } from "@/server/profile";
 import { EmptyResults } from "./_components/empty-results";
 import { ResultsHead } from "./_components/results-head";
 import { ResultsSkeleton } from "./_components/results-skeleton";

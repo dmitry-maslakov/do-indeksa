@@ -1,8 +1,8 @@
 import "server-only";
 import { and, eq, isNull, sql } from "drizzle-orm";
+import type { SuggestionReason } from "@/db/columns";
 import { suggestions } from "@/db/schema";
 import { db } from "@/server/db";
-import type { SuggestionReason } from "./suggestion-reasons";
 
 export async function recordSuggestion(
   profileId: string,

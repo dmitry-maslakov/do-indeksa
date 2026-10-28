@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import type { SignInSource } from "./sign-up-source";
+import type { SignInSource } from "@/server/sign-up-source";
 
 export const authClient = createAuthClient();
 

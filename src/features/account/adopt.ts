@@ -1,5 +1,4 @@
 import "server-only";
-import { createHash, randomBytes } from "node:crypto";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import {
   attempts,
@@ -10,58 +9,25 @@ import {
   taskSessions,
   testSessions,
 } from "@/db/schema";
-import { db } from "@/server/db";
-
-const hashOf = (token: string) =>
-  createHash("sha256").update(token).digest("base64url");
-
-export async function profileOf(userId: string) {
-  const [found] = await db
-    .select({ id: profiles.id })
-    .from(profiles)
-    .where(eq(profiles.userId, userId));
-  if (found) return found.id;
-  const [created] = await db
-    .insert(profiles)
-    .values({ userId })
-    .onConflictDoUpdate({ target: profiles.userId, set: { userId } })
-    .returning({ id: profiles.id });
-  if (!created) throw new Error("profile was not created");
-  return created.id;
-}
-
-export async function guestProfileOf(token: string) {
-  const [found] = await db
-    .select({ id: profiles.id })
-    .from(profiles)
-    .where(and(eq(profiles.tokenHash, hashOf(token)), isNull(profiles.userId)));
-  return found?.id;
-}
-
-export async function createGuestProfile() {
-  const token = randomBytes(32).toString("base64url");
-  const [created] = await db
-    .insert(profiles)
-    .values({ tokenHash: hashOf(token) })
-    .returning({ id: profiles.id });
-  if (!created) throw new Error("guest profile was not created");
-  return { id: created.id, token };
-}
-
-type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+import { getSession } from "@/server/auth";
+import { db, type Tx } from "@/server/db";
+import { forgetGuest, guestToken, tokenHashOf } from "@/server/profile";
 
 const hasProgress = async (tx: Tx, profileId: string) =>
   (await tx.$count(attempts, eq(attempts.profileId, profileId))) +
     (await tx.$count(favorites, eq(favorites.profileId, profileId))) >
   0;
 
-export async function adoptGuest(userId: string, token: string) {
+async function mergeGuest(userId: string, token: string) {
   return db.transaction(async (tx) => {
     const [guest] = await tx
       .select({ id: profiles.id })
       .from(profiles)
       .where(
-        and(eq(profiles.tokenHash, hashOf(token)), isNull(profiles.userId)),
+        and(
+          eq(profiles.tokenHash, tokenHashOf(token)),
+          isNull(profiles.userId),
+        ),
       )
       .for("update");
     if (!guest) return false;
@@ -110,4 +76,17 @@ export async function adoptGuest(userId: string, token: string) {
     await tx.delete(profiles).where(eq(profiles.id, guest.id));
     return both;
   });
+}
+
+export async function hasGuestToAdopt() {
+  const [session, token] = await Promise.all([getSession(), guestToken()]);
+  return Boolean(session && token);
+}
+
+export async function adoptGuestProfile() {
+  const [session, token] = await Promise.all([getSession(), guestToken()]);
+  if (!session || !token) return false;
+  const merged = await mergeGuest(session.user.id, token);
+  await forgetGuest();
+  return merged;
 }

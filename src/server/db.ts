@@ -20,3 +20,5 @@ const pool =
 if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
 
 export const db = drizzle({ client: pool, schema, casing: "snake_case" });
+
+export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
