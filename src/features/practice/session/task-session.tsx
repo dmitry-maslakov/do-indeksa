@@ -10,8 +10,8 @@ import {
   useState,
 } from "react";
 import { keepTaskSession } from "@/features/practice/actions";
-import { secondMs } from "@/lib/dates";
 import { localTimeZone } from "@/lib/time-zone";
+import { keepAliveMs } from "./session-kind";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
 
@@ -22,8 +22,6 @@ interface TaskSession {
   showHint: () => void;
   showSolution: () => void;
 }
-
-const keepAliveMs = 30 * secondMs;
 
 const TaskSessionContext = createContext<TaskSession | null>(null);
 

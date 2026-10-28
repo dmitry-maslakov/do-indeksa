@@ -2,7 +2,7 @@ import "server-only";
 import { and, desc, eq, gt, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { db } from "@/server/db";
-import { attemptGapMs, practiceKind } from "./session-kind";
+import { attemptGapMs, practiceKind, sessionLiveMs } from "./session-kind";
 
 type Executor = Pick<typeof db, "insert" | "update" | "select">;
 
@@ -36,7 +36,7 @@ async function kindFor(executor: Executor, profileId: string, taskId: string) {
   return practiceKind(last, Boolean(answered || revealed));
 }
 
-const alive = sql`now() - interval '45 seconds'`;
+const alive = sql`now() - ${sessionLiveMs} * interval '1 millisecond'`;
 
 export async function liveSession(
   executor: Executor,
