@@ -158,7 +158,12 @@ export async function finishTest(
           now,
         ),
       })
-      .where(eq(testSessions.id, test.id));
+      .where(
+        and(
+          eq(testSessions.id, test.id),
+          eq(testSessions.profileId, profileId),
+        ),
+      );
     const sessions = sessionsOf(
       test.draft.visits,
       stored.taskIds,
