@@ -1,8 +1,8 @@
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { Logo } from "@/components/logo";
 import { UserMenu } from "@/features/account/user-menu";
 import { ExamSwitcher } from "@/features/catalog/exam-switcher";
 import { currentExam, examOptions } from "@/features/catalog/exams";
-import { LocaleSwitcher } from "./locale-switcher";
-import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
 
 export function TopNav() {

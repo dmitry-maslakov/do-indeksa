@@ -2,12 +2,12 @@ import { useLocale, useTranslations } from "next-intl";
 import type { ComponentProps, ReactNode } from "react";
 import type { NativeSelect } from "@/components/ui/native-select";
 import { NativeSelectOption } from "@/components/ui/native-select";
+import { sources, statusFilters } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
 import { levels } from "@/features/catalog/level";
 import { topics } from "@/features/catalog/topics";
 import { Link } from "@/i18n/navigation";
 import { FilterSelect } from "./filter-select";
-import { sources, statusFilters } from "./params";
 
 interface BankFiltersProps {
   variant?: ComponentProps<typeof NativeSelect>["variant"];

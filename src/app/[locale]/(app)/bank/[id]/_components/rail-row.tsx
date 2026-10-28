@@ -2,7 +2,7 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { RailLink } from "@/components/rail";
-import type { QueueRow } from "@/features/bank/queue";
+import type { QueueRow } from "@/features/bank/queue/queue";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { ExamMark } from "./task-meta";
 

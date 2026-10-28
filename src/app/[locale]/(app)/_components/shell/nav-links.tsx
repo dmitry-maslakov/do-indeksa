@@ -2,9 +2,9 @@
 
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { WithPathname } from "@/components/with-url";
 import { Link } from "@/i18n/navigation";
 import { isActive, sections } from "./sections";
-import { WithPathname } from "./with-url";
 
 export function NavLinks() {
   const t = useTranslations("Nav");

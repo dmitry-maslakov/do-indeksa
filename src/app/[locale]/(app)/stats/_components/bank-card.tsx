@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { StackBar } from "@/components/stack-bar";
 import {
   Card,
   CardDescription,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { totals } from "@/features/progress/stats";
+import { StackBar } from "./stack-bar";
 
 interface BankCardProps {
   totals?: ReturnType<typeof totals>;

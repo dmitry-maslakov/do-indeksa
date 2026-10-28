@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
-import type { Queue } from "@/features/bank/queue";
+import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
 import { RecList } from "./rec-list";
 

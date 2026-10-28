@@ -3,10 +3,10 @@ import { useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { VariantStrip } from "@/components/variant-strip";
 import { reviewHref } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
+import { VariantStrip } from "./variant-strip";
 
 interface RecentTest {
   id: string;

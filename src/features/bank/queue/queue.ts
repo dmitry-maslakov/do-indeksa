@@ -1,12 +1,12 @@
 import "server-only";
 import type { Locale } from "next-intl";
+import { findTasks } from "@/features/bank/search";
 import { getTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import { getTouched } from "@/features/progress/progress";
 import type { TaskStatus, Touched } from "@/features/progress/status";
 import { planQueue } from "./picks";
-import { examYear, previewHtml } from "./rail-task";
-import { findTasks } from "./search";
+import { examYear, previewHtml } from "./task-preview";
 
 export interface QueueRow {
   id: string;

@@ -1,15 +1,19 @@
 import "server-only";
 import { escape as escapeHtml } from "es-toolkit";
 import katex from "katex";
+import { LRUCache } from "lru-cache";
+import { examSource } from "@/features/bank/source";
 import { getTask } from "@/features/catalog/tasks";
-import { examSource } from "./source";
 
 const toHtml = (part: string, index: number) =>
   index % 2
     ? katex.renderToString(part, { throwOnError: false })
     : escapeHtml(part);
 
-const previews = new Map<string, string>();
+const previews = new LRUCache<string, string>({
+  maxSize: 4 * 1024 * 1024,
+  sizeCalculation: (html) => html.length + 1,
+});
 
 export function previewHtml(id: string) {
   const cached = previews.get(id);

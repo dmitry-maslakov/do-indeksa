@@ -3,8 +3,8 @@ import { feedPage } from "@/features/bank/feed";
 import { loadBankFilters } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
 import { getProgress } from "@/features/progress/progress";
+import { pageQuery } from "@/lib/page-query";
 import { getProfileId } from "@/server/profile";
-import { pageQuery } from "../page-query";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

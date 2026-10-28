@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
-import type { Queue } from "@/features/bank/queue";
+import type { Queue } from "@/features/bank/queue/queue";
 import { QueueLink } from "./rail-row";
 
 interface RecListProps {
