@@ -254,6 +254,11 @@ const theories = defineCollection({
   },
 });
 
+const methodParts = (path: string) => {
+  const [topic = "", , slug = ""] = path.split("/");
+  return { topic, slug };
+};
+
 const methods = defineCollection({
   name: "methods",
   directory: theoryRoot,
@@ -266,7 +271,7 @@ const methods = defineCollection({
   }),
   transform: async (method, { documents, cache }) => {
     const origin = method._meta.filePath;
-    const [topic = "", , slug = ""] = method._meta.path.split("/");
+    const { topic, slug } = methodParts(method._meta.path);
     if (!documents(theories).some((t) => t._meta.directory === topic)) {
       throw new Error(`${origin}: no theory for topic "${topic}"`);
     }
@@ -282,6 +287,32 @@ const methods = defineCollection({
   },
 });
 
+const theoryIds = defineCollection({
+  name: "theoryIds",
+  directory: theoryRoot,
+  include: "*/index.md",
+  schema: z.object({ content: z.string() }),
+  transform: (theory) => ({ id: theory._meta.directory }),
+});
+
+const methodSlugs = defineCollection({
+  name: "methodSlugs",
+  directory: theoryRoot,
+  include: "*/methods/*.md",
+  schema: z.object({ content: z.string() }),
+  transform: (method) => methodParts(method._meta.path),
+});
+
 export default defineConfig({
-  content: [topics, tasks, taskIds, exams, variants, theories, methods],
+  content: [
+    topics,
+    tasks,
+    taskIds,
+    exams,
+    variants,
+    theories,
+    methods,
+    theoryIds,
+    methodSlugs,
+  ],
 });

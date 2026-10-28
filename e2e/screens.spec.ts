@@ -85,7 +85,17 @@ for (const [path, text, title] of screens) {
   });
 }
 
-for (const path of ["/bank/unknown", "/review/a/b"]) {
+const missing = [
+  "/bank/unknown",
+  "/review/a/b",
+  "/theory/nema-teme",
+  "/theory/nema-teme/methods",
+  "/theory/exponential-equations/methods/nema-metode",
+  "/variants/nema-varijante",
+  "/variants/set-nema-zadatka",
+];
+
+for (const path of missing) {
   test(`titles the not found page at ${path}`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(404);
@@ -93,6 +103,22 @@ for (const path of ["/bank/unknown", "/review/a/b"]) {
     await expect(page.getByRole("banner")).toBeVisible();
   });
 }
+
+test("keeps missing pages out of search before scripts run", async ({
+  request,
+}) => {
+  for (const path of [
+    ...missing,
+    "/ru/theory/nema-teme",
+    "/en/variants/nema-varijante",
+  ]) {
+    const res = await request.get(path);
+    expect(res.status(), path).toBe(404);
+    expect(await res.text(), path).toContain(
+      '<meta name="robots" content="noindex"/>',
+    );
+  }
+});
 
 test("describes the launch page for search", async ({ page, request }) => {
   await page.goto("/launch");
