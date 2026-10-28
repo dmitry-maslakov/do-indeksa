@@ -41,7 +41,6 @@ const routes = [
   "/bank/eks-001",
   "/variants",
   "/variants/set-eks-001",
-  "/daily",
   "/review",
   "/stats",
   "/privacy",

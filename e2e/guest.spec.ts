@@ -206,12 +206,9 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   await expect(sheet.getByLabel("Tema")).toHaveValue("logarithms");
 });
 
-test("a guest finishes the daily test", { tag: "@mobile" }, async ({
-  page,
-}) => {
+test("a guest finishes a test", { tag: "@mobile" }, async ({ page }) => {
   const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
-  await page.goto("/daily");
-  await expect(page).toHaveURL(/\/variants\/daily-\d{4}-\d{2}-\d{2}$/);
+  await page.goto("/variants/ftn-p1-2025");
   await page.getByRole("timer").waitFor();
   await expect(bar).toBeHidden();
   await page.reload();

@@ -11,9 +11,7 @@ const personal = [
   "/review",
   "/stats",
   "/v/",
-  "/daily",
   "/variants/compose",
-  "/variants/daily-",
   "/variants/set-",
 ];
 

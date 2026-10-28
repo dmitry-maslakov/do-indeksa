@@ -8,7 +8,7 @@ test.use({ viewport: { width: 1280, height: 400 } });
 const seedTests = (db: Client, profileId: string, count: number) =>
   db.query(
     `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
-     select gen_random_uuid(), $1::uuid, 'daily'::test_kind, 'daily-2026-01-' || lpad(n::text, 2, '0'),
+     select gen_random_uuid(), $1::uuid, 'custom'::test_kind, 'set-eks-00' || n,
        '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour', false
      from generate_series(1, $2::int) n`,
     [profileId, count],

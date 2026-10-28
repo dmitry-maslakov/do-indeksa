@@ -55,8 +55,8 @@ export function RecentTests({ tests }: { tests?: RecentTest[] }) {
       ) : tests.length === 0 ? (
         <EmptyNote
           text={t("noTests")}
-          href="/daily"
-          action={home("playDaily")}
+          href="/variants"
+          action={home("startTest")}
         />
       ) : (
         <ul className="flex flex-col gap-1 text-sm">

@@ -135,8 +135,6 @@
     "original": "Оригинал (PDF) ↗",
     "official": "Вступительные экзамены · {count, number}",
     "curated": "Наши варианты · {count, number}",
-    "daily": "Вариант дня",
-    "dailyOn": "Вариант дня · {date}",
     "history": "История",
     "historyEmpty": "Пока нет завершённых вариантов.",
     "notSolved": "не решён",
@@ -158,7 +156,7 @@
     },
     "weeklyReview": "Разбор →",
     "weeklyNext": "Новый вариант через {days, plural, one {# день} few {# дня} other {# дней}}",
-    "testTitle": "{kind, select, weekly {Вариант недели} custom {Свой вариант} daily {Вариант дня} other {{title}}}",
+    "testTitle": "{kind, select, weekly {Вариант недели} custom {Свой вариант} other {{title}}}",
     "testKind": "{kind, select, official {Вступительный экзамен} curated {Наш вариант} weekly {Задание недели} other {{count, plural, one {# задача} few {# задачи} other {# задач}}}}"
   },
   "Exam": {
@@ -239,7 +237,6 @@
     "repeated": "{count, plural, one {Ошибки повторяются в задаче {numbers}.} other {Ошибки повторяются в задачах {numbers}.}}"
   },
   "Home": {
-    "playDaily": "Решить вариант дня",
     "timeEmpty": "Реши первый вариант, и здесь появится, на каких задачах уходит больше всего времени.",
     "startTest": "Выбрать вариант",
     "suggestion": "Предложение на сегодня: <b>{reason}</b>",
