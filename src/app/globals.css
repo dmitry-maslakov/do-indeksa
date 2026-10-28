@@ -182,21 +182,6 @@
   --nav-bottom: 4rem;
 }
 
-@custom-variant focused (&:where([data-focus] *));
-@custom-variant exam-running (&:where([data-focus="exam"] *));
-@custom-variant task-focus (&:where([data-focus="task"] *));
-
-@media (width < 48rem) {
-  :root[data-focus="task"] {
-    --nav-bottom: 0rem;
-  }
-}
-
-:root[data-focus="exam"],
-:root:not(:has([data-bottom-nav])) {
-  --nav-bottom: 0rem;
-}
-
 @utility scrollbar-none {
   scrollbar-width: none;
 }
@@ -214,9 +199,6 @@
         var(--nav-bottom) +
         env(safe-area-inset-bottom)
       );
-    }
-    body {
-      padding-bottom: calc(var(--nav-bottom) + env(safe-area-inset-bottom));
     }
   }
   body {

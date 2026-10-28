@@ -6,14 +6,16 @@ import { WithPathname } from "@/components/with-url";
 import { Link } from "@/i18n/navigation";
 import { isActive, sections } from "./sections";
 
-export function BottomNav() {
+export function BottomNav({ className }: { className?: string }) {
   const t = useTranslations("Nav");
 
   return (
     <nav
       aria-label={t("label")}
-      data-bottom-nav
-      className="fixed inset-x-0 bottom-0 z-40 flex border-t bg-card pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] lg:hidden exam-running:hidden max-md:task-focus:hidden"
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-40 flex border-t bg-card pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] lg:hidden",
+        className,
+      )}
     >
       <WithPathname>
         {(pathname) =>

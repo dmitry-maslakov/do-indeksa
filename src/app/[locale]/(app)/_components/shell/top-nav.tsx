@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { UserMenu } from "@/features/account/user-menu";
@@ -5,9 +6,14 @@ import { ExamSwitcher } from "@/features/catalog/exam-switcher";
 import { currentExam, examOptions } from "@/features/catalog/exams";
 import { NavLinks } from "./nav-links";
 
-export function TopNav() {
+export function TopNav({ className }: { className?: string }) {
   return (
-    <header className="flex h-14 items-center gap-4 px-4 max-md:focused:hidden lg:h-18 lg:gap-7 lg:px-10">
+    <header
+      className={cn(
+        "flex h-14 items-center gap-4 px-4 lg:h-18 lg:gap-7 lg:px-10",
+        className,
+      )}
+    >
       <Logo />
       <div className="max-lg:hidden">
         <ExamSwitcher exams={examOptions} current={currentExam} />

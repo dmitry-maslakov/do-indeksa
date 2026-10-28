@@ -4,7 +4,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
-import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
 import { saveTest, submitTest } from "@/features/tests/actions";
 import { reviewHref } from "@/features/tests/review";
@@ -143,7 +142,6 @@ export function TestRunner({
 
   return (
     <>
-      <FocusMode mode="exam" />
       <TestBar {...rail} />
       <div className="flex items-start gap-14">
         <RailPanel label={t("tasks")}>

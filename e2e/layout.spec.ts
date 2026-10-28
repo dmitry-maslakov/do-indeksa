@@ -60,7 +60,7 @@ async function fitsPhone(
 ) {
   await page.goto(path);
   await expect(
-    /^\/(bank|theory)\//.test(path)
+    /^\/(bank|theory|variants)\//.test(path)
       ? page.getByRole("main")
       : page.getByRole("banner").getByRole("button", { name: account }),
   ).toBeVisible();
@@ -136,4 +136,26 @@ test("a theory topic keeps only the bottom bar on a phone", {
   await expect(
     page.getByRole("navigation", { name: "Glavna navigacija" }),
   ).toBeVisible();
+});
+
+test.describe("before scripts run", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("a phone gets each page's chrome from the server", {
+    tag: "@mobile",
+  }, async ({ page }) => {
+    const nav = page.getByRole("navigation", { name: "Glavna navigacija" });
+    for (const [path, header, bottom] of [
+      ["/bank", true, true],
+      ["/bank/eks-001", false, false],
+      ["/theory/exponential-equations", false, true],
+      ["/variants/ftn-p1-2025", false, false],
+    ] as const) {
+      await page.goto(path);
+      await expect(page.getByRole("banner"), path).toBeVisible({
+        visible: header,
+      });
+      await expect(nav, path).toBeVisible({ visible: bottom });
+    }
+  });
 });
