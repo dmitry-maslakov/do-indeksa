@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { reportKinds } from "@/db/columns";
 import { taskIdSchema } from "@/features/catalog/tasks";
-import { timeZoneSchema } from "@/lib/dates";
+import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
 import { submitAnswer } from "./answer/answers";
 import { setTaskFavorite } from "./favorites";

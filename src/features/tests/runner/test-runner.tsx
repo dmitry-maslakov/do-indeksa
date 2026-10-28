@@ -13,7 +13,7 @@ import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { ComposeMode } from "@/features/variants/compose";
 import type { VariantTask as Task } from "@/features/variants/variants";
 import { getPathname, useRouter } from "@/i18n/navigation";
-import { localTimeZone } from "@/lib/dates";
+import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
 import { TestBar } from "./test-bar";
 import { TestGhost } from "./test-ghost";
