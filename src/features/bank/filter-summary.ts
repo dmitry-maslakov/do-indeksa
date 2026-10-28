@@ -1,10 +1,10 @@
 import "server-only";
 import type { Locale, useTranslations } from "next-intl";
 import { topicName } from "@/features/catalog/topics";
-import type { BankFilters } from "./search";
+import type { BankQuery } from "./search";
 
 export function activeFilters(
-  { topic, number, source, level, status }: BankFilters,
+  { topic, number, source, level, status }: BankQuery,
   t: ReturnType<typeof useTranslations<"Bank">>,
   locale: Locale,
 ) {
@@ -18,7 +18,7 @@ export function activeFilters(
 }
 
 export function filterLabel(
-  filters: BankFilters,
+  filters: BankQuery,
   t: ReturnType<typeof useTranslations<"Bank">>,
   locale: Locale,
 ) {
