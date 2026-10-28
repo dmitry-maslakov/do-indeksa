@@ -1,8 +1,8 @@
 import { orderBy } from "es-toolkit";
 import "server-only";
 import type { inferParserType } from "nuqs/server";
+import { summarize, type TaskSummary, tasks } from "@/features/catalog/tasks";
 import type { Progress } from "@/features/progress/status";
-import { summarize, type TaskSummary, tasks } from "@/features/tasks/tasks";
 import type { bankParsers, statusFilters } from "./params";
 import { examSource } from "./source";
 

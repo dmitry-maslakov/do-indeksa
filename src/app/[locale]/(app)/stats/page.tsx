@@ -3,7 +3,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
-import { minutesAt, positions } from "@/features/exam/exam";
+import { minutesAt, positions } from "@/features/catalog/exams";
+import { tasks } from "@/features/catalog/tasks";
+import { topicName } from "@/features/catalog/topics";
 import { summarizeTests } from "@/features/exam/test-summaries";
 import {
   countTests,
@@ -15,8 +17,6 @@ import {
   meanTimeByNumber,
   totals,
 } from "@/features/progress/stats";
-import { tasks } from "@/features/tasks/tasks";
-import { topicName } from "@/features/tasks/topics";
 import { getProfileId } from "@/server/profile";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";

@@ -1,9 +1,9 @@
 import "server-only";
 import type { Locale } from "next-intl";
+import { getTask } from "@/features/catalog/tasks";
+import { topicName } from "@/features/catalog/topics";
 import { getTouched } from "@/features/progress/progress";
 import type { TaskStatus, Touched } from "@/features/progress/status";
-import { getTask } from "@/features/tasks/tasks";
-import { topicName } from "@/features/tasks/topics";
 import { planQueue } from "./picks";
 import { examYear, previewHtml } from "./rail-task";
 import { findTasks } from "./search";

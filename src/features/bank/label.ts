@@ -1,6 +1,6 @@
 import "server-only";
 import type { Locale, useTranslations } from "next-intl";
-import { topicName } from "@/features/tasks/topics";
+import { topicName } from "@/features/catalog/topics";
 import type { BankFilters } from "./search";
 
 export function activeFilters(

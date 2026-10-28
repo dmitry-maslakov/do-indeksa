@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
+import { topicName } from "@/features/catalog/topics";
 import type { Suggestion } from "@/features/progress/topic-progress";
-import { topicName } from "@/features/tasks/topics";
 import { HeroBackdrop } from "./hero-backdrop";
 import { SuggestionLink } from "./suggestion-link";
 

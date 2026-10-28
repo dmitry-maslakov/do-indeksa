@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dailySize } from "./exam";
+import { dailySize } from "@/features/catalog/exams";
 import { getVariant, officialVariants, reviewTasks } from "./variants";
 
 describe("getVariant", () => {

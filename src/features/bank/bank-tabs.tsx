@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { positions } from "@/features/exam/exam";
+import { positions } from "@/features/catalog/exams";
 
 interface BankTabsProps {
   topic?: string | null;

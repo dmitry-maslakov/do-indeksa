@@ -8,16 +8,21 @@ import { RailPanel } from "@/components/rail";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue } from "@/features/bank/queue";
 import { examSource } from "@/features/bank/source";
-import { positions } from "@/features/exam/exam";
+import { positions } from "@/features/catalog/exams";
+import { levelOf } from "@/features/catalog/level";
+import {
+  getTask,
+  renderTask,
+  tasks,
+  taskTitle,
+} from "@/features/catalog/tasks";
+import { topicLook, topicName } from "@/features/catalog/topics";
 import { AnswerForm } from "@/features/tasks/answer-form";
 import { FavoriteButton } from "@/features/tasks/favorite-button";
 import { FavoriteToggle } from "@/features/tasks/favorite-toggle";
 import { HelpPanel } from "@/features/tasks/help-panel";
-import { levelOf } from "@/features/tasks/level";
 import { ReportTask } from "@/features/tasks/report-task";
 import { TaskSessionProvider } from "@/features/tasks/task-session";
-import { getTask, renderTask, tasks, taskTitle } from "@/features/tasks/tasks";
-import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
 import { PhoneBar } from "./_components/phone-bar";

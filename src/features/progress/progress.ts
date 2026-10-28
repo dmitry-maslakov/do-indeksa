@@ -1,9 +1,9 @@
 import "server-only";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { attempts, favorites } from "@/db/schema";
-import { positions } from "@/features/exam/exam";
+import { positions } from "@/features/catalog/exams";
+import { idsByTopic } from "@/features/catalog/tasks";
 import { getLastSeen } from "@/features/tasks/sessions";
-import { idsByTopic } from "@/features/tasks/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { decidesStatus } from "./decides-status";

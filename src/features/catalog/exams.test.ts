@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { numberOf, positions } from "./exam";
+import { numberOf, positions } from "./exams";
 
 describe("numberOf", () => {
   it("gives every position topic its number", () => {

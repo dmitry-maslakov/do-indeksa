@@ -1,5 +1,5 @@
 import "server-only";
-import { renderTask } from "./tasks";
+import { renderTask } from "@/features/catalog/tasks";
 
 export type RevealPart = "answer" | "solution" | number;
 

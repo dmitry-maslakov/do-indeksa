@@ -2,7 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { topicName } from "@/features/tasks/topics";
+import { topicName } from "@/features/catalog/topics";
 import { getMethod, methodsOf, theoryMethods } from "@/features/theory/theory";
 import {
   InlineMarkdown,

@@ -3,9 +3,9 @@
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
 import { MathHtml } from "@/components/math-html";
+import type { PartLabel } from "@/features/catalog/parts";
 import { StatusIcon } from "@/features/progress/status-icon";
 import type { AnswerState } from "./answer-state";
-import type { PartLabel } from "./parts";
 import { useMathField } from "./use-math-field";
 
 type Variant = "exam" | "solve";

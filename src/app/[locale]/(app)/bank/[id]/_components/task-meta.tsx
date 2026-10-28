@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import type { ExamSource } from "@/features/bank/source";
+import type { Level } from "@/features/catalog/level";
 import type { Touched } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
-import type { Level } from "@/features/tasks/level";
 
 interface TaskMetaProps {
   topic: string;

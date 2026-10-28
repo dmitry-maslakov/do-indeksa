@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { numberOf } from "@/features/exam/exam";
-import { topicName } from "@/features/tasks/topics";
+import { numberOf } from "@/features/catalog/exams";
+import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf } from "@/features/theory/theory";
 
 export function Hero({

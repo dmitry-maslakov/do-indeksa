@@ -1,12 +1,12 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { ProgressBar } from "@/components/progress-bar";
+import { TopicIcon } from "@/features/catalog/topic-icon";
+import type { TopicLook } from "@/features/catalog/topic-look";
 import type {
   TopicProgress,
   TopicState,
 } from "@/features/progress/topic-progress";
-import { TopicIcon } from "@/features/tasks/topic-icon";
-import type { TopicLook } from "@/features/tasks/topic-look";
 import { Link } from "@/i18n/navigation";
 
 export interface TopicRowProps

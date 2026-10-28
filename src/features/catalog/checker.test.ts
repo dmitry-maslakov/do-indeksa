@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gradeParts, isEquivalent } from "./math";
+import { gradeParts, isEquivalent } from "./checker";
 
 describe("isEquivalent", () => {
   it.each([

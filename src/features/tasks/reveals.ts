@@ -1,10 +1,10 @@
 import "server-only";
 import { reveals } from "@/db/schema";
+import { getTask } from "@/features/catalog/tasks";
 import { db } from "@/server/db";
 import type { RevealOwner } from "./reveal-owner";
 import type { RevealPart } from "./reveal-part";
 import { liveSession, testTaskSession } from "./sessions";
-import { getTask } from "./tasks";
 
 const hintParts = ["hint1", "hint2", "hint3"] as const;
 

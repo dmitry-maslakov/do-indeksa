@@ -1,6 +1,6 @@
 import { maxBy, sumBy } from "es-toolkit";
 import "server-only";
-import { getTask } from "@/features/tasks/tasks";
+import { getTask } from "@/features/catalog/tasks";
 import { belgradeDate, dayMs } from "@/lib/dates";
 import { hash } from "./pick";
 import {

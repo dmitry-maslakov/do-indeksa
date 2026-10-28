@@ -1,10 +1,10 @@
 import "server-only";
 import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
-import { checkerVersion, gradeParts } from "@/lib/math";
+import { checkerVersion, gradeParts } from "@/features/catalog/checker";
+import { getTask } from "@/features/catalog/tasks";
 import { db } from "@/server/db";
 import { liveSession } from "./sessions";
-import { getTask } from "./tasks";
 
 interface Answer {
   taskId: string;

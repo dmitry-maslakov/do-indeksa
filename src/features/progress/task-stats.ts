@@ -1,6 +1,6 @@
 import "server-only";
-import { numberOf } from "@/features/exam/exam";
-import { getTask } from "@/features/tasks/tasks";
+import { numberOf } from "@/features/catalog/exams";
+import { getTask } from "@/features/catalog/tasks";
 import type { TaskStat } from "./stats";
 
 type TaskTotals = Omit<TaskStat, "number" | "topic">;

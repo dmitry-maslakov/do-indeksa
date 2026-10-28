@@ -1,10 +1,10 @@
 "use server";
 
 import { z } from "zod";
+import { taskIdSchema } from "@/features/catalog/tasks";
 import { timeZoneSchema } from "@/lib/dates";
 import { actionClient } from "@/server/action-client";
 import { keepSession } from "./sessions";
-import { taskIdSchema } from "./tasks";
 
 export const keepTaskSession = actionClient
   .inputSchema(
