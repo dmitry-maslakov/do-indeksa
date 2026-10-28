@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { reportKinds } from "@/db/columns";
+import { maxParts } from "@/features/catalog/parts";
 import { taskIdSchema } from "@/features/catalog/tasks";
 import { keepSession } from "@/features/practice/session/task-sessions";
 import { timeZoneSchema } from "@/lib/time-zone";
@@ -17,7 +18,7 @@ export const checkAnswer = actionClient
   .inputSchema(
     zfd.formData({
       taskId: zfd.text(taskIdSchema),
-      answer: zfd.repeatable(z.array(z.string().max(500)).max(6)),
+      answer: zfd.repeatable(z.array(z.string().max(500)).max(maxParts)),
       sessionId: zfd.text(z.uuid().optional()),
       clientId: zfd.text(z.uuid()),
     }),

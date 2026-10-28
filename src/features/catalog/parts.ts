@@ -1,3 +1,5 @@
+export const maxParts = 6;
+
 export interface PartLabel {
   letter: string;
   prefix: string | null;

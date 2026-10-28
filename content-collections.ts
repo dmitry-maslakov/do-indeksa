@@ -5,7 +5,7 @@ import { defineCollection, defineConfig } from "@content-collections/core";
 import { uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { parseMath } from "./src/features/catalog/checker";
-import { hasBareTex, splitLabel } from "./src/features/catalog/parts";
+import { hasBareTex, maxParts, splitLabel } from "./src/features/catalog/parts";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
@@ -56,7 +56,7 @@ const tasks = defineCollection({
         }),
       )
       .min(1)
-      .max(6),
+      .max(maxParts),
     hints: z.array(z.string().min(1)).max(3).default([]),
     solution: z.string().min(1),
     type: z.string().min(1),
