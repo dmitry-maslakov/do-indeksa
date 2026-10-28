@@ -4,28 +4,28 @@ import { cn } from "cn";
 import { ChevronLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { answeredCount, isAnswered } from "@/features/tests/state";
+import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
-import type { LocalTest } from "./exam-store";
-import { TimeUp, useClock } from "./exam-timer";
 import { FinishDialog } from "./finish-dialog";
-import { answeredCount, isAnswered } from "./test-state";
-import type { ExamTask } from "./variants";
+import type { LocalTest } from "./test-store";
+import { TimeUp, useClock } from "./test-timer";
 
-interface ExamBarProps {
+interface TestBarProps {
   test: LocalTest;
-  tasks: ExamTask[];
+  tasks: VariantTask[];
   pending: boolean;
   onGo: (index: number) => void;
   onFinish: () => void;
 }
 
-export function ExamBar({
+export function TestBar({
   test,
   tasks,
   pending,
   onGo,
   onFinish,
-}: ExamBarProps) {
+}: TestBarProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
   const { over, text } = useClock(test);
@@ -72,7 +72,7 @@ export function ExamBar({
           const answered = isAnswered(test.answers[i] ?? []);
           return (
             <button
-              key={task.id}
+              key={task.taskId}
               type="button"
               onClick={() => onGo(i)}
               aria-current={i === test.current ? "step" : undefined}

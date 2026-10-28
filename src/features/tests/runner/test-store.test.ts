@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { type LocalTest, useExamStore } from "./exam-store";
+import { type LocalTest, useTestStore } from "./test-store";
 
 const meta = {
   title: "2026",
@@ -26,7 +26,7 @@ const saved: LocalTest = {
   ],
 };
 
-const store = () => useExamStore.getState();
+const store = () => useTestStore.getState();
 const test = () => store().tests.v;
 
 afterEach(() => {
@@ -142,7 +142,7 @@ describe("persisted tests", () => {
       removeItem: (key: string) => items.delete(key),
     });
     vi.resetModules();
-    const { useExamStore: persisted } = await import("./exam-store");
+    const { useTestStore: persisted } = await import("./test-store");
     await persisted.persist.rehydrate();
     expect(persisted.getState().tests).toEqual({});
     vi.unstubAllGlobals();

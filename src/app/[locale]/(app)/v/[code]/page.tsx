@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { composeModes } from "@/features/exam/compose";
-import { findSet } from "@/features/exam/sets";
-import { setId } from "@/features/exam/variant-id";
-import { VariantScreen, variantMetadata } from "@/features/exam/variant-screen";
-import { getVariant } from "@/features/exam/variants";
+import {
+  TestScreen,
+  variantMetadata,
+} from "@/features/tests/runner/test-screen";
+import { composeModes } from "@/features/variants/compose";
+import { findSet } from "@/features/variants/sets";
+import { setId } from "@/features/variants/variant-id";
+import { getVariant } from "@/features/variants/variants";
 import { redirect } from "@/i18n/navigation";
 
 export const instant = false;
@@ -37,7 +40,5 @@ export default async function SetPage({
       locale: await getLocale(),
     });
   }
-  return (
-    <VariantScreen variant={set.variant} code={set.code} fallback={mode} />
-  );
+  return <TestScreen variant={set.variant} code={set.code} fallback={mode} />;
 }

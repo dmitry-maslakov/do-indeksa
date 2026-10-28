@@ -8,15 +8,16 @@ import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { positions } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import { testPage } from "@/features/exam/test-feed";
-import {
-  summarizeTests,
-  type TestSummary,
-} from "@/features/exam/test-summaries";
-import { curatedVariants, officialVariants } from "@/features/exam/variants";
-import { weeklyVariant } from "@/features/exam/weekly";
-import { getLatestTests, getTaskStats } from "@/features/progress/history";
+import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
+import { testPage } from "@/features/tests/feed";
+import { getLatestTests } from "@/features/tests/history";
+import { summarizeTests, type TestSummary } from "@/features/tests/summaries";
+import {
+  curatedVariants,
+  officialVariants,
+} from "@/features/variants/variants";
+import { weeklyVariant } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
 import { ComposeCard } from "./_components/compose-card";

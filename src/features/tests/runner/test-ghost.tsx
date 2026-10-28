@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function ExamGhost() {
+export function TestGhost() {
   return (
     <div className="flex items-start gap-14">
       <div className="sticky top-3 hidden h-rail w-80 shrink-0 rounded-3xl bg-muted md:block" />

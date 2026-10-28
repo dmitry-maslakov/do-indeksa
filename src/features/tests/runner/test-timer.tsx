@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import type { LocalTest } from "./exam-store";
+import type { LocalTest } from "./test-store";
 
 type Timing = Pick<LocalTest, "startedAt" | "minutes">;
 
@@ -36,7 +36,7 @@ export function TimeUp({ className }: { className?: string }) {
   );
 }
 
-export function ExamTimer({ timing }: { timing: Timing }) {
+export function TestTimer({ timing }: { timing: Timing }) {
   const t = useTranslations("Exam");
   const { over, text } = useClock(timing);
   const [hidden, setHidden] = useState(false);

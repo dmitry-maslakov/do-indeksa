@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { saveSet } from "@/features/exam/sets";
-import { VariantScreen, variantMetadata } from "@/features/exam/variant-screen";
-import { contentVariants, getVariant } from "@/features/exam/variants";
+import {
+  TestScreen,
+  variantMetadata,
+} from "@/features/tests/runner/test-screen";
+import { saveSet } from "@/features/variants/sets";
+import { contentVariants, getVariant } from "@/features/variants/variants";
 import { alternates } from "@/i18n/alternates";
 import { redirect } from "@/i18n/navigation";
 
@@ -40,5 +43,5 @@ export default async function VariantPage({
       locale: await getLocale(),
     });
   }
-  return <VariantScreen variant={variant} />;
+  return <TestScreen variant={variant} />;
 }

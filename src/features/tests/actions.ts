@@ -5,7 +5,7 @@ import { z } from "zod";
 import { testDraft } from "@/db/columns";
 import { timeZoneSchema } from "@/lib/dates";
 import { actionClient } from "@/server/action-client";
-import { finishTest, saveDraft } from "./test-sessions";
+import { finishTest, saveDraft } from "./sessions";
 
 const testInput = z.object({
   id: z.uuid(),

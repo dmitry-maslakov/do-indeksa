@@ -3,10 +3,10 @@ import { useTranslations } from "next-intl";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { topicLook } from "@/features/catalog/topics";
-import type { TestSummary } from "@/features/exam/test-summaries";
-import type { WeeklyVariant } from "@/features/exam/weekly";
-import { WeeklyWave } from "@/features/exam/weekly-wave";
-import { reviewHref } from "@/features/review/review";
+import { reviewHref } from "@/features/tests/review";
+import type { TestSummary } from "@/features/tests/summaries";
+import type { WeeklyVariant } from "@/features/variants/weekly";
+import { WeeklyWave } from "@/features/variants/weekly-wave";
 import { Link } from "@/i18n/navigation";
 import { type Result, resultOf, resultTone } from "./results";
 

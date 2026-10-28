@@ -1,11 +1,11 @@
-import { useExamStore } from "@/features/exam/exam-store";
+import { useTestStore } from "@/features/tests/runner/test-store";
 import { useRouter } from "@/i18n/navigation";
 
 export function useSignedOut() {
   const router = useRouter();
 
   return () => {
-    useExamStore.setState({ tests: {} });
+    useTestStore.setState({ tests: {} });
     router.refresh();
   };
 }

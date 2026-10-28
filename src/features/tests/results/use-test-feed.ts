@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
-import type { TestPage } from "./test-feed";
+import type { TestPage } from "@/features/tests/feed";
 
 async function fetchPage(
   offset: number,

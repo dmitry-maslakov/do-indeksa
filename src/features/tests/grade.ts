@@ -1,6 +1,6 @@
 import { isRight } from "@/db/columns";
 import { gradeParts } from "@/features/catalog/checker";
-import { isAnswered } from "./test-state";
+import { isAnswered } from "./state";
 
 interface GradedTask {
   taskId: string;

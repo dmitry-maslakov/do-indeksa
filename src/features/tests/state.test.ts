@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { answeredCount, nextIndex, overtimeAt } from "./test-state";
+import { answeredCount, nextIndex, overtimeAt } from "./state";
 
 const run = { current: 1, answers: [["2", ""], [""], ["", ""], ["x"]] };
 

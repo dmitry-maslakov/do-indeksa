@@ -1,9 +1,9 @@
 import { connection } from "next/server";
 import { getLocale } from "next-intl/server";
-import { composeSchema, composeTaskIds } from "@/features/exam/compose-set";
-import { saveSet } from "@/features/exam/sets";
 import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
+import { composeSchema, composeTaskIds } from "@/features/variants/compose-set";
+import { saveSet } from "@/features/variants/sets";
 import { redirect } from "@/i18n/navigation";
 import { getProfileId } from "@/server/profile";
 

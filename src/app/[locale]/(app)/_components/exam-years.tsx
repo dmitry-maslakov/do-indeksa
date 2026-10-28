@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { officialVariants } from "@/features/exam/variants";
+import { officialVariants } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 
 const shown = 8;
