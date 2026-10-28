@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import type { ExamSource } from "@/features/bank/source";
 import type { Level } from "@/features/catalog/level";
 import type { Touched } from "@/features/progress/status";
-import { StatusIcon } from "@/features/progress/status-icon";
+import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 
 interface TaskMetaProps {
   topic: string;
@@ -23,8 +23,6 @@ export function ExamMark({ year }: { year: number }) {
     </span>
   );
 }
-
-const tones = { solved: "text-success-text", wrong: "text-error-text" };
 
 export function TaskMeta({ topic, exam, level, before }: TaskMetaProps) {
   const t = useTranslations("Solve");
@@ -58,7 +56,9 @@ export function TaskMeta({ topic, exam, level, before }: TaskMetaProps) {
         {bank("taskLevel", { level })}
       </span>
       {before && (
-        <span className={`hidden items-center gap-2 md:flex ${tones[before]}`}>
+        <span
+          className={`hidden items-center gap-2 md:flex ${statusTones[before]}`}
+        >
           <Dot />
           <StatusIcon status={before} decorative />
           {t("before", { status: before })}

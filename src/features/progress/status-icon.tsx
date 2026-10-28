@@ -9,6 +9,11 @@ const icons = {
   wrong: { Icon: CircleXIcon, look: "fill-error stroke-card" },
 } as const;
 
+export const statusTones = {
+  solved: "text-success-text",
+  wrong: "text-error-text",
+} as const;
+
 interface StatusIconProps {
   status?: TaskStatus;
   decorative?: boolean;
