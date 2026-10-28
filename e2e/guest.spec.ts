@@ -29,6 +29,9 @@ test("a guest finds a solved task in statistics after a reload", async ({
   await page.reload();
   await page.goto("/stats");
   await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Sačuvaj napredak" }),
+  ).toContainText("Statistika je samo na ovom uređaju");
 });
 
 const profileCookie = async (context: BrowserContext) =>

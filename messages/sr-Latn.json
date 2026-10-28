@@ -61,7 +61,8 @@
     "label": "Sačuvaj napredak",
     "save": "Sačuvaj",
     "close": "Zatvori",
-    "result": "Rezultat testa je samo na ovom uređaju"
+    "result": "Rezultat testa je samo na ovom uređaju",
+    "stats": "Statistika je samo na ovom uređaju"
   },
   "Bank": {
     "title": "Banka zadataka",

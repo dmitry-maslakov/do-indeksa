@@ -79,6 +79,8 @@ test("signing out hides the account statistics", async ({ page, auth }) => {
   await seedAttempt(auth.db, profileId, "eks-001", true);
   await page.goto("/stats");
   await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
+  const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
+  await expect(strip).toHaveCount(0);
 
   const nav = page.getByRole("banner").getByRole("navigation");
   await nav.getByRole("link", { name: "Početna" }).click();
@@ -90,6 +92,7 @@ test("signing out hides the account statistics", async ({ page, auth }) => {
   await page.getByRole("link", { name: "Statistika →" }).click();
 
   await expect(page.getByText(/^0 od [\d.]+$/)).toBeVisible();
+  await expect(strip).toHaveCount(0);
 });
 
 const solveAsGuest = async (page: Page) => {

@@ -61,7 +61,8 @@
     "label": "Save your progress",
     "save": "Save",
     "close": "Close",
-    "result": "This test result is only on this device"
+    "result": "This test result is only on this device",
+    "stats": "These statistics are only on this device"
   },
   "Bank": {
     "title": "Task bank",

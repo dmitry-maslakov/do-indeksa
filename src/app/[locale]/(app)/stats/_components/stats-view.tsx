@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { SignInStrip } from "@/features/account/sign-in-strip";
 import { minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
@@ -12,6 +13,7 @@ import { getTaskStats, getTaskTimes } from "@/features/progress/task-stats";
 import { countTests, getTests } from "@/features/tests/finished-tests";
 import { summarizeTests } from "@/features/tests/summaries";
 import { minuteMs } from "@/lib/dates";
+import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
 import { AccuracyCard } from "./accuracy-card";
 import { BankCard } from "./bank-card";
@@ -42,7 +44,17 @@ export async function StatsView({
   searchParams,
 }: Pick<PageProps<"/[locale]/stats">, "searchParams">) {
   const byNumber = (await searchParams).by === "number";
-  return <StatsCards byNumber={byNumber} stats={await loadStats()} />;
+  const stats = await loadStats();
+  const guest = !(await getSession());
+
+  return (
+    <div className="flex flex-col gap-6">
+      {guest && (stats.byTask.length > 0 || stats.testCount > 0) && (
+        <SignInStrip from="stats" />
+      )}
+      <StatsCards byNumber={byNumber} stats={stats} />
+    </div>
+  );
 }
 
 export function StatsCards({
