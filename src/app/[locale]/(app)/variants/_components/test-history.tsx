@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { LoadMore } from "@/components/load-more";
 import type { TestPage } from "@/features/tests/feed";
-import { useTestFeed } from "@/features/tests/results/use-test-feed";
 import type { TestSummary } from "@/features/tests/summaries";
+import { useFeed } from "@/lib/use-feed";
 import { ExamRow } from "./exam-row";
 import { TestsTable } from "./tests-table";
 
@@ -41,33 +41,20 @@ function HistoryRow({ test }: { test: TestSummary }) {
 
 function TestFeed({ first }: { first: TestPage }) {
   const t = useTranslations("Bank");
-  const {
-    data,
-    hasNextPage,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    fetchNextPage,
-  } = useTestFeed(first);
+  const feed = useFeed("/api/tests", first);
 
   return (
     <>
       <TestsTable first="attempt">
-        {data.pages
+        {feed.data.pages
           .flatMap((page) => page.tests)
           .map((test) => (
             <HistoryRow key={test.id} test={test} />
           ))}
       </TestsTable>
-      {hasNextPage && (
-        <LoadMore
-          key={data.pages.length}
-          pending={isFetchingNextPage}
-          failed={isFetchNextPageError}
-          onLoad={() => fetchNextPage({ cancelRefetch: false })}
-        >
-          {t("more")}
-        </LoadMore>
-      )}
+      <LoadMore key={feed.data.pages.length} feed={feed}>
+        {t("more")}
+      </LoadMore>
     </>
   );
 }

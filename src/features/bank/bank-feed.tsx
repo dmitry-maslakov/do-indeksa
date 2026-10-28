@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { LoadMore } from "@/components/load-more";
+import { useFeed } from "@/lib/use-feed";
 import type { FeedPage } from "./feed";
 import { TaskCard } from "./task-card";
-import { useBankFeed } from "./use-bank-feed";
 
 interface BankFeedProps {
   search: string;
@@ -13,31 +13,18 @@ interface BankFeedProps {
 
 export function BankFeed({ search, first }: BankFeedProps) {
   const t = useTranslations("Bank");
-  const {
-    data,
-    hasNextPage,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    fetchNextPage,
-  } = useBankFeed(search, first);
+  const feed = useFeed("/api/bank", first, search);
 
   return (
     <>
-      {data.pages
+      {feed.data.pages
         .flatMap((page) => page.cards)
         .map((card) => (
           <TaskCard key={card.id} card={card} />
         ))}
-      {hasNextPage && (
-        <LoadMore
-          key={data.pages.length}
-          pending={isFetchingNextPage}
-          failed={isFetchNextPageError}
-          onLoad={() => fetchNextPage({ cancelRefetch: false })}
-        >
-          {t("more")}
-        </LoadMore>
-      )}
+      <LoadMore key={feed.data.pages.length} feed={feed}>
+        {t("more")}
+      </LoadMore>
     </>
   );
 }
