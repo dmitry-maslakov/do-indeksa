@@ -1,7 +1,11 @@
 import "server-only";
 import type { Locale } from "next-intl";
 import type { Level } from "@/features/catalog/level";
-import { getTask, type TaskSummary } from "@/features/catalog/tasks";
+import {
+  getTask,
+  renderStatement,
+  type TaskSummary,
+} from "@/features/catalog/tasks";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { TaskStatus, TaskStatuses } from "@/features/progress/status";
@@ -19,12 +23,13 @@ export interface BankCard {
 
 const pageSize = 30;
 
-function cardOf(
+async function cardOf(
   task: TaskSummary,
   locale: Locale,
   statuses?: TaskStatuses,
-): BankCard {
+): Promise<BankCard> {
   const content = getTask(task.id);
+  if (!content) throw new Error(`unknown task ${task.id}`);
   return {
     id: task.id,
     topic: {
@@ -32,24 +37,24 @@ function cardOf(
       name: topicName(task.topic, locale),
       ...topicLook(task.topic),
     },
-    exam: content ? examSource(content.source) : null,
+    exam: examSource(content.source),
     level: task.level,
-    statement: content?.text ?? "",
+    statement: await renderStatement(content),
     status: statuses?.get(task.id) ?? "new",
   };
 }
 
-export function bankPage(
+export async function bankPage(
   tasks: TaskSummary[],
   offset: number,
   locale: Locale,
   statuses?: TaskStatuses,
-): Page<BankCard> {
+): Promise<Page<BankCard>> {
   const end = offset + pageSize;
   return {
-    items: tasks
-      .slice(offset, end)
-      .map((task) => cardOf(task, locale, statuses)),
+    items: await Promise.all(
+      tasks.slice(offset, end).map((task) => cardOf(task, locale, statuses)),
+    ),
     next: end < tasks.length ? end : null,
   };
 }

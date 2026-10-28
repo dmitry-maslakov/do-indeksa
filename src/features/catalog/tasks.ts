@@ -76,6 +76,19 @@ const rendered = new LRUCache<string, RenderedTask>({
     ) + 1,
 });
 
+const statements = new LRUCache<string, string>({
+  maxSize: 8 * 1024 * 1024,
+  sizeCalculation: (html) => html.length + 1,
+});
+
+export async function renderStatement(task: Task) {
+  const cached = statements.get(task.id);
+  if (cached !== undefined) return cached;
+  const html = await renderMarkdown(task.text, task.id);
+  statements.set(task.id, html);
+  return html;
+}
+
 export async function renderTask(id: string) {
   const cached = rendered.get(id);
   if (cached) return cached;
@@ -87,7 +100,7 @@ export async function renderTask(id: string) {
     splitLabel(c.label, i, all.length),
   );
   const html = {
-    statement: await render(task.text),
+    statement: await renderStatement(task),
     answer: await render(task.answer),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),

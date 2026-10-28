@@ -1,11 +1,11 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { ExamMark } from "@/components/exam-mark";
+import { MathHtml } from "@/components/math-html";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
-import { Markdown } from "./markdown";
 
 function StatusMark({ status }: { status: BankCard["status"] }) {
   const t = useTranslations("Bank");
@@ -57,8 +57,8 @@ export function TaskCard({ card }: TaskCardProps) {
         href={`/bank/${card.id}`}
         className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
       >
-        <Markdown
-          source={card.statement}
+        <MathHtml
+          html={card.statement}
           className="leading-relaxed [&_.katex-display]:my-2 [&_p+p]:mt-2"
         />
       </Link>
