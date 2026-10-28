@@ -1,0 +1,1 @@
+ALTER TYPE "public"."test_kind" ADD VALUE 'weekly';

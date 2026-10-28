@@ -148,6 +148,13 @@
       "when": 1793208356435,
       "tag": "0020_drop_daily_tests",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793209508787,
+      "tag": "0021_weekly_tests",
+      "breakpoints": true
     }
   ]
 }

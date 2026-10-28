@@ -1,5 +1,5 @@
 import "server-only";
-import { allTasks, type Task } from "content-collections";
+import { allTasks, allVariants, type Task } from "content-collections";
 import { sumBy } from "es-toolkit";
 import { truncate } from "es-toolkit/compat";
 import { LRUCache } from "lru-cache";
@@ -29,13 +29,19 @@ export function summarize(task: Task): TaskSummary {
   };
 }
 
-export const tasks = allTasks;
+const unreleased = new Set(
+  allVariants.flatMap((v) =>
+    v.kind === "weekly" && !v.released ? v.taskIds : [],
+  ),
+);
+
+export const tasks = allTasks.filter((t) => !unreleased.has(t.id));
 
 const byId = new Map(allTasks.map((t) => [t.id, t]));
 
 export const idsByTopic = new Map(
   Array.from(
-    Map.groupBy(allTasks, (t) => t.topic),
+    Map.groupBy(tasks, (t) => t.topic),
     ([topic, group]) => [topic, group.map((t) => t.id)] as const,
   ),
 );

@@ -50,6 +50,7 @@ export const testKind = pgEnum("test_kind", [
   "curated",
   "random",
   "custom",
+  "weekly",
 ]);
 
 export const testSessions = pgTable(

@@ -155,6 +155,14 @@ const exams = defineCollection({
   },
 });
 
+function weekOf(id: string, origin: string) {
+  const week = /^nedelja-(\d{4}-\d{2}-\d{2})$/.exec(id)?.[1];
+  if (!week || new Date(`${week}T00:00:00Z`).getUTCDay() !== 1) {
+    throw new Error(`${origin}: a weekly variant is named nedelja-<Monday>`);
+  }
+  return week;
+}
+
 const variants = defineCollection({
   name: "variants",
   directory: `${root}/variants`,
@@ -162,30 +170,41 @@ const variants = defineCollection({
   parser: "yaml",
   schema: z.object({
     exam: z.string(),
-    kind: z.enum(["official", "curated"]),
+    kind: z.enum(["official", "curated", "weekly"]),
     year: z.number().int().optional(),
     title: z.string().optional(),
     original: z.url().optional(),
+    released: z.boolean().default(false),
     taskIds: z.array(z.string()).min(1),
   }),
   transform: (variant, { documents }) => {
     const origin = variant._meta.filePath;
+    const id = variant._meta.path;
+    const week = variant.kind === "weekly" ? weekOf(id, origin) : undefined;
     const exam = documents(exams).find((e) => e._meta.path === variant.exam);
     if (!exam) throw new Error(`${origin}: unknown exam "${variant.exam}"`);
     const tasksById = new Map(documents(tasks).map((t) => [t._meta.path, t]));
     if (variant.taskIds.length !== exam.positions.length) {
       throw new Error(`${origin}: expected ${exam.positions.length} tasks`);
     }
-    variant.taskIds.forEach((id, i) => {
-      const task = tasksById.get(id);
-      if (!task) throw new Error(`${origin}: unknown task "${id}"`);
+    variant.taskIds.forEach((taskId, i) => {
+      const task = tasksById.get(taskId);
+      if (!task) throw new Error(`${origin}: unknown task "${taskId}"`);
       if (task.topic !== exam.positions[i]?.topic) {
-        throw new Error(`${origin}: "${id}" does not fit position ${i + 1}`);
+        throw new Error(
+          `${origin}: "${taskId}" does not fit position ${i + 1}`,
+        );
+      }
+      if (week && taskId !== `${id}-${String(i + 1).padStart(2, "0")}`) {
+        throw new Error(`${origin}: task ${i + 1} is named ${id}-NN`);
+      }
+      if (week && task.difficulty < 3) {
+        throw new Error(`${origin}: "${taskId}" is easier than difficulty 3`);
       }
     });
     const title = variant.title ?? variant.year?.toString();
     if (!title) throw new Error(`${origin}: needs a title or a year`);
-    return { ...variant, id: variant._meta.path, title };
+    return { ...variant, id, title, week };
   },
 });
 

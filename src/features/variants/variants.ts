@@ -12,7 +12,11 @@ export const officialVariants = allVariants
   .filter((v) => v.kind === "official")
   .sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
 
-export const curatedVariants = allVariants.filter((v) => v.kind === "curated");
+export const curatedVariants = allVariants.filter(
+  (v) => v.kind === "curated" || (v.kind === "weekly" && v.released),
+);
+
+export const weeklyVariants = allVariants.filter((v) => v.kind === "weekly");
 
 export const contentVariants = [...officialVariants, ...curatedVariants];
 
