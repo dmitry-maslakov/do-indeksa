@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
 import { Reveal } from "@/features/practice/reveal/reveal";
 import type {
-  AnswerOutcome,
-  Outcomes,
+  Comparison,
+  Comparisons,
   Review,
   ReviewAttempt,
   ReviewRow,
@@ -19,7 +19,7 @@ import type { Segment } from "@/lib/strip";
 
 interface ReviewRowsProps {
   review: Review<VariantTask>;
-  outcomes: Outcomes;
+  comparisons: Comparisons;
   testSessionId: string;
 }
 
@@ -32,7 +32,7 @@ const tones: Record<Segment, string> = {
 
 export function ReviewRows({
   review,
-  outcomes,
+  comparisons,
   testSessionId,
 }: ReviewRowsProps) {
   const t = useTranslations("Review");
@@ -45,7 +45,7 @@ export function ReviewRows({
           <Row
             key={row.taskId}
             row={row}
-            outcome={outcomes[row.taskId]}
+            comparison={comparisons[row.taskId]}
             testSessionId={testSessionId}
           />
         ))}
@@ -56,11 +56,11 @@ export function ReviewRows({
 
 interface RowProps {
   row: ReviewRow<VariantTask>;
-  outcome?: AnswerOutcome;
+  comparison?: Comparison;
   testSessionId: string;
 }
 
-function Row({ row, outcome, testSessionId }: RowProps) {
+function Row({ row, comparison, testSessionId }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
   const minutes = toMinutes(row.attempt?.durationMs ?? 0);
@@ -95,7 +95,7 @@ function Row({ row, outcome, testSessionId }: RowProps) {
         <div className="flex flex-col items-start gap-2 pb-4 pl-9.5">
           {row.attempt && (
             <p className="text-[13px] text-subtle [&_.katex]:text-[1em]">
-              <Outcome attempt={row.attempt} outcome={outcome} />
+              <GivenAnswer attempt={row.attempt} comparison={comparison} />
             </p>
           )}
           <Reveal
@@ -124,18 +124,18 @@ function Row({ row, outcome, testSessionId }: RowProps) {
   );
 }
 
-function Outcome({
+function GivenAnswer({
   attempt,
-  outcome,
+  comparison,
 }: {
   attempt: ReviewAttempt;
-  outcome?: AnswerOutcome;
+  comparison?: Comparison;
 }) {
   const t = useTranslations("Review");
 
   const unreadable = attempt.outcomes.filter((o) => o === "unreadable").length;
 
-  if (!outcome) {
+  if (!comparison) {
     const right = t("partsRight", {
       right: attempt.outcomes.filter(isRight).length,
       total: attempt.outcomes.length,
@@ -150,10 +150,10 @@ function Outcome({
         t("unreadableOne")
       ) : (
         <>
-          {t("gave")} <MathHtml as="span" html={outcome.given} />
+          {t("gave")} <MathHtml as="span" html={comparison.given} />
         </>
       )}
-      , {t("key")} <MathHtml as="span" html={outcome.key} />
+      , {t("key")} <MathHtml as="span" html={comparison.key} />
     </>
   );
 }

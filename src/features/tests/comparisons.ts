@@ -1,23 +1,23 @@
 import "server-only";
 import katex from "katex";
 import { getTask } from "@/features/catalog/tasks";
-import type { Outcomes } from "./review";
+import type { Comparisons } from "./review";
 
 const latexToHtml = (latex: string) =>
   katex.renderToString(latex, { throwOnError: false, output: "html" });
 
-export function outcomesOf(
+export function comparisonsOf(
   attempts: { taskId: string; answers: string[] }[],
-): Outcomes {
-  const outcomes: Outcomes = {};
+): Comparisons {
+  const comparisons: Comparisons = {};
   for (const { taskId, answers } of attempts) {
     const [key, ...rest] = getTask(taskId)?.check ?? [];
     if (key && rest.length === 0) {
-      outcomes[taskId] = {
+      comparisons[taskId] = {
         given: latexToHtml(answers[0] ?? ""),
         key: latexToHtml(key.expected),
       };
     }
   }
-  return outcomes;
+  return comparisons;
 }
