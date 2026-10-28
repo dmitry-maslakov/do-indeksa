@@ -56,7 +56,9 @@ function LocaleOptions({
   function select(next: string) {
     const target = routing.locales.find((l) => l === next);
     if (target)
-      startTransition(() => router.replace(pathname, { locale: target }));
+      startTransition(() =>
+        router.replace(`${pathname}${location.search}`, { locale: target }),
+      );
   }
 
   return (
