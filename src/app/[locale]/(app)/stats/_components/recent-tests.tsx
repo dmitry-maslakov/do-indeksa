@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,6 +33,7 @@ const ghost = (
 export function RecentTests({ tests }: { tests?: RecentTest[] }) {
   const t = useTranslations("Stats");
   const home = useTranslations("Home");
+  const format = useFormatter();
   const done = tests ?? [];
   const repeated = [...new Set(done.flatMap((r) => r.misses))]
     .filter((n) => done.filter((r) => r.misses.includes(n)).length > 1)
@@ -70,7 +71,9 @@ export function RecentTests({ tests }: { tests?: RecentTest[] }) {
                   segments={test.segments}
                   label={t("score", { score: test.score })}
                 />
-                <b className="text-right font-semibold">{test.score}</b>
+                <b className="text-right font-semibold">
+                  {format.number(test.score)}
+                </b>
               </Link>
             </li>
           ))}

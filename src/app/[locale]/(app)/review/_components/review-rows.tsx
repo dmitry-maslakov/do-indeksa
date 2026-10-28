@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { ChevronRightIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
@@ -63,6 +63,7 @@ interface RowProps {
 function Row({ row, comparison, testSessionId }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
+  const format = useFormatter();
   const minutes = toMinutes(row.attempt?.durationMs ?? 0);
 
   return (
@@ -88,7 +89,7 @@ function Row({ row, comparison, testSessionId }: RowProps) {
               tones[row.segment],
             )}
           >
-            {row.earned}/{row.points}
+            {format.number(row.earned)}/{row.points}
           </span>
           <ChevronRightIcon className="size-4 shrink-0 text-subtle transition-transform group-open/row:rotate-90" />
         </summary>

@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { topicLook } from "@/features/catalog/topics";
@@ -25,6 +25,7 @@ interface WeekCardProps extends WeeklyVariant {
 export function WeekCard({ id, topics, daysLeft, test }: WeekCardProps) {
   const home = useTranslations("Home");
   const t = useTranslations("Variants");
+  const format = useFormatter();
 
   return (
     <section className="relative flex flex-col items-start overflow-hidden rounded-xl bg-lime px-5 py-6">
@@ -35,7 +36,9 @@ export function WeekCard({ id, topics, daysLeft, test }: WeekCardProps) {
       {test ? (
         <>
           <p className="relative mt-2 tabular-nums">
-            <b className="font-bold text-4xl tracking-tight">{test.score}</b>
+            <b className="font-bold text-4xl tracking-tight">
+              {format.number(test.score)}
+            </b>
             <span className="font-semibold text-lime-text"> / {test.max}</span>
           </p>
           <Chips

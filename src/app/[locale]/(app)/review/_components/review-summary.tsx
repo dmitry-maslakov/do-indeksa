@@ -73,7 +73,7 @@ export function ReviewSummary({
           <div className="flex flex-col gap-1.5">
             <p className="flex items-baseline gap-3">
               <span className="font-bold text-6xl leading-none tracking-tighter tabular-nums md:text-7xl">
-                {review.score}
+                {format.number(review.score)}
               </span>
               <span className="text-muted-foreground text-xl">
                 {t("outOf", { max: review.max })}
