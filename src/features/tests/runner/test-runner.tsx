@@ -41,7 +41,6 @@ interface TestRunnerProps {
 const payload = (variantId: string, test: LocalTest) => ({
   id: test.testId,
   variantId,
-  timed: test.timed,
   startedAt: test.startedAt,
   draft: { answers: test.answers, visits: visitsAt(test, Date.now()) },
 });
@@ -87,7 +86,6 @@ export function TestRunner({
             title,
             minutes,
             testId: saved.id,
-            timed: saved.timed,
             startedAt: saved.startedAt,
             updatedAt: saved.updatedAt,
             current:

@@ -17,10 +17,9 @@ describe("continue hints", () => {
     expect(nextIndex({ current: 0, answers: [["1"]] })).toBeUndefined();
   });
 
-  it("tells a timed run finished after the limit from one in time", () => {
-    const at = { startedAt: 0, minutes: 240, timed: true };
+  it("tells a run finished after the limit from one in time", () => {
+    const at = { startedAt: 0, minutes: 240 };
     expect(overtimeAt(at, 240 * minuteMs)).toBe(false);
     expect(overtimeAt(at, 240 * minuteMs + 1)).toBe(true);
-    expect(overtimeAt({ ...at, timed: false }, 300 * minuteMs)).toBeNull();
   });
 });

@@ -17,6 +17,6 @@ export function nextIndex(test: TestProgress) {
 }
 
 export const overtimeAt = (
-  test: { startedAt: number; minutes: number; timed: boolean },
+  test: { startedAt: number; minutes: number },
   now: number,
-) => (test.timed ? now > test.startedAt + test.minutes * minuteMs : null);
+) => now > test.startedAt + test.minutes * minuteMs;
