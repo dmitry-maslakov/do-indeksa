@@ -2,8 +2,8 @@ import { getLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { getUnfinishedTest } from "@/features/tests/test-sessions";
-import type { ComposeMode } from "@/features/variants/compose";
-import { swapIds } from "@/features/variants/compose-set";
+import type { ComposeMode } from "@/features/variants/custom/compose";
+import { swapIds } from "@/features/variants/custom/compose-set";
 import { variantTitle } from "@/features/variants/variant-title";
 import {
   type ExamVariant,

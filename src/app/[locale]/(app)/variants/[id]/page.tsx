@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { TestScreen } from "@/features/tests/runner/test-screen";
-import { saveSet } from "@/features/variants/sets";
+import { saveSet } from "@/features/variants/custom/sets";
 import { variantMetadata } from "@/features/variants/variant-title";
 import { contentVariants, getVariant } from "@/features/variants/variants";
 import { alternates } from "@/i18n/alternates";

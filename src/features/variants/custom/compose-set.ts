@@ -3,9 +3,9 @@ import { z } from "zod";
 import { positions } from "@/features/catalog/exams";
 import { getTask, idsByTopic } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
+import { setId } from "@/features/variants/variant-id";
+import { byNumber, byPosition } from "@/features/variants/variants";
 import { compose, composeModes, swap } from "./compose";
-import { setId } from "./variant-id";
-import { byNumber, byPosition } from "./variants";
 
 const topicIds = topics.map((t) => t.id);
 

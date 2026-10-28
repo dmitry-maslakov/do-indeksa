@@ -1,4 +1,4 @@
-import { pick } from "./pick";
+import { pick } from "@/features/variants/pick";
 
 export const composeModes = ["exam", "weak", "unsolved", "topics"] as const;
 export type ComposeMode = (typeof composeModes)[number];
