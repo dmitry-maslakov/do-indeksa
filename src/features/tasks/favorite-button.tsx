@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useOptimisticAction } from "next-safe-action/hooks";
-import { type ComponentProps, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useErrorText } from "@/lib/use-error-text";
@@ -14,14 +14,12 @@ interface FavoriteButtonProps {
   taskId: string;
   saved?: boolean;
   pending?: boolean;
-  compact?: boolean;
 }
 
 export function FavoriteButton({
   taskId,
   saved: initial = false,
   pending = false,
-  compact = false,
 }: FavoriteButtonProps) {
   const t = useTranslations("Solve");
   const errorText = useErrorText();
@@ -35,33 +33,23 @@ export function FavoriteButton({
   const toggle = () => execute({ taskId, favorite: !shown });
 
   const label = shown ? t("saved") : t("save");
-  const props = {
-    variant: "ghost",
-    size: "sm",
-    disabled: pending,
-    "aria-label": label,
-    className: cn(
-      "bg-transparent",
-      compact
-        ? "size-9 shrink-0 rounded-xl px-0 hover:bg-muted"
-        : "-mr-2 px-2 sm:px-4",
-    ),
-  } satisfies ComponentProps<typeof Button>;
-  const star = (
-    <>
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      disabled={pending}
+      aria-label={label}
+      aria-pressed={shown}
+      onClick={toggle}
+      className="size-9 shrink-0 rounded-xl bg-transparent px-0 hover:bg-muted"
+    >
       <StarIcon
         className={cn(
-          compact ? "size-4 text-foreground" : "text-subtle",
+          "size-4 text-foreground",
           shown && "fill-overtime text-overtime",
         )}
       />
-      {!compact && <span className="hidden sm:inline">{label}</span>}
-    </>
-  );
-
-  return (
-    <Button {...props} onClick={toggle} aria-pressed={shown}>
-      {star}
     </Button>
   );
 }

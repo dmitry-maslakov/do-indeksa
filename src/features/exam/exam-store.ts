@@ -6,13 +6,12 @@ import type { Visit } from "./test-draft";
 interface TestMeta {
   title: string;
   minutes: number;
-  tasks: { number: number; topic: string; parts: number }[];
+  parts: number[];
 }
 
-export interface LocalTest extends Omit<TestMeta, "tasks"> {
+export interface LocalTest extends Omit<TestMeta, "parts"> {
   testId: string;
   timed: boolean;
-  tasks: { number: number; topic: string }[];
   startedAt: number;
   updatedAt: number;
   current: number;
@@ -63,7 +62,7 @@ export const useExamStore = create<ExamState>()(
 
       return {
         tests: {},
-        start: (variantId, { title, minutes, tasks }) =>
+        start: (variantId, { title, minutes, parts }) =>
           set((s) => {
             if (s.tests[variantId]) return s;
             const now = Date.now();
@@ -72,12 +71,11 @@ export const useExamStore = create<ExamState>()(
               title,
               minutes,
               timed: true,
-              tasks: tasks.map(({ number, topic }) => ({ number, topic })),
               startedAt: now,
               updatedAt: now,
               current: 0,
-              answers: tasks.map((t) =>
-                Array.from({ length: t.parts }, () => ""),
+              answers: parts.map((count) =>
+                Array.from({ length: count }, () => ""),
               ),
               visits: [visit(0, now)],
             };

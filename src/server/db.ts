@@ -15,9 +15,7 @@ const pool =
     connectionTimeoutMillis: 5_000,
     idleTimeoutMillis: 30_000,
     query_timeout: 10_000,
-  });
-
-pool.on("error", reportServerError);
+  }).on("error", reportServerError);
 
 if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
 

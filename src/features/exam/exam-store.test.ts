@@ -4,10 +4,7 @@ import { type LocalTest, useExamStore } from "./exam-store";
 const meta = {
   title: "2026",
   minutes: 48,
-  tasks: [
-    { number: 1, topic: "a", parts: 2 },
-    { number: 2, topic: "b", parts: 1 },
-  ],
+  parts: [2, 1],
 };
 
 const saved: LocalTest = {
@@ -15,7 +12,6 @@ const saved: LocalTest = {
   title: "2026",
   minutes: 48,
   timed: true,
-  tasks: [{ number: 1, topic: "a" }],
   startedAt: 0,
   updatedAt: 0,
   current: 0,
@@ -46,10 +42,6 @@ describe("exam store", () => {
     store().start("v", meta);
     expect(test()?.testId).toBe(first);
     expect(test()?.answers).toEqual([["", ""], [""]]);
-    expect(test()?.tasks).toEqual([
-      { number: 1, topic: "a" },
-      { number: 2, topic: "b" },
-    ]);
   });
 
   it("answers parts of the current task", () => {

@@ -1,4 +1,4 @@
-export type Segment = "none" | "done" | "error" | "partial" | "current";
+export type Segment = "none" | "done" | "error" | "partial";
 
 export function segmentOf(parts: boolean[] | undefined): Segment {
   if (!parts || parts.length === 0) return "none";

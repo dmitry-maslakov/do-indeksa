@@ -28,7 +28,6 @@ const tones: Record<Segment, string> = {
   partial: "text-overtime-text",
   error: "text-error-text",
   none: "text-subtle",
-  current: "text-subtle",
 };
 
 export function ReviewRows({

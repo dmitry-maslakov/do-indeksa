@@ -9,13 +9,10 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground",
         lime: "bg-lime text-foreground hover:bg-lime-strong",
-        quiet:
-          "bg-transparent text-foreground hover:bg-muted hover:brightness-100",
         secondary: "bg-data text-primary-foreground",
         tint: "bg-data-tint text-data",
         destructive: "bg-error-tint text-error-text",
         ghost: "bg-muted text-foreground",
-        inverse: "bg-white text-daily",
         link: "text-primary underline-offset-4 hover:underline hover:brightness-100",
       },
       size: {

@@ -4,7 +4,6 @@ import { Link } from "@/i18n/navigation";
 const list = cva("flex", {
   variants: {
     variant: {
-      underline: "gap-5",
       segmented: "gap-1 rounded-xl bg-muted p-1",
       fill: "gap-1 rounded-xl bg-untouched p-1",
       pill: "-mx-4 gap-2 overflow-x-auto px-4 scrollbar-none md:mx-0 md:flex-wrap md:px-0",
@@ -15,8 +14,6 @@ const list = cva("flex", {
 const tab = cva("font-medium transition-colors", {
   variants: {
     variant: {
-      underline:
-        "border-b-2 pb-1 text-sm data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=false]:border-transparent data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
       segmented:
         "rounded-lg px-3 py-2 text-sm data-[active=true]:bg-card data-[active=true]:shadow-sm data-[active=false]:text-subtle data-[active=false]:hover:text-foreground",
       fill: "flex h-8 flex-1 items-center justify-center rounded-md text-sm data-[active=true]:bg-card data-[active=true]:shadow-raised data-[active=false]:text-muted-foreground data-[active=false]:hover:text-foreground",
@@ -32,7 +29,7 @@ interface LinkTabsProps {
     active: boolean;
     prefetch?: boolean;
   }[];
-  variant: "underline" | "segmented" | "fill" | "pill";
+  variant: "segmented" | "fill" | "pill";
   scroll?: boolean;
 }
 

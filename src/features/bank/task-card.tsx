@@ -52,7 +52,7 @@ export function TaskCard({ card }: TaskCardProps) {
           <StatusMark status={card.status} />
         </span>
         <div className="ml-auto">
-          <FavoriteButton taskId={card.id} saved={card.favorite} compact />
+          <FavoriteButton taskId={card.id} saved={card.favorite} />
         </div>
       </div>
       <Link

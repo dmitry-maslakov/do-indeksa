@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { review, reviewHref } from "./review";
+import { creditOf, review, reviewHref } from "./review";
 
 const task = (taskId: string, topic: string) => ({
   taskId,
@@ -60,5 +60,14 @@ describe("reviewHref", () => {
     expect(reviewHref("0a1b2c3d-4e5f-6789-abcd-ef0123456789")).toBe(
       "/review/0a1b2c3d",
     );
+  });
+});
+
+describe("creditOf", () => {
+  it("credits the share of right parts", () => {
+    expect(creditOf(["right"], 6)).toBe(6);
+    expect(creditOf(["right", "wrong"], 6)).toBe(3);
+    expect(creditOf(["right", "unreadable", "empty"], 6)).toBe(2);
+    expect(creditOf([], 6)).toBe(0);
   });
 });
