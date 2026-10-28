@@ -1,8 +1,10 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { segmentTone } from "@/components/segment-tone";
 import { tableGrid } from "./exam-row";
-import { results, resultTone } from "./results";
+
+const legend = ["done", "partial", "error"] as const;
 
 interface TestsTableProps {
   first: "year" | "test" | "attempt";
@@ -29,10 +31,10 @@ export function TestsTable({ first, children }: TestsTableProps) {
         <ul>{children}</ul>
       </div>
       <div className="flex gap-4 px-1 text-subtle text-xs">
-        {results.map((result) => (
-          <span key={result} className="inline-flex items-center gap-2">
-            <i className={cn("size-3 rounded-xs", resultTone[result])} />
-            {t(`result.${result}`)}
+        {legend.map((segment) => (
+          <span key={segment} className="inline-flex items-center gap-2">
+            <i className={cn("size-3 rounded-xs", segmentTone[segment].chip)} />
+            {t(`result.${segment}`)}
           </span>
         ))}
       </div>

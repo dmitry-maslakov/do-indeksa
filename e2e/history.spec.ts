@@ -57,6 +57,33 @@ test("a finished variant shows its result in the catalog", async ({
   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
 });
 
+test("a finished weekly variant shows its score and review in the weekly card", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await page.goto("/variants");
+  const start = page.getByRole("link", { name: "Počni varijantu →" });
+  const href = (await start.getAttribute("href")) ?? "";
+  const testId = randomUUID();
+  await auth.db.query(
+    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at)
+     values ($1, $2, 'official', $3, '{}', now(), now())`,
+    [testId, profileId, href.split("/").at(-1)],
+  );
+  await page.reload();
+  const card = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Varijanta nedelje" }),
+  });
+  await expect(card).toContainText("0 / 0");
+  await expect(card).toContainText("Nova varijanta za");
+  await expect(card.getByRole("link", { name: "Pregled →" })).toHaveAttribute(
+    "href",
+    `/review/${testId.slice(0, 8)}`,
+  );
+  await expect(start).toHaveCount(0);
+});
+
 test("the test feed returns only the caller's tests", async ({
   page,
   auth,

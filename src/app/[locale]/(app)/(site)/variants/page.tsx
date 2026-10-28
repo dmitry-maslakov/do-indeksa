@@ -67,7 +67,7 @@ export default async function VariantsPage({
         </section>
         <aside className="contents lg:flex lg:flex-col lg:gap-5">
           <div className="max-lg:order-first">
-            <Suspense fallback={<Skeleton className="h-62 rounded-xl" />}>
+            <Suspense fallback={<Skeleton className="h-77 rounded-xl" />}>
               <Weekly />
             </Suspense>
           </div>

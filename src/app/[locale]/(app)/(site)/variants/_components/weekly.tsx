@@ -1,7 +1,7 @@
 import { io } from "next/cache";
+import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import { weeklyVariant } from "@/features/variants/weekly";
 import { loadLatest } from "./catalog-tab";
-import { WeekCard } from "./week-card";
 
 export async function Weekly() {
   await io();
@@ -11,5 +11,5 @@ export async function Weekly() {
   const test = tests.find(
     (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
   );
-  return <WeekCard {...weekly} test={test} />;
+  return <WeeklyCard {...weekly} test={test} />;
 }

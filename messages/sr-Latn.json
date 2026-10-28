@@ -148,9 +148,9 @@
     "go": "Počni →",
     "cellsLabel": "{ok, number} od {total, number} tačno",
     "result": {
-      "ok": "tačno",
-      "part": "delimično",
-      "no": "netačno"
+      "done": "tačno",
+      "partial": "delimično",
+      "error": "netačno"
     },
     "weeklyReview": "Pregled →",
     "weeklyNext": "Nova varijanta za {days, plural, one {# dan} few {# dana} other {# dana}}",

@@ -2,6 +2,7 @@ import { cn } from "cn";
 import { ChevronRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
+import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
 import { Reveal } from "@/features/practice/reveal/reveal";
@@ -15,20 +16,12 @@ import type {
 import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 import { toMinutes } from "@/lib/dates";
-import type { Segment } from "@/lib/strip";
 
 interface ReviewRowsProps {
   review: Review<VariantTask>;
   comparisons: Comparisons;
   testSessionId: string;
 }
-
-const tones: Record<Segment, string> = {
-  done: "text-success-text",
-  partial: "text-overtime-text",
-  error: "text-error-text",
-  none: "text-subtle",
-};
 
 export function ReviewRows({
   review,
@@ -86,7 +79,7 @@ function Row({ row, comparison, testSessionId }: RowProps) {
           <span
             className={cn(
               "w-10 shrink-0 text-right font-semibold text-[15px] tabular-nums",
-              tones[row.segment],
+              segmentTone[row.segment].text,
             )}
           >
             {format.number(row.earned)}/{row.points}
