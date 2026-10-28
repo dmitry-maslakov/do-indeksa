@@ -11,12 +11,12 @@ export interface ReviewAttempt {
   durationMs: number;
 }
 
-export interface AnswerOutcome {
+export interface Comparison {
   given: string;
   key: string;
 }
 
-export type Outcomes = Record<string, AnswerOutcome>;
+export type Comparisons = Record<string, Comparison>;
 
 export type ReviewRow<
   T extends Slot = Slot,

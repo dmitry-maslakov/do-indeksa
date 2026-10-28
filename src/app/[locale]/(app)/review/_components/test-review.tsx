@@ -1,6 +1,6 @@
 import { getLocale } from "next-intl/server";
+import { comparisonsOf } from "@/features/tests/comparisons";
 import type { getTest } from "@/features/tests/finished-tests";
-import { outcomesOf } from "@/features/tests/outcomes";
 import { review } from "@/features/tests/review";
 import { variantTitle } from "@/features/variants/variant-title";
 import { getVariant, tasksFor } from "@/features/variants/variants";
@@ -33,7 +33,7 @@ export async function TestReview({
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
         <ReviewRows
           review={result}
-          outcomes={outcomesOf(found.attempts)}
+          comparisons={comparisonsOf(found.attempts)}
           testSessionId={found.test.id}
         />
         <div className="flex flex-col gap-10">
