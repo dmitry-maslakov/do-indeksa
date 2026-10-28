@@ -27,7 +27,11 @@ export function ShareButton({ title, href, className }: ShareButtonProps) {
       await navigator.share(data).catch(() => undefined);
       return;
     }
-    await navigator.clipboard.writeText(data.url);
+    const written = await navigator.clipboard
+      .writeText(data.url)
+      .then(() => true)
+      .catch(() => false);
+    if (!written) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2 * secondMs);
   }
