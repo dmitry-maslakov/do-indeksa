@@ -1,13 +1,13 @@
 import "server-only";
-import { maxBy, sumBy } from "es-toolkit";
+import { sumBy } from "es-toolkit";
 import { getTask } from "@/features/catalog/tasks";
 import { belgradeDate, dayMs } from "@/lib/dates";
-import { hash } from "./pick";
 import {
   contentVariants,
   curatedVariants,
   minutesOf,
   pointsOf,
+  weeklyVariants,
 } from "./variants";
 
 const pool = curatedVariants.length > 0 ? curatedVariants : contentVariants;
@@ -16,7 +16,9 @@ export function weeklyVariant(now = new Date()) {
   const day = Date.parse(belgradeDate(now)) / dayMs;
   const weekday = (day + 3) % 7;
   const week = Math.floor((day + 3) / 7);
-  const variant = maxBy(pool, (v) => hash(`${week}:${v.id}`));
+  const monday = new Date((day - weekday) * dayMs).toISOString().slice(0, 10);
+  const variant =
+    weeklyVariants.find((v) => v.week === monday) ?? pool[week % pool.length];
   if (!variant) return undefined;
   return {
     id: variant.id,
