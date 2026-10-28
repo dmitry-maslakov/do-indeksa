@@ -93,7 +93,7 @@ jobs:
             -e POSTGRES_USER=ci -e POSTGRES_PASSWORD=ci -e POSTGRES_DB=ci \
             mirror.gcr.io/library/postgres:17 > /dev/null 2>&1 &
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - if: env.TRUSTED == 'true'
+      - if: github.event_name != 'pull_request'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ secrets.CONTENT_REPO }}
@@ -119,7 +119,7 @@ jobs:
       - run: pnpm build
         env:
           GIT_SHA: ${{ env.TAG }}
-          CONTENT_DIR: ${{ env.TRUSTED == 'true' && 'bank' || 'content' }}
+          CONTENT_DIR: ${{ github.event_name == 'pull_request' && 'content' || 'bank' }}
           NEXT_TELEMETRY_DISABLED: 1
           DATABASE_URL: postgres://build:build@localhost:5432/build
           BETTER_AUTH_SECRET: build-only-not-a-secret-build-only
