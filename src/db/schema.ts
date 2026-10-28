@@ -60,7 +60,6 @@ export const testSessions = pgTable(
     kind: testKind().notNull(),
     variantId: text().notNull(),
     taskIds: text().array().notNull(),
-    timed: boolean().notNull(),
     startedAt: stamp().notNull(),
     updatedAt: stampNow(),
     finishedAt: stamp(),

@@ -11,7 +11,6 @@ interface TestMeta {
 
 export interface LocalTest extends Omit<TestMeta, "parts"> {
   testId: string;
-  timed: boolean;
   startedAt: number;
   updatedAt: number;
   current: number;
@@ -70,7 +69,6 @@ export const useTestStore = create<TestState>()(
               testId: crypto.randomUUID(),
               title,
               minutes,
-              timed: true,
               startedAt: now,
               updatedAt: now,
               current: 0,

@@ -28,7 +28,7 @@ async function expectAnswers(page: Page, errors: string[]) {
 
 async function storedTest(db: Client, profileId: string) {
   const { rows } = await db.query(
-    `select t.timed, t.overtime, count(s.id)::int as visits
+    `select t.overtime, count(s.id)::int as visits
      from test_sessions t join task_sessions s on s.test_session_id = t.id
      where t.profile_id = $1 group by t.id`,
     [profileId],
@@ -85,7 +85,7 @@ test("a signed-in user reviews a finished test", {
     page.getByRole("region", { name: "Sačuvaj napredak" }),
   ).toHaveCount(0);
   expect(await storedTest(auth.db, profileId)).toEqual([
-    { timed: true, overtime: false, visits: 1 },
+    { overtime: false, visits: 1 },
   ]);
 });
 

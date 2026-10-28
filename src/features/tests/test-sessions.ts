@@ -15,7 +15,6 @@ import { overtimeAt } from "./state";
 export const testInput = z.object({
   id: z.uuid(),
   variantId: z.string().refine((id) => getVariant(id) !== undefined),
-  timed: z.boolean(),
   startedAt: z.number().int(),
   draft: testDraft,
 });
@@ -33,7 +32,7 @@ function variantOf(variantId: string) {
 const upsert = (
   executor: Pick<typeof db, "insert">,
   profileId: string,
-  { id, variantId, timed, startedAt, draft }: TestInput,
+  { id, variantId, startedAt, draft }: TestInput,
   set: Partial<typeof testSessions.$inferInsert>,
 ) => {
   const variant = variantOf(variantId);
@@ -46,7 +45,6 @@ const upsert = (
       kind: variant.kind,
       variantId,
       taskIds: variant.taskIds,
-      timed,
       startedAt: new Date(Math.min(startedAt, now.getTime())),
       draft,
       ...set,
@@ -150,10 +148,7 @@ export async function finishTest(
     await tx
       .update(testSessions)
       .set({
-        overtime: overtimeAt(
-          { startedAt, timed: test.timed, minutes: minutesOf(variant) },
-          now,
-        ),
+        overtime: overtimeAt({ startedAt, minutes: minutesOf(variant) }, now),
       })
       .where(
         and(
@@ -218,7 +213,6 @@ export const getUnfinishedTest = cache(
     return {
       id: row.id,
       variantId: row.variantId,
-      timed: row.timed,
       startedAt: row.startedAt.getTime(),
       updatedAt: row.updatedAt.getTime(),
       draft: row.draft,

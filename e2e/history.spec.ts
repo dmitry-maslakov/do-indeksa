@@ -7,9 +7,9 @@ test.use({ viewport: { width: 1280, height: 400 } });
 
 const seedTests = (db: Client, profileId: string, count: number) =>
   db.query(
-    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
+    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at)
      select gen_random_uuid(), $1::uuid, 'custom'::test_kind, 'set-eks-00' || n,
-       '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour', false
+       '{}'::text[], now() - n * interval '1 hour', now() - n * interval '1 hour'
      from generate_series(1, $2::int) n`,
     [profileId, count],
   );
@@ -44,8 +44,8 @@ test("a finished variant shows its result in the catalog", async ({
   const href = (await first.getAttribute("href")) ?? "";
   const testId = randomUUID();
   await auth.db.query(
-    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at, timed)
-     values ($1, $2, 'official', $3, '{}', now(), now(), false)`,
+    `insert into test_sessions (id, profile_id, kind, variant_id, task_ids, started_at, finished_at)
+     values ($1, $2, 'official', $3, '{}', now(), now())`,
     [testId, profileId, href.split("/").at(-1)],
   );
   await page.reload();

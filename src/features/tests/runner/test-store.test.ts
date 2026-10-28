@@ -12,7 +12,6 @@ const saved: LocalTest = {
   testId: "00000000-0000-4000-8000-000000000000",
   title: "2026",
   minutes: 48,
-  timed: true,
   startedAt: 0,
   updatedAt: 0,
   current: 0,
@@ -93,11 +92,6 @@ describe("exam store", () => {
     const newer = { ...saved, updatedAt: Date.now() + 1 };
     store().restore("v", newer);
     expect(test()?.testId).toBe(newer.testId);
-  });
-
-  it("starts tests with a time limit", () => {
-    store().start("v", meta);
-    expect(test()?.timed).toBe(true);
   });
 
   it("moves a test to the variant with a swapped task", () => {
