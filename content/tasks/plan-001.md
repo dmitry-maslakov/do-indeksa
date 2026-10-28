@@ -1,5 +1,6 @@
 ---
 topic: plane-geometry
+type: rhombus-diagonals
 difficulty: 3
 source: Do indeksa
 answer: $d_1=24$, $d_2=10$, $P=120$, $r=\frac{60}{13}$

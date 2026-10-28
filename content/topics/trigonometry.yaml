@@ -5,3 +5,5 @@ name:
 icon:
   text: "sin"
 tone: pink
+types:
+- roots-in-interval

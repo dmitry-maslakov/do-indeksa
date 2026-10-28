@@ -5,3 +5,5 @@ name:
 icon:
   name: "triangle"
 tone: orange
+types:
+- rhombus-diagonals

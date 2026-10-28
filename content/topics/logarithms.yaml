@@ -5,3 +5,5 @@ name:
 icon:
   text: "log"
 tone: blue
+types:
+- substitution

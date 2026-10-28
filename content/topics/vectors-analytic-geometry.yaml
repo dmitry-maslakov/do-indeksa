@@ -5,3 +5,5 @@ name:
 icon:
   name: "arrow-up-right"
 tone: orange
+types:
+- length-angle-coordinates
