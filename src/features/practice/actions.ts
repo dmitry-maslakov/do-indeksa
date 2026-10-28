@@ -1,5 +1,6 @@
 "use server";
 
+import { refresh } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { reportKinds } from "@/db/columns";
@@ -23,16 +24,19 @@ export const checkAnswer = actionClient
     }),
   )
   .action(
-    ({
+    async ({
       parsedInput: { taskId, answer, sessionId, clientId },
       ctx: { profileId },
-    }) =>
-      submitAnswer(profileId, {
+    }) => {
+      const checked = await submitAnswer(profileId, {
         taskId,
         answers: answer,
         sessionId,
         clientId,
-      }),
+      });
+      refresh();
+      return checked;
+    },
   );
 
 export const saveReveal = actionClient
