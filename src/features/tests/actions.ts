@@ -1,19 +1,9 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { z } from "zod";
-import { testDraft } from "@/db/columns";
 import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
-import { finishTest, saveDraft } from "./sessions";
-
-const testInput = z.object({
-  id: z.uuid(),
-  variantId: z.string().min(1),
-  timed: z.boolean(),
-  startedAt: z.number().int(),
-  draft: testDraft,
-});
+import { finishTest, saveDraft, testInput } from "./sessions";
 
 export const saveTest = actionClient
   .inputSchema(testInput)

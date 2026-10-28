@@ -2,7 +2,8 @@ import { clamp } from "es-toolkit";
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { cache } from "react";
-import type { TestDraft, Visit } from "@/db/columns";
+import { z } from "zod";
+import { testDraft, type Visit } from "@/db/columns";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { checkerVersion } from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
@@ -11,22 +12,17 @@ import { db, type Tx } from "@/server/db";
 import { gradeTest } from "./grade";
 import { overtimeAt } from "./state";
 
-export interface TestInput {
-  id: string;
-  variantId: string;
-  timed: boolean;
-  startedAt: number;
-  draft: TestDraft;
-}
+export const testInput = z.object({
+  id: z.uuid(),
+  variantId: z.string().refine((id) => getVariant(id) !== undefined),
+  timed: z.boolean(),
+  startedAt: z.number().int(),
+  draft: testDraft,
+});
 
-export interface UnfinishedTest {
-  id: string;
-  variantId: string;
-  timed: boolean;
-  startedAt: number;
-  updatedAt: number;
-  draft: TestDraft;
-}
+export type TestInput = z.infer<typeof testInput>;
+
+export type UnfinishedTest = TestInput & { updatedAt: number };
 
 function variantOf(variantId: string) {
   const variant = getVariant(variantId);
