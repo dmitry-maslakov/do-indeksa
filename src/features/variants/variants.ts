@@ -6,7 +6,7 @@ import { numberOf, positionOf, positions } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import { parseVariantId } from "./variant-id";
+import { customTaskIds } from "./variant-id";
 
 export const officialVariants = allVariants
   .filter((v) => v.kind === "official")
@@ -32,14 +32,8 @@ export const byPosition = positions.map((p) => idsByTopic.get(p.topic) ?? []);
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
-  const parsed = parseVariantId(id);
-  if (
-    parsed?.kind === "custom" &&
-    parsed.taskIds.length <= positions.length &&
-    parsed.taskIds.every((taskId) => getTask(taskId))
-  ) {
-    return { id, kind: "custom", taskIds: byNumber(parsed.taskIds) };
-  }
+  const taskIds = customTaskIds(id, positions.length, getTask);
+  if (taskIds) return { id, kind: "custom", taskIds: byNumber(taskIds) };
 }
 
 export const byNumber = (ids: string[]) =>
