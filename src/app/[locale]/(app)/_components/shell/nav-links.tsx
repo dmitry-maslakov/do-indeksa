@@ -13,8 +13,9 @@ export function NavLinks() {
     <nav aria-label={t("label")} className="hidden gap-6 lg:flex">
       <WithPathname>
         {(pathname) =>
-          sections.map(({ href, key }) => {
-            const active = isActive(pathname, href);
+          sections.map((section) => {
+            const { href, key } = section;
+            const active = isActive(pathname, section);
             return (
               <Link
                 key={key}

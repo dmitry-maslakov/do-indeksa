@@ -17,8 +17,9 @@ export function BottomNav() {
     >
       <WithPathname>
         {(pathname) =>
-          sections.map(({ href, key, icon: Icon }) => {
-            const active = isActive(pathname, href);
+          sections.map((section) => {
+            const { href, key, icon: Icon } = section;
+            const active = isActive(pathname, section);
             return (
               <Link
                 key={key}
