@@ -135,8 +135,6 @@
     "original": "Original (PDF) ↗",
     "official": "Entrance exams · {count, number}",
     "curated": "Our tests · {count, number}",
-    "daily": "Daily test",
-    "dailyOn": "Daily test · {date}",
     "history": "History",
     "historyEmpty": "No finished tests yet.",
     "notSolved": "not solved",
@@ -158,7 +156,7 @@
     },
     "weeklyReview": "Review →",
     "weeklyNext": "New variant in {days, plural, one {# day} other {# days}}",
-    "testTitle": "{kind, select, weekly {Variant of the week} custom {Own test} daily {Daily test} other {{title}}}",
+    "testTitle": "{kind, select, weekly {Variant of the week} custom {Own test} other {{title}}}",
     "testKind": "{kind, select, official {Entrance exam} curated {Our test} weekly {Weekly challenge} other {{count, plural, one {# task} other {# tasks}}}}"
   },
   "Exam": {
@@ -239,7 +237,6 @@
     "repeated": "{count, plural, one {Mistakes repeat in task {numbers}.} other {Mistakes repeat in tasks {numbers}.}}"
   },
   "Home": {
-    "playDaily": "Play the daily test",
     "timeEmpty": "Finish your first test to see which tasks take the most time.",
     "startTest": "Pick a test",
     "suggestion": "Suggested for today: <b>{reason}</b>",

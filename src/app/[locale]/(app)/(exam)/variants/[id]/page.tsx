@@ -32,7 +32,6 @@ export default async function VariantPage({
   params,
 }: PageProps<"/[locale]/variants/[id]">) {
   const { id } = await params;
-  if (id === "daily") redirect({ href: "/daily", locale: await getLocale() });
   const variant = getVariant(id);
   if (!variant) notFound();
   if (variant.kind === "custom") {

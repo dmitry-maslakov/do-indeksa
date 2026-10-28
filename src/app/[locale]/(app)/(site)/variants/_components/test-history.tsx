@@ -16,8 +16,8 @@ export function TestHistory({ first }: { first: Page<TestSummary> }) {
     return (
       <EmptyNote
         text={t("historyEmpty")}
-        href="/daily"
-        action={home("playDaily")}
+        href="/variants"
+        action={home("startTest")}
       />
     );
   }

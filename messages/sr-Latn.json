@@ -135,8 +135,6 @@
     "original": "Original (PDF) ↗",
     "official": "Prijemni ispiti · {count, number}",
     "curated": "Naši testovi · {count, number}",
-    "daily": "Test dana",
-    "dailyOn": "Test dana · {date}",
     "history": "Istorija",
     "historyEmpty": "Još nema završenih testova.",
     "notSolved": "nije rešeno",
@@ -158,7 +156,7 @@
     },
     "weeklyReview": "Pregled →",
     "weeklyNext": "Nova varijanta za {days, plural, one {# dan} few {# dana} other {# dana}}",
-    "testTitle": "{kind, select, weekly {Varijanta nedelje} custom {Svoj test} daily {Test dana} other {{title}}}",
+    "testTitle": "{kind, select, weekly {Varijanta nedelje} custom {Svoj test} other {{title}}}",
     "testKind": "{kind, select, official {Prijemni ispit} curated {Naš test} weekly {Nedeljni izazov} other {{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}}}"
   },
   "Exam": {
@@ -239,7 +237,6 @@
     "repeated": "{count, plural, one {Greške se ponavljaju u zadatku {numbers}.} other {Greške se ponavljaju u zadacima {numbers}.}}"
   },
   "Home": {
-    "playDaily": "Reši test dana",
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",
     "startTest": "Izaberi test",
     "suggestion": "Predlog za danas: <b>{reason}</b>",

@@ -48,7 +48,6 @@ const owner = () =>
 export const testKind = pgEnum("test_kind", [
   "official",
   "curated",
-  "daily",
   "random",
   "custom",
 ]);

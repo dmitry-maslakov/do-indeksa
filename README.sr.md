@@ -1,6 +1,6 @@
 # Do indeksa
 
-Besplatna priprema za prijemni ispit: banka zadataka sa nagoveštajima i rešenjima, probni testovi sa vremenom, test dana, analiza testa i statistika. Prvi ispit je FTN P1 matematika.
+Besplatna priprema za prijemni ispit: banka zadataka sa nagoveštajima i rešenjima, probni testovi sa vremenom, varijanta nedelje, analiza testa i statistika. Prvi ispit je FTN P1 matematika.
 
 Sajt: [doindeksa.rs](https://doindeksa.rs). [English](README.md)
 

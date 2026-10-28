@@ -32,7 +32,7 @@ test("finishing a test offline keeps it open", async ({ page, context }) => {
   const submit = page
     .getByRole("alertdialog")
     .getByRole("button", { name: "Završi test" });
-  await page.goto("/daily");
+  await page.goto("/variants/ftn-p1-2025");
   await page.getByRole("timer").waitFor();
   await context.setOffline(true);
   await finish(page);

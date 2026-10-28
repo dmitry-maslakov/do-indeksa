@@ -2,16 +2,10 @@ import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import { orderBy, sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
-import {
-  dailySize,
-  numberOf,
-  positionOf,
-  positions,
-} from "@/features/catalog/exams";
+import { numberOf, positionOf, positions } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import { pick } from "./pick";
 import { parseVariantId } from "./variant-id";
 
 export const officialVariants = allVariants
@@ -25,7 +19,7 @@ export const contentVariants = [...officialVariants, ...curatedVariants];
 export interface ExamVariant
   extends Pick<Variant, "id">,
     Partial<Pick<Variant, "title" | "year" | "original">> {
-  kind: Variant["kind"] | "daily" | "custom";
+  kind: Variant["kind"] | "custom";
   taskIds: string[];
 }
 
@@ -35,9 +29,6 @@ export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
   const parsed = parseVariantId(id);
-  if (parsed?.kind === "daily") {
-    return { id, kind: "daily", taskIds: pick(byPosition, dailySize, id) };
-  }
   if (
     parsed?.kind === "custom" &&
     parsed.taskIds.every((taskId) => getTask(taskId))

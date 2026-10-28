@@ -1,17 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { dailySize } from "@/features/catalog/exams";
 import { getVariant, officialVariants, slotsOf } from "./variants";
 
 describe("getVariant", () => {
   it("finds a variant from the bank", () => {
     const official = officialVariants[0];
     expect(official && getVariant(official.id)).toBe(official);
-  });
-
-  it("builds the same daily test for the same day", () => {
-    const daily = getVariant("daily-2026-10-08");
-    expect(daily?.taskIds).toHaveLength(dailySize);
-    expect(getVariant("daily-2026-10-08")?.taskIds).toEqual(daily?.taskIds);
   });
 
   it("orders a custom set by task number and rejects unknown tasks", () => {

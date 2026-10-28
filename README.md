@@ -1,6 +1,6 @@
 # Do indeksa
 
-Free entrance exam preparation for Serbian high school graduates: a task bank with hints and solutions, timed practice tests, a daily test, run review and statistics. The first exam is FTN P1 mathematics.
+Free entrance exam preparation for Serbian high school graduates: a task bank with hints and solutions, timed practice tests, a weekly variant, run review and statistics. The first exam is FTN P1 mathematics.
 
 Live at [doindeksa.rs](https://doindeksa.rs). [Srpski](README.sr.md)
 
