@@ -8,11 +8,12 @@ export interface TaskStat {
   right: number;
   recentAttempts: number;
   recentRight: number;
-  durationMs: number;
   firstRight: boolean;
   latestRight: boolean;
   lastAt: number;
 }
+
+export type TimedStat = TaskStat & { durationMs: number };
 
 export interface Accuracy {
   key: string | number;
@@ -43,7 +44,7 @@ export function accuracyBy<K extends string | number>(
   });
 }
 
-export function meanTimeByNumber(stats: TaskStat[], numbers: number[]) {
+export function meanTimeByNumber(stats: TimedStat[], numbers: number[]) {
   return numbers.map((number) => {
     const mine = stats.filter((s) => s.number === number);
     const attempts = sumBy(mine, (s) => s.attempts);
@@ -55,7 +56,7 @@ export function meanTimeByNumber(stats: TaskStat[], numbers: number[]) {
   });
 }
 
-export function totals(stats: TaskStat[]) {
+export function totals(stats: TimedStat[]) {
   const firstRight = stats.filter((s) => s.firstRight).length;
   return {
     solved: stats.filter((s) => s.latestRight).length,

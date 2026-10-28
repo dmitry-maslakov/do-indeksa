@@ -6,7 +6,7 @@ import { PageTitle } from "@/components/page-title";
 import { minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import { getTaskStats } from "@/features/progress/history";
+import { getTaskStats, getTaskTimes } from "@/features/progress/history";
 import {
   accuracyBy,
   meanTimeByNumber,
@@ -31,13 +31,14 @@ const recentTestCount = 5;
 
 async function loadStats() {
   const profileId = await getProfileId();
-  const [byTask, recent, testCount] = await Promise.all([
+  const [stats, times, recent, testCount] = await Promise.all([
     getTaskStats(profileId),
+    getTaskTimes(profileId),
     getTests(profileId, recentTestCount),
     countTests(profileId),
   ]);
   return {
-    byTask,
+    byTask: stats.map((s) => ({ ...s, durationMs: times.get(s.taskId) ?? 0 })),
     testCount,
     tests: await summarizeTests(profileId, recent, await getLocale()),
   };

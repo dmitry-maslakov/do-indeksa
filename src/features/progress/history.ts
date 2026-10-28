@@ -61,13 +61,10 @@ export async function getTaskStats(profileId: string) {
     .from(attempts)
     .where(and(eq(attempts.profileId, profileId), decidesStatus))
     .groupBy(attempts.taskId);
-  const time = await getTimeByTask(profileId);
-  return taskStats(
-    rows.map((row) => ({ ...row, durationMs: time.get(row.taskId) ?? 0 })),
-  );
+  return taskStats(rows);
 }
 
-async function getTimeByTask(profileId: string) {
+export async function getTaskTimes(profileId: string) {
   const rows = await db
     .select({
       taskId: taskSessions.taskId,
