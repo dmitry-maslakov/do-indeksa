@@ -4,21 +4,20 @@ import { useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
-import type { ExamTask } from "@/features/exam/variants";
 import { Reveal } from "@/features/practice/reveal/reveal";
-import { Link } from "@/i18n/navigation";
-import type { Segment } from "@/lib/strip";
 import type {
   AnswerOutcome,
   Outcomes,
   Review,
   ReviewAttempt,
   ReviewRow,
-} from "./review";
+} from "@/features/tests/review";
+import type { VariantTask } from "@/features/variants/variants";
+import { Link } from "@/i18n/navigation";
+import type { Segment } from "@/lib/strip";
 
 interface ReviewRowsProps {
-  review: Review;
-  tasks: ExamTask[];
+  review: Review<VariantTask>;
   outcomes: Outcomes;
   testSessionId: string;
 }
@@ -32,7 +31,6 @@ const tones: Record<Segment, string> = {
 
 export function ReviewRows({
   review,
-  tasks,
   outcomes,
   testSessionId,
 }: ReviewRowsProps) {
@@ -42,33 +40,26 @@ export function ReviewRows({
     <section className="flex flex-col gap-1">
       <h2 className="font-semibold text-lg">{t("tasks")}</h2>
       <ul>
-        {review.rows.map((row) => {
-          const task = tasks.find((x) => x.id === row.taskId);
-          return (
-            task && (
-              <Row
-                key={row.taskId}
-                row={row}
-                task={task}
-                outcome={outcomes[row.taskId]}
-                testSessionId={testSessionId}
-              />
-            )
-          );
-        })}
+        {review.rows.map((row) => (
+          <Row
+            key={row.taskId}
+            row={row}
+            outcome={outcomes[row.taskId]}
+            testSessionId={testSessionId}
+          />
+        ))}
       </ul>
     </section>
   );
 }
 
 interface RowProps {
-  row: ReviewRow;
-  task: ExamTask;
+  row: ReviewRow<VariantTask>;
   outcome?: AnswerOutcome;
   testSessionId: string;
 }
 
-function Row({ row, task, outcome, testSessionId }: RowProps) {
+function Row({ row, outcome, testSessionId }: RowProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
   const minutes = Math.round((row.attempt?.durationMs ?? 0) / 60_000);
@@ -82,11 +73,11 @@ function Row({ row, task, outcome, testSessionId }: RowProps) {
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-0.75">
             <MathHtml
-              html={task.statement}
+              html={row.statement}
               className="overflow-hidden whitespace-nowrap text-[15px] leading-normal mask-r-from-85% md:text-base [&_.katex-display]:my-0 [&_.katex-display]:inline [&_p]:inline [&>:not(:first-child)]:hidden"
             />
             <span className="text-[13px] text-subtle">
-              {task.topicName} ·{" "}
+              {row.topicName} ·{" "}
               {row.attempt ? t("minutes", { minutes }) : t("skipped")}
             </span>
           </span>
@@ -108,20 +99,20 @@ function Row({ row, task, outcome, testSessionId }: RowProps) {
           )}
           <Reveal
             label={solve("answer")}
-            taskId={task.id}
+            taskId={row.taskId}
             testSessionId={testSessionId}
             part="answer"
           />
           <Reveal
             label={solve("solution")}
-            taskId={task.id}
+            taskId={row.taskId}
             testSessionId={testSessionId}
             part="solution"
           />
           <Button
             variant="ghost"
             size="sm"
-            render={<Link href={`/bank/${task.id}`} />}
+            render={<Link href={`/bank/${row.taskId}`} />}
             nativeButton={false}
           >
             {t("toTask")}

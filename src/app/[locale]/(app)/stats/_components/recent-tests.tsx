@@ -4,7 +4,7 @@ import { EmptyNote } from "@/components/empty-note";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VariantStrip } from "@/components/variant-strip";
-import { reviewHref } from "@/features/review/review";
+import { reviewHref } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
 

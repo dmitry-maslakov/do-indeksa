@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import type { Review } from "@/features/review/review";
+import type { Review } from "@/features/tests/review";
 
 export function TimeSpent({ review }: { review: Review }) {
   const t = useTranslations("Review");

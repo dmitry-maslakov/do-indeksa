@@ -2,8 +2,8 @@ import { cn } from "cn";
 import { ArrowRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { ShareButton } from "@/features/exam/share-button";
-import type { Review } from "@/features/review/review";
+import { ShareButton } from "@/features/tests/results/share-button";
+import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import type { Segment } from "@/lib/strip";
 

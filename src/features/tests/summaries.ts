@@ -2,12 +2,16 @@ import "server-only";
 import type { Locale } from "next-intl";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { topicLook } from "@/features/catalog/topics";
-import { getTestAttempts } from "@/features/progress/history";
-import { review } from "@/features/review/review";
+import { variantTitle } from "@/features/variants/variant-title";
+import {
+  type ExamVariant,
+  getVariant,
+  slotsOf,
+} from "@/features/variants/variants";
+import { weeklyVariant } from "@/features/variants/weekly";
 import type { Segment } from "@/lib/strip";
-import { variantTitle } from "./variant-title";
-import { type ExamVariant, getVariant, reviewTasks } from "./variants";
-import { weeklyVariant } from "./weekly";
+import { getTestAttempts } from "./history";
+import { review } from "./review";
 
 export interface TestRow {
   id: string;
@@ -44,10 +48,7 @@ export async function summarizeTests(
   return Promise.all(
     tests.map(async (test) => {
       const variant = getVariant(test.variantId);
-      const result = review(
-        reviewTasks(test.taskIds),
-        byTest.get(test.id) ?? [],
-      );
+      const result = review(slotsOf(test.taskIds), byTest.get(test.id) ?? []);
       const weekly = weeklyVariant(test.finishedAt)?.id === test.variantId;
       return {
         id: test.id,

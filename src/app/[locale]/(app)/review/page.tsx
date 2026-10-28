@@ -5,12 +5,12 @@ import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { variantTitle } from "@/features/exam/variant-title";
-import { getVariant, tasksFor } from "@/features/exam/variants";
-import { getTest } from "@/features/progress/history";
-import { outcomesOf } from "@/features/review/outcomes";
-import { review } from "@/features/review/review";
-import { ReviewRows } from "@/features/review/review-rows";
+import { getTest } from "@/features/tests/history";
+import { outcomesOf } from "@/features/tests/outcomes";
+import { ReviewRows } from "@/features/tests/results/review-rows";
+import { review } from "@/features/tests/review";
+import { variantTitle } from "@/features/variants/variant-title";
+import { getVariant, tasksFor } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 import { getProfileId } from "@/server/profile";
 import { LostPoints } from "./_components/lost-points";
@@ -96,10 +96,7 @@ async function TestReview({
 }) {
   const locale = await getLocale();
   const tasks = await tasksFor(found.test.taskIds, locale);
-  const result = review(
-    tasks.map((task) => ({ ...task, taskId: task.id })),
-    found.attempts,
-  );
+  const result = review(tasks, found.attempts);
   const variant = getVariant(found.test.variantId);
 
   return (
@@ -116,7 +113,6 @@ async function TestReview({
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
         <ReviewRows
           review={result}
-          tasks={tasks}
           outcomes={outcomesOf(found.attempts)}
           testSessionId={found.test.id}
         />

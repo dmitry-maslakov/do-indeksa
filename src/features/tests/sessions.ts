@@ -5,10 +5,10 @@ import type { TestDraft, Visit } from "@/db/columns";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { checkerVersion } from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
+import { getVariant, minutesOf } from "@/features/variants/variants";
 import { db, type Tx } from "@/server/db";
 import { gradeTest } from "./grade";
-import { overtimeAt } from "./test-state";
-import { getVariant, minutesOf } from "./variants";
+import { overtimeAt } from "./state";
 
 export interface TestInput {
   id: string;

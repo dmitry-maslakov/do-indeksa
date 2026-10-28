@@ -36,7 +36,7 @@ export const visitsAt = (test: LocalTest, now: number) =>
     i === test.visits.length - 1 ? { ...v, endedAt: now } : v,
   );
 
-interface ExamState {
+interface TestState {
   tests: Record<string, LocalTest>;
   start: (variantId: string, meta: TestMeta) => void;
   answer: (variantId: string, part: number, value: string) => void;
@@ -46,7 +46,7 @@ interface ExamState {
   clear: (variantId: string) => void;
 }
 
-export const useExamStore = create<ExamState>()(
+export const useTestStore = create<TestState>()(
   persist(
     (set) => {
       const update = (
@@ -144,13 +144,13 @@ export const useExamStore = create<ExamState>()(
   ),
 );
 
-export function useExamHydrated() {
+export function useTestHydrated() {
   useEffect(() => {
-    if (!useExamStore.persist.hasHydrated()) useExamStore.persist.rehydrate();
+    if (!useTestStore.persist.hasHydrated()) useTestStore.persist.rehydrate();
   }, []);
   return useSyncExternalStore(
-    (onChange) => useExamStore.persist.onFinishHydration(onChange),
-    () => useExamStore.persist.hasHydrated(),
+    (onChange) => useTestStore.persist.onFinishHydration(onChange),
+    () => useTestStore.persist.hasHydrated(),
     () => false,
   );
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dailySize } from "@/features/catalog/exams";
-import { getVariant, officialVariants, reviewTasks } from "./variants";
+import { getVariant, officialVariants, slotsOf } from "./variants";
 
 describe("getVariant", () => {
   it("finds a variant from the bank", () => {
@@ -27,9 +27,9 @@ describe("getVariant", () => {
   });
 });
 
-describe("reviewTasks", () => {
+describe("slotsOf", () => {
   it("takes number, points and minutes from the exam positions", () => {
-    expect(reviewTasks(["log-001", "kb-003"])).toEqual([
+    expect(slotsOf(["log-001", "kb-003"])).toEqual([
       {
         taskId: "log-001",
         number: 3,
@@ -48,7 +48,7 @@ describe("reviewTasks", () => {
   });
 
   it("skips tasks that are not in the bank", () => {
-    expect(reviewTasks(["missing", "log-001"]).map((t) => t.taskId)).toEqual([
+    expect(slotsOf(["missing", "log-001"]).map((t) => t.taskId)).toEqual([
       "log-001",
     ]);
   });

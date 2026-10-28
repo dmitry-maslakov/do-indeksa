@@ -6,9 +6,9 @@ import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { phoneBar } from "@/features/practice/answer/action-bar";
 import { AnswerField } from "@/features/practice/answer/answer-field";
-import type { ExamTask as Task } from "./variants";
+import type { VariantTask as Task } from "@/features/variants/variants";
 
-interface ExamTaskProps {
+interface TestTaskProps {
   task: Task;
   answers: string[];
   first: boolean;
@@ -19,7 +19,7 @@ interface ExamTaskProps {
   onNext: () => void;
 }
 
-export function ExamTask({
+export function TestTask({
   task,
   answers,
   first,
@@ -28,10 +28,10 @@ export function ExamTask({
   onAnswer,
   onPrev,
   onNext,
-}: ExamTaskProps) {
+}: TestTaskProps) {
   const t = useTranslations("Exam");
   const solve = useTranslations("Solve");
-  const ids = task.parts.map((_, i) => `answer-${task.id}-${i}`);
+  const ids = task.parts.map((_, i) => `answer-${task.taskId}-${i}`);
 
   return (
     <article className="flex flex-col pt-4.5 md:pt-3.5">
@@ -60,7 +60,7 @@ export function ExamTask({
         {task.parts.map((part, i) => (
           <AnswerField
             key={ids[i]}
-            id={ids[i] ?? task.id}
+            id={ids[i] ?? task.taskId}
             index={i}
             name="answer"
             label={

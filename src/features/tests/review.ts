@@ -1,14 +1,7 @@
 import { sumBy } from "es-toolkit";
 import { isRight, type PartOutcome } from "@/db/columns";
+import type { Slot } from "@/features/variants/variants";
 import { type Segment, segmentOf } from "@/lib/strip";
-
-export interface ReviewTask {
-  taskId: string;
-  number: number;
-  topic: string;
-  points: number;
-  minutes: number;
-}
 
 export interface ReviewAttempt {
   taskId: string;
@@ -24,16 +17,21 @@ export interface AnswerOutcome {
 
 export type Outcomes = Record<string, AnswerOutcome>;
 
-export interface ReviewRow<A extends ReviewAttempt = ReviewAttempt>
-  extends ReviewTask {
+export type ReviewRow<
+  T extends Slot = Slot,
+  A extends ReviewAttempt = ReviewAttempt,
+> = T & {
   attempt?: A;
   earned: number;
   over: boolean;
   segment: Segment;
-}
+};
 
-export interface Review<A extends ReviewAttempt = ReviewAttempt> {
-  rows: ReviewRow<A>[];
+export interface Review<
+  T extends Slot = Slot,
+  A extends ReviewAttempt = ReviewAttempt,
+> {
+  rows: ReviewRow<T, A>[];
   score: number;
   max: number;
   correct: number;
@@ -50,10 +48,10 @@ export const creditOf = (outcomes: PartOutcome[], points: number) =>
         (points * outcomes.filter(isRight).length * 10) / outcomes.length,
       ) / 10;
 
-export function review<A extends ReviewAttempt>(
-  tasks: ReviewTask[],
+export function review<T extends Slot, A extends ReviewAttempt>(
+  tasks: T[],
   attempts: A[],
-): Review<A> {
+): Review<T, A> {
   const byTask = new Map(attempts.map((a) => [a.taskId, a]));
   const rows = tasks.map((task) => {
     const attempt = byTask.get(task.taskId);

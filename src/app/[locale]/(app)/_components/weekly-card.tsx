@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { topicLook } from "@/features/catalog/topics";
-import type { WeeklyVariant } from "@/features/exam/weekly";
-import { WeeklyWave } from "@/features/exam/weekly-wave";
+import type { WeeklyVariant } from "@/features/variants/weekly";
+import { WeeklyWave } from "@/features/variants/weekly-wave";
 import { Link } from "@/i18n/navigation";
 
 export function WeeklyCard({

@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
+import { getUnfinishedTest } from "@/features/tests/sessions";
+import type { ComposeMode } from "@/features/variants/compose";
+import { swapIds } from "@/features/variants/compose-set";
+import { variantTitle } from "@/features/variants/variant-title";
+import {
+  type ExamVariant,
+  minutesOf,
+  tasksFor,
+} from "@/features/variants/variants";
 import { getProfileId } from "@/server/profile";
-import type { ComposeMode } from "./compose";
-import { swapIds } from "./compose-set";
-import { ExamGhost } from "./exam-ghost";
-import { ExamRunner } from "./exam-runner";
-import { getUnfinishedTest } from "./test-sessions";
-import { variantTitle } from "./variant-title";
-import { type ExamVariant, minutesOf, tasksFor } from "./variants";
+import { TestGhost } from "./test-ghost";
+import { TestRunner } from "./test-runner";
 
 export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
   const t = await getTranslations("Variants");
@@ -22,7 +26,7 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
   };
 }
 
-export async function VariantScreen({
+export async function TestScreen({
   variant,
   code,
   fallback,
@@ -39,14 +43,14 @@ export async function VariantScreen({
   return (
     <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
       <h1 className="sr-only">{title}</h1>
-      <Suspense fallback={<ExamGhost />}>
+      <Suspense fallback={<TestGhost />}>
         <Await
           promise={getProfileId().then((id) =>
             getUnfinishedTest(id, variant.id),
           )}
         >
           {(saved) => (
-            <ExamRunner
+            <TestRunner
               key={variant.id}
               variantId={variant.id}
               tasks={tasks}

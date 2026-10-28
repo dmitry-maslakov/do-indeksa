@@ -6,27 +6,27 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { FocusMode } from "@/components/focus-mode";
 import { RailPanel } from "@/components/rail";
-import { reviewHref } from "@/features/review/review";
+import { saveTest, submitTest } from "@/features/tests/actions";
+import { reviewHref } from "@/features/tests/review";
+import type { UnfinishedTest } from "@/features/tests/sessions";
+import { isAnswered, nextIndex } from "@/features/tests/state";
+import type { ComposeMode } from "@/features/variants/compose";
+import type { VariantTask as Task } from "@/features/variants/variants";
 import { getPathname, useRouter } from "@/i18n/navigation";
 import { localTimeZone } from "@/lib/dates";
 import { useErrorText } from "@/lib/use-error-text";
-import { saveTest, submitTest } from "./actions";
-import type { ComposeMode } from "./compose";
-import { ExamBar } from "./exam-bar";
-import { ExamGhost } from "./exam-ghost";
-import { ExamRail } from "./exam-rail";
+import { TestBar } from "./test-bar";
+import { TestGhost } from "./test-ghost";
+import { TestRail } from "./test-rail";
 import {
   type LocalTest,
-  useExamHydrated,
-  useExamStore,
+  useTestHydrated,
+  useTestStore,
   visitsAt,
-} from "./exam-store";
-import { ExamTask } from "./exam-task";
-import type { UnfinishedTest } from "./test-sessions";
-import { isAnswered, nextIndex } from "./test-state";
-import type { ExamTask as Task } from "./variants";
+} from "./test-store";
+import { TestTask } from "./test-task";
 
-interface ExamRunnerProps {
+interface TestRunnerProps {
   variantId: string;
   tasks: Task[];
   minutes: number;
@@ -45,7 +45,7 @@ const payload = (variantId: string, test: LocalTest) => ({
   draft: { answers: test.answers, visits: visitsAt(test, Date.now()) },
 });
 
-export function ExamRunner({
+export function TestRunner({
   variantId,
   tasks,
   minutes,
@@ -54,11 +54,11 @@ export function ExamRunner({
   saved,
   swaps,
   fallback,
-}: ExamRunnerProps) {
-  const hydrated = useExamHydrated();
+}: TestRunnerProps) {
+  const hydrated = useTestHydrated();
   const router = useRouter();
-  const test = useExamStore((s) => s.tests[variantId]);
-  const { start, answer, go, restore, swap, clear } = useExamStore.getState();
+  const test = useTestStore((s) => s.tests[variantId]);
+  const { start, answer, go, restore, swap, clear } = useTestStore.getState();
   const t = useTranslations("Exam");
   const locale = useLocale();
   const errorText = useErrorText();
@@ -122,7 +122,7 @@ export function ExamRunner({
 
   const task = test && tasks[test.current];
   if (!test || !task) {
-    return <ExamGhost />;
+    return <TestGhost />;
   }
 
   const answers = test.answers[test.current] ?? [];
@@ -145,10 +145,10 @@ export function ExamRunner({
   return (
     <>
       <FocusMode mode="exam" />
-      <ExamBar {...rail} />
+      <TestBar {...rail} />
       <div className="flex items-start gap-14">
         <RailPanel label={t("tasks")}>
-          <ExamRail {...rail} code={code} />
+          <TestRail {...rail} code={code} />
         </RailPanel>
         <div className="flex min-w-0 max-w-task flex-1 flex-col">
           {fallback && (
@@ -156,7 +156,7 @@ export function ExamRunner({
               {t("fallback", { mode: fallback })}
             </p>
           )}
-          <ExamTask
+          <TestTask
             task={task}
             answers={answers}
             first={test.current === 0}

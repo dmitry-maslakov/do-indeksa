@@ -1,7 +1,7 @@
 import "server-only";
 import type { Locale } from "next-intl";
-import { getTests } from "@/features/progress/history";
-import { summarizeTests, type TestSummary } from "./test-summaries";
+import { getTests } from "./history";
+import { summarizeTests, type TestSummary } from "./summaries";
 
 const runsPage = 20;
 

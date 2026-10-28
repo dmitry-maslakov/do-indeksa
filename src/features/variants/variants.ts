@@ -11,7 +11,6 @@ import {
 } from "@/features/catalog/exams";
 import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import type { ReviewTask } from "@/features/review/review";
 import { pick } from "./pick";
 import { parseVariantId } from "./variant-id";
 
@@ -54,40 +53,37 @@ export const byNumber = (ids: string[]) =>
     ["asc"],
   ).map((task) => task.id);
 
-export function minutesOf(variant: ExamVariant) {
-  return sumBy(variant.taskIds, (id) => {
-    const task = getTask(id);
-    return task ? (positionOf(task.topic)?.minutes ?? 0) : 0;
-  });
-}
-
-export function pointsOf(taskId: string) {
-  const task = getTask(taskId);
-  return task ? (positionOf(task.topic)?.points ?? 0) : 0;
-}
-
-export function reviewTasks(taskIds: string[]): ReviewTask[] {
-  return taskIds.flatMap((taskId) => {
-    const task = getTask(taskId);
-    if (!task) return [];
-    const position = positionOf(task.topic);
-    return {
-      taskId,
-      number: position?.number ?? 0,
-      topic: task.topic,
-      points: position?.points ?? 0,
-      minutes: position?.minutes ?? 0,
-    };
-  });
-}
-
-export interface ExamTask {
-  id: string;
+export interface Slot {
+  taskId: string;
   number: number;
   topic: string;
-  topicName: string;
   points: number;
   minutes: number;
+}
+
+export function slotOf(taskId: string): Slot | undefined {
+  const task = getTask(taskId);
+  if (!task) return;
+  const position = positionOf(task.topic);
+  return {
+    taskId,
+    number: position?.number ?? 0,
+    topic: task.topic,
+    points: position?.points ?? 0,
+    minutes: position?.minutes ?? 0,
+  };
+}
+
+export const slotsOf = (taskIds: string[]) =>
+  taskIds.flatMap((taskId) => slotOf(taskId) ?? []);
+
+export const minutesOf = (variant: ExamVariant) =>
+  sumBy(variant.taskIds, (taskId) => slotOf(taskId)?.minutes ?? 0);
+
+export const pointsOf = (taskId: string) => slotOf(taskId)?.points ?? 0;
+
+export interface VariantTask extends Slot {
+  topicName: string;
   statement: string;
   parts: PartLabel[];
 }
@@ -95,19 +91,15 @@ export interface ExamTask {
 export async function tasksFor(
   taskIds: string[],
   locale: Locale,
-): Promise<ExamTask[]> {
+): Promise<VariantTask[]> {
   const tasks = await Promise.all(
-    taskIds.map(async (id) => {
-      const task = getTask(id);
-      const html = await renderTask(id);
-      if (!task || !html) return [];
+    taskIds.map(async (taskId) => {
+      const slot = slotOf(taskId);
+      const html = await renderTask(taskId);
+      if (!slot || !html) return [];
       return {
-        id,
-        number: numberOf(task.topic) ?? 0,
-        topic: task.topic,
-        topicName: topicName(task.topic, locale),
-        points: pointsOf(id),
-        minutes: positionOf(task.topic)?.minutes ?? 0,
+        ...slot,
+        topicName: topicName(slot.topic, locale),
         statement: html.statement,
         parts: html.parts,
       };

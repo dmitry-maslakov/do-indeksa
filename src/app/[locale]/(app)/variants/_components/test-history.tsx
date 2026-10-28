@@ -3,9 +3,9 @@
 import { useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { LoadMore } from "@/components/load-more";
-import type { TestPage } from "@/features/exam/test-feed";
-import type { TestSummary } from "@/features/exam/test-summaries";
-import { useTestFeed } from "@/features/exam/use-test-feed";
+import type { TestPage } from "@/features/tests/feed";
+import { useTestFeed } from "@/features/tests/results/use-test-feed";
+import type { TestSummary } from "@/features/tests/summaries";
 import { ExamRow } from "./exam-row";
 import { TestsTable } from "./tests-table";
 

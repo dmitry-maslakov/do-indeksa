@@ -6,17 +6,14 @@ import { PageTitle } from "@/components/page-title";
 import { minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
-import { summarizeTests } from "@/features/exam/test-summaries";
-import {
-  countTests,
-  getTaskStats,
-  getTests,
-} from "@/features/progress/history";
+import { getTaskStats } from "@/features/progress/history";
 import {
   accuracyBy,
   meanTimeByNumber,
   totals,
 } from "@/features/progress/stats";
+import { countTests, getTests } from "@/features/tests/history";
+import { summarizeTests } from "@/features/tests/summaries";
 import { getProfileId } from "@/server/profile";
 import { AccuracyCard } from "./_components/accuracy-card";
 import { BankCard } from "./_components/bank-card";

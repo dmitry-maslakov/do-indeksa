@@ -4,29 +4,29 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { RailButton, RailContent, RailHeading } from "@/components/rail";
 import { Button } from "@/components/ui/button";
-import type { LocalTest } from "./exam-store";
-import { ExamTimer } from "./exam-timer";
+import { answeredCount, isAnswered } from "@/features/tests/state";
+import type { VariantTask } from "@/features/variants/variants";
 import { FinishDialog } from "./finish-dialog";
-import { answeredCount, isAnswered } from "./test-state";
-import type { ExamTask } from "./variants";
+import type { LocalTest } from "./test-store";
+import { TestTimer } from "./test-timer";
 
-interface ExamRailProps {
+interface TestRailProps {
   test: LocalTest;
   code?: string;
-  tasks: ExamTask[];
+  tasks: VariantTask[];
   pending: boolean;
   onGo: (index: number) => void;
   onFinish: () => void;
 }
 
-export function ExamRail({
+export function TestRail({
   test,
   code,
   tasks,
   pending,
   onGo,
   onFinish,
-}: ExamRailProps) {
+}: TestRailProps) {
   const t = useTranslations("Exam");
   const variants = useTranslations("Variants");
   const done = answeredCount(test);
@@ -42,7 +42,7 @@ export function ExamRail({
             </span>
           )}
         </span>
-        <ExamTimer timing={test} />
+        <TestTimer timing={test} />
       </div>
       <nav
         aria-label={t("tasks")}
@@ -54,7 +54,7 @@ export function ExamRail({
           const current = i === test.current;
           return (
             <RailButton
-              key={task.id}
+              key={task.taskId}
               current={current}
               onClick={() => onGo(i)}
               className="h-10 shrink-0 items-center gap-2.5 px-3"
