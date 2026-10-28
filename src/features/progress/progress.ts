@@ -1,9 +1,8 @@
 import "server-only";
-import { and, desc, eq, inArray } from "drizzle-orm";
-import { attempts, favorites } from "@/db/schema";
+import { and, desc, eq, inArray, max } from "drizzle-orm";
+import { attempts, favorites, taskSessions } from "@/db/schema";
 import { positions } from "@/features/catalog/exams";
 import { idsByTopic } from "@/features/catalog/tasks";
-import { getLastSeen } from "@/features/tasks/sessions";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { decidesStatus } from "./decides-status";
@@ -11,6 +10,20 @@ import { getLatestResults, getTaskStats } from "./history";
 import { type TaskStat, weakest } from "./stats";
 import type { Progress, TaskStatus, Touched } from "./status";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
+
+async function getLastSeen(profileId: string, taskIds: string[]) {
+  const rows = await db
+    .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
+    .from(taskSessions)
+    .where(
+      and(
+        eq(taskSessions.profileId, profileId),
+        inArray(taskSessions.taskId, taskIds),
+      ),
+    )
+    .groupBy(taskSessions.taskId);
+  return rows.flatMap((r) => (r.at ? [{ taskId: r.taskId, at: r.at }] : []));
+}
 
 const getLatestAttempts = (profileId: string, taskIds?: string[]) =>
   db
