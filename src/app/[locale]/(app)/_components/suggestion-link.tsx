@@ -1,8 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useRef } from "react";
-import { openSuggestion } from "@/features/progress/open-suggestion-action";
-import { showSuggestion } from "@/features/progress/show-suggestion-action";
+import { openSuggestion, showSuggestion } from "@/features/progress/actions";
 import type { Suggestion } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
 

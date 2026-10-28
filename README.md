@@ -33,7 +33,7 @@ e2e runs on desktop (1280) and mobile (390): tag a test `@responsive` for both o
 - `content/` sample topics, exam, tasks, tests and theory. Production content is built in from a separate bank via `CONTENT_DIR`. Theory is `theory/<topic>/index.md` with `##` sections and `theory/<topic>/methods/<slug>.md`, with the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`.
 - `messages/` UI strings for `sr-Latn`, `ru` and `en`.
 - `src/app` routes; UI used by one route sits in its `_components`.
-- `src/features/<feature>` everything one feature owns: server-only services, `*-action.ts` server actions, components, `use-*.ts` hooks and its constants.
+- `src/features/<feature>` everything one feature owns: server-only services, server actions in `actions.ts`, components, `use-*.ts` hooks and its constants.
 - `src/components` app shell and shared UI, `src/lib` helpers without domain knowledge, `src/server` database, env, auth and the safe action clients.
 - `docs/decisions` short architecture decisions.
 

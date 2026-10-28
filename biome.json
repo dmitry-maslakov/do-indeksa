@@ -69,7 +69,7 @@
       }
     },
     {
-      "includes": ["src/app/**", "src/**/*-action.ts", "src/**/*-actions.ts"],
+      "includes": ["src/app/**", "src/**/actions.ts"],
       "linter": {
         "rules": {
           "style": {

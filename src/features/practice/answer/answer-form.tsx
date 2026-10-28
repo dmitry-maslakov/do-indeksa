@@ -6,16 +6,14 @@ import { useAction } from "next-safe-action/hooks";
 import { useCallback, useRef, useState } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
-import { checkAnswer } from "@/features/practice/answer-action";
+import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
-import { saveSkip } from "@/features/practice/skip-action";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { useRouter } from "@/i18n/navigation";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
-import type { AnswerState } from "./answer-state";
 
 interface AnswerFormProps {
   taskId: string;
@@ -29,13 +27,6 @@ interface Checked {
   outcomes: PartOutcome[];
   correct: boolean;
 }
-
-const fieldStates: Record<PartOutcome, AnswerState> = {
-  right: "correct",
-  wrong: "wrong",
-  empty: "empty",
-  unreadable: "unreadable",
-};
 
 type Verdict = "correct" | "wrong" | "unreadable" | "incomplete";
 
@@ -110,8 +101,7 @@ export function AnswerForm({
     id: `answer-${taskId}-${i}`,
   }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
-  const stateOf = (i: number): AnswerState =>
-    checked ? fieldStates[checked.outcomes[i] ?? "empty"] : "empty";
+  const stateOf = (i: number): PartOutcome => checked?.outcomes[i] ?? "empty";
 
   return (
     <form

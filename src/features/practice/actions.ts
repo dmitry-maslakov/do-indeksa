@@ -1,0 +1,86 @@
+"use server";
+
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+import { reportKinds } from "@/db/columns";
+import { taskIdSchema } from "@/features/catalog/tasks";
+import { timeZoneSchema } from "@/lib/dates";
+import { actionClient } from "@/server/action-client";
+import { submitAnswer } from "./answer/answers";
+import { setTaskFavorite } from "./favorites";
+import { saveReport } from "./reports";
+import { recordReveal, revealOwner, revealPartSchema } from "./reveal/reveals";
+import { keepSession } from "./session/sessions";
+import { recordSkip } from "./session/skips";
+
+export const checkAnswer = actionClient
+  .inputSchema(
+    zfd.formData({
+      taskId: zfd.text(taskIdSchema),
+      answer: zfd.repeatable(z.array(z.string().max(500)).max(6)),
+      sessionId: zfd.text(z.uuid().optional()),
+      clientId: zfd.text(z.uuid()),
+    }),
+  )
+  .action(
+    ({
+      parsedInput: { taskId, answer, sessionId, clientId },
+      ctx: { profileId },
+    }) =>
+      submitAnswer(profileId, {
+        taskId,
+        answers: answer,
+        sessionId,
+        clientId,
+      }),
+  );
+
+export const saveReveal = actionClient
+  .inputSchema(
+    z.object({
+      taskId: taskIdSchema,
+      part: revealPartSchema,
+      owner: revealOwner,
+    }),
+  )
+  .action(({ parsedInput: { taskId, part, owner }, ctx: { profileId } }) =>
+    recordReveal(profileId, taskId, part, owner),
+  );
+
+export const keepTaskSession = actionClient
+  .inputSchema(
+    z.object({
+      taskId: taskIdSchema,
+      sessionId: z.uuid().optional(),
+      tz: timeZoneSchema,
+    }),
+  )
+  .action(({ parsedInput: { taskId, sessionId, tz }, ctx: { profileId } }) =>
+    keepSession(profileId, taskId, sessionId, tz),
+  );
+
+export const saveSkip = actionClient
+  .inputSchema(
+    z.object({ taskId: taskIdSchema, sessionId: z.uuid().optional() }),
+  )
+  .action(({ parsedInput: { taskId, sessionId }, ctx: { profileId } }) =>
+    recordSkip(profileId, taskId, sessionId),
+  );
+
+export const setFavorite = actionClient
+  .inputSchema(z.object({ taskId: taskIdSchema, favorite: z.boolean() }))
+  .action(({ parsedInput: { taskId, favorite }, ctx: { profileId } }) =>
+    setTaskFavorite(profileId, taskId, favorite),
+  );
+
+export const reportTask = actionClient
+  .inputSchema(
+    zfd.formData({
+      taskId: taskIdSchema,
+      kind: z.enum(reportKinds),
+      message: z.string().trim().max(1000),
+    }),
+  )
+  .action(({ parsedInput, ctx: { profileId } }) =>
+    saveReport(profileId, parsedInput),
+  );

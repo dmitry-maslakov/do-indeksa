@@ -3,9 +3,9 @@
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
 import { MathHtml } from "@/components/math-html";
+import type { PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { StatusIcon } from "@/features/progress/status-icon";
-import type { AnswerState } from "./answer-state";
 import { useMathField } from "./use-math-field";
 
 type Variant = "exam" | "solve";
@@ -17,7 +17,7 @@ interface AnswerFieldProps {
   label: string;
   part: PartLabel;
   variant: Variant;
-  state?: AnswerState;
+  state?: PartOutcome;
   defaultValue?: string;
   placeholder?: string;
   onChange: (index: number, value: string) => void;
@@ -32,7 +32,7 @@ const box = cva("flex items-center transition-colors", {
     },
     state: {
       empty: "",
-      correct: "border-success bg-success-tint",
+      right: "border-success bg-success-tint",
       wrong: "border-error bg-error-tint",
       unreadable: "border-overtime bg-overtime-tint",
     },
@@ -120,10 +120,10 @@ export function AnswerField({
         >
           {defaultValue}
         </math-field>
-        {(state === "correct" || state === "wrong") && (
+        {(state === "right" || state === "wrong") && (
           <span className="flex pr-4">
             <StatusIcon
-              status={state === "correct" ? "solved" : "wrong"}
+              status={state === "right" ? "solved" : "wrong"}
               className="size-5"
             />
           </span>

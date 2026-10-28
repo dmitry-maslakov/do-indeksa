@@ -1,13 +1,26 @@
 import "server-only";
+import { z } from "zod";
 import { reveals } from "@/db/schema";
-import { getTask } from "@/features/catalog/tasks";
+import { getTask, renderTask } from "@/features/catalog/tasks";
 import {
   liveSession,
   testTaskSession,
 } from "@/features/practice/session/sessions";
 import { db } from "@/server/db";
-import type { RevealOwner } from "./reveal-owner";
-import type { RevealPart } from "./reveal-part";
+
+export const revealPartSchema = z.union([
+  z.enum(["answer", "solution"]),
+  z.number().int().min(0).max(2),
+]);
+
+export type RevealPart = z.infer<typeof revealPartSchema>;
+
+export const revealOwner = z.union([
+  z.object({ testSessionId: z.uuid() }),
+  z.object({ sessionId: z.uuid().optional() }),
+]);
+
+type RevealOwner = z.infer<typeof revealOwner>;
 
 const hintParts = ["hint1", "hint2", "hint3"] as const;
 
@@ -36,4 +49,12 @@ export async function recordReveal(
       .values({ profileId, taskId, part: stored, sessionId });
     return sessionId;
   });
+}
+
+export async function renderReveal(taskId: string, part: RevealPart) {
+  const html = await renderTask(taskId);
+  if (!html) return null;
+  if (part === "answer") return html.answer;
+  if (part === "solution") return html.solution;
+  return html.hints[part] ?? null;
 }

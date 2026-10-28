@@ -5,12 +5,17 @@ import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue";
 import { QueueLink } from "./rail-row";
-import { centerCurrent } from "./scroll";
 
 interface RecListProps {
   queue: Queue;
   current: string;
   href: (id: string) => string;
+}
+
+function centerCurrent(list: HTMLElement) {
+  const row = list.querySelector<HTMLElement>("[aria-current=page]");
+  if (row)
+    list.scrollTop = row.offsetTop - (list.clientHeight - row.offsetHeight) / 2;
 }
 
 const sections = ["earlier", "today", "upcoming"] as const;

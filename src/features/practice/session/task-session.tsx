@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { keepTaskSession } from "@/features/practice/session-action";
+import { keepTaskSession } from "@/features/practice/actions";
 import { localTimeZone } from "@/lib/dates";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;

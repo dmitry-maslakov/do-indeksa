@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
-import { adoptGuest } from "./adopt-action";
+import { adoptGuest } from "./actions";
 
 export function GuestAdoption() {
   const t = useTranslations("UserMenu");
