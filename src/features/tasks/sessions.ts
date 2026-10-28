@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, gt, inArray, max, sql } from "drizzle-orm";
+import { and, desc, eq, gt, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { db } from "@/server/db";
 import { attemptGapMs, practiceKind } from "./session-kind";
@@ -105,17 +105,3 @@ export const keepSession = (
   sessionId: string | undefined,
   tz: string | undefined,
 ) => liveSession(db, profileId, taskId, sessionId, tz);
-
-export async function getLastSeen(profileId: string, taskIds: string[]) {
-  const rows = await db
-    .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
-    .from(taskSessions)
-    .where(
-      and(
-        eq(taskSessions.profileId, profileId),
-        inArray(taskSessions.taskId, taskIds),
-      ),
-    )
-    .groupBy(taskSessions.taskId);
-  return rows.flatMap((r) => (r.at ? [{ taskId: r.taskId, at: r.at }] : []));
-}
