@@ -10,7 +10,8 @@ import {
   useState,
 } from "react";
 import { keepTaskSession } from "@/features/practice/actions";
-import { localTimeZone, secondMs } from "@/lib/dates";
+import { secondMs } from "@/lib/dates";
+import { localTimeZone } from "@/lib/time-zone";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
 

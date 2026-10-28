@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { testDraft } from "@/db/columns";
-import { timeZoneSchema } from "@/lib/dates";
+import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
 import { finishTest, saveDraft } from "./sessions";
 
