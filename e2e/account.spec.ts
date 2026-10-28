@@ -87,7 +87,7 @@ test("signing out hides the account statistics", async ({ page, auth }) => {
   await expect(
     page.getByRole("banner").getByRole("button", { name: "Prijavi se" }),
   ).toBeVisible();
-  await nav.getByRole("link", { name: "Statistika" }).click();
+  await page.getByRole("link", { name: "Statistika →" }).click();
 
   await expect(page.getByText(/^0 od [\d.]+$/)).toBeVisible();
 });

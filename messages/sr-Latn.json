@@ -34,7 +34,7 @@
     "home": "Početna",
     "bank": "Zadaci",
     "variants": "Testovi",
-    "stats": "Statistika",
+    "theory": "Teorija",
     "label": "Glavna navigacija"
   },
   "LocaleSwitcher": {
@@ -53,6 +53,7 @@
     "signIn": "Prijavi se",
     "signOut": "Odjavi se",
     "account": "Nalog",
+    "stats": "Statistika",
     "privacy": "Privatnost",
     "merged": "Napredak sa ovog uređaja je spojen sa nalogom."
   },
@@ -249,6 +250,7 @@
     "weeklyMeta": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · {points, plural, one {# poen} few {# poena} other {# poena}} · još {days, plural, one {# dan} few {# dana} other {# dana}}",
     "startWeekly": "Počni varijantu →",
     "topicMap": "Mapa tema",
+    "stats": "Statistika →",
     "allTopics": "Sve · {count, number}",
     "state": {
       "mastered": "Savladano",

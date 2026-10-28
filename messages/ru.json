@@ -34,7 +34,7 @@
     "home": "Главная",
     "bank": "Задачи",
     "variants": "Варианты",
-    "stats": "Статистика",
+    "theory": "Теория",
     "label": "Основная навигация"
   },
   "LocaleSwitcher": {
@@ -53,6 +53,7 @@
     "signIn": "Войти",
     "signOut": "Выйти",
     "account": "Аккаунт",
+    "stats": "Статистика",
     "privacy": "Конфиденциальность",
     "merged": "Прогресс с этого устройства объединён с аккаунтом."
   },
@@ -249,6 +250,7 @@
     "weeklyMeta": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {hours, plural, one {# час} few {# часа} other {# часов}} · {points, plural, one {# балл} few {# балла} other {# баллов}} · ещё {days, plural, one {# день} few {# дня} other {# дней}}",
     "startWeekly": "Начать вариант →",
     "topicMap": "Карта тем",
+    "stats": "Статистика →",
     "allTopics": "Все · {count, number}",
     "state": {
       "mastered": "Освоено",
