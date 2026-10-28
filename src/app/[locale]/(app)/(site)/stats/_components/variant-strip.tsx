@@ -1,17 +1,6 @@
-import { cva } from "class-variance-authority";
+import { cn } from "cn";
+import { segmentTone } from "@/components/segment-tone";
 import type { Segment } from "@/lib/strip";
-
-const segment = cva("flex-1 rounded-[2px]", {
-  variants: {
-    state: {
-      none: "bg-untouched",
-      done: "bg-data",
-      error: "border-2 border-error bg-error-tint",
-      partial:
-        "bg-[linear-gradient(90deg,var(--data)_50%,var(--untouched)_50%)]",
-    },
-  },
-});
 
 interface VariantStripProps {
   segments: Segment[];
@@ -24,7 +13,10 @@ export function VariantStrip({ segments, label }: VariantStripProps) {
       {segments
         .map((state, i) => ({ state, position: i + 1 }))
         .map(({ state, position }) => (
-          <span key={position} className={segment({ state })} />
+          <span
+            key={position}
+            className={cn("flex-1 rounded-[2px]", segmentTone[state].strip)}
+          />
         ))}
     </div>
   );

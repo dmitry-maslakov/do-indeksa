@@ -2,11 +2,11 @@ import { cn } from "cn";
 import { ArrowRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { toMinutes } from "@/lib/dates";
-import type { Segment } from "@/lib/strip";
 import { ShareButton } from "./share-button";
 
 interface ReviewSummaryProps {
@@ -19,13 +19,6 @@ interface ReviewSummaryProps {
 }
 
 const action = "h-12 rounded-xl px-6 text-base max-md:w-full";
-
-const tones: Record<Segment, string> = {
-  done: "bg-success",
-  partial: "bg-overtime",
-  error: "bg-error",
-  none: "bg-untouched",
-};
 
 export function ReviewSummary({
   review,
@@ -137,7 +130,10 @@ export function ReviewSummary({
                 className="flex flex-1 flex-col items-center gap-1.5"
               >
                 <span
-                  className={cn("h-2.5 w-full rounded-full", tones[r.segment])}
+                  className={cn(
+                    "h-2.5 w-full rounded-full",
+                    segmentTone[r.segment].bar,
+                  )}
                 />
                 <span className="text-subtle text-xs tabular-nums">
                   {r.number}

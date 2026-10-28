@@ -148,9 +148,9 @@
     "go": "Start →",
     "cellsLabel": "{ok, number} of {total, number} correct",
     "result": {
-      "ok": "correct",
-      "part": "partial",
-      "no": "wrong"
+      "done": "correct",
+      "partial": "partial",
+      "error": "wrong"
     },
     "weeklyReview": "Review →",
     "weeklyNext": "New variant in {days, plural, one {# day} other {# days}}",

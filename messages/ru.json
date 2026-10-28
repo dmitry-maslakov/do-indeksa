@@ -148,9 +148,9 @@
     "go": "Начать →",
     "cellsLabel": "{ok, number} из {total, number} верно",
     "result": {
-      "ok": "верно",
-      "part": "частично",
-      "no": "неверно"
+      "done": "верно",
+      "partial": "частично",
+      "error": "неверно"
     },
     "weeklyReview": "Разбор →",
     "weeklyNext": "Новый вариант через {days, plural, one {# день} few {# дня} other {# дней}}",

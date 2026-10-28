@@ -37,9 +37,9 @@ export function LostPoints({
               </span>
               <span className="text-subtle text-xs">
                 {row.segment === "partial"
-                  ? variants("result.part")
+                  ? variants("result.partial")
                   : row.attempt
-                    ? variants("result.no")
+                    ? variants("result.error")
                     : t("skipped")}
               </span>
             </span>

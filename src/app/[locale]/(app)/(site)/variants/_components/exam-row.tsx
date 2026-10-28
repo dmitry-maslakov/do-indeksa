@@ -1,12 +1,12 @@
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
+import { segmentTone } from "@/components/segment-tone";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import { reviewHref } from "@/features/tests/review";
 import type { TestSummary } from "@/features/tests/summaries";
 import { Link } from "@/i18n/navigation";
 import { belgradeDate } from "@/lib/dates";
-import { resultOf, resultTone } from "./results";
 
 export const tableGrid =
   "md:grid-cols-[--spacing(37)_minmax(0,1fr)_--spacing(18)_--spacing(24)] md:gap-5 md:px-6";
@@ -98,7 +98,7 @@ export function ExamRow({
                 key={position}
                 className={cn(
                   "flex h-7 items-center justify-center rounded-md font-bold md:h-9 [&_svg]:size-3",
-                  resultTone[resultOf(segments[position - 1] ?? "none")],
+                  segmentTone[segments[position - 1] ?? "none"].chip,
                 )}
               >
                 <TopicGlyph icon={look.icon} size="sm" />

@@ -1,11 +1,11 @@
 import { useLocale } from "next-intl";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { getTopicPlan } from "@/features/progress/progress";
+import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import { weeklyVariant } from "@/features/variants/weekly";
 import { ExamYears } from "./exam-years";
 import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
-import { WeeklyCard } from "./weekly-card";
 
 type HomeProps = Awaited<ReturnType<typeof getTopicPlan>>;
 
