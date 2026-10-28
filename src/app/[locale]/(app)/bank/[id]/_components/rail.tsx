@@ -6,7 +6,7 @@ import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
-import { RecList } from "./rec-list";
+import { QueueList } from "./queue-list";
 
 export interface RailProps {
   current: string;
@@ -51,7 +51,7 @@ export function Rail({
           ))}
         </RailSelect>
       </div>
-      <RecList key={current} queue={queue} current={current} href={href} />
+      <QueueList key={current} queue={queue} current={current} href={href} />
     </RailContent>
   );
 }
