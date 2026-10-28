@@ -211,6 +211,9 @@ importers:
       mathlive:
         specifier: ^0.111.0
         version: 0.111.0
+      mdast-util-to-string:
+        specifier: ^4.0.0
+        version: 4.0.0
       next:
         specifier: 16.3.8
         version: 16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(@types/node@24.19.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -238,6 +241,24 @@ importers:
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.3.0)(react@19.2.8)(supports-color@7.2.0)
+      rehype-katex:
+        specifier: ^7.0.1
+        version: 7.0.1
+      rehype-stringify:
+        specifier: ^10.0.1
+        version: 10.0.1
+      remark-directive:
+        specifier: ^4.0.0
+        version: 4.0.0(supports-color@7.2.0)
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0(supports-color@7.2.0)
+      remark-rehype:
+        specifier: ^11.1.2
+        version: 11.1.2
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -250,6 +271,12 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.2.0
+        version: 5.2.0
       zod:
         specifier: ^4.6.5
         version: 4.6.5
@@ -311,30 +338,9 @@ importers:
       knip:
         specifier: ^6.39.0
         version: 6.39.0
-      mdast-util-to-string:
-        specifier: ^4.0.0
-        version: 4.0.0
       node:
         specifier: runtime:^24
         version: runtime:24.22.1
-      rehype-katex:
-        specifier: ^7.0.1
-        version: 7.0.1
-      rehype-stringify:
-        specifier: ^10.0.1
-        version: 10.0.1
-      remark-directive:
-        specifier: ^4.0.0
-        version: 4.0.0(supports-color@7.2.0)
-      remark-math:
-        specifier: ^6.0.0
-        version: 6.0.0(supports-color@7.2.0)
-      remark-parse:
-        specifier: ^11.0.0
-        version: 11.0.0(supports-color@7.2.0)
-      remark-rehype:
-        specifier: ^11.1.2
-        version: 11.1.2
       shadcn:
         specifier: ^4.21.3
         version: 4.21.3(supports-color@7.2.0)
@@ -344,12 +350,6 @@ importers:
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
-      unist-util-visit:
-        specifier: ^5.2.0
-        version: 5.2.0
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@opentelemetry/api@1.9.1)(@types/node@24.19.1)(vite@8.3.3(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
