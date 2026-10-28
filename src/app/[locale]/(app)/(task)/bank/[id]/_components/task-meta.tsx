@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { ExamMark } from "@/components/exam-mark";
 import type { ExamSource } from "@/features/bank/source";
 import type { Level } from "@/features/catalog/level";
 import type { Touched } from "@/features/progress/status";
@@ -15,15 +16,6 @@ function Dot() {
   return <span className="size-1 shrink-0 rounded-full bg-input" />;
 }
 
-export function ExamMark({ year }: { year: number }) {
-  const t = useTranslations("Solve");
-  return (
-    <span className="inline-flex items-center gap-1 text-muted-foreground before:size-2 before:rounded-xs before:bg-exam">
-      {t("exam", { year: String(year) })}
-    </span>
-  );
-}
-
 export function TaskMeta({ topic, exam, level, before }: TaskMetaProps) {
   const t = useTranslations("Solve");
   const bank = useTranslations("Bank");
@@ -38,7 +30,7 @@ export function TaskMeta({ topic, exam, level, before }: TaskMetaProps) {
         {exam ? (
           <>
             <span className="md:hidden">
-              <ExamMark year={exam.year} />
+              <ExamMark>{t("exam", { year: String(exam.year) })}</ExamMark>
             </span>
             <span className="hidden md:inline">
               {bank("exam", {

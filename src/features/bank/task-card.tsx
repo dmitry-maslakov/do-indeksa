@@ -1,5 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { ExamMark } from "@/components/exam-mark";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 import { Link } from "@/i18n/navigation";
@@ -26,9 +27,9 @@ function Source({ exam }: Pick<BankCard, "exam">) {
   const t = useTranslations("Bank");
   if (!exam) return <span>{t("sources", { source: "ours" })}</span>;
   return (
-    <span className="inline-flex items-center gap-1 text-muted-foreground before:size-2 before:rounded-xs before:bg-exam">
+    <ExamMark>
       {t("exam", { year: String(exam.year), position: exam.position })}
-    </span>
+    </ExamMark>
   );
 }
 
