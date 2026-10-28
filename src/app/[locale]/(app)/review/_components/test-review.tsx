@@ -1,4 +1,5 @@
 import { getLocale } from "next-intl/server";
+import { SignInStrip } from "@/features/account/sign-in-strip";
 import { comparisonsOf } from "@/features/tests/comparisons";
 import type { getTest } from "@/features/tests/finished-tests";
 import { review } from "@/features/tests/review";
@@ -11,8 +12,10 @@ import { TimeSpent } from "./time-spent";
 
 export async function TestReview({
   found,
+  guest,
 }: {
   found: NonNullable<Awaited<ReturnType<typeof getTest>>>;
+  guest: boolean;
 }) {
   const locale = await getLocale();
   const tasks = await tasksFor(found.test.taskIds, locale);
@@ -29,7 +32,9 @@ export async function TestReview({
         }
         original={variant?.original}
         finishedAt={found.test.finishedAt}
-      />
+      >
+        {guest && <SignInStrip from="result" />}
+      </ReviewSummary>
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
         <ReviewRows
           review={result}

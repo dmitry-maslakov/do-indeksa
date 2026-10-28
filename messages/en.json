@@ -57,6 +57,12 @@
     "privacy": "Privacy",
     "merged": "Progress from this device was merged into your account."
   },
+  "SignInStrip": {
+    "label": "Save your progress",
+    "save": "Save",
+    "close": "Close",
+    "result": "This test result is only on this device"
+  },
   "Bank": {
     "title": "Task bank",
     "search": "Search",
