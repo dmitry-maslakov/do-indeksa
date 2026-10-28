@@ -61,6 +61,14 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
   const top =
     Math.max(...bars.map((b) => Math.max(b.meanMs ?? 0, b.normMs))) * 1.15 || 1;
   const over = bars.filter((b) => (b.meanMs ?? 0) > b.normMs);
+  const summary =
+    over.length > 0
+      ? t("overNorm", {
+          count: over.length,
+          minutes: norm,
+          numbers: over.map((b) => b.number).join(", "),
+        })
+      : t("inNorm", { minutes: norm });
 
   return (
     <>
@@ -75,7 +83,11 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
           ))}
         </div>
       ) : (
-        <div className={cn(columns, "relative h-28 items-end")}>
+        <div
+          role="img"
+          aria-label={summary}
+          className={cn(columns, "relative h-28 items-end")}
+        >
           <span
             className="absolute inset-x-0 h-px bg-foreground/35"
             style={{ bottom: `${((norm * minuteMs) / top) * 100}%` }}
@@ -103,7 +115,10 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
           ))}
         </div>
       )}
-      <div className={cn(columns, "text-center text-subtle text-xs")}>
+      <div
+        aria-hidden="true"
+        className={cn(columns, "text-center text-subtle text-xs")}
+      >
         {bars.map((bar) => (
           <span
             key={bar.number}
@@ -119,15 +134,7 @@ function TimeColumns({ bars, norm, pending }: TimeColumnsProps) {
       {pending ? (
         <Skeleton className="my-1 h-3 w-56" />
       ) : (
-        <p className="text-[13px] text-subtle">
-          {over.length > 0
-            ? t("overNorm", {
-                count: over.length,
-                minutes: norm,
-                numbers: over.map((b) => b.number).join(", "),
-              })
-            : t("inNorm", { minutes: norm })}
-        </p>
+        <p className="text-[13px] text-subtle">{summary}</p>
       )}
     </>
   );
