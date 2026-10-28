@@ -1,12 +1,17 @@
 import { orderBy, sumBy } from "es-toolkit";
-import type { PartLabel } from "@/features/tasks/parts";
+import type { PartLabel } from "@/features/catalog/parts";
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import type { Locale } from "next-intl";
+import {
+  dailySize,
+  numberOf,
+  positionOf,
+  positions,
+} from "@/features/catalog/exams";
+import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
+import { topicName } from "@/features/catalog/topics";
 import type { ReviewTask } from "@/features/review/review";
-import { getTask, idsByTopic, renderTask } from "@/features/tasks/tasks";
-import { topicName } from "@/features/tasks/topics";
-import { dailySize, numberOf, positionOf, positions } from "./exam";
 import { pick } from "./pick";
 import { parseVariantId } from "./variant-id";
 

@@ -1,5 +1,5 @@
 import { isRight } from "@/db/columns";
-import { gradeParts } from "@/lib/math";
+import { gradeParts } from "@/features/catalog/checker";
 import { isAnswered } from "./test-state";
 
 interface GradedTask {

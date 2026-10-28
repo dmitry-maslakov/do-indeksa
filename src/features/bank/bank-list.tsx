@@ -1,6 +1,6 @@
 import { getLocale } from "next-intl/server";
+import type { TaskSummary } from "@/features/catalog/tasks";
 import type { Progress } from "@/features/progress/status";
-import type { TaskSummary } from "@/features/tasks/tasks";
 import { BankFeed } from "./bank-feed";
 import { feedPage } from "./feed";
 

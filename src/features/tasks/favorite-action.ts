@@ -1,9 +1,9 @@
 "use server";
 
 import { z } from "zod";
+import { taskIdSchema } from "@/features/catalog/tasks";
 import { actionClient } from "@/server/action-client";
 import { setTaskFavorite } from "./favorites";
-import { taskIdSchema } from "./tasks";
 
 const schema = z.object({ taskId: taskIdSchema, favorite: z.boolean() });
 

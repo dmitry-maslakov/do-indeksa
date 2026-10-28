@@ -1,5 +1,5 @@
 import { UserMenu } from "@/features/account/user-menu";
-import { currentExam, examOptions } from "@/features/exam/exam";
+import { currentExam, examOptions } from "@/features/catalog/exams";
 import { ExamSwitcher } from "@/features/exam/exam-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";

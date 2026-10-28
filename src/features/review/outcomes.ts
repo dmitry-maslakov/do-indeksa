@@ -1,6 +1,6 @@
 import "server-only";
 import katex from "katex";
-import { getTask } from "@/features/tasks/tasks";
+import { getTask } from "@/features/catalog/tasks";
 import type { Outcomes } from "./review";
 
 const latexToHtml = (latex: string) =>

@@ -1,8 +1,8 @@
 import { orderBy } from "es-toolkit";
 import { useTranslations } from "next-intl";
+import { TopicIcon } from "@/features/catalog/topic-icon";
+import { topicLook } from "@/features/catalog/topics";
 import type { Review } from "@/features/review/review";
-import { TopicIcon } from "@/features/tasks/topic-icon";
-import { topicLook } from "@/features/tasks/topics";
 
 export function LostPoints({
   review,

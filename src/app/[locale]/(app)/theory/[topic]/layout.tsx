@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { RailPanel } from "@/components/rail";
-import { toneStyle } from "@/features/tasks/topic-look";
-import { topicLook, topicName } from "@/features/tasks/topics";
+import { toneStyle } from "@/features/catalog/topic-look";
+import { topicLook, topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theories } from "@/features/theory/theory";
 import { InlineMarkdown } from "@/features/theory/theory-markdown";
 import { TheoryRail } from "./_components/theory-rail";

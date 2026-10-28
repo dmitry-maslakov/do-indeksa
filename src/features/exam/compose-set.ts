@@ -1,9 +1,9 @@
 import "server-only";
 import { z } from "zod";
-import { getTask, idsByTopic } from "@/features/tasks/tasks";
-import { topics } from "@/features/tasks/topics";
+import { positions } from "@/features/catalog/exams";
+import { getTask, idsByTopic } from "@/features/catalog/tasks";
+import { topics } from "@/features/catalog/topics";
 import { compose, composeModes, swap } from "./compose";
-import { positions } from "./exam";
 import { setId } from "./variant-id";
 import { byNumber, byPosition } from "./variants";
 

@@ -1,7 +1,7 @@
 import { useLocale } from "next-intl";
+import { topicLook, topicName } from "@/features/catalog/topics";
 import { weeklyVariant } from "@/features/exam/weekly";
 import type { getTopicPlan } from "@/features/progress/progress";
-import { topicLook, topicName } from "@/features/tasks/topics";
 import { ExamYears } from "./exam-years";
 import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";

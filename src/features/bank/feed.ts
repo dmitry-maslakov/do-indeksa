@@ -1,10 +1,10 @@
 import "server-only";
 import type { Locale } from "next-intl";
+import type { Level } from "@/features/catalog/level";
+import { getTask, type TaskSummary } from "@/features/catalog/tasks";
+import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
+import { topicLook, topicName } from "@/features/catalog/topics";
 import type { Progress, TaskStatus } from "@/features/progress/status";
-import type { Level } from "@/features/tasks/level";
-import { getTask, type TaskSummary } from "@/features/tasks/tasks";
-import type { Tone, TopicIconData } from "@/features/tasks/topic-look";
-import { topicLook, topicName } from "@/features/tasks/topics";
 import { bankPage } from "./search";
 import { type ExamSource, examSource } from "./source";
 

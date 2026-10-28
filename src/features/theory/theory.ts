@@ -1,7 +1,7 @@
 import { sortBy } from "es-toolkit";
 import "server-only";
 import { allMethods, allTheories } from "content-collections";
-import { numberOf } from "@/features/exam/exam";
+import { numberOf } from "@/features/catalog/exams";
 
 export const theories = sortBy(allTheories, [
   (t) => numberOf(t.topic) ?? Number.POSITIVE_INFINITY,

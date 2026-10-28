@@ -1,9 +1,9 @@
 import "server-only";
 import type { Locale } from "next-intl";
+import type { TopicLook } from "@/features/catalog/topic-look";
+import { topicLook } from "@/features/catalog/topics";
 import { getTestAttempts } from "@/features/progress/history";
 import { review } from "@/features/review/review";
-import type { TopicLook } from "@/features/tasks/topic-look";
-import { topicLook } from "@/features/tasks/topics";
 import type { Segment } from "@/lib/strip";
 import { variantTitle } from "./variant-title";
 import { type ExamVariant, getVariant, reviewTasks } from "./variants";

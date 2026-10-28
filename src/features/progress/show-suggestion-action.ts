@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { suggestionReasons } from "@/db/columns";
-import { idsByTopic } from "@/features/tasks/tasks";
+import { idsByTopic } from "@/features/catalog/tasks";
 import { knownProfileClient } from "@/server/action-client";
 import { recordSuggestion } from "./suggestions";
 

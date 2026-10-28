@@ -1,10 +1,10 @@
 "use server";
 
 import { z } from "zod";
+import { taskIdSchema } from "@/features/catalog/tasks";
 import { actionClient } from "@/server/action-client";
 import { revealOwner } from "./reveal-owner";
 import { recordReveal } from "./reveals";
-import { taskIdSchema } from "./tasks";
 
 const schema = z.object({
   taskId: taskIdSchema,

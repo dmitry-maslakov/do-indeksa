@@ -4,12 +4,12 @@ import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { uniqBy } from "es-toolkit";
 import { z } from "zod";
-import { splitLabel } from "./src/features/tasks/parts";
-import { tones, topicIconSchema } from "./src/features/tasks/topic-look";
+import { parseMath } from "./src/features/catalog/checker";
+import { splitLabel } from "./src/features/catalog/parts";
+import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
 import { excerpt, headline, preview, renderMarkdown } from "./src/lib/markdown";
-import { parseMath } from "./src/lib/math";
 
 const keyRevOf = (expected: string[]) =>
   createHash("sha256")

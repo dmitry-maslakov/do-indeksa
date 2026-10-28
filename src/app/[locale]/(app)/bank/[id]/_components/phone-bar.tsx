@@ -4,8 +4,8 @@ import { ChevronDownIcon, ChevronLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { TopicIcon } from "@/features/tasks/topic-icon";
-import type { Tone, TopicIconData } from "@/features/tasks/topic-look";
+import { TopicIcon } from "@/features/catalog/topic-icon";
+import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { Link } from "@/i18n/navigation";
 import { Rail, type RailProps } from "./rail";
 

@@ -6,7 +6,8 @@ import { Await } from "@/components/await";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { positions } from "@/features/exam/exam";
+import { positions } from "@/features/catalog/exams";
+import { topicLook, topicName } from "@/features/catalog/topics";
 import { testPage } from "@/features/exam/test-feed";
 import {
   summarizeTests,
@@ -16,7 +17,6 @@ import { curatedVariants, officialVariants } from "@/features/exam/variants";
 import { weeklyVariant } from "@/features/exam/weekly";
 import { getLatestTests, getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
-import { topicLook, topicName } from "@/features/tasks/topics";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
 import { ComposeCard } from "./_components/compose-card";

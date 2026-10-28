@@ -1,7 +1,7 @@
 import "server-only";
 import { escape as escapeHtml } from "es-toolkit";
 import katex from "katex";
-import { getTask } from "@/features/tasks/tasks";
+import { getTask } from "@/features/catalog/tasks";
 import { examSource } from "./source";
 
 const toHtml = (part: string, index: number) =>

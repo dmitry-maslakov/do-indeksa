@@ -1,9 +1,9 @@
 "use server";
 
 import { z } from "zod";
+import { taskIdSchema } from "@/features/catalog/tasks";
 import { actionClient } from "@/server/action-client";
 import { recordSkip } from "./skips";
-import { taskIdSchema } from "./tasks";
 
 export const saveSkip = actionClient
   .inputSchema(

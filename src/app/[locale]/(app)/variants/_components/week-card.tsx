@@ -1,12 +1,12 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { TopicGlyph } from "@/features/catalog/topic-icon";
+import type { TopicLook } from "@/features/catalog/topic-look";
+import { topicLook } from "@/features/catalog/topics";
 import type { TestSummary } from "@/features/exam/test-summaries";
 import type { WeeklyVariant } from "@/features/exam/weekly";
 import { WeeklyWave } from "@/features/exam/weekly-wave";
 import { reviewHref } from "@/features/review/review";
-import { TopicGlyph } from "@/features/tasks/topic-icon";
-import type { TopicLook } from "@/features/tasks/topic-look";
-import { topicLook } from "@/features/tasks/topics";
 import { Link } from "@/i18n/navigation";
 import { type Result, resultOf, resultTone } from "./results";
 

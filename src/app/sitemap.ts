@@ -1,9 +1,9 @@
 import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
+import { tasks } from "@/features/catalog/tasks";
 import { contentVariants } from "@/features/exam/variants";
 import { launchPages } from "@/features/launch/launch";
-import { tasks } from "@/features/tasks/tasks";
 import { theories, theoryMethods } from "@/features/theory/theory";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";

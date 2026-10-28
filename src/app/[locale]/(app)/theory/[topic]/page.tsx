@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { topicName } from "@/features/tasks/topics";
+import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theories } from "@/features/theory/theory";
 import { TheoryMarkdown } from "@/features/theory/theory-markdown";
 import { alternates } from "@/i18n/alternates";

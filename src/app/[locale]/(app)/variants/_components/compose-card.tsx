@@ -4,8 +4,8 @@ import { isEqual } from "es-toolkit";
 import { useTranslations } from "next-intl";
 import { Suspense, use, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TopicGlyph } from "@/features/tasks/topic-icon";
-import type { TopicLook } from "@/features/tasks/topic-look";
+import { TopicGlyph } from "@/features/catalog/topic-icon";
+import type { TopicLook } from "@/features/catalog/topic-look";
 import { useRouter } from "@/i18n/navigation";
 
 const counts = [5, 10];

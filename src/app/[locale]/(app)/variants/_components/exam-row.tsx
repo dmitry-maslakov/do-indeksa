@@ -1,9 +1,9 @@
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TestSummary } from "@/features/exam/test-summaries";
 import { reviewHref } from "@/features/review/review";
-import { TopicGlyph } from "@/features/tasks/topic-icon";
 import { Link } from "@/i18n/navigation";
 import { resultOf, resultTone } from "./results";
 

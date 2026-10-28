@@ -2,9 +2,9 @@
 
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { taskIdSchema } from "@/features/catalog/tasks";
 import { actionClient } from "@/server/action-client";
 import { submitAnswer } from "./answers";
-import { taskIdSchema } from "./tasks";
 
 const schema = zfd.formData({
   taskId: zfd.text(taskIdSchema),
