@@ -23,6 +23,7 @@ jobs:
   bank:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       build: ${{ steps.tag.outputs.build }}
@@ -51,6 +52,7 @@ jobs:
     needs: bank
     if: ${{ !cancelled() && needs.bank.outputs.build != 'false' }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -79,6 +81,7 @@ jobs:
     needs: bank
     if: ${{ !cancelled() && needs.bank.outputs.build != 'false' }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     env:
@@ -156,6 +159,12 @@ jobs:
       - run: pnpm e2e
       - if: failure()
         run: docker logs web
+      - if: failure() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright
+          path: test-results
+          retention-days: 7
       - if: env.TRUSTED == 'true'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -189,6 +198,7 @@ jobs:
     needs: bank
     if: ${{ !cancelled() && needs.bank.outputs.build != 'false' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     steps:
@@ -218,6 +228,7 @@ jobs:
     needs: [bank, check, e2e, migrate]
     if: ${{ !cancelled() && needs.check.result == 'success' }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     permissions:
       contents: read
       deployments: write
