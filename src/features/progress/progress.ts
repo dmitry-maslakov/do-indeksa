@@ -84,6 +84,11 @@ export async function getTouched(profileId: string, taskIds: string[]) {
   return touched;
 }
 
+export async function countSolved(profileId: string, except: string) {
+  const rows = await getLatestAttempts(profileId);
+  return rows.filter((row) => row.correct && row.taskId !== except).length;
+}
+
 const topicTotals = positions.map((p) => ({
   topic: p.topic,
   total: idsByTopic.get(p.topic)?.length ?? 0,

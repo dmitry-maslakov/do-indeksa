@@ -3,10 +3,13 @@
 import { cn } from "cn";
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GoogleLogo } from "./google-logo";
 import { GoogleSignInButton } from "./sign-in-button";
+
+const nudgeAfterSolved = 5;
+const taskStripShown = "sign-in-strip-task";
 
 function Screen({ className, sync }: { className: string; sync?: boolean }) {
   return (
@@ -38,7 +41,12 @@ function DevicesIcon() {
   );
 }
 
-export function SignInStrip({ from }: { from: "result" | "stats" }) {
+interface SignInStripProps {
+  from: "result" | "stats" | "task";
+  children: ReactNode;
+}
+
+export function SignInStrip({ from, children }: SignInStripProps) {
   const t = useTranslations("SignInStrip");
   const [open, setOpen] = useState(true);
   if (!open) return null;
@@ -50,7 +58,7 @@ export function SignInStrip({ from }: { from: "result" | "stats" }) {
     >
       <DevicesIcon />
       <p className="flex-[1_1_10rem] font-medium text-[15px] leading-[1.4] md:flex-[0_1_auto]">
-        {t(from)}
+        {children}
       </p>
       <span className="flex items-center gap-1">
         <GoogleSignInButton
@@ -71,5 +79,20 @@ export function SignInStrip({ from }: { from: "result" | "stats" }) {
         </Button>
       </span>
     </section>
+  );
+}
+
+export function TaskSignInStrip({ solved }: { solved: number }) {
+  const t = useTranslations("SignInStrip");
+  const [show] = useState(
+    () => solved >= nudgeAfterSolved && !sessionStorage.getItem(taskStripShown),
+  );
+  useEffect(() => {
+    if (show) sessionStorage.setItem(taskStripShown, "1");
+  }, [show]);
+  return (
+    show && (
+      <SignInStrip from="task">{t("task", { count: solved })}</SignInStrip>
+    )
   );
 }

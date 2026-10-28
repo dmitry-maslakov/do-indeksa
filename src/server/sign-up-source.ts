@@ -1,7 +1,7 @@
 import "server-only";
 import { getOAuthState } from "better-auth/api";
 
-const signInSources = ["header", "result", "stats"] as const;
+const signInSources = ["header", "result", "stats", "task"] as const;
 
 export type SignInSource = (typeof signInSources)[number];
 

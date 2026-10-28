@@ -1,5 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
 import { minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
@@ -46,11 +46,12 @@ export async function StatsView({
   const byNumber = (await searchParams).by === "number";
   const stats = await loadStats();
   const guest = !(await getSession());
+  const strip = await getTranslations("SignInStrip");
 
   return (
     <div className="flex flex-col gap-6">
       {guest && (stats.byTask.length > 0 || stats.testCount > 0) && (
-        <SignInStrip from="stats" />
+        <SignInStrip from="stats">{strip("stats")}</SignInStrip>
       )}
       <StatsCards byNumber={byNumber} stats={stats} />
     </div>

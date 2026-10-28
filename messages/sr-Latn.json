@@ -62,7 +62,8 @@
     "save": "Sačuvaj",
     "close": "Zatvori",
     "result": "Rezultat testa je samo na ovom uređaju",
-    "stats": "Statistika je samo na ovom uređaju"
+    "stats": "Statistika je samo na ovom uređaju",
+    "task": "{count, plural, one {# rešen zadatak je} few {# rešena zadatka su} other {# rešenih zadataka je}} samo na ovom uređaju"
   },
   "Bank": {
     "title": "Banka zadataka",

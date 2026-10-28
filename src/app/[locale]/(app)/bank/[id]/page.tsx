@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { FocusMode } from "@/components/focus-mode";
 import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
+import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue } from "@/features/bank/queue/queue";
 import { examSource } from "@/features/bank/source";
@@ -23,7 +24,9 @@ import { FavoriteToggle } from "@/features/practice/favorite-toggle";
 import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
+import { countSolved } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
+import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
 import { PhoneBar } from "./_components/phone-bar";
 import { Rail } from "./_components/rail";
@@ -63,6 +66,9 @@ export default async function SolvePage({
     getTranslations("Bank"),
   ]);
   if (!html) notFound();
+  const solved = (await getSession())
+    ? undefined
+    : (await countSolved(profileId, id)) + 1;
 
   const queue = await loadQueue({
     topic: task.topic,
@@ -114,6 +120,7 @@ export default async function SolvePage({
               unchecked={html.unchecked}
               next={queue.next && `/bank/${queue.next}`}
               fallback="/bank"
+              afterCorrect={solved && <TaskSignInStrip solved={solved} />}
             />
             <HelpPanel taskId={id} hintCount={html.hints.length} />
             <div className="mt-6">
