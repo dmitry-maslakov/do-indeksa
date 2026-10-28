@@ -1,7 +1,7 @@
-import { sumBy } from "es-toolkit";
-import { truncate } from "es-toolkit/compat";
 import "server-only";
 import { allTasks, type Task } from "content-collections";
+import { sumBy } from "es-toolkit";
+import { truncate } from "es-toolkit/compat";
 import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
 import { z } from "zod";

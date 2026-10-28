@@ -1,7 +1,7 @@
 import "server-only";
 import { skips } from "@/db/schema";
 import { db } from "@/server/db";
-import { liveSession } from "./sessions";
+import { liveSession } from "./task-sessions";
 
 export const recordSkip = (
   profileId: string,

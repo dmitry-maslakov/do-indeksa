@@ -3,7 +3,7 @@ import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
 import { checkerVersion, gradeParts } from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
-import { liveSession } from "@/features/practice/session/sessions";
+import { liveSession } from "@/features/practice/session/task-sessions";
 import { db } from "@/server/db";
 
 interface Answer {

@@ -3,17 +3,16 @@
 import { useTranslations } from "next-intl";
 import { EmptyNote } from "@/components/empty-note";
 import { LoadMore } from "@/components/load-more";
-import type { TestPage } from "@/features/tests/feed";
 import type { TestSummary } from "@/features/tests/summaries";
-import { useFeed } from "@/lib/use-feed";
+import { type Page, useFeed } from "@/lib/use-feed";
 import { ExamRow } from "./exam-row";
 import { TestsTable } from "./tests-table";
 
-export function TestHistory({ first }: { first: TestPage }) {
+export function TestHistory({ first }: { first: Page<TestSummary> }) {
   const t = useTranslations("Variants");
   const home = useTranslations("Home");
 
-  if (first.tests.length === 0) {
+  if (first.items.length === 0) {
     return (
       <EmptyNote
         text={t("historyEmpty")}
@@ -39,7 +38,7 @@ function HistoryRow({ test }: { test: TestSummary }) {
   );
 }
 
-function TestFeed({ first }: { first: TestPage }) {
+function TestFeed({ first }: { first: Page<TestSummary> }) {
   const t = useTranslations("Bank");
   const feed = useFeed("/api/tests", first);
 
@@ -47,7 +46,7 @@ function TestFeed({ first }: { first: TestPage }) {
     <>
       <TestsTable first="attempt">
         {feed.data.pages
-          .flatMap((page) => page.tests)
+          .flatMap((page) => page.items)
           .map((test) => (
             <HistoryRow key={test.id} test={test} />
           ))}

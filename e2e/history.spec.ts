@@ -57,19 +57,22 @@ test("a finished variant shows its result in the catalog", async ({
   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
 });
 
-test("the run feed returns only the caller's runs", async ({ page, auth }) => {
+test("the test feed returns only the caller's tests", async ({
+  page,
+  auth,
+}) => {
   await seedTests(auth.db, (await auth.signIn()).profileId, 3);
-  expect((await feed(page)).tests).toHaveLength(3);
+  expect((await feed(page)).items).toHaveLength(3);
 
   await auth.signIn();
-  expect(await feed(page)).toEqual({ tests: [], next: null });
+  expect(await feed(page)).toEqual({ items: [], next: null });
 });
 
-test("the run feed is empty without a profile and rejects malformed pages", async ({
+test("the test feed is empty without a profile and rejects malformed pages", async ({
   request,
 }) => {
   const guest = await request.get("/api/tests?offset=0&locale=sr-Latn");
-  expect(await guest.json()).toEqual({ tests: [], next: null });
+  expect(await guest.json()).toEqual({ items: [], next: null });
   const malformed = await request.get("/api/tests?offset=-1&locale=xx");
   expect(malformed.status()).toBe(400);
 });

@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { testPage } from "@/features/tests/feed";
+import { testPage } from "@/features/tests/summaries";
 import { pageQuery } from "@/lib/page-query";
 import { getProfileId } from "@/server/profile";
 

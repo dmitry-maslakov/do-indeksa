@@ -8,11 +8,14 @@ import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { positions } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import { getTaskStats } from "@/features/progress/history";
 import { weakTopics } from "@/features/progress/progress";
-import { testPage } from "@/features/tests/feed";
-import { getLatestTests } from "@/features/tests/history";
-import { summarizeTests, type TestSummary } from "@/features/tests/summaries";
+import { getTaskStats } from "@/features/progress/task-stats";
+import { getLatestTests } from "@/features/tests/finished-tests";
+import {
+  summarizeTests,
+  type TestSummary,
+  testPage,
+} from "@/features/tests/summaries";
 import {
   curatedVariants,
   officialVariants,

@@ -2,11 +2,11 @@ import { cn } from "cn";
 import { ArrowRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { ShareButton } from "@/features/tests/results/share-button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { toMinutes } from "@/lib/dates";
 import type { Segment } from "@/lib/strip";
+import { ShareButton } from "./share-button";
 
 interface ReviewSummaryProps {
   review: Review;

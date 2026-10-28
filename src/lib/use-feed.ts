@@ -1,15 +1,16 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocale } from "next-intl";
 
-export function useFeed<Page extends { next: number | null }>(
-  path: string,
-  first: Page,
-  search = "",
-) {
+export interface Page<T> {
+  items: T[];
+  next: number | null;
+}
+
+export function useFeed<T>(path: string, first: Page<T>, search = "") {
   const locale = useLocale();
   return useInfiniteQuery({
     queryKey: [path, locale, search],
-    queryFn: async ({ pageParam, signal }): Promise<Page> => {
+    queryFn: async ({ pageParam, signal }): Promise<Page<T>> => {
       const params = new URLSearchParams(search);
       params.set("offset", String(pageParam));
       params.set("locale", locale);

@@ -5,7 +5,7 @@ import { getTask, renderTask } from "@/features/catalog/tasks";
 import {
   liveSession,
   testTaskSession,
-} from "@/features/practice/session/sessions";
+} from "@/features/practice/session/task-sessions";
 import { db } from "@/server/db";
 
 export const revealPartSchema = z.union([
