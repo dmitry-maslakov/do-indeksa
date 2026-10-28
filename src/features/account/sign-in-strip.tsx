@@ -38,7 +38,7 @@ function DevicesIcon() {
   );
 }
 
-export function SignInStrip({ from }: { from: "result" }) {
+export function SignInStrip({ from }: { from: "result" | "stats" }) {
   const t = useTranslations("SignInStrip");
   const [open, setOpen] = useState(true);
   if (!open) return null;
