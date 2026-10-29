@@ -3,7 +3,7 @@
 import { noop } from "es-toolkit";
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,36 +39,53 @@ export function RevealContent({ taskId, part, className }: RevealContentProps) {
   return html ? <MathHtml html={html} className={className} /> : null;
 }
 
-interface RevealProps {
-  label: string;
+interface RevealSwitchProps {
   taskId: string;
   testSessionId: string;
-  part: RevealPart;
+  parts: { part: RevealPart; label: string }[];
+  children?: ReactNode;
 }
 
-export function Reveal({ label, taskId, testSessionId, part }: RevealProps) {
-  const [requested, setRequested] = useState(false);
+export function RevealSwitch({
+  taskId,
+  testSessionId,
+  parts,
+  children,
+}: RevealSwitchProps) {
+  const [open, setOpen] = useState<RevealPart | null>(null);
+  const [seen, setSeen] = useState<RevealPart[]>([]);
 
-  function open() {
-    if (!requested)
+  function toggle(part: RevealPart) {
+    if (!seen.includes(part)) {
       saveReveal({ taskId, part, owner: { testSessionId } }).catch(noop);
-    setRequested(true);
+      setSeen([...seen, part]);
+    }
+    setOpen(open === part ? null : part);
   }
 
   return (
-    <details
-      className="group rounded-xl bg-muted px-4 py-3"
-      onToggle={(e) => e.currentTarget.open && open()}
-    >
-      <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-sm [&::-webkit-details-marker]:hidden">
-        {label}
-        <ChevronDownIcon className="size-4 text-subtle transition-transform group-open:rotate-180" />
-      </summary>
-      {requested && (
-        <div className="mt-3">
-          <RevealContent taskId={taskId} part={part} />
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {parts.map(({ part, label }) => (
+          <Button
+            key={part}
+            variant="ghost"
+            size="sm"
+            aria-expanded={open === part}
+            onClick={() => toggle(part)}
+            className="aria-expanded:bg-card aria-expanded:ring-[1.5px] aria-expanded:ring-foreground aria-expanded:ring-inset"
+          >
+            {label}
+            <ChevronDownIcon className="text-subtle transition-transform group-aria-expanded/button:rotate-180" />
+          </Button>
+        ))}
+        {children}
+      </div>
+      {open !== null && (
+        <div className="rounded-xl bg-muted px-4 py-3">
+          <RevealContent taskId={taskId} part={open} />
         </div>
       )}
-    </details>
+    </div>
   );
 }

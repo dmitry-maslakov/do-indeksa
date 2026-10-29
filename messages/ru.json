@@ -194,7 +194,7 @@
     "estimate": "Это примерный результат, а не официальный: мы проверяем только итоговый ответ, а FTN на вступительном оценивает и ход решения и может дать частичные баллы.",
     "tasks": "Задачи",
     "skipped": "без ответа",
-    "minutes": "{minutes, number} мин",
+    "minutes": "{minutes, plural, =0 {меньше минуты} other {# мин}}",
     "timeTitle": "Куда ушло время",
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "{count, plural, one {Дольше {minutes, number} мин: задача {numbers}.} other {Дольше {minutes, number} мин: задачи {numbers}.}}",
@@ -202,7 +202,7 @@
     "similar": "Порешать похожие · {count, plural, one {# ошибка} few {# ошибки} many {# ошибок} other {# ошибки}}",
     "gave": "твой ответ",
     "key": "верно",
-    "partsRight": "верно {right, number} из {total, number} пунктов",
+    "partsRight": "верно {right, number} из {total, plural, one {# пункта} other {# пунктов}}",
     "unreadable": "{count, plural, one {# пункт не прочитан} few {# пункта не прочитаны} other {# пунктов не прочитано}}",
     "unreadableOne": "ответ не прочитан",
     "toTask": "Открыть задачу"
