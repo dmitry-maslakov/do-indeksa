@@ -91,7 +91,8 @@ export function TestRail({
           {t("answered", { count: done, total: tasks.length })}
         </span>
         <FinishDialog
-          left={tasks.length - done}
+          test={test}
+          tasks={tasks}
           pending={pending}
           onFinish={onFinish}
           trigger={
