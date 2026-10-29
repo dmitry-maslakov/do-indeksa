@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { ChevronLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { answeredCount, isAnswered } from "@/features/tests/state";
+import { isAnswered } from "@/features/tests/state";
 import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 import { FinishDialog } from "./finish-dialog";
@@ -53,7 +53,8 @@ export function TestBar({
           {text}
         </span>
         <FinishDialog
-          left={tasks.length - answeredCount(test)}
+          test={test}
+          tasks={tasks}
           pending={pending}
           onFinish={onFinish}
           trigger={
