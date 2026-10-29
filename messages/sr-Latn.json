@@ -194,7 +194,7 @@
     "estimate": "Ovo je procena, a ne zvaničan rezultat: proveravamo samo konačan odgovor, a FTN na prijemnom boduje i postupak i može dati delimične bodove.",
     "tasks": "Zadaci",
     "skipped": "bez odgovora",
-    "minutes": "{minutes, number} min",
+    "minutes": "{minutes, plural, =0 {manje od minuta} other {# min}}",
     "timeTitle": "Kuda je otišlo vreme",
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "{count, plural, one {Duže od {minutes, number} min: zadatak {numbers}.} other {Duže od {minutes, number} min: zadaci {numbers}.}}",
@@ -202,7 +202,7 @@
     "similar": "Vežbaj slično · {count, plural, one {# greška} few {# greške} other {# grešaka}}",
     "gave": "odgovor",
     "key": "tačno",
-    "partsRight": "tačno {right, number} od {total, number} delova",
+    "partsRight": "tačno {right, number} od {total, plural, one {# dela} few {# dela} other {# delova}}",
     "unreadable": "{count, plural, one {# deo nije pročitan} few {# dela nisu pročitana} other {# delova nije pročitano}}",
     "unreadableOne": "odgovor nije pročitan",
     "toTask": "Otvori zadatak"

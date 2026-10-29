@@ -194,7 +194,7 @@
     "estimate": "This is an estimate, not an official result: we only check the final answer, while FTN grades the method at the exam and can give partial credit.",
     "tasks": "Tasks",
     "skipped": "no answer",
-    "minutes": "{minutes, number} min",
+    "minutes": "{minutes, plural, =0 {under a minute} other {# min}}",
     "timeTitle": "Where the time went",
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "{count, plural, one {Over {minutes, number} min: task {numbers}.} other {Over {minutes, number} min: tasks {numbers}.}}",
@@ -202,7 +202,7 @@
     "similar": "Practice similar · {count, plural, one {# mistake} other {# mistakes}}",
     "gave": "answered",
     "key": "correct",
-    "partsRight": "{right, number} of {total, number} parts right",
+    "partsRight": "{right, number} of {total, plural, one {# part} other {# parts}} right",
     "unreadable": "{count, plural, one {# part couldn't be read} other {# parts couldn't be read}}",
     "unreadableOne": "answer couldn't be read",
     "toTask": "Open the task"

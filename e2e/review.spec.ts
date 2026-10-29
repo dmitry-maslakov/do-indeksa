@@ -21,7 +21,7 @@ async function expectAnswers(page: Page, errors: string[]) {
   await expect(row).toContainText("odgovor");
   await expect(row).toContainText("tačno");
   await expect(
-    row.getByRole("button", { name: "Otvori zadatak" }),
+    row.getByRole("link", { name: "Otvori zadatak" }),
   ).toHaveAttribute("href", /\/bank\/eks-001$/);
   expect(errors).toEqual([]);
 }

@@ -1,11 +1,10 @@
 import { cn } from "cn";
-import { ChevronRightIcon } from "lucide-react";
+import { ArrowRightIcon, ChevronRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { segmentTone } from "@/components/segment-tone";
-import { Button } from "@/components/ui/button";
 import { isRight } from "@/db/columns";
-import { Reveal } from "@/features/practice/reveal/reveal";
+import { RevealSwitch } from "@/features/practice/reveal/reveal";
 import type {
   Comparison,
   Comparisons,
@@ -86,32 +85,28 @@ function Row({ row, comparison, testSessionId }: RowProps) {
           </span>
           <ChevronRightIcon className="size-4 shrink-0 text-subtle transition-transform group-open/row:rotate-90" />
         </summary>
-        <div className="flex flex-col items-start gap-2 pb-4 pl-9.5">
+        <div className="flex flex-col items-start gap-3 pb-4 pl-9.5">
           {row.attempt && (
             <p className="text-[13px] text-subtle [&_.katex]:text-[1em]">
               <GivenAnswer attempt={row.attempt} comparison={comparison} />
             </p>
           )}
-          <Reveal
-            label={solve("answer")}
+          <RevealSwitch
             taskId={row.taskId}
             testSessionId={testSessionId}
-            part="answer"
-          />
-          <Reveal
-            label={solve("solution")}
-            taskId={row.taskId}
-            testSessionId={testSessionId}
-            part="solution"
-          />
-          <Button
-            variant="ghost"
-            size="sm"
-            render={<Link href={`/bank/${row.taskId}`} />}
-            nativeButton={false}
+            parts={[
+              { part: "answer", label: solve("answer") },
+              { part: "solution", label: solve("solution") },
+            ]}
           >
-            {t("toTask")}
-          </Button>
+            <Link
+              href={`/bank/${row.taskId}`}
+              className="ml-auto inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {t("toTask")}
+              <ArrowRightIcon className="size-4" />
+            </Link>
+          </RevealSwitch>
         </div>
       </details>
     </li>
