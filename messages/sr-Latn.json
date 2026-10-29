@@ -195,7 +195,6 @@
     "tasks": "Zadaci",
     "skipped": "bez odgovora",
     "minutes": "{minutes, number} min",
-    "lost": "Gde su izgubljeni bodovi",
     "timeTitle": "Kuda je otišlo vreme",
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "{count, plural, one {Duže od {minutes, number} min: zadatak {numbers}.} other {Duže od {minutes, number} min: zadaci {numbers}.}}",

@@ -195,7 +195,6 @@
     "tasks": "Tasks",
     "skipped": "no answer",
     "minutes": "{minutes, number} min",
-    "lost": "Where points were lost",
     "timeTitle": "Where the time went",
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "{count, plural, one {Over {minutes, number} min: task {numbers}.} other {Over {minutes, number} min: tasks {numbers}.}}",

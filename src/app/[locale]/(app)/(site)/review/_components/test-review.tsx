@@ -5,7 +5,6 @@ import type { getTest } from "@/features/tests/finished-tests";
 import { review } from "@/features/tests/review";
 import { variantTitle } from "@/features/variants/variant-title";
 import { getVariant, tasksFor } from "@/features/variants/variants";
-import { LostPoints } from "./lost-points";
 import { ReviewRows } from "./review-rows";
 import { ReviewSummary } from "./review-summary";
 import { TimeSpent } from "./time-spent";
@@ -42,15 +41,7 @@ export async function TestReview({
           comparisons={comparisonsOf(found.attempts)}
           testSessionId={found.test.id}
         />
-        <div className="flex flex-col gap-10">
-          <LostPoints
-            review={result}
-            names={Object.fromEntries(
-              tasks.map((task) => [task.topic, task.topicName]),
-            )}
-          />
-          <TimeSpent review={result} />
-        </div>
+        <TimeSpent review={result} />
       </div>
     </div>
   );

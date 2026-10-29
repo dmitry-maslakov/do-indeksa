@@ -195,7 +195,6 @@
     "tasks": "Задачи",
     "skipped": "без ответа",
     "minutes": "{minutes, number} мин",
-    "lost": "Где потеряны баллы",
     "timeTitle": "Куда ушло время",
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "{count, plural, one {Дольше {minutes, number} мин: задача {numbers}.} other {Дольше {minutes, number} мин: задачи {numbers}.}}",
