@@ -12,6 +12,14 @@ export const toMinutes = (ms: number) => Math.round(ms / minuteMs);
 
 const timeZone = "Europe/Belgrade";
 
-const belgrade = new Intl.DateTimeFormat("en-CA", { timeZone });
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
 
-export const belgradeDate = (at = new Date()) => belgrade.format(at);
+export function dateIn(at: Date | number, zone?: string | null) {
+  const key = zone ?? timeZone;
+  const format =
+    dateFormats.get(key) ?? new Intl.DateTimeFormat("en-CA", { timeZone: key });
+  dateFormats.set(key, format);
+  return format.format(at);
+}
+
+export const belgradeDate = (at = new Date()) => dateIn(at);

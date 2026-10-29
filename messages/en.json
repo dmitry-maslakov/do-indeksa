@@ -258,6 +258,7 @@
     "allTopics": "All · {count, number}",
     "state": {
       "mastered": "Mastered",
+      "warming": "Warming up",
       "inProgress": "In progress",
       "review": "Review",
       "notStarted": "Not started"

@@ -1,7 +1,5 @@
 import type { SessionKind } from "@/db/columns";
-import { hourMs, secondMs } from "@/lib/dates";
-
-export const attemptGapMs = hourMs;
+import { secondMs } from "@/lib/dates";
 
 export const keepAliveMs = 30 * secondMs;
 

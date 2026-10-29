@@ -1,13 +1,14 @@
 import "server-only";
-import { and, desc, eq, inArray, max } from "drizzle-orm";
-import { attempts, taskSessions } from "@/db/schema";
+import { and, desc, eq, inArray, max, type SQLWrapper, sql } from "drizzle-orm";
+import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { positions } from "@/features/catalog/exams";
-import { idsByTopic } from "@/features/catalog/tasks";
+import { getTask, idsByTopic } from "@/features/catalog/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
+import { type FirstAttempt, observe } from "./observations";
 import { type TaskStat, weakest } from "./stats";
 import type { TaskStatus, TaskStatuses, Touched } from "./status";
-import { decidesStatus, getLatestResults, getTaskStats } from "./task-stats";
+import { decidesStatus, getLatestResults } from "./task-stats";
 import { lastPracticed, suggest, topicProgress } from "./topic-progress";
 
 async function getLastSeen(profileId: string, taskIds: string[]) {
@@ -78,17 +79,90 @@ export async function getSolved(profileId: string) {
   return rows.filter((row) => row.correct);
 }
 
-const topicTotals = positions.map((p) => ({
-  topic: p.topic,
-  total: idsByTopic.get(p.topic)?.length ?? 0,
-}));
+const epochMs = (column: SQLWrapper) =>
+  sql<number>`extract(epoch from ${column}) * 1000`.mapWith(Number);
+
+const inFirstSession = (profileId: string) =>
+  and(eq(taskSessions.profileId, profileId), eq(taskSessions.kind, "first"));
+
+async function getFirstAttempts(profileId: string): Promise<FirstAttempt[]> {
+  const [submits, opened, skipped] = await Promise.all([
+    db
+      .select({
+        taskId: attempts.taskId,
+        at: epochMs(attempts.createdAt),
+        outcomes: attempts.outcomes,
+        correct: attempts.correct,
+        difficulty: attempts.difficulty,
+        keyRev: attempts.keyRev,
+        tz: taskSessions.tz,
+      })
+      .from(attempts)
+      .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
+      .where(inFirstSession(profileId)),
+    db
+      .select({
+        taskId: reveals.taskId,
+        at: epochMs(reveals.createdAt),
+        part: reveals.part,
+      })
+      .from(reveals)
+      .innerJoin(taskSessions, eq(taskSessions.id, reveals.sessionId))
+      .where(inFirstSession(profileId)),
+    db
+      .select({ taskId: skips.taskId, at: epochMs(skips.createdAt) })
+      .from(skips)
+      .innerJoin(taskSessions, eq(taskSessions.id, skips.sessionId))
+      .where(inFirstSession(profileId)),
+  ]);
+  const submitsOf = Map.groupBy(submits, (s) => s.taskId);
+  const revealsOf = Map.groupBy(opened, (r) => r.taskId);
+  const skipsOf = Map.groupBy(skipped, (s) => s.taskId);
+  return [...submitsOf].flatMap(([taskId, mine]) => {
+    const task = getTask(taskId);
+    if (!task) return [];
+    return {
+      taskId,
+      topic: task.topic,
+      keyRev: task.keyRev,
+      tz: mine.find((s) => s.tz)?.tz ?? null,
+      submits: mine,
+      reveals: revealsOf.get(taskId) ?? [],
+      skips: skipsOf.get(taskId)?.map((s) => s.at) ?? [],
+    };
+  });
+}
+
+async function getLastAnswered(profileId: string) {
+  const rows = await db
+    .select({
+      taskId: attempts.taskId,
+      at: epochMs(sql`max(${attempts.createdAt})`),
+    })
+    .from(attempts)
+    .where(eq(attempts.profileId, profileId))
+    .groupBy(attempts.taskId);
+  const byTopic = new Map<string, number>();
+  for (const { taskId, at } of rows) {
+    const topic = getTask(taskId)?.topic;
+    if (topic && at !== null)
+      byTopic.set(topic, Math.max(at, byTopic.get(topic) ?? at));
+  }
+  return byTopic;
+}
+
+const examTopics = positions.map((p) => p.topic);
 
 export async function getTopicPlan(profileId: string) {
-  const topics = topicProgress(
-    await getTaskStats(profileId),
-    topicTotals,
-    Date.now(),
+  const now = Date.now();
+  const [firstAttempts, lastAnswered] = await Promise.all([
+    getFirstAttempts(profileId),
+    getLastAnswered(profileId),
+  ]);
+  const observations = firstAttempts.flatMap(
+    (attempt) => observe(attempt, now) ?? [],
   );
+  const topics = topicProgress(observations, lastAnswered, examTopics, now);
   const last = lastPracticed(topics);
   const latest = last
     ? await getLatestResults(profileId, idsByTopic.get(last.topic) ?? [], 3)
@@ -99,9 +173,6 @@ export async function getTopicPlan(profileId: string) {
 const weakCount = 3;
 
 export const weakTopics = (stats: TaskStat[]) =>
-  weakest(
-    stats,
-    positions.map((p) => p.topic),
-  )
+  weakest(stats, examTopics)
     .slice(0, weakCount)
     .map((w) => String(w.key));

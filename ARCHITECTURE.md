@@ -19,7 +19,7 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 `src/features` has the product code. Each folder owns its server code, one `actions.ts`, its components and its hooks:
 
 - `catalog` reads content: exams, topics, tasks and the answer checker.
-- `progress` turns attempts into task status, topic progress and statistics.
+- `progress` turns attempts into task status, topic status and statistics. A topic's status is computed on read from the first attempt at each of its tasks, and its thresholds live in `progress/learning.ts`.
 - `practice` is working on one task: the answer field, hints and solutions, task sessions and reports.
 - `bank` is the task list with filters, search and the queue of what to solve next.
 - `variants` lists exam variants, the weekly one and variants composed from chosen topics.

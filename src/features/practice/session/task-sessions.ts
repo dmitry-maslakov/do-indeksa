@@ -3,8 +3,9 @@ import { and, desc, eq, gt, inArray, lt, type SQL, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { taskFacts } from "@/features/catalog/tasks";
 import { verdictOf } from "@/features/practice/answer/verdicts";
+import { attemptGapMs } from "@/features/progress/learning";
 import { db } from "@/server/db";
-import { attemptGapMs, practiceKind, sessionLiveMs } from "./session-kind";
+import { practiceKind, sessionLiveMs } from "./session-kind";
 
 type Executor = Pick<typeof db, "insert" | "update" | "select">;
 
