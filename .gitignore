@@ -15,3 +15,4 @@ next-env.d.ts
 .content-collections/
 public/mathlive-fonts/
 /bank/
+/load-report.html
