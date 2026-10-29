@@ -2,7 +2,7 @@ import "server-only";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "@/db/schema";
-import { secondMs } from "@/lib/dates";
+import { minuteMs, secondMs } from "@/lib/dates";
 import { env } from "./env";
 import { reportServerError } from "./report";
 
@@ -14,7 +14,7 @@ const pool =
     connectionString: env.DATABASE_URL,
     max: 5,
     connectionTimeoutMillis: 5 * secondMs,
-    idleTimeoutMillis: 30 * secondMs,
+    idleTimeoutMillis: 4 * minuteMs,
     query_timeout: 10 * secondMs,
   }).on("error", reportServerError);
 
