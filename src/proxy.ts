@@ -9,8 +9,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { positions } from "@/features/catalog/exams";
 import { launchCookie, launchGate } from "@/features/launch/launch";
-import { composeSegment, customTaskIds } from "@/features/variants/variant-id";
+import { customTaskIds } from "@/features/variants/variant-id";
 import { daySeconds } from "@/lib/dates";
+import { type RouteTemplate, routeOf } from "@/lib/routes";
 import { routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
@@ -18,25 +19,21 @@ const idsOf = (items: { id: string }[]) => new Set(items.map((i) => i.id));
 const taskIds = idsOf(allTaskIds);
 const topicIds = idsOf(allTheoryIds);
 const variantIds = idsOf(allVariants);
-const localePath = new RegExp(`^(?:/(${routing.locales.join("|")}))?(/.*)$`);
+const topicExists = (topic: string) => topicIds.has(topic);
 
-const contentPages: [RegExp, (...ids: string[]) => boolean][] = [
-  [/^\/bank\/([^/]+)$/, (id) => taskIds.has(id)],
-  [/^\/theory\/([^/]+)(?:\/methods)?$/, (topic) => topicIds.has(topic)],
-  [
-    /^\/theory\/([^/]+)\/methods\/([^/]+)$/,
-    (topic, slug) =>
-      allMethodSlugs.some((m) => m.topic === topic && m.slug === slug),
-  ],
-  [
-    /^\/variants\/([^/]+)$/,
-    (id) =>
-      id === composeSegment ||
-      variantIds.has(id) ||
-      customTaskIds(id, positions.length, (taskId) => taskIds.has(taskId)) !==
-        undefined,
-  ],
-];
+const contentPages: Partial<
+  Record<RouteTemplate, (...ids: string[]) => boolean>
+> = {
+  "/bank/[id]": (id) => taskIds.has(id),
+  "/theory/[topic]": topicExists,
+  "/theory/[topic]/methods": topicExists,
+  "/theory/[topic]/methods/[method]": (topic, slug) =>
+    allMethodSlugs.some((m) => m.topic === topic && m.slug === slug),
+  "/variants/[id]": (id) =>
+    variantIds.has(id) ||
+    customTaskIds(id, positions.length, (taskId) => taskIds.has(taskId)) !==
+      undefined,
+};
 
 function withTraceTiming(response: NextResponse) {
   const timing = Object.entries(Sentry.getTraceData())
@@ -65,13 +62,8 @@ async function respond(request: NextRequest) {
       });
     return response;
   }
-  const [, locale = routing.defaultLocale, path = ""] =
-    localePath.exec(request.nextUrl.pathname) ?? [];
-  const missing = contentPages.some(([pattern, exists]) => {
-    const ids = pattern.exec(path)?.slice(1);
-    return ids && !exists(...ids);
-  });
-  return missing
+  const { locale, route, params } = routeOf(request.nextUrl.pathname);
+  return contentPages[route]?.(...params) === false
     ? NextResponse.rewrite(new URL(`/${locale}/404`, request.url))
     : intl(request);
 }
