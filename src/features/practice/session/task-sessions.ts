@@ -28,6 +28,39 @@ async function lastEvent(
   return last;
 }
 
+const decidingAnswer = sql`${attempts.outcomes} && array['right', 'wrong']::part_outcome[]`;
+
+async function hasWorked(
+  executor: Executor,
+  profileId: string,
+  taskId: string,
+) {
+  const [answered] = await executor
+    .select({ id: attempts.id })
+    .from(attempts)
+    .where(
+      and(
+        eq(attempts.profileId, profileId),
+        eq(attempts.taskId, taskId),
+        decidingAnswer,
+      ),
+    )
+    .limit(1);
+  if (answered) return true;
+  const [shown] = await executor
+    .select({ id: reveals.id })
+    .from(reveals)
+    .where(
+      and(
+        eq(reveals.profileId, profileId),
+        eq(reveals.taskId, taskId),
+        inArray(reveals.part, ["answer", "solution"]),
+      ),
+    )
+    .limit(1);
+  return Boolean(shown);
+}
+
 async function kindFor(executor: Executor, profileId: string, taskId: string) {
   const answered = await lastEvent(executor, attempts, profileId, taskId);
   const revealed = await lastEvent(executor, reveals, profileId, taskId);
@@ -35,7 +68,7 @@ async function kindFor(executor: Executor, profileId: string, taskId: string) {
   const [last] = [answered, revealed, skipped]
     .filter((e) => e !== undefined)
     .sort((a, b) => b.at.getTime() - a.at.getTime());
-  return practiceKind(last, Boolean(answered || revealed));
+  return practiceKind(last, await hasWorked(executor, profileId, taskId));
 }
 
 const alive = sql`now() - ${sessionLiveMs} * interval '1 millisecond'`;

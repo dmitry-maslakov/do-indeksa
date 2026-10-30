@@ -52,7 +52,7 @@ When someone signs in while holding a guest cookie, the account takes over the g
 
 The server keeps task sessions. While the page is visible it pings every 30 seconds. A ping, attempt or reveal within 45 seconds of the previous signal extends the session, so one late ping doesn't split a sitting; a later one opens a new session. Time on a task is `last_seen_at − started_at` on the database clock.
 
-In practice a session is `first` until the task has an attempt or a reveal and an hour has passed since the last attempt, reveal or skip on it; after that it is `retry`. A reload or a short break doesn't count as a second try. In a test it is `mock`. Each attempt stores the task's difficulty, a hash of its key and the checker version, so results can be recomputed when content or grading changes. The action client refuses crawlers by User-Agent, so they never get a profile.
+In practice a session is `first` until the task has been worked on, meaning an answer with a part right or wrong or an opened answer or solution, and an hour has passed since the last attempt, reveal or skip on it; after that it is `retry`. A hint, an empty or unreadable answer or a skip alone leaves the first attempt open. A reload or a short break doesn't count as a second try. In a test it is `mock`. Each attempt stores the task's difficulty, a hash of its key and the checker version, so results can be recomputed when content or grading changes. The action client refuses crawlers by User-Agent, so they never get a profile.
 
 ### A test is a draft until it is finished
 
