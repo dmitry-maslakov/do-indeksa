@@ -59,6 +59,16 @@
       }
     },
     {
+      "includes": ["src/lib/analytics-browser.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDocumentCookie": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": [
         "src/components/math-html.tsx",
         "src/app/**/launch/_components/json-ld.tsx"
