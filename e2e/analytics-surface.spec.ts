@@ -1,41 +1,16 @@
-import type { Page } from "@playwright/test";
-import { answer, expect, test } from "./fixtures";
+import {
+  answer,
+  expect,
+  flush,
+  hydrated,
+  needsRecorder,
+  noId,
+  propsOf,
+  recorded,
+  test,
+} from "./fixtures";
 
-interface Row {
-  name: string;
-  aid: string;
-  profile_id: string;
-  route: string;
-  props: Record<string, unknown>;
-}
-
-const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
-
-test.skip(!recorder, "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder");
-
-const noId = "00000000-0000-0000-0000-000000000000";
-
-const flush = (page: Page) =>
-  page.evaluate(() => dispatchEvent(new Event("pagehide")));
-
-async function recorded(page: Page, name: string) {
-  const aid = (await page.context().cookies()).find(
-    (c) => c.name === "aid",
-  )?.value;
-  const rows = (await (await fetch(`${recorder}/rows`)).json()) as Row[];
-  return rows.filter((row) => row.aid === aid && row.name === name);
-}
-
-const propsOf = async (page: Page, name: string) =>
-  (await recorded(page, name)).map(({ props }) => props);
-
-const hydrated = (page: Page) =>
-  page.waitForFunction(() =>
-    Array.from(document.querySelectorAll("main select, main a")).every(
-      (field) =>
-        Object.keys(field).some((key) => key.startsWith("__reactProps")),
-    ),
-  );
+needsRecorder();
 
 test("home records the suggestion and the picks a visitor sees", async ({
   page,

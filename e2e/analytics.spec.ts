@@ -1,23 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { BrowserContext, Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import type { BrowserContext } from "@playwright/test";
+import { expect, flush, needsRecorder, noId, rows, test } from "./fixtures";
 
-interface Row {
-  name: string;
-  aid: string;
-  route: string;
-  locale: string;
-  bot: boolean;
-  utm_campaign: string;
-  props: Record<string, unknown>;
-}
-
-const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
-
-test.skip(!recorder, "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder");
-
-const rows = async (match: (row: Row) => boolean) =>
-  ((await (await fetch(`${recorder}/rows`)).json()) as Row[]).filter(match);
+needsRecorder();
 
 const visitOf = async (campaign: string) =>
   (await rows((row) => row.utm_campaign === campaign))
@@ -32,14 +17,9 @@ const anonymousOnPrivacy = async (name: string) =>
   (
     await rows(
       (row) =>
-        row.name === name &&
-        row.route === "/privacy" &&
-        row.aid === "00000000-0000-0000-0000-000000000000",
+        row.name === name && row.route === "/privacy" && row.aid === noId,
     )
   ).length;
-
-const flush = (page: Page) =>
-  page.evaluate(() => dispatchEvent(new Event("pagehide")));
 
 test("a first visit records the visit and the page", async ({ page }) => {
   const campaign = randomUUID();

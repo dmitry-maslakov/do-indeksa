@@ -1,31 +1,19 @@
 import type { Page } from "@playwright/test";
-import { answer, expect, test } from "./fixtures";
+import {
+  answer,
+  expect,
+  flush,
+  needsRecorder,
+  propsOf,
+  type Row,
+  recorded,
+  test,
+} from "./fixtures";
 
-interface Row {
-  name: string;
-  aid: string;
-  route: string;
-  props: Record<string, unknown>;
-}
-
-const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
-
-test.skip(!recorder, "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder");
-
-const aidOf = async (page: Page) =>
-  (await page.context().cookies()).find((c) => c.name === "aid")?.value;
-
-async function rowsOf(page: Page, name: string) {
-  const aid = await aidOf(page);
-  const rows = (await (await fetch(`${recorder}/rows`)).json()) as Row[];
-  return rows.filter((row) => row.aid === aid && row.name === name);
-}
-
-const recorded = async (page: Page, name: string) =>
-  (await rowsOf(page, name)).map(({ props }) => props);
+needsRecorder();
 
 const opens = async (page: Page) =>
-  (await recorded(page, "task_opened")).map(({ via, placement }) => [
+  (await propsOf(page, "task_opened")).map(({ via, placement }) => [
     via,
     placement,
   ]);
@@ -35,15 +23,12 @@ const inOrder = (rows: Row["props"][]) =>
     (a, b) => Number(a.attempts_before) - Number(b.attempts_before),
   );
 
-const flush = (page: Page) =>
-  page.evaluate(() => dispatchEvent(new Event("pagehide")));
-
 test("a task opened from Preporučeno is a picker pick", async ({ page }) => {
   await page.goto("/bank?topic=logarithms");
   await page.getByRole("link", { name: "Preporučeno" }).first().click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect
-    .poll(() => recorded(page, "task_opened"))
+    .poll(() => propsOf(page, "task_opened"))
     .toEqual([
       expect.objectContaining({
         topic: "logarithms",
@@ -62,7 +47,7 @@ test("a task opened from a bank card is a list pick", async ({ page }) => {
   await card.click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));
   await expect
-    .poll(() => recorded(page, "task_opened"))
+    .poll(() => propsOf(page, "task_opened"))
     .toEqual([
       expect.objectContaining({
         task_id: href?.split("/").at(-1),
@@ -88,12 +73,12 @@ test("checking an answer records the input and the attempt", async ({
   await flush(page);
 
   await expect
-    .poll(() => recorded(page, "task_opened"))
+    .poll(() => propsOf(page, "task_opened"))
     .toEqual([expect.objectContaining({ task_id: "eks-001", via: "direct" })]);
-  const [opened] = await recorded(page, "task_opened");
+  const [opened] = await propsOf(page, "task_opened");
   const session = { task_session_id: opened?.task_session_id };
   await expect
-    .poll(() => recorded(page, "help_revealed"))
+    .poll(() => propsOf(page, "help_revealed"))
     .toEqual([
       expect.objectContaining({
         ...session,
@@ -103,7 +88,7 @@ test("checking an answer records the input and the attempt", async ({
       }),
     ]);
   await expect
-    .poll(async () => inOrder(await recorded(page, "answer_submitted")))
+    .poll(async () => inOrder(await propsOf(page, "answer_submitted")))
     .toEqual([
       expect.objectContaining({
         ...session,
@@ -123,13 +108,13 @@ test("checking an answer records the input and the attempt", async ({
       }),
     ]);
   const ids = async (name: string) =>
-    (await recorded(page, name)).map((row) => row.answer_client_id).toSorted();
+    (await propsOf(page, name)).map((row) => row.answer_client_id).toSorted();
   await expect
     .poll(() => ids("answer_input"))
     .toEqual(await ids("answer_submitted"));
-  const [, right] = inOrder(await recorded(page, "answer_submitted"));
+  const [, right] = inOrder(await propsOf(page, "answer_submitted"));
   expect(
-    (await recorded(page, "answer_input")).find(
+    (await propsOf(page, "answer_input")).find(
       (input) => input.answer_client_id === right?.answer_client_id,
     ),
   ).toMatchObject({
@@ -148,7 +133,7 @@ test("leaving a task records how it was left", async ({ page }) => {
   await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
   await flush(page);
   await expect
-    .poll(() => recorded(page, "task_left"))
+    .poll(() => propsOf(page, "task_left"))
     .toContainEqual(
       expect.objectContaining({
         task_id: "eks-001",
@@ -157,10 +142,10 @@ test("leaving a task records how it was left", async ({ page }) => {
         typed_len: 1,
       }),
     );
-  const [left] = await recorded(page, "task_left");
+  const [left] = await propsOf(page, "task_left");
   expect(left?.visible_ms).toBeGreaterThan(0);
   await expect
-    .poll(() => recorded(page, "task_skipped"))
+    .poll(() => propsOf(page, "task_skipped"))
     .toEqual([expect.objectContaining({ task_id: "eks-001" })]);
   await expect
     .poll(() => opens(page))
@@ -194,7 +179,7 @@ test("opens from the hero, the next link and a reload are told apart", async ({
     ]);
   await expect
     .poll(async () =>
-      (await rowsOf(page, "task_left"))
+      (await recorded(page, "task_left"))
         .filter(({ props }) => props.exit === "navigate")
         .map(({ route, props }) => [route, props.state]),
     )

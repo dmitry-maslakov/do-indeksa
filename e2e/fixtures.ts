@@ -6,6 +6,19 @@ export { expect } from "@playwright/test";
 
 const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
+export interface Row {
+  name: string;
+  source: string;
+  aid: string;
+  profile_id: string;
+  route: string;
+  locale: string;
+  bot: boolean;
+  utm_source: string;
+  utm_campaign: string;
+  props: Record<string, unknown>;
+}
+
 interface Auth {
   db: Client;
   signIn: (age?: number) => Promise<{ userId: string; profileId: string }>;
@@ -107,3 +120,38 @@ export async function finish(page: Page) {
     .getByRole("button", { name: "Završi test" })
     .click();
 }
+
+export const noId = "00000000-0000-0000-0000-000000000000";
+
+const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
+
+export const needsRecorder = () =>
+  test.skip(
+    !recorder,
+    "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder",
+  );
+
+export const rows = async (match: (row: Row) => boolean) =>
+  ((await (await fetch(`${recorder}/rows`)).json()) as Row[]).filter(match);
+
+export const aidOf = async (page: Page) =>
+  (await page.context().cookies()).find(({ name }) => name === "aid")?.value;
+
+export async function recorded(page: Page, name: string) {
+  const aid = await aidOf(page);
+  return rows((row) => row.aid === aid && row.name === name);
+}
+
+export const propsOf = async (page: Page, name: string) =>
+  (await recorded(page, name)).map(({ props }) => props);
+
+export const flush = (page: Page) =>
+  page.evaluate(() => dispatchEvent(new Event("pagehide")));
+
+export const hydrated = (page: Page) =>
+  page.waitForFunction(() =>
+    Array.from(document.querySelectorAll("main select, main a")).every(
+      (field) =>
+        Object.keys(field).some((key) => key.startsWith("__reactProps")),
+    ),
+  );
