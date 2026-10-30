@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   reactCompiler: { panicThreshold: "all_errors" },
   cacheMaxMemorySize: 0,
+  experimental: { isrFlushToDisk: false },
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
     return [
