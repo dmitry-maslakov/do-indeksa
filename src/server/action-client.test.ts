@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { actionClient } from "./action-client";
-import { ensureProfileId } from "./profile";
+import { track } from "./analytics";
+import { ensureProfile } from "./profile";
 
 vi.mock("./profile", () => ({
-  ensureProfileId: vi.fn(),
+  ensureProfile: vi.fn(),
   findProfileId: vi.fn(),
 }));
+vi.mock("./analytics", () => ({ track: vi.fn() }));
 
 const browser = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
 let userAgent = browser;
@@ -24,19 +26,31 @@ const action = actionClient.inputSchema(input).action(handler);
 beforeEach(() => {
   userAgent = browser;
   handler.mockClear();
-  vi.mocked(ensureProfileId).mockResolvedValue("p1");
+  vi.mocked(track).mockClear();
+  vi.mocked(ensureProfile).mockResolvedValue({ id: "p1" });
 });
 
 describe("action clients", () => {
   it("passes the profile id to the action", async () => {
     expect(await action({ n: 1 })).toEqual({ data: { profileId: "p1" } });
+    expect(track).not.toHaveBeenCalled();
+  });
+
+  it("records a profile the action created", async () => {
+    vi.mocked(ensureProfile).mockResolvedValue({ id: "p2", created: "guest" });
+    await action({ n: 1 });
+    expect(track).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "profile_created" }),
+      { kind: "guest" },
+      { profileId: "p2" },
+    );
   });
 
   it("refuses a crawler before it gets a profile", async () => {
     userAgent =
       "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
     expect(await action({ n: 1 })).toEqual({ serverError: "bot" });
-    expect(ensureProfileId).not.toHaveBeenCalled();
+    expect(ensureProfile).not.toHaveBeenCalled();
   });
 
   it("logs an unexpected error and returns only its code", async () => {
