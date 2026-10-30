@@ -9,7 +9,7 @@ import { getSession } from "./auth";
 import { db } from "./db";
 
 const profileCookie = "__Host-profile";
-const noProfile = "00000000-0000-0000-0000-000000000000";
+export const noId = "00000000-0000-0000-0000-000000000000";
 const profileCookieAge = 400 * daySeconds;
 const profileCookieOptions = {
   httpOnly: true,
@@ -21,12 +21,17 @@ const profileCookieOptions = {
 export const tokenHashOf = (token: string) =>
   createHash("sha256").update(token).digest("base64url");
 
-async function profileOf(userId: string) {
+async function accountProfileOf(userId: string) {
   const [found] = await db
     .select({ id: profiles.id })
     .from(profiles)
     .where(eq(profiles.userId, userId));
-  if (found) return found.id;
+  return found?.id;
+}
+
+async function profileOf(userId: string) {
+  const found = await accountProfileOf(userId);
+  if (found) return found;
   const [created] = await db
     .insert(profiles)
     .values({ userId })
@@ -67,14 +72,21 @@ export async function forgetGuest() {
   });
 }
 
-export const findProfileId = cache(async () => {
-  const session = await getSession();
-  if (session) return profileOf(session.user.id);
-  const token = await guestToken();
-  return token ? guestProfileOf(token) : undefined;
-});
+const profileLookup = (
+  ofAccount: (userId: string) => Promise<string | undefined>,
+) =>
+  cache(async () => {
+    const session = await getSession();
+    if (session) return ofAccount(session.user.id);
+    const token = await guestToken();
+    return token ? guestProfileOf(token) : undefined;
+  });
 
-export const getProfileId = async () => (await findProfileId()) ?? noProfile;
+export const findProfileId = profileLookup(profileOf);
+
+export const existingProfileId = profileLookup(accountProfileOf);
+
+export const getProfileId = async () => (await findProfileId()) ?? noId;
 
 export async function ensureProfileId() {
   const found = await findProfileId();

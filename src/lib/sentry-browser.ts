@@ -20,7 +20,15 @@ export function routerTransitionStart(href: string, type: string) {
 
 export async function startSentry() {
   const loaded = await import("@sentry/nextjs");
-  loaded.init({ ...sentryOptions, dsn: process.env.NEXT_PUBLIC_SENTRY_DSN });
+  loaded.init({
+    ...sentryOptions,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    integrations: [
+      loaded.browserTracingIntegration({
+        shouldCreateSpanForRequest: (url) => !url.endsWith("/api/events"),
+      }),
+    ],
+  });
   sentry = loaded;
   for (const error of early.splice(0)) loaded.captureException(error);
 }
