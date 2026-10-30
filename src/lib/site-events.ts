@@ -60,6 +60,11 @@ export const analyticsOptedIn = defineEvent("analytics_opted_in", {});
 
 export const analyticsOptedOut = defineEvent("analytics_opted_out", {});
 
+export const actionFailed = defineEvent("action_failed", {
+  reason: z.enum(["unexpected", "bot"]),
+  error: text.optional(),
+});
+
 export const clientEvents = [
   visitStarted,
   pageView,
