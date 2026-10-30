@@ -162,7 +162,9 @@ export function trackBatch(
 
 export async function track<Event extends EventDefinition>(
   { name, props: schema }: Event,
-  props: z.input<Event["props"]>,
+  props: NoInfer<
+    z.input<Event["props"]> | (() => Promise<z.input<Event["props"]>>)
+  >,
   { profileId, anonymous }: { profileId?: string; anonymous?: boolean } = {},
 ) {
   const [request, jar] = await Promise.all([headers(), cookies()]);
@@ -176,7 +178,11 @@ export async function track<Event extends EventDefinition>(
   const at = Date.now();
   after(async () => {
     try {
-      const event = { name, props: schema.parse(props) };
+      const input =
+        typeof props === "function"
+          ? await (props as () => Promise<unknown>)()
+          : props;
+      const event = { name, props: schema.parse(input) };
       const who = anonymous ? { ...visitor, aid: undefined } : visitor;
       const context = { source: "server", at, profileId, page } as const;
       await deliver([trackedOf(who, event, context)], randomUUID());
