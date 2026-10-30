@@ -15,7 +15,7 @@ interface BankFeedProps {
 
 export function BankFeed({ search, first }: BankFeedProps) {
   const t = useTranslations("Bank");
-  const feed = useFeed("/api/bank", first, search);
+  const feed = useFeed("bank", first, search);
   const via = loadBankFilters(search).q ? "search" : "list";
 
   return (
