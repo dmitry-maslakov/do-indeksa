@@ -22,6 +22,7 @@ export function SuggestionLink({
   return (
     <Link
       href={href}
+      prefetch={false}
       className={className}
       onClick={async () => {
         const id = await shown.current;

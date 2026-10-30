@@ -37,6 +37,7 @@ export function TopicRow({ name, look, pct, state, href }: TopicRowProps) {
     <li>
       <Link
         href={href}
+        prefetch={false}
         className="flex items-center gap-3 border-b py-3 text-sm md:gap-4 md:text-base"
       >
         <TopicIcon {...look} size="md" />
