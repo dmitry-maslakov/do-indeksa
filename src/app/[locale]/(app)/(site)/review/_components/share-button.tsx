@@ -8,6 +8,8 @@ import { getPathname } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
 import { secondMs } from "@/lib/dates";
 
+const shareTags = { utm_source: "share", utm_medium: "variant" };
+
 interface ShareButtonProps {
   title: string;
   variantId: string;
@@ -24,7 +26,10 @@ export function ShareButton({ title, variantId, className }: ShareButtonProps) {
       title,
       url:
         location.origin +
-        getPathname({ href: `/variants/${variantId}`, locale }),
+        getPathname({
+          href: { pathname: `/variants/${variantId}`, query: shareTags },
+          locale,
+        }),
     };
     const native =
       matchMedia("(pointer: coarse)").matches && navigator.canShare?.(data);

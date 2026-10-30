@@ -45,7 +45,7 @@ test("a guest reviews a finished test and finds it in history", {
   const review = new URL(page.url()).pathname;
   await page.getByRole("button", { name: "Podeli" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
-    /\/variants\/set-eks-001$/,
+    /\/variants\/set-eks-001\?utm_source=share&utm_medium=variant$/,
   );
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
