@@ -196,4 +196,43 @@ test.describe("attempt log", () => {
       .poll(async () => (await sessions()).map((s) => s.kind))
       .toEqual(["first", "retry"]);
   });
+
+  test("a first visit with only a hint keeps the first attempt", async ({
+    page,
+    auth,
+  }) => {
+    const { profileId } = await auth.signIn();
+    const kinds = async () =>
+      (
+        await auth.db.query<{ kind: string }>(
+          `select kind from task_sessions
+           where profile_id = $1 and task_id = 'eks-001' order by started_at`,
+          [profileId],
+        )
+      ).rows.map((s) => s.kind);
+
+    await page.goto("/bank/eks-001");
+    await page.getByRole("button", { name: "Nagoveštaj" }).click();
+    await expect
+      .poll(async () => {
+        const { rows } = await auth.db.query(
+          "select count(*)::int as n from reveals where profile_id = $1",
+          [profileId],
+        );
+        return rows[0]?.n;
+      })
+      .toBe(1);
+
+    await page.goto("/bank");
+    await auth.db.query(
+      "update reveals set created_at = now() - interval '2 hours' where profile_id = $1",
+      [profileId],
+    );
+    await auth.db.query(
+      "update task_sessions set last_seen_at = now() - interval '2 hours' where profile_id = $1",
+      [profileId],
+    );
+    await page.goto("/bank/eks-001");
+    await expect.poll(kinds).toEqual(["first", "first"]);
+  });
 });
