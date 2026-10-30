@@ -89,6 +89,22 @@ test("a signed-in user reviews a finished test", {
   ]);
 });
 
+test("a test starts again right after it is finished", async ({
+  page,
+  errors,
+}) => {
+  await finishSet(page);
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
+  await page.getByRole("button", { name: "Reši ponovo" }).click();
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+  const field = page.locator("math-field").first();
+  await expect(field).toBeVisible();
+  expect(
+    await field.evaluate((el) => (el as HTMLElement & { value: string }).value),
+  ).toBe("");
+  expect(errors).toEqual([]);
+});
+
 test("an unfinished test continues from the server on another device", async ({
   page,
   auth,
