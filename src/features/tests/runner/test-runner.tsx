@@ -16,6 +16,7 @@ import type {
   VariantTask as Task,
 } from "@/features/variants/variants";
 import { getPathname, useRouter } from "@/i18n/navigation";
+import { queueEvent } from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
 import { TestBar } from "./test-bar";
@@ -51,6 +52,12 @@ const payload = (variantId: string, test: LocalTest) => ({
   draft: { answers: test.answers, visits: visitsAt(test, Date.now()) },
 });
 
+const failed = (kind: "test_save" | "test_finish", thrown?: unknown) =>
+  queueEvent("request_failed", {
+    kind,
+    reason: !thrown ? "server" : navigator.onLine ? "network" : "offline",
+  });
+
 export function TestRunner({
   variantId,
   kind,
@@ -73,10 +80,12 @@ export function TestRunner({
       clear(variantId);
       router.push(reviewHref(input.id));
     },
-    onError: () =>
+    onError: ({ error }) => {
+      failed("test_finish", error.thrownError);
       toast.error(t("finishFailed"), {
         description: errorText(),
-      }),
+      });
+    },
   });
   const meta = useMemo(
     () => ({
@@ -116,7 +125,12 @@ export function TestRunner({
     if (!test || test.updatedAt <= synced || test.updatedAt === test.startedAt)
       return;
     const id = setTimeout(() => {
-      saveTest(payload(variantId, test)).catch(() => undefined);
+      saveTest(payload(variantId, test)).then(
+        (result) =>
+          (result?.serverError || result?.validationErrors) &&
+          failed("test_save"),
+        (error) => failed("test_save", error),
+      );
     }, 1500);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
