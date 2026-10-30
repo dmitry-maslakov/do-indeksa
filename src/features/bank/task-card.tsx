@@ -55,6 +55,7 @@ export function TaskCard({ card }: TaskCardProps) {
       </div>
       <Link
         href={`/bank/${card.id}`}
+        prefetch={false}
         className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
       >
         <MathHtml
