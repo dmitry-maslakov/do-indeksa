@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clientEvents } from "./bank-events";
+import { clientEvents, resultsShown } from "./bank-events";
 import { recommendationOf } from "./queue/recommendation";
 
 const schemaOf = (name: string) =>
@@ -39,6 +39,36 @@ describe("bank events", () => {
     ["another algorithm", { ...picked, algo_version: 2 }],
   ])("rejects a recommendation with %s", (_, props) => {
     expect(schemaOf("recommendation_made")?.safeParse(props).success).toBe(
+      false,
+    );
+  });
+
+  it("records a search by its length and drops empty filters", () => {
+    const shown = resultsShown(
+      { q: "kvadratna", topic: "logarithms", level: null, number: 3 },
+      0,
+    );
+    expect(schemaOf("bank_results_shown")?.parse(shown)).toEqual({
+      topic: "logarithms",
+      number: 3,
+      q_len: 9,
+      results: 0,
+    });
+  });
+
+  it("leaves out filter values the catalog does not know", () => {
+    const shown = resultsShown({ topic: "astrology", number: 12 }, 0);
+    expect(schemaOf("bank_results_shown")?.parse(shown)).toEqual({
+      results: 0,
+    });
+  });
+
+  it.each([
+    ["the query text", { q: "kvadratna", results: 1 }],
+    ["an unknown topic", { topic: "astrology", results: 1 }],
+    ["no result count", { level: "easy" }],
+  ])("rejects bank results with %s", (_, props) => {
+    expect(schemaOf("bank_results_shown")?.safeParse(props).success).toBe(
       false,
     );
   });

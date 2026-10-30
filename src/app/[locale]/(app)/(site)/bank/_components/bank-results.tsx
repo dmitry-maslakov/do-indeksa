@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { resultsShown } from "@/features/bank/bank-events";
 import { BankList } from "@/features/bank/bank-list";
 import { BankTabs } from "@/features/bank/bank-tabs";
 import { activeFilters, filterLabel } from "@/features/bank/filter-summary";
@@ -104,8 +105,10 @@ export function BankResults({
           </div>
         </div>
         <ResultsHead
+          key={search}
           count={tasks.length}
           label={filterLabel(filters, t, locale)}
+          shown={pending ? undefined : resultsShown(filters, tasks.length)}
           pending={pending}
         />
         {pending ? (

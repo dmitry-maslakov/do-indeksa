@@ -6,7 +6,7 @@ import {
 } from "nuqs/server";
 import { levels } from "@/features/catalog/level";
 
-const sorts = ["easy", "hard"] as const;
+export const sorts = ["easy", "hard"] as const;
 
 export const statusFilters = ["new", "solved", "wrong"] as const;
 
