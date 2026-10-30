@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 
-interface InputStats {
+export interface InputStats {
   focusAt?: number;
   inputs: number;
   deletes: number;

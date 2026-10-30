@@ -14,7 +14,7 @@ import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
-import { countInput, focused, freshInput, takeInput } from "./input-stats";
+import { freshInput, takeInput } from "./input-stats";
 import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
@@ -81,7 +81,7 @@ export function AnswerForm({
   const help = useTaskSession();
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
-  const input = useRef(freshInput());
+  const stats = useRef(freshInput());
   const [values, setValues] = useState(() => parts.map(() => ""));
   const onChange = (index: number, value: string) => {
     setEdited(true);
@@ -100,15 +100,11 @@ export function AnswerForm({
 
   return (
     <form
-      onFocus={() => focused(input.current)}
-      onInput={(event) =>
-        countInput(input.current, event.nativeEvent as InputEvent)
-      }
       action={(form) => {
         setEdited(false);
         if (!answerId.current) {
           answerId.current = crypto.randomUUID();
-          const { focusAt, ...counts } = takeInput(input);
+          const { focusAt, ...counts } = takeInput(stats);
           queueEvent("answer_input", {
             context: "practice",
             task_id: taskId,
@@ -155,6 +151,7 @@ export function AnswerForm({
                 : `\\text{${t("placeholder")}}`
             }
             state={stateOf(i)}
+            stats={stats}
             onChange={onChange}
           />
         ))}

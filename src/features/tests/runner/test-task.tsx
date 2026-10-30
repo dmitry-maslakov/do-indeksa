@@ -2,10 +2,12 @@
 
 import { ArrowRightIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { RefObject } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { phoneBar } from "@/features/practice/answer/action-bar";
 import { AnswerField } from "@/features/practice/answer/answer-field";
+import type { InputStats } from "@/features/practice/answer/input-stats";
 import type { VariantTask as Task } from "@/features/variants/variants";
 
 interface TestTaskProps {
@@ -13,6 +15,7 @@ interface TestTaskProps {
   answers: string[];
   first: boolean;
   last: boolean;
+  stats: RefObject<InputStats>;
   onSwap?: () => void;
   onAnswer: (part: number, value: string) => void;
   onPrev: () => void;
@@ -24,6 +27,7 @@ export function TestTask({
   answers,
   first,
   last,
+  stats,
   onSwap,
   onAnswer,
   onPrev,
@@ -71,6 +75,7 @@ export function TestTask({
             part={part}
             variant="exam"
             defaultValue={answers[i]}
+            stats={stats}
             onChange={onAnswer}
           />
         ))}

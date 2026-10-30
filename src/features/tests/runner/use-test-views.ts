@@ -1,10 +1,6 @@
 import { attempt } from "es-toolkit";
-import { type FormEvent, useEffect, useEffectEvent, useRef } from "react";
-import {
-  countInput,
-  freshInput,
-  takeInput,
-} from "@/features/practice/answer/input-stats";
+import { useEffect, useEffectEvent, useRef } from "react";
+import { freshInput, takeInput } from "@/features/practice/answer/input-stats";
 import { answeredCount, overtimeAt } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
 import type { VariantTask } from "@/features/variants/variants";
@@ -45,12 +41,12 @@ export function useTestViews(
   { variantId, kind, tasks, saved, fallback }: ViewedTest,
   testId: string | undefined,
 ) {
-  const input = useRef(freshInput());
+  const stats = useRef(freshInput());
 
   const recordInput = () => {
     const test = testOf(variantId);
     const task = test && tasks[test.current];
-    const { focusAt, ...counts } = takeInput(input);
+    const { focusAt, ...counts } = takeInput(stats);
     if (!test || !task || !counts.inputs) return;
     queueEvent("answer_input", {
       context: "test",
@@ -164,7 +160,6 @@ export function useTestViews(
       view(nav);
     },
     recordInput,
-    onInput: (event: FormEvent) =>
-      countInput(input.current, event.nativeEvent as InputEvent),
+    stats,
   };
 }

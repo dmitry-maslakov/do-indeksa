@@ -1,10 +1,12 @@
 "use client";
 
 import { cva } from "class-variance-authority";
+import type { RefObject } from "react";
 import { MathHtml } from "@/components/math-html";
 import type { PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { StatusIcon } from "@/features/progress/status-icon";
+import type { InputStats } from "./input-stats";
 import { useMathField } from "./use-math-field";
 
 type Variant = "exam" | "solve";
@@ -19,6 +21,7 @@ interface AnswerFieldProps {
   state?: PartOutcome;
   defaultValue?: string;
   placeholder?: string;
+  stats: RefObject<InputStats>;
   onChange: (index: number, value: string) => void;
 }
 
@@ -92,10 +95,11 @@ export function AnswerField({
   state = "empty",
   defaultValue = "",
   placeholder,
+  stats,
   onChange,
 }: AnswerFieldProps) {
   const onEdit = (value: string) => onChange(index, value);
-  const { field, value } = useMathField(defaultValue, onEdit);
+  const { field, value } = useMathField(defaultValue, onEdit, stats);
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
