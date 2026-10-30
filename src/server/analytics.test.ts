@@ -5,7 +5,7 @@ import { defineEvent } from "@/lib/analytics-schema";
 import { rowOf, track, trackBatch, visitorOf } from "./analytics";
 import { insertEvents } from "./clickhouse";
 import { sendToOpenPanel } from "./openpanel";
-import { existingProfileId } from "./profile";
+import { findProfileId } from "./profile";
 
 const pending: Promise<unknown>[] = [];
 
@@ -19,7 +19,7 @@ vi.mock("next/headers", () => ({
 }));
 vi.mock("./clickhouse", () => ({ insertEvents: vi.fn() }));
 vi.mock("./openpanel", () => ({ sendToOpenPanel: vi.fn() }));
-vi.mock("./profile", () => ({ existingProfileId: vi.fn(), noId: "0" }));
+vi.mock("./profile", () => ({ findProfileId: vi.fn(), noId: "0" }));
 
 const aid = "0b9f8a5e-5d47-4d1f-9a3e-1f2b3c4d5e6f";
 const iphone =
@@ -147,7 +147,7 @@ describe("trackBatch", () => {
   beforeEach(() => {
     pending.length = 0;
     vi.mocked(insertEvents).mockReset();
-    vi.mocked(existingProfileId).mockResolvedValue("p1");
+    vi.mocked(findProfileId).mockResolvedValue("p1");
   });
 
   const batch = {

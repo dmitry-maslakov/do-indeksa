@@ -11,7 +11,7 @@ vi.mock("next/server", async (original) => ({
 }));
 vi.mock("@/server/env", () => ({ env: {} }));
 vi.mock("@/server/profile", () => ({
-  existingProfileId: async () => "p1",
+  findProfileId: async () => "p1",
   noId: "0",
 }));
 vi.mock("@/server/clickhouse", () => ({ insertEvents: vi.fn() }));

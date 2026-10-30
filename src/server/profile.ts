@@ -29,16 +29,14 @@ async function accountProfileOf(userId: string) {
   return found?.id;
 }
 
-async function profileOf(userId: string) {
-  const found = await accountProfileOf(userId);
-  if (found) return found;
-  const [created] = await db
+async function createAccountProfile(userId: string) {
+  const [profile] = await db
     .insert(profiles)
     .values({ userId })
     .onConflictDoUpdate({ target: profiles.userId, set: { userId } })
     .returning({ id: profiles.id });
-  if (!created) throw new Error("profile was not created");
-  return created.id;
+  if (!profile) throw new Error("profile was not created");
+  return profile.id;
 }
 
 async function guestProfileOf(token: string) {
@@ -53,12 +51,16 @@ async function guestProfileOf(token: string) {
 
 async function createGuestProfile() {
   const token = randomBytes(32).toString("base64url");
-  const [created] = await db
+  const [profile] = await db
     .insert(profiles)
     .values({ tokenHash: tokenHashOf(token) })
     .returning({ id: profiles.id });
-  if (!created) throw new Error("guest profile was not created");
-  return { id: created.id, token };
+  if (!profile) throw new Error("guest profile was not created");
+  (await cookies()).set(profileCookie, token, {
+    ...profileCookieOptions,
+    maxAge: profileCookieAge,
+  });
+  return profile.id;
 }
 
 export async function guestToken() {
@@ -72,29 +74,22 @@ export async function forgetGuest() {
   });
 }
 
-const profileLookup = (
-  ofAccount: (userId: string) => Promise<string | undefined>,
-) =>
-  cache(async () => {
-    const session = await getSession();
-    if (session) return ofAccount(session.user.id);
-    const token = await guestToken();
-    return token ? guestProfileOf(token) : undefined;
-  });
+async function profileIdOf(userId?: string, token?: string) {
+  const own = userId && (await accountProfileOf(userId));
+  if (own) return own;
+  return token ? guestProfileOf(token) : undefined;
+}
 
-export const findProfileId = profileLookup(profileOf);
-
-export const existingProfileId = profileLookup(accountProfileOf);
+export const findProfileId = cache(async () => {
+  const [session, token] = await Promise.all([getSession(), guestToken()]);
+  return profileIdOf(session?.user.id, token);
+});
 
 export const getProfileId = async () => (await findProfileId()) ?? noId;
 
 export async function ensureProfileId() {
   const found = await findProfileId();
   if (found) return found;
-  const { id, token } = await createGuestProfile();
-  (await cookies()).set(profileCookie, token, {
-    ...profileCookieOptions,
-    maxAge: profileCookieAge,
-  });
-  return id;
+  const session = await getSession();
+  return session ? createAccountProfile(session.user.id) : createGuestProfile();
 }
