@@ -23,11 +23,17 @@ function firstSitting(
   now: number,
   gapMs: number,
 ) {
-  const work = [...submits.map((s) => s.at), ...reveals.map((r) => r.at)];
-  const start = Math.min(...work);
-  const times = [...work, ...skips.filter((at) => at > start)].toSorted(
-    (a, b) => a - b,
+  const start = Math.min(
+    ...submits.filter(decides).map((s) => s.at),
+    ...reveals.filter((r) => !isHint(r)).map((r) => r.at),
   );
+  const times = [
+    ...submits.map((s) => s.at),
+    ...reveals.map((r) => r.at),
+    ...skips,
+  ]
+    .filter((at) => at >= start)
+    .toSorted((a, b) => a - b);
   const gap = times.findIndex((at, i) => at - (times[i - 1] ?? at) >= gapMs);
   const end = times[gap] ?? Infinity;
   return {

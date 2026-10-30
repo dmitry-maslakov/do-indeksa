@@ -215,4 +215,23 @@ describe("observe", () => {
     );
     expect(result).toMatchObject({ result: "clean", credit: 1 });
   });
+
+  it("doesn't start the first attempt with a hint, but still counts the hint", () => {
+    const result = observe(
+      attempt({
+        submits: [submit(24 * 60, ["right"])],
+        reveals: [{ at: at(0), part: "hint1" }],
+      }),
+      now + dayMs,
+    );
+    expect(result).toMatchObject({ result: "helped", at: at(24 * 60) });
+  });
+
+  it("doesn't start the first attempt with an empty answer", () => {
+    const result = observe(
+      attempt({ submits: [submit(0, ["empty"]), submit(24 * 60, ["right"])] }),
+      now + dayMs,
+    );
+    expect(result).toMatchObject({ result: "clean", at: at(24 * 60) });
+  });
 });
