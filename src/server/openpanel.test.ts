@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Tracked } from "./analytics";
-import { sendToOpenPanel, toOpenPanel } from "./openpanel";
+import { identifyOf, sendToOpenPanel, toOpenPanel } from "./openpanel";
 
 vi.mock("./env", () => ({
   env: {
@@ -87,6 +87,49 @@ describe("toOpenPanel", () => {
     expect(properties.__path).toBe("https://doindeksa.rs/");
     expect(properties.__referrer).toBeUndefined();
   });
+
+  it("keeps profile ids out of the properties", () => {
+    const merged = tracked();
+    merged.row.props = {
+      outcome: "merged",
+      from_profile_id: "p0",
+      to_profile_id: "p1",
+      task_id: "eks-001",
+    };
+    const { properties } = toOpenPanel(merged).payload;
+    expect(properties).toMatchObject({ outcome: "merged", task_id: "eks-001" });
+    expect(properties).not.toHaveProperty("from_profile_id");
+    expect(properties).not.toHaveProperty("to_profile_id");
+  });
+});
+
+describe("identifyOf", () => {
+  const event = (name: string, props: Record<string, unknown>) => {
+    const item = tracked({ profileId: "p1", source: "server" });
+    item.row.name = name;
+    item.row.props = props;
+    return item;
+  };
+
+  it("names the kind of a new profile", () => {
+    expect(identifyOf(event("profile_created", { kind: "guest" }))).toEqual({
+      type: "identify",
+      payload: { profileId: "p1", properties: { kind: "guest" } },
+    });
+  });
+
+  it("marks a signed-in profile as an account", () => {
+    expect(
+      identifyOf(event("signed_in", { method: "google" }))?.payload.properties,
+    ).toEqual({ kind: "account" });
+  });
+
+  it("identifies nobody for other events or without a profile", () => {
+    const anonymous = event("profile_created", { kind: "guest" });
+    anonymous.profileId = undefined;
+    expect(identifyOf(event("page_view", {}))).toBeUndefined();
+    expect(identifyOf(anonymous)).toBeUndefined();
+  });
 });
 
 describe("sendToOpenPanel", () => {
@@ -123,6 +166,17 @@ describe("sendToOpenPanel", () => {
     await sendToOpenPanel([tracked({ source: "server" })]);
     expect(headersOf()["user-agent"]).toBe("do-indeksa/1");
     expect(headersOf()).not.toHaveProperty("openpanel-client-ip");
+  });
+
+  it("identifies the profile before its event", async () => {
+    const created = tracked({ profileId: "p1", source: "server" });
+    created.row.name = "profile_created";
+    created.row.props = { kind: "account" };
+    await sendToOpenPanel([created]);
+    const types = fetch.mock.calls.map(
+      ([, init]) => JSON.parse(init.body).type,
+    );
+    expect(types).toEqual(["identify", "track"]);
   });
 
   it("leaves bots out", async () => {
