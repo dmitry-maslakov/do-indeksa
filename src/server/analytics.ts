@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { throttle } from "es-toolkit";
 import { isbot } from "isbot";
+import { cookies } from "next/headers";
 import {
   after,
   type NextRequest,
@@ -158,4 +159,15 @@ export function trackBatch(
 export function keepAid(response: NextResponse, visitor: Visitor) {
   if (visitor.aid && !visitor.optedOut)
     response.cookies.set(aidCookie, visitor.aid, cookieOptions);
+}
+
+export async function setAnalyticsConsent(on: boolean) {
+  const store = await cookies();
+  if (on) {
+    store.delete(consentCookie);
+    store.set(aidCookie, randomUUID(), cookieOptions);
+  } else {
+    store.set(consentCookie, "off", cookieOptions);
+    store.delete(aidCookie);
+  }
 }
