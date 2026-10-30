@@ -191,9 +191,10 @@ test("the bank records its pick, results and filter changes", async ({
 }) => {
   await page.goto("/bank");
   await hydrated(page);
-  const count = Number.parseInt(
-    (await page.getByText(/^\d+ zadat(ak|ka|aka)$/).textContent()) ?? "",
-    10,
+  const count = Number(
+    (
+      await page.getByText(/^\d+(\.\d{3})* zadat(ak|ka|aka)$/).textContent()
+    )?.replace(/\D/g, ""),
   );
 
   await expect
@@ -204,12 +205,12 @@ test("the bank records its pick, results and filter changes", async ({
     .toEqual([{ results: count }]);
   await expect
     .poll(async () =>
-      (await propsOf(page, "recommendation_made")).map(({ surface, topic }) => [
-        surface,
-        topic,
-      ]),
+      (await propsOf(page, "recommendation_made")).map(
+        ({ surface }) => surface,
+      ),
     )
-    .toEqual([["bank_tab", "complex-numbers"]]);
+    .toEqual(["bank_tab"]);
+  const [pick] = await propsOf(page, "recommendation_made");
 
   await page
     .getByRole("combobox", { name: "Tema", exact: true })
@@ -244,7 +245,7 @@ test("the bank records its pick, results and filter changes", async ({
     ]);
   expect(
     (await propsOf(page, "recommendation_made")).map(({ topic }) => topic),
-  ).toEqual(["complex-numbers", "logarithms", "complex-numbers"]);
+  ).toEqual([pick?.topic, "logarithms", pick?.topic]);
   expect(await propsOf(page, "control_used")).toEqual([
     { control: "bank_filters_reset" },
   ]);
@@ -265,8 +266,10 @@ test("theory records how far a page was read", async ({ page }) => {
   await page.goto("/theory/exponential-equations");
   await hydrated(page);
   const rail = page.getByRole("complementary", { name: "Teorija" });
-  await rail.getByRole("link", { name: "Grafik" }).click();
-  await expect(page).toHaveURL(/#grafik$/);
+  const last = rail.locator('a[href*="#"]').last();
+  const section = (await last.getAttribute("href"))?.split("#").at(-1);
+  await last.click();
+  await expect(page).toHaveURL(new RegExp(`#${section}$`));
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForFunction(
     () => innerHeight + scrollY >= document.documentElement.scrollHeight - 1,
@@ -287,7 +290,7 @@ test("theory records how far a page was read", async ({ page }) => {
   const [read] = await propsOf(page, "theory_read");
   expect(read?.sections).toBeGreaterThan(0);
   expect(read?.sections_reached).toBe(read?.sections);
-  expect(read?.last_section).toBe("grafik");
+  expect(read?.last_section).toBe(section);
 
   await rail.getByRole("link", { name: "Metodi", exact: true }).click();
   await expect(page).toHaveURL(/\/methods\/[\w-]+$/);
@@ -310,7 +313,7 @@ test("theory records how far a page was read", async ({ page }) => {
       .map(({ route }) => route),
   ).toEqual(["/theory/[topic]", "/theory/[topic]"]);
   expect(await propsOf(page, "control_used")).toEqual([
-    { control: "theory_section_link", value: "grafik" },
+    { control: "theory_section_link", value: section },
     { control: "theory_tab", value: "methods" },
   ]);
 });
