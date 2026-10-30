@@ -113,7 +113,7 @@ export function ReviewSummary({
             </Button>
             <ShareButton
               title={title}
-              href={`/variants/${variantId}`}
+              variantId={variantId}
               className={action}
             />
           </div>

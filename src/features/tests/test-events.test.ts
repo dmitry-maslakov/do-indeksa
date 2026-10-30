@@ -48,6 +48,7 @@ const valid = {
     topics: ["eks", "log"],
     size: 5,
   },
+  result_shared: { variant_id: "set-eks-001", method: "clipboard", ok: true },
 };
 
 const invalid = {
@@ -57,6 +58,7 @@ const invalid = {
   test_task_swapped: { ...valid.test_task_swapped, test_session_id: "1" },
   test_left: { ...valid.test_left, exit: "close" },
   variant_compose_started: { mode: "exam", preset: "all", size: 0 },
+  result_shared: { variant_id: "ftn-p1-2025", method: "email", ok: true },
 };
 
 const schemaOf = (name: string) =>
