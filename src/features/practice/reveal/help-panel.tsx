@@ -37,9 +37,11 @@ function Chip({ label, onClick }: { label: string; onClick: () => void }) {
 
 export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
   const t = useTranslations("Solve");
-  const { track, hints, solution, showHint, showSolution } = useTaskSession();
+  const { track, note, hints, solution, showHint, showSolution } =
+    useTaskSession();
   const [answer, setAnswer] = useState(false);
   const open = (part: RevealPart, show: () => void) => () => {
+    if (typeof part !== "number") note({ revealed: true });
     track(
       async (sessionId) =>
         (await saveReveal({ taskId, part, owner: { sessionId } }))?.data ??

@@ -122,7 +122,8 @@ function enqueue<Event extends Name>(
 export const queueEvent = <Event extends Name>(
   name: Event,
   props: BrowserEvents[Event],
-) => enqueue(name, props);
+  path?: string,
+) => enqueue(name, props, path);
 
 function crossReferrer() {
   const [, url] = attempt(() => new URL(document.referrer));

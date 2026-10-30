@@ -69,6 +69,26 @@ describe("POST /api/events", () => {
     expect(rows).toHaveLength(1);
   });
 
+  it("takes the browser events of features", async () => {
+    const left = {
+      name: "task_left",
+      props: {
+        task_id: "eks-001",
+        seq: 1,
+        exit: "navigate",
+        state: "untouched",
+        visible_ms: 4000,
+        typed_len: 0,
+      },
+      ...page,
+    };
+    const text = JSON.stringify({ id: crypto.randomUUID(), events: [left] });
+    expect((await post({}, text)).status).toBe(204);
+    await Promise.all(pending);
+    const [rows] = vi.mocked(insertEvents).mock.calls[0] ?? [];
+    expect(rows).toMatchObject([{ name: "task_left" }]);
+  });
+
   it("records nothing for a visitor who opted out", async () => {
     const response = await post({ cookie: `aid=${aid}; analytics=off` });
     await Promise.all(pending);
