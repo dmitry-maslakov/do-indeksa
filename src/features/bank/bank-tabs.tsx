@@ -1,27 +1,20 @@
 import { useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { positions } from "@/features/catalog/exams";
 
 interface BankTabsProps {
-  topic?: string | null;
-  pending?: boolean;
+  recommended?: string;
 }
 
-export function BankTabs({ topic, pending }: BankTabsProps) {
+export function BankTabs({ recommended }: BankTabsProps) {
   const t = useTranslations("Bank");
-  if (pending) return <Skeleton className="h-10 rounded-xl" />;
+  if (!recommended) return <Skeleton className="h-10 rounded-xl" />;
   return (
     <LinkTabs
       label={t("title")}
       variant="fill"
       items={[
-        {
-          href: `/bank/start/${topic ?? positions[0]?.topic}`,
-          label: t("recommended"),
-          active: false,
-          prefetch: false,
-        },
+        { href: recommended, label: t("recommended"), active: false },
         { href: "/bank", label: t("all"), active: true },
       ]}
     />

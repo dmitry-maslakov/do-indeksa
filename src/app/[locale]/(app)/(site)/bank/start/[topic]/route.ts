@@ -1,5 +1,5 @@
 import { hasLocale } from "next-intl";
-import { nextTask } from "@/features/bank/queue/queue";
+import { nextTasks } from "@/features/bank/queue/queue";
 import { idsByTopic } from "@/features/catalog/tasks";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -14,7 +14,7 @@ export async function GET(
   if (!first || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });
   }
-  const next = await nextTask(topic, await getProfileId());
+  const next = (await nextTasks(await getProfileId())).get(topic);
   const href = getPathname({ href: `/bank/${next ?? first}`, locale });
   return new Response(null, { status: 307, headers: { Location: href } });
 }

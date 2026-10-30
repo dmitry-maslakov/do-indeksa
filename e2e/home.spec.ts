@@ -11,7 +11,7 @@ async function expectFirstVisit(page: Page) {
   await expect(page.getByText("Kreni odavde.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Počni →" })).toHaveAttribute(
     "href",
-    "/bank/start/complex-numbers",
+    /^\/bank\/(?!start\/)[\w-]+$/,
   );
   await expect(
     page.getByRole("link", { name: "Počni varijantu →" }),

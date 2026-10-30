@@ -8,9 +8,10 @@ import { Link } from "@/i18n/navigation";
 export function SuggestionLink({
   topic,
   reason,
+  href,
   className,
   children,
-}: Suggestion & { className: string; children: ReactNode }) {
+}: Suggestion & { href: string; className: string; children: ReactNode }) {
   const shown = useRef<Promise<string | undefined> | null>(null);
 
   useEffect(() => {
@@ -20,8 +21,7 @@ export function SuggestionLink({
 
   return (
     <Link
-      href={`/bank/start/${topic}`}
-      prefetch={false}
+      href={href}
       className={className}
       onClick={async () => {
         const id = await shown.current;

@@ -7,7 +7,9 @@ import { FilterLabel } from "@/features/bank/filters/filter-label";
 import { FilterSearch } from "@/features/bank/filters/filter-search";
 import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
+import { nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { type BankQuery, findTasks } from "@/features/bank/search";
+import { positions } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
 import { getTaskStatuses } from "@/features/progress/progress";
 import type { TaskStatuses } from "@/features/progress/status";
@@ -20,13 +22,19 @@ export async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
-  const statuses = await getTaskStatuses(await getProfileId());
+  const profileId = await getProfileId();
+  const [statuses, starts] = await Promise.all([
+    getTaskStatuses(profileId),
+    nextTasks(profileId),
+  ]);
+  const topic = filters.topic ?? positions[0]?.topic ?? "";
 
   return (
     <BankResults
       filters={filters}
       tasks={findTasks(filters, statuses)}
       statuses={statuses}
+      recommended={topicStart(starts, topic)}
     />
   );
 }
@@ -35,6 +43,7 @@ interface BankResultsProps {
   filters: BankQuery;
   tasks: TaskSummary[];
   statuses?: TaskStatuses;
+  recommended?: string;
   pending?: boolean;
 }
 
@@ -42,6 +51,7 @@ export function BankResults({
   filters,
   tasks,
   statuses,
+  recommended,
   pending = false,
 }: BankResultsProps) {
   const t = useTranslations("Bank");
@@ -51,7 +61,7 @@ export function BankResults({
   return (
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
-        <BankTabs topic={filters.topic} pending={pending} />
+        <BankTabs recommended={recommended} />
         <BankFilters variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
@@ -64,7 +74,7 @@ export function BankResults({
       </aside>
       <section className="flex min-w-0 flex-col gap-3">
         <div className="flex flex-col gap-3 px-1 lg:hidden">
-          <BankTabs topic={filters.topic} pending={pending} />
+          <BankTabs recommended={recommended} />
           <div className="flex gap-2">
             <FilterSearch
               variant="card"

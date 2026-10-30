@@ -13,6 +13,7 @@ export interface TopicRowProps
   extends Pick<TopicProgress, "topic" | "pct" | "state"> {
   name: string;
   look: TopicLook;
+  href: string;
 }
 
 const bar: Record<TopicState, string> = {
@@ -29,14 +30,13 @@ const pill: Record<TopicState, string> = {
   notStarted: "bg-muted text-subtle",
 };
 
-export function TopicRow({ topic, name, look, pct, state }: TopicRowProps) {
+export function TopicRow({ name, look, pct, state, href }: TopicRowProps) {
   const t = useTranslations("Home");
 
   return (
     <li>
       <Link
-        href={`/bank/start/${topic}`}
-        prefetch={false}
+        href={href}
         className="flex items-center gap-3 border-b py-3 text-sm md:gap-4 md:text-base"
       >
         <TopicIcon {...look} size="md" />

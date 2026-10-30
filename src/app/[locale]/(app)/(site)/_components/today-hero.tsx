@@ -6,7 +6,11 @@ import type { Suggestion } from "@/features/progress/topic-progress";
 import { HeroBackdrop } from "./hero-backdrop";
 import { SuggestionLink } from "./suggestion-link";
 
-export function TodayHero({ topic, reason }: Suggestion) {
+export function TodayHero({
+  topic,
+  reason,
+  href,
+}: Suggestion & { href: string }) {
   const t = useTranslations("Home");
   const locale = useLocale();
 
@@ -36,6 +40,7 @@ export function TodayHero({ topic, reason }: Suggestion) {
           <SuggestionLink
             topic={topic}
             reason={reason}
+            href={href}
             className={buttonVariants({
               variant: "lime",
               className: "h-12 rounded-xl px-6 font-semibold text-base",
