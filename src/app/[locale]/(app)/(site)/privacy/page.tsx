@@ -61,6 +61,10 @@ export default function PrivacyPage() {
         <Section title={t("cookiesTitle")}>
           <p>{t("cookies")}</p>
         </Section>
+        <Section title={t("analyticsTitle")}>
+          <p>{t("analytics")}</p>
+          <p>{t("analyticsOff")}</p>
+        </Section>
         <Section title={t("rightsTitle")}>
           <p>{t.rich("rights", links)}</p>
           <DeleteAccount />
