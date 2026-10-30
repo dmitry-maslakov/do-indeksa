@@ -1,16 +1,16 @@
-import { answer, expect, finish, test } from "./fixtures";
+import {
+  aidOf,
+  answer,
+  expect,
+  finish,
+  flush,
+  needsRecorder,
+  type Row,
+  rows,
+  test,
+} from "./fixtures";
 
-interface Row {
-  name: string;
-  aid: string;
-  source: string;
-  utm_source: string;
-  props: Record<string, unknown>;
-}
-
-const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
-
-test.skip(!recorder, "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder");
+needsRecorder();
 
 const testEvents = new Set([
   "variant_compose_started",
@@ -23,13 +23,8 @@ const testEvents = new Set([
   "result_shared",
 ]);
 
-const rowsOf = async (aid?: string) =>
-  ((await (await fetch(`${recorder}/rows`)).json()) as Row[]).filter(
-    (row) => row.aid === aid,
-  );
-
-const recorded = async (aid?: string) =>
-  (await rowsOf(aid)).filter((row) => testEvents.has(row.name));
+const testRows = (aid?: string) =>
+  rows((row) => row.aid === aid && testEvents.has(row.name));
 
 const summary = ({ name, props }: Row) =>
   [name, props.nav ?? props.from ?? props.exit ?? props.method, props.position]
@@ -66,11 +61,11 @@ test("a composed test records its start, views, swap and finish", async ({
   await expect(
     page.getByRole("button", { name: "Link je kopiran" }),
   ).toBeVisible();
-  await page.evaluate(() => dispatchEvent(new Event("pagehide")));
+  await flush(page);
 
-  const aid = (await context.cookies()).find((c) => c.name === "aid")?.value;
+  const aid = await aidOf(page);
   await expect
-    .poll(async () => (await recorded(aid)).map(summary).toSorted())
+    .poll(async () => (await testRows(aid)).map(summary).toSorted())
     .toEqual(
       [
         "variant_compose_started",
@@ -89,8 +84,8 @@ test("a composed test records its start, views, swap and finish", async ({
       ].toSorted(),
     );
 
-  const rows = await recorded(aid);
-  const one = (name: string) => rows.find((row) => row.name === name)?.props;
+  const events = await testRows(aid);
+  const one = (name: string) => events.find((row) => row.name === name)?.props;
   const swapped = one("test_task_swapped");
   const facts = { variant_kind: "custom", tasks: 10, minutes: 240 };
   expect(one("variant_compose_started")).toEqual({
@@ -99,7 +94,7 @@ test("a composed test records its start, views, swap and finish", async ({
     size: 10,
   });
   expect(
-    rows
+    events
       .filter(({ name }) => name === "test_started")
       .map(({ props }) => props),
   ).toEqual(
@@ -122,7 +117,7 @@ test("a composed test records its start, views, swap and finish", async ({
   expect(one("test_resumed")).toMatchObject({
     test_session_id: swapped?.test_session_id,
   });
-  const finished = rows.find(({ name }) => name === "test_finished");
+  const finished = events.find(({ name }) => name === "test_finished");
   expect(finished).toMatchObject({
     source: "server",
     props: {
@@ -152,9 +147,9 @@ test("a composed test records its start, views, swap and finish", async ({
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await expect
     .poll(async () =>
-      (await rowsOf(aid)).some(
-        (row) => row.name === "page_view" && row.utm_source === "share",
+      (await rows((row) => row.aid === aid && row.name === "page_view")).map(
+        ({ utm_source }) => utm_source,
       ),
     )
-    .toBe(true);
+    .toContain("share");
 });

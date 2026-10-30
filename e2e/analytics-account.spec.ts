@@ -1,29 +1,22 @@
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
-import { answer, expect, test } from "./fixtures";
+import {
+  answer,
+  expect,
+  flush,
+  needsRecorder,
+  noId,
+  propsOf,
+  type Row,
+  recorded,
+  rows,
+  test,
+} from "./fixtures";
 
-interface Row {
-  name: string;
-  aid: string;
-  profile_id: string;
-  props: Record<string, unknown>;
-}
+needsRecorder();
 
-const recorder = process.env.ANALYTICS_CLICKHOUSE_URL;
-const noId = "00000000-0000-0000-0000-000000000000";
-
-test.skip(!recorder, "needs ANALYTICS_CLICKHOUSE_URL pointing at the recorder");
-
-const recorded = async (name: string, match: (row: Row) => boolean) =>
-  ((await (await fetch(`${recorder}/rows`)).json()) as Row[]).filter(
-    (row) => row.name === name && match(row),
-  );
-
-const aidOf = async (page: Page) =>
-  (await page.context().cookies()).find(({ name }) => name === "aid")?.value;
-
-const flush = (page: Page) =>
-  page.evaluate(() => dispatchEvent(new Event("pagehide")));
+const named = (name: string, match: (row: Row) => boolean) =>
+  rows((row) => row.name === name && match(row));
 
 const accountProfile = async (db: Client, userId: string) =>
   (await db.query(`select id from profiles where user_id = $1`, [userId]))
@@ -34,8 +27,7 @@ async function solveAsGuest(page: Page) {
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
-  const aid = await aidOf(page);
-  const created = () => recorded("profile_created", (row) => row.aid === aid);
+  const created = () => recorded(page, "profile_created");
   await expect.poll(created).toHaveLength(1);
   const [guest] = await created();
   expect(guest?.props).toEqual({ kind: "guest" });
@@ -52,7 +44,7 @@ test("an account gets and records its profile on its first action", async ({
   await expect.poll(() => accountProfile(auth.db, userId)).toBeDefined();
   const id = await accountProfile(auth.db, userId);
   await expect
-    .poll(() => recorded("profile_created", (row) => row.profile_id === id))
+    .poll(() => named("profile_created", (row) => row.profile_id === id))
     .toEqual([expect.objectContaining({ props: { kind: "account" } })]);
 });
 
@@ -62,7 +54,7 @@ test("a new account takes over the guest profile", async ({ page, auth }) => {
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
   await page.goto("/stats");
   await expect
-    .poll(() => recorded("profile_merged", (row) => row.profile_id === guest))
+    .poll(() => named("profile_merged", (row) => row.profile_id === guest))
     .toEqual([
       expect.objectContaining({
         props: {
@@ -83,12 +75,11 @@ test("signing in on a task page takes over the guest profile", async ({
   auth,
 }) => {
   const guest = await solveAsGuest(page);
-  const aid = await aidOf(page);
   const { userId, profileId } = await auth.signIn();
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
   await page.goto("/bank/eks-002");
   await expect
-    .poll(() => recorded("profile_merged", (row) => row.aid === aid))
+    .poll(() => recorded(page, "profile_merged"))
     .toEqual([
       expect.objectContaining({
         props: expect.objectContaining({ outcome: "claimed" }),
@@ -99,9 +90,7 @@ test("signing in on a task page takes over the guest profile", async ({
   await expect
     .poll(async () => (await auth.db.query(opened, [guest])).rowCount)
     .toBe(1);
-  expect(
-    await recorded("profile_created", (row) => row.aid === aid),
-  ).toHaveLength(1);
+  expect(await recorded(page, "profile_created")).toHaveLength(1);
 });
 
 test("an account with a profile takes in the guest", async ({ page, auth }) => {
@@ -109,9 +98,7 @@ test("an account with a profile takes in the guest", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
   await page.goto("/stats");
   await expect
-    .poll(() =>
-      recorded("profile_merged", (row) => row.profile_id === profileId),
-    )
+    .poll(() => named("profile_merged", (row) => row.profile_id === profileId))
     .toEqual([
       expect.objectContaining({
         props: {
@@ -130,15 +117,14 @@ test("the sign-in strip is recorded once per visit to the page", async ({
   page,
 }) => {
   await solveAsGuest(page);
-  const aid = await aidOf(page);
   const prompts = async () =>
     (
       await Promise.all(
         ["sign_in_prompt_shown", "sign_in_prompt_closed"].map((name) =>
-          recorded(name, (row) => row.aid === aid),
+          propsOf(page, name),
         ),
       )
-    ).map((rows) => rows.map(({ props }) => props.from));
+    ).map((events) => events.map(({ from }) => from));
   const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
   const nav = page.getByRole("banner").getByRole("navigation");
 
@@ -168,12 +154,9 @@ test("a Google button records where sign-in started", async ({ page }) => {
     .getByRole("button", { name: "Prijavi se" })
     .click();
   await signInRequest;
-  const aid = await aidOf(page);
   await expect
     .poll(async () =>
-      (await recorded("sign_in_started", (row) => row.aid === aid)).map(
-        ({ props }) => props.from,
-      ),
+      (await propsOf(page, "sign_in_started")).map(({ from }) => from),
     )
     .toEqual(["header"]);
 });
@@ -187,7 +170,7 @@ test("signing out is recorded with the profile", async ({ page, auth }) => {
     page.getByRole("banner").getByRole("button", { name: "Prijavi se" }),
   ).toBeVisible();
   await expect
-    .poll(() => recorded("signed_out", (row) => row.profile_id === profileId))
+    .poll(() => named("signed_out", (row) => row.profile_id === profileId))
     .toHaveLength(1);
 });
 
@@ -209,7 +192,7 @@ test("deleting the account queues its analytics for erasure", async ({
     [profileId],
   );
   expect(queued.rowCount).toBe(1);
-  const deleted = () => recorded("account_deleted", () => true);
+  const deleted = () => named("account_deleted", () => true);
   await expect.poll(deleted).not.toEqual([]);
   for (const row of await deleted())
     expect(row).toMatchObject({ aid: noId, profile_id: noId });
