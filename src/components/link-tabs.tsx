@@ -1,6 +1,9 @@
+"use client";
+
 import { cva } from "class-variance-authority";
 import type { Ref } from "react";
 import { Link } from "@/i18n/navigation";
+import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 
 const list = cva("flex", {
   variants: {
@@ -30,10 +33,12 @@ interface LinkTabsProps {
     active: boolean;
     prefetch?: boolean;
     intent?: string;
+    value?: string;
   }[];
   label: string;
   variant: "segmented" | "fill" | "pill";
   scroll?: boolean;
+  control?: BrowserEvents["control_used"]["control"];
   ref?: Ref<HTMLElement>;
 }
 
@@ -42,6 +47,7 @@ export function LinkTabs({
   label,
   variant,
   scroll = false,
+  control,
   ref,
 }: LinkTabsProps) {
   return (
@@ -56,6 +62,10 @@ export function LinkTabs({
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}
           className={tab({ variant })}
+          onClick={
+            control &&
+            (() => queueEvent("control_used", { control, value: item.value }))
+          }
         >
           {item.label}
         </Link>

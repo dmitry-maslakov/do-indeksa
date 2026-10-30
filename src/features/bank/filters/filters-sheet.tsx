@@ -10,6 +10,7 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { queueEvent } from "@/lib/analytics-browser";
 
 interface FiltersSheetProps {
   active: number;
@@ -21,7 +22,11 @@ export function FiltersSheet({ active, count, children }: FiltersSheetProps) {
   const t = useTranslations("Bank");
 
   return (
-    <Drawer>
+    <Drawer
+      onOpenChange={(open) =>
+        open && queueEvent("control_used", { control: "bank_filters_sheet" })
+      }
+    >
       <DrawerTrigger
         render={
           <Button

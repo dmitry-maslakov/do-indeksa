@@ -6,8 +6,8 @@ import { sources, statusFilters } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
 import { levels } from "@/features/catalog/level";
 import { topics } from "@/features/catalog/topics";
-import { Link } from "@/i18n/navigation";
 import { FilterSelect } from "./filter-select";
+import { ResetLink } from "./reset-link";
 
 interface BankFiltersProps {
   variant?: ComponentProps<typeof NativeSelect>["variant"];
@@ -61,12 +61,7 @@ export function BankFilters({ variant, children }: BankFiltersProps) {
           </NativeSelectOption>
         ))}
       </FilterSelect>
-      <Link
-        href="/bank"
-        className="w-fit text-muted-foreground text-sm underline decoration-1 underline-offset-3 hover:text-foreground"
-      >
-        {t("reset")}
-      </Link>
+      <ResetLink className="w-fit text-muted-foreground text-sm underline decoration-1 underline-offset-3 hover:text-foreground" />
     </>
   );
 }

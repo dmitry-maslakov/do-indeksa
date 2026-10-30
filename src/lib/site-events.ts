@@ -56,6 +56,20 @@ const requestFailed = defineEvent("request_failed", {
   status: z.int().min(100).max(599).optional(),
 });
 
+const controlUsed = defineEvent("control_used", {
+  control: z.enum([
+    "topic_map_filter",
+    "other_topic",
+    "rail_sheet",
+    "bank_filters_sheet",
+    "bank_filters_reset",
+    "stats_by",
+    "theory_tab",
+    "theory_section_link",
+  ]),
+  value: text.regex(/^[\w-]+$/).optional(),
+});
+
 const listPageLoaded = defineEvent("list_page_loaded", {
   list: z.enum(["bank", "tests"]),
   offset: z.int().min(1),
@@ -77,5 +91,6 @@ export const clientEvents = [
   webVital,
   errorShown,
   requestFailed,
+  controlUsed,
   listPageLoaded,
 ] as const;

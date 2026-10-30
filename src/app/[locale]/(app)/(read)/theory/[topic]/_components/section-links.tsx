@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { RailLink } from "@/components/rail";
+import { queueEvent } from "@/lib/analytics-browser";
 
 interface SectionLinksProps {
   base: string;
@@ -37,7 +38,13 @@ export function SectionLinks({ base, sections }: SectionLinksProps) {
       key={s.id}
       href={`${base}#${s.id}`}
       current={s.id === current}
-      onClick={() => setCurrent(s.id)}
+      onClick={() => {
+        setCurrent(s.id);
+        queueEvent("control_used", {
+          control: "theory_section_link",
+          value: s.id,
+        });
+      }}
       className="px-3 py-2.5 leading-snug"
     >
       {s.title}
