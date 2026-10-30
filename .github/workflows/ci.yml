@@ -93,6 +93,7 @@ jobs:
       TRUSTED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
       DATABASE_URL: postgres://ci:ci@localhost:5432/ci
       BETTER_AUTH_SECRET: smoke-test-not-a-secret-smoke-test
+      ANALYTICS_CLICKHOUSE_URL: http://localhost:8124
     steps:
       - run: |
           docker pull -q mirror.gcr.io/moby/buildkit:buildx-stable-1 > /dev/null 2>&1 &
@@ -149,7 +150,7 @@ jobs:
       - name: Smoke test
         run: |
           docker run -d --name web --network host -e DATABASE_URL \
-            -e BETTER_AUTH_SECRET \
+            -e BETTER_AUTH_SECRET -e ANALYTICS_CLICKHOUSE_URL \
             -e BETTER_AUTH_URL=http://localhost:3000 \
             -e GOOGLE_CLIENT_ID=smoke -e GOOGLE_CLIENT_SECRET=smoke app
           for _ in $(seq 30); do curl -fs localhost:3000/api/healthz && exit 0; sleep 1; done
