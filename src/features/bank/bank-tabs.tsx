@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { LinkTabs } from "@/components/link-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { intentOf } from "@/lib/analytics-browser";
 
 interface BankTabsProps {
   recommended?: string;
@@ -19,6 +20,7 @@ export function BankTabs({ recommended }: BankTabsProps) {
           label: t("recommended"),
           active: false,
           prefetch: false,
+          intent: intentOf({ via: "picker", placement: "bank_tab" }),
         },
         { href: "/bank", label: t("all"), active: true },
       ]}

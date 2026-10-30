@@ -6,6 +6,7 @@ import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
+import { rememberIntent } from "@/lib/analytics-browser";
 import { QueueList } from "./queue-list";
 
 export interface RailProps {
@@ -45,7 +46,9 @@ export function Rail({
           value={topic}
           onChange={(e) => {
             const next = topics.find((x) => x.id === e.target.value);
-            if (next) router.push(next.href);
+            if (!next) return;
+            rememberIntent({ via: "picker", placement: "topic_select" });
+            router.push(next.href);
           }}
         >
           {topics.map((x) => (

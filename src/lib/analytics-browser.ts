@@ -24,6 +24,12 @@ interface Queued {
   at: number;
 }
 
+export interface Intent {
+  via: string;
+  placement?: string;
+  rank?: number;
+}
+
 interface BrowserExtras {
   globalPrivacyControl?: boolean;
   connection?: {
@@ -37,6 +43,7 @@ const flushMs = 5 * secondMs;
 const flushBytes = batchBytes / 2;
 const visitKey = "visit";
 const browser = () => navigator as Navigator & BrowserExtras;
+const historyIntent: Intent = { via: "history" };
 
 let queue: Queued[] = [];
 let queuedBytes = 0;
@@ -45,6 +52,8 @@ let loadPath = "/";
 let pageViews = 0;
 let lastRoute: RouteTemplate | undefined;
 let transition: { nav: Navigation; at: number } | undefined;
+let pendingIntent: Intent | undefined;
+let intent: Intent | undefined;
 
 const readCookie = (name: string) =>
   document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1];
@@ -148,8 +157,30 @@ function startVisit() {
   );
 }
 
+export const intentOf = (intent: Intent) => JSON.stringify(intent);
+
+export const rememberIntent = (value: Intent) => {
+  pendingIntent = value;
+};
+
+export function takeIntent() {
+  const taken = intent;
+  intent = undefined;
+  return taken;
+}
+
+function clicked(event: MouseEvent) {
+  if (event.button || event.metaKey || event.ctrlKey || event.shiftKey) return;
+  const value = (event.target as Element)
+    .closest?.("[data-intent]")
+    ?.getAttribute("data-intent");
+  pendingIntent = value ? attempt(() => JSON.parse(value))[1] : undefined;
+}
+
 export function startAnalytics() {
   loadPath = currentPath();
+  intent = loadNavigation() === "load" ? undefined : historyIntent;
+  addEventListener("click", clicked, true);
   addEventListener("pagehide", flush);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") flush();
@@ -160,6 +191,8 @@ export function startAnalytics() {
 
 export function navigationStarted(nav: Navigation) {
   transition = { nav, at: performance.now() };
+  intent = nav === "traverse" ? historyIntent : pendingIntent;
+  pendingIntent = undefined;
 }
 
 function loadNavigation(): Navigation {

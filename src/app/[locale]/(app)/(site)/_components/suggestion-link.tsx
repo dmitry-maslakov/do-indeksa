@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { openSuggestion, showSuggestion } from "@/features/progress/actions";
 import type { Suggestion } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 
 export function SuggestionLink({
   topic,
@@ -23,6 +24,7 @@ export function SuggestionLink({
     <Link
       href={href}
       prefetch={false}
+      data-intent={intentOf({ via: "picker", placement: "home_hero" })}
       className={className}
       onClick={async () => {
         const id = await shown.current;

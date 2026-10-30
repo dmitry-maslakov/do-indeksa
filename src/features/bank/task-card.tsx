@@ -35,9 +35,10 @@ function Source({ exam }: Pick<BankCard, "exam">) {
 
 interface TaskCardProps {
   card: BankCard;
+  intent: string;
 }
 
-export function TaskCard({ card }: TaskCardProps) {
+export function TaskCard({ card, intent }: TaskCardProps) {
   const t = useTranslations("Bank");
 
   return (
@@ -56,6 +57,7 @@ export function TaskCard({ card }: TaskCardProps) {
       <Link
         href={`/bank/${card.id}`}
         prefetch={false}
+        data-intent={intent}
         className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
       >
         <MathHtml

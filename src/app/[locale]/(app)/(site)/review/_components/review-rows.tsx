@@ -14,6 +14,7 @@ import type {
 } from "@/features/tests/review";
 import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
 
 interface ReviewRowsProps {
@@ -101,6 +102,7 @@ function Row({ row, comparison, testSessionId }: RowProps) {
           >
             <Link
               href={`/bank/${row.taskId}`}
+              data-intent={intentOf({ via: "review", placement: "review_row" })}
               className="ml-auto inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
             >
               {t("toTask")}
