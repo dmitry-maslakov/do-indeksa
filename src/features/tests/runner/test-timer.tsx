@@ -3,6 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { queueEvent } from "@/lib/analytics-browser";
 import { minuteMs, secondMs } from "@/lib/dates";
 import type { LocalTest } from "./test-store";
 
@@ -63,7 +64,13 @@ export function TestTimer({ timing }: { timing: Timing }) {
         </span>
         <button
           type="button"
-          onClick={() => setHidden(!hidden)}
+          onClick={() => {
+            setHidden(!hidden);
+            queueEvent("control_used", {
+              control: "timer",
+              value: hidden ? "show" : "hide",
+            });
+          }}
           className={cn(
             "rounded-sm text-[13px] text-subtle outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
             !hidden && "mb-2",

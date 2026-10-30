@@ -6,7 +6,7 @@ import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
-import { intentOf } from "@/lib/analytics-browser";
+import { controlOf, intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
 import { ShareButton } from "./share-button";
 
@@ -100,6 +100,7 @@ export function ReviewSummary({
                       via: "review",
                       placement: "similar",
                     })}
+                    data-control={controlOf({ control: "practice_similar" })}
                   />
                 }
                 nativeButton={false}

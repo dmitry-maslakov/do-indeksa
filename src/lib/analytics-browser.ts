@@ -161,6 +161,9 @@ function startVisit() {
 
 export const intentOf = (intent: Intent) => JSON.stringify(intent);
 
+export const controlOf = (control: BrowserEvents["control_used"]) =>
+  JSON.stringify(control);
+
 export const rememberIntent = (value: Intent | null) => {
   pendingIntent = value;
 };
@@ -171,12 +174,19 @@ export function takeIntent() {
   return taken;
 }
 
+const dataOf = (element: Element | null | undefined, name: string) => {
+  const value = element?.getAttribute(name);
+  return value ? attempt(() => JSON.parse(value))[1] : undefined;
+};
+
 function clicked(event: MouseEvent) {
+  const target = event.target as Element;
+  const control = target.closest?.("[data-control]");
+  if (control && !control.matches("details[open] > summary"))
+    enqueue("control_used", dataOf(control, "data-control"));
   if (event.button || event.metaKey || event.ctrlKey || event.shiftKey) return;
-  const value = (event.target as Element)
-    .closest?.("[data-intent]")
-    ?.getAttribute("data-intent");
-  pendingIntent = value ? attempt(() => JSON.parse(value))[1] : null;
+  pendingIntent =
+    dataOf(target.closest?.("[data-intent]"), "data-intent") ?? null;
 }
 
 const sharedIntent = (): Intent | undefined =>

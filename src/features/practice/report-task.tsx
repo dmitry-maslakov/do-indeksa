@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { reportKinds } from "@/db/columns";
+import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { reportTask } from "./actions";
 
@@ -20,7 +21,12 @@ export function ReportTask({ taskId }: { taskId: string }) {
   const errorText = useErrorText();
 
   return (
-    <details>
+    <details
+      onToggle={(event) =>
+        event.currentTarget.open &&
+        queueEvent("control_used", { control: "report_form" })
+      }
+    >
       <summary className="flex cursor-pointer list-none items-center gap-2 text-sm text-subtle [&::-webkit-details-marker]:hidden">
         <FlagIcon className="size-4" />
         {t("open")}

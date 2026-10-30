@@ -14,7 +14,7 @@ import type {
 } from "@/features/tests/review";
 import type { VariantTask } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
-import { intentOf } from "@/lib/analytics-browser";
+import { controlOf, intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
 
 interface ReviewRowsProps {
@@ -62,7 +62,13 @@ function Row({ row, comparison, testSessionId }: RowProps) {
   return (
     <li className="border-b">
       <details className="group/row">
-        <summary className="flex cursor-pointer list-none items-center gap-4 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+        <summary
+          data-control={controlOf({
+            control: "review_row",
+            value: String(row.number),
+          })}
+          className="flex cursor-pointer list-none items-center gap-4 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden"
+        >
           <span className="w-5.5 shrink-0 font-semibold text-muted-foreground text-sm tabular-nums">
             {row.number}
           </span>
