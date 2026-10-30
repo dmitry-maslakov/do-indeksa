@@ -1,9 +1,14 @@
-import { sql } from "drizzle-orm";
+import { createClient } from "@clickhouse/client";
+import { inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
+import { minuteMs } from "@/lib/dates";
+import { eraseAnalytics } from "./analytics-erasure";
+import { analyticsErasures } from "./schema";
 
-const db = drizzle(
-  process.env.DATABASE_URL_DIRECT ?? process.env.DATABASE_URL ?? "",
-);
+const db = drizzle({
+  connection: process.env.DATABASE_URL_DIRECT ?? process.env.DATABASE_URL ?? "",
+  casing: "snake_case",
+});
 
 const stale = sql`
   select p.id from profiles p
@@ -29,4 +34,25 @@ for (;;) {
   removed += rowCount;
 }
 console.log(`removed ${removed} guest profiles`);
+
+const analyticsUrl = process.env.ANALYTICS_CLEANUP_URL;
+if (analyticsUrl) {
+  const ids = (
+    await db.select({ id: analyticsErasures.profileId }).from(analyticsErasures)
+  ).map(({ id }) => id);
+  if (ids.length) {
+    const client = createClient({
+      url: analyticsUrl,
+      request_timeout: 10 * minuteMs,
+    });
+    const erased = await eraseAnalytics(client, ids);
+    await client.close();
+    await db
+      .delete(analyticsErasures)
+      .where(inArray(analyticsErasures.profileId, ids));
+    console.log(
+      `erased analytics of ${erased.profiles} profiles and ${erased.devices} devices`,
+    );
+  }
+}
 await db.$client.end();

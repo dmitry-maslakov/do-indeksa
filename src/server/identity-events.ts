@@ -12,3 +12,5 @@ export const signedIn = defineEvent("signed_in", {
   new_account: z.boolean(),
   had_guest: z.boolean(),
 });
+
+export const accountDeleted = defineEvent("account_deleted", {});

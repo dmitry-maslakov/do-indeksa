@@ -219,3 +219,8 @@ export const reports = pgTable("reports", {
   profileId: uuid().references(() => profiles.id, { onDelete: "set null" }),
   createdAt: stampNow(),
 });
+
+export const analyticsErasures = pgTable("analytics_erasures", {
+  profileId: uuid().primaryKey(),
+  requestedAt: stampNow(),
+});

@@ -46,7 +46,7 @@ A profile is the student, and the better-auth user is only how they sign in. Tas
 
 Feature functions take the profile id as an argument and scope every query to it. The id comes from `src/server/profile.ts`, from the session or the cookie, never from request input.
 
-When someone signs in while holding a guest cookie, the account takes over the guest profile. If the account already has a profile, the guest's sessions, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts or tests.
+When someone signs in while holding a guest cookie, the account takes over the guest profile. If the account already has a profile, the guest's sessions, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts or tests. Deleting an account puts its profile id in `analytics_erasures`, and the same job then deletes the analytics of that profile, of the guest profiles merged into it and of the browsers it was used in: the events in ClickHouse and the rows in every OpenPanel table the cleanup user is granted.
 
 ### A sitting on a task is a task session
 
