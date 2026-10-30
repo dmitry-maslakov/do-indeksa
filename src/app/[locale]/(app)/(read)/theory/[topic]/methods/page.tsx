@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { plain } from "@/lib/markdown";
 import { TopicHero } from "../_components/hero";
 import { BackBar, PhoneTabs } from "../_components/phone-nav";
+import { TheoryArticle } from "../_components/theory-article";
 
 export function generateStaticParams() {
   return theories.map((t) => ({ topic: t.topic }));
@@ -47,7 +48,11 @@ export default async function MethodsPage({
   return (
     <>
       <BackBar href="/theory" label={t("title")} />
-      <article className="flex flex-col gap-5.5 md:gap-10">
+      <TheoryArticle
+        topic={topic}
+        page="methods"
+        className="flex flex-col gap-5.5 md:gap-10"
+      >
         <TopicHero topic={topic} />
         <PhoneTabs topic={topic} methods={methods.length} active="methods" />
         <ul className="flex flex-col gap-2">
@@ -69,7 +74,7 @@ export default async function MethodsPage({
             </li>
           ))}
         </ul>
-      </article>
+      </TheoryArticle>
     </>
   );
 }
