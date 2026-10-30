@@ -82,6 +82,12 @@ const variantComposeStarted = defineEvent("variant_compose_started", {
   size: ordinal,
 });
 
+const resultShared = defineEvent("result_shared", {
+  variant_id: text,
+  method: z.enum(["native", "clipboard"]),
+  ok: z.boolean(),
+});
+
 export const clientEvents = [
   testStarted,
   testResumed,
@@ -89,6 +95,7 @@ export const clientEvents = [
   testTaskSwapped,
   testLeft,
   variantComposeStarted,
+  resultShared,
 ] as const;
 
 declare module "@/lib/analytics-browser" {

@@ -5,15 +5,16 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPathname } from "@/i18n/navigation";
+import { queueEvent } from "@/lib/analytics-browser";
 import { secondMs } from "@/lib/dates";
 
 interface ShareButtonProps {
   title: string;
-  href: string;
+  variantId: string;
   className?: string;
 }
 
-export function ShareButton({ title, href, className }: ShareButtonProps) {
+export function ShareButton({ title, variantId, className }: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const [copied, setCopied] = useState(false);
@@ -21,17 +22,25 @@ export function ShareButton({ title, href, className }: ShareButtonProps) {
   async function share() {
     const data = {
       title,
-      url: location.origin + getPathname({ href, locale }),
+      url:
+        location.origin +
+        getPathname({ href: `/variants/${variantId}`, locale }),
     };
-    if (matchMedia("(pointer: coarse)").matches && navigator.canShare?.(data)) {
-      await navigator.share(data).catch(() => undefined);
-      return;
-    }
-    const written = await navigator.clipboard
-      .writeText(data.url)
-      .then(() => true)
-      .catch(() => false);
-    if (!written) return;
+    const native =
+      matchMedia("(pointer: coarse)").matches && navigator.canShare?.(data);
+    const sent = native
+      ? navigator.share(data)
+      : navigator.clipboard.writeText(data.url);
+    const ok = await sent.then(
+      () => true,
+      () => false,
+    );
+    queueEvent("result_shared", {
+      variant_id: variantId,
+      method: native ? "native" : "clipboard",
+      ok,
+    });
+    if (native || !ok) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2 * secondMs);
   }
