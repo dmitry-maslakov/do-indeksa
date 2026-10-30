@@ -3,8 +3,10 @@
 import { cn } from "cn";
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
+import { queueEvent } from "@/lib/analytics-browser";
 import { GoogleLogo } from "./google-logo";
 import { nudgeAfterSolved } from "./nudge";
 import { GoogleSignInButton } from "./sign-in-button";
@@ -43,12 +45,20 @@ function DevicesIcon() {
 
 interface SignInStripProps {
   from: "result" | "stats" | "task";
+  solved?: number;
   children: ReactNode;
 }
 
-export function SignInStrip({ from, children }: SignInStripProps) {
+export function SignInStrip({ from, solved, children }: SignInStripProps) {
   const t = useTranslations("SignInStrip");
+  const { bfcacheId } = useRouter();
   const [open, setOpen] = useState(true);
+  const shownOn = useRef<string>(undefined);
+  useEffect(() => {
+    if (!open || shownOn.current === bfcacheId) return;
+    shownOn.current = bfcacheId;
+    queueEvent("sign_in_prompt_shown", { from, solved });
+  }, [open, bfcacheId, from, solved]);
   if (!open) return null;
 
   return (
@@ -73,7 +83,10 @@ export function SignInStrip({ from, children }: SignInStripProps) {
           variant="ghost"
           size="icon-sm"
           aria-label={t("close")}
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            queueEvent("sign_in_prompt_closed", { from });
+          }}
         >
           <XIcon className="text-subtle" />
         </Button>
@@ -92,7 +105,9 @@ export function TaskSignInStrip({ solved }: { solved: number }) {
   }, [show]);
   return (
     show && (
-      <SignInStrip from="task">{t("task", { count: solved })}</SignInStrip>
+      <SignInStrip from="task" solved={solved}>
+        {t("task", { count: solved })}
+      </SignInStrip>
     )
   );
 }

@@ -79,7 +79,7 @@ export async function forgetGuest() {
   });
 }
 
-async function profileIdOf(userId?: string, token?: string) {
+export async function profileIdOf(userId?: string, token?: string) {
   const own = userId && (await accountProfileOf(userId));
   if (own) return own;
   return token ? guestProfileOf(token) : undefined;

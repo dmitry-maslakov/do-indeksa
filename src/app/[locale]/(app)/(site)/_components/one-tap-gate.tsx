@@ -11,7 +11,7 @@ export async function OneTapGate() {
   const solved = profileId ? await getSolved(profileId) : [];
   return (
     isReturningGuest(solved.map((s) => s.createdAt)) && (
-      <GoogleOneTap clientId={env.GOOGLE_CLIENT_ID} />
+      <GoogleOneTap clientId={env.GOOGLE_CLIENT_ID} solved={solved.length} />
     )
   );
 }

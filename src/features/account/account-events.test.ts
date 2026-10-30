@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { profileMerged } from "./account-events";
+import { clientEvents, profileMerged } from "./account-events";
 
-const events = [profileMerged];
+const events = [profileMerged, ...clientEvents];
 
 const schemaOf = (name: string) =>
   events.find((event) => event.name === name)?.props;
@@ -17,6 +17,14 @@ const valid = {
     own_had_progress: false,
     guest_age_days: 3,
   },
+  sign_in_prompt_shown: { from: "task", solved: 5 },
+  sign_in_prompt_closed: {
+    from: "one_tap",
+    moment: "dismissed",
+    reason: "cancel_called",
+  },
+  sign_in_started: { from: "privacy" },
+  signed_out: {},
 };
 
 const invalid = {
@@ -28,6 +36,10 @@ const invalid = {
     own_had_progress: false,
     guest_age_days: 0,
   },
+  sign_in_prompt_shown: { from: "header" },
+  sign_in_prompt_closed: { from: "one_tap", moment: "no thanks" },
+  sign_in_started: { from: "footer" },
+  signed_out: { profile_id: guest },
 };
 
 describe("account events", () => {

@@ -8,10 +8,15 @@ import { io } from "next/cache";
 import { headers } from "next/headers";
 import { cache } from "react";
 import { daySeconds } from "@/lib/dates";
+import { track } from "./analytics";
 import { db } from "./db";
 import { env } from "./env";
+import { signedIn } from "./identity-events";
+import { guestToken, profileIdOf } from "./profile";
 import { reportServerError } from "./report";
-import { signUpSource } from "./sign-up-source";
+import { isOneTap, signInSource, signUpSource } from "./sign-up-source";
+
+const signUps = new Set<string>();
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -45,6 +50,30 @@ export const auth = betterAuth({
         before: async (user, ctx) => ({
           data: { ...user, signUpSource: await signUpSource(ctx?.path) },
         }),
+        after: async (user) => {
+          signUps.add(user.id);
+        },
+      },
+    },
+    session: {
+      create: {
+        after: async (session, ctx) => {
+          try {
+            const token = await guestToken();
+            await track(
+              signedIn,
+              {
+                method: isOneTap(ctx?.path) ? "one_tap" : "google",
+                from: await signInSource(),
+                new_account: signUps.delete(session.userId),
+                had_guest: Boolean(token),
+              },
+              { profileId: await profileIdOf(session.userId, token) },
+            );
+          } catch (error) {
+            reportServerError(error);
+          }
+        },
       },
     },
   },

@@ -7,7 +7,7 @@ import type { SignInSource } from "@/server/sign-up-source";
 import { signIn } from "./auth-client";
 
 interface GoogleSignInButtonProps extends ComponentProps<typeof Button> {
-  from?: SignInSource;
+  from: SignInSource;
 }
 
 export function GoogleSignInButton({

@@ -51,7 +51,9 @@ export async function StatsView({
   return (
     <div className="flex flex-col gap-6">
       {guest && (stats.byTask.length > 0 || stats.testCount > 0) && (
-        <SignInStrip from="stats">{strip("stats")}</SignInStrip>
+        <SignInStrip from="stats" solved={totals(stats.byTask).solved}>
+          {strip("stats")}
+        </SignInStrip>
       )}
       <StatsCards byNumber={byNumber} stats={stats} />
     </div>
