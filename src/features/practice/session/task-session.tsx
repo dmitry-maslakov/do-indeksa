@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { keepTaskSession } from "@/features/practice/actions";
+import { type Intent, takeIntent } from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { keepAliveMs } from "./session-kind";
 
@@ -43,20 +44,27 @@ export function TaskSessionProvider({
   const [solution, setSolution] = useState(false);
 
   useEffect(() => {
-    const keep = () => {
+    const keep = (intent?: Intent) => {
       if (document.visibilityState !== "visible") return;
       track(
         async (sessionId) =>
-          (await keepTaskSession({ taskId, sessionId, tz: localTimeZone() }))
-            ?.data,
+          (
+            await keepTaskSession({
+              taskId,
+              sessionId,
+              tz: localTimeZone(),
+              intent,
+            })
+          )?.data,
       );
     };
-    keep();
+    const onVisible = () => keep();
+    keep(takeIntent());
     const timer = setInterval(keep, keepAliveMs);
-    document.addEventListener("visibilitychange", keep);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       clearInterval(timer);
-      document.removeEventListener("visibilitychange", keep);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [taskId, track]);
 

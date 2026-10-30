@@ -28,6 +28,7 @@ interface LinkTabsProps {
     label: string;
     active: boolean;
     prefetch?: boolean;
+    intent?: string;
   }[];
   label: string;
   variant: "segmented" | "fill" | "pill";
@@ -47,6 +48,7 @@ export function LinkTabs({
           key={item.href}
           href={item.href}
           prefetch={item.prefetch}
+          data-intent={item.intent}
           scroll={scroll}
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}

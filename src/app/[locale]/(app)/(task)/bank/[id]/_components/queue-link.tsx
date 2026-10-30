@@ -11,15 +11,23 @@ const preview = "min-w-0 overflow-hidden whitespace-nowrap mask-r-from-85%";
 interface QueueLinkProps {
   task: QueueRow;
   href: string;
+  intent: string;
   current: boolean;
   next?: boolean;
 }
 
-export function QueueLink({ task, href, current, next }: QueueLinkProps) {
+export function QueueLink({
+  task,
+  href,
+  intent,
+  current,
+  next,
+}: QueueLinkProps) {
   const t = useTranslations("Solve");
   return (
     <RailLink
       href={href}
+      data-intent={intent}
       current={current}
       className={cn(
         "min-h-12 items-start py-2 [&>svg]:mt-1",

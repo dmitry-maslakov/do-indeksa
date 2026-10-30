@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue/queue";
+import { intentOf } from "@/lib/analytics-browser";
 import { QueueLink } from "./queue-link";
 
 interface QueueListProps {
@@ -37,11 +38,16 @@ export function QueueList({ queue, current, href }: QueueListProps) {
         queue[key].length ? (
           <Fragment key={key}>
             <RailHeading>{t(key)}</RailHeading>
-            {queue[key].map((task) => (
+            {queue[key].map((task, i) => (
               <QueueLink
                 key={task.id}
                 task={task}
                 href={href(task.id)}
+                intent={intentOf({
+                  via: "picker",
+                  placement: `rail_${key}`,
+                  rank: i + 1,
+                })}
                 current={key === "today" && task.id === current}
                 next={key === "upcoming"}
               />

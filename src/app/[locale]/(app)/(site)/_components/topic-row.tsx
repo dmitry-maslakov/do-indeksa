@@ -8,6 +8,7 @@ import type {
   TopicState,
 } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 
 export interface TopicRowProps
   extends Pick<TopicProgress, "topic" | "pct" | "state"> {
@@ -38,6 +39,7 @@ export function TopicRow({ name, look, pct, state, href }: TopicRowProps) {
       <Link
         href={href}
         prefetch={false}
+        data-intent={intentOf({ via: "picker", placement: "topic_row" })}
         className="flex items-center gap-3 border-b py-3 text-sm md:gap-4 md:text-base"
       >
         <TopicIcon {...look} size="md" />

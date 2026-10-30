@@ -3,6 +3,7 @@ import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 
 interface ActionBarProps {
   go: boolean;
@@ -34,6 +35,7 @@ function Skip({
     <Link
       href={href}
       onClick={onClick}
+      data-intent={intentOf({ via: "picker", placement: "skip" })}
       className={cn(
         buttonVariants({ variant: "ghost", size: "pill" }),
         "order-1 px-4 md:order-2",
@@ -58,7 +60,11 @@ export function ActionBar({
   return (
     <div className={phoneBar}>
       {go ? (
-        <Link href={next} className={primary}>
+        <Link
+          href={next}
+          data-intent={intentOf({ via: "picker", placement: "next" })}
+          className={primary}
+        >
           <span className="md:hidden">{t("next")}</span>
           <span className="hidden md:inline">{t("nextTask")}</span>
           <ArrowRightIcon />
