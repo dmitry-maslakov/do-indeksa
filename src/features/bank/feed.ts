@@ -1,6 +1,7 @@
 import "server-only";
 import type { Locale } from "next-intl";
 import type { Level } from "@/features/catalog/level";
+import { type ExamSource, examSource } from "@/features/catalog/source";
 import {
   getTask,
   renderStatement,
@@ -10,7 +11,6 @@ import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { TaskStatus, TaskStatuses } from "@/features/progress/status";
 import type { Page } from "@/lib/use-feed";
-import { type ExamSource, examSource } from "./source";
 
 export interface BankCard {
   id: string;

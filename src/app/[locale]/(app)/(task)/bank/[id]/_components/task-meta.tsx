@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ExamMark } from "@/components/exam-mark";
-import type { ExamSource } from "@/features/bank/source";
 import type { Level } from "@/features/catalog/level";
+import type { ExamSource } from "@/features/catalog/source";
 import type { Touched } from "@/features/progress/status";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 
