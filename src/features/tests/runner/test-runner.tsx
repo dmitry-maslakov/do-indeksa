@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useMemo } from "react";
 import { toast } from "sonner";
 import { RailPanel } from "@/components/rail";
 import { saveTest, submitTest } from "@/features/tests/actions";
@@ -87,14 +87,11 @@ export function TestRunner({
       });
     },
   });
-  const meta = useMemo(
-    () => ({
-      title,
-      minutes,
-      parts: tasks.map((task) => task.parts.length),
-    }),
-    [title, minutes, tasks],
-  );
+  const meta = {
+    title,
+    minutes,
+    parts: tasks.map((task) => task.parts.length),
+  };
   const resumed = useMemo(
     (): LocalTest | undefined =>
       saved?.variantId === variantId
@@ -112,12 +109,12 @@ export function TestRunner({
     [saved, variantId, title, minutes],
   );
   const synced = saved?.updatedAt ?? 0;
-  const opened = useRef(false);
-  useEffect(() => {
-    if (!hydrated || opened.current) return;
-    opened.current = true;
+  const open = useEffectEvent(() => {
     if (!resumed) start(variantId, meta);
-  }, [hydrated, resumed, variantId, meta]);
+  });
+  useEffect(() => {
+    if (hydrated) open();
+  }, [hydrated]);
   useEffect(() => {
     if (hydrated && resumed) restore(variantId, resumed);
   }, [hydrated, resumed, variantId]);

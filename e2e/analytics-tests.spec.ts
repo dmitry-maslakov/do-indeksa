@@ -212,7 +212,6 @@ test("a test records its answers, controls and where it was started", async ({
   await expect(page.getByRole("alertdialog")).toBeHidden();
   await finish(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
-  await page.reload();
 
   const row = page.getByRole("main").locator("details > summary").first();
   await row.click();
