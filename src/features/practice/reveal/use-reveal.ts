@@ -10,7 +10,10 @@ async function fetchPart(
   const response = await fetch(`/api/tasks/${taskId}/reveal?${params}`, {
     signal,
   });
-  if (!response.ok) throw new Error(`reveal failed: ${response.status}`);
+  if (!response.ok)
+    throw new Error(`reveal failed: ${response.status}`, {
+      cause: response.status,
+    });
   const { html }: { html: string } = await response.json();
   return html;
 }

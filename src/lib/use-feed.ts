@@ -15,7 +15,10 @@ export function useFeed<T>(path: string, first: Page<T>, search = "") {
       params.set("offset", String(pageParam));
       params.set("locale", locale);
       const response = await fetch(`${path}?${params}`, { signal });
-      if (!response.ok) throw new Error(`${path} failed: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`${path} failed: ${response.status}`, {
+          cause: response.status,
+        });
       return response.json();
     },
     initialPageParam: 0,

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { recordError } from "@/lib/analytics-browser";
 import { reportError } from "@/lib/sentry-browser";
 
 export default function ErrorPage({
@@ -19,6 +20,7 @@ export default function ErrorPage({
   const notFound = useTranslations("NotFound");
   useEffect(() => {
     reportError(error);
+    recordError("route_error", error.digest);
   }, [error]);
   return (
     <main className="flex flex-col items-center gap-5 px-4 pt-16 pb-6 text-center md:pt-24">

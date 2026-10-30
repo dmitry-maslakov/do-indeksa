@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { routing } from "@/i18n/routing";
+import { recordError } from "@/lib/analytics-browser";
 import { reportError } from "@/lib/sentry-browser";
 import messages from "../../messages/sr-Latn.json";
 import "./globals.css";
@@ -18,6 +19,7 @@ export default function GlobalError({
   const t = messages.Errors;
   useEffect(() => {
     reportError(error);
+    recordError("global_error", error.digest);
   }, [error]);
   return (
     <html lang={routing.defaultLocale}>
