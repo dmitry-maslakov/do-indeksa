@@ -3,16 +3,14 @@ import { useTranslations } from "next-intl";
 import { ProgressBar } from "@/components/progress-bar";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
-import type {
-  TopicProgress,
-  TopicState,
-} from "@/features/progress/topic-progress";
+import type { TopicState } from "@/features/progress/learning/status/topic-status";
+import type { TopicProgress } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
 
 export interface TopicRowProps
-  extends Pick<TopicProgress, "topic" | "pct" | "state"> {
+  extends Pick<TopicProgress, "topic" | "fill" | "state"> {
   name: string;
   look: TopicLook;
   href: string;
@@ -21,6 +19,7 @@ export interface TopicRowProps
 
 const bar: Record<TopicState, string> = {
   mastered: "bg-success",
+  warming: "bg-progress",
   inProgress: "bg-progress",
   review: "bg-overtime",
   notStarted: "bg-transparent",
@@ -28,6 +27,7 @@ const bar: Record<TopicState, string> = {
 
 const pill: Record<TopicState, string> = {
   mastered: "bg-success-tint text-success-text",
+  warming: "bg-progress-tint text-progress-text",
   inProgress: "bg-progress-tint text-progress-text",
   review: "bg-overtime-tint text-overtime-text",
   notStarted: "bg-muted text-subtle",
@@ -36,7 +36,7 @@ const pill: Record<TopicState, string> = {
 export function TopicRow({
   name,
   look,
-  pct,
+  fill,
   state,
   href,
   recommendation,
@@ -56,11 +56,10 @@ export function TopicRow({
         <TopicIcon {...look} size="md" />
         <span className="min-w-0 flex-1">{name}</span>
         <ProgressBar
-          value={pct / 100}
+          value={fill}
           tone={bar[state]}
-          className="h-2 w-20 shrink-0 max-md:hidden"
+          className="h-2 w-12 shrink-0 md:w-20"
         />
-        <b className="w-10 shrink-0 text-right font-bold text-sm">{pct}%</b>
         <span className="flex w-24 shrink-0 justify-end">
           <span
             className={cn(

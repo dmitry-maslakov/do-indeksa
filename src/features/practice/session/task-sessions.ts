@@ -3,8 +3,9 @@ import { and, desc, eq, gt, inArray, lt, type SQL, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { taskFacts } from "@/features/catalog/tasks";
 import { verdictOf } from "@/features/practice/answer/verdicts";
+import { defaultPolicy } from "@/features/progress/learning/policy";
 import { db } from "@/server/db";
-import { attemptGapMs, practiceKind, sessionLiveMs } from "./session-kind";
+import { practiceKind, sessionLiveMs } from "./session-kind";
 
 type Executor = Pick<typeof db, "insert" | "update" | "select">;
 
@@ -18,7 +19,7 @@ async function lastEvent(
     .select({
       at: table.createdAt,
       kind: taskSessions.kind,
-      recent: sql<boolean>`${table.createdAt} > now() - ${attemptGapMs} * interval '1 millisecond'`,
+      recent: sql<boolean>`${table.createdAt} > now() - ${defaultPolicy.attemptGapMs} * interval '1 millisecond'`,
     })
     .from(table)
     .innerJoin(taskSessions, eq(taskSessions.id, table.sessionId))

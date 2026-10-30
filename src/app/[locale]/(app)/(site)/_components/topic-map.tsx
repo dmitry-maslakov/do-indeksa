@@ -5,7 +5,7 @@ import { type ReactNode, useRef, useState } from "react";
 import {
   type TopicState,
   topicStates,
-} from "@/features/progress/topic-progress";
+} from "@/features/progress/learning/status/topic-status";
 import { Link } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
 import { TopicRow, type TopicRowProps } from "./topic-row";

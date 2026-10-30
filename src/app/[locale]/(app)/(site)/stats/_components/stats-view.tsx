@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
-import { minutesAt, positions } from "@/features/catalog/exams";
+import { examTopics, minutesAt, positions } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import {
@@ -76,11 +76,10 @@ export function StatsCards({
         ...a,
         label: exam("task", { number: Number(a.key) }),
       }))
-    : accuracyBy(
-        byTask,
-        positions.map((p) => p.topic),
-        (s) => s.topic,
-      ).map((a) => ({ ...a, label: topicName(String(a.key), locale) }));
+    : accuracyBy(byTask, examTopics, (s) => s.topic).map((a) => ({
+        ...a,
+        label: topicName(String(a.key), locale),
+      }));
   const summary = stats && totals(byTask);
 
   return (

@@ -20,6 +20,7 @@ import {
   partOutcomes,
   reportKinds,
   sessionKinds,
+  storedReveals,
   suggestionReasons,
   type TestDraft,
 } from "./columns";
@@ -153,13 +154,7 @@ export const sets = pgTable(
   (t) => [uniqueIndex().on(t.taskIds).where(isNull(t.code))],
 );
 
-export const revealPart = pgEnum("reveal_part", [
-  "hint1",
-  "hint2",
-  "hint3",
-  "answer",
-  "solution",
-]);
+export const revealPart = pgEnum("reveal_part", storedReveals);
 
 export const reveals = pgTable(
   "reveals",

@@ -258,6 +258,7 @@
     "allTopics": "Все · {count, number}",
     "state": {
       "mastered": "Освоено",
+      "warming": "Разминка",
       "inProgress": "В процессе",
       "review": "Повторить",
       "notStarted": "Не начато"

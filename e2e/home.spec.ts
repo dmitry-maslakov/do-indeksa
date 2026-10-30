@@ -58,12 +58,14 @@ test("the home page suggests a topic and maps progress", async ({
   const map = page.locator("#topic-map");
   const rows = map.getByRole("listitem");
   await expect(rows).toHaveCount(10);
-  await map.getByRole("button", { name: "Ponovi" }).click();
-  await expect(rows).toHaveText([/Planimetrija/]);
-  await map.getByRole("button", { name: "U toku" }).click();
+  await map.getByRole("button", { name: "Zagrevanje" }).click();
+  await expect(rows).toHaveCount(3);
   await expect(
     rows.filter({ hasText: "Eksponencijalne jednačine i nejednačine" }),
   ).toHaveCount(1);
+  await expect(rows.filter({ hasText: "%" })).toHaveCount(0);
+  await map.getByRole("button", { name: "Nije početo" }).click();
+  await expect(rows).toHaveCount(7);
 });
 
 test("Počni opens the suggested topic", async ({ page }) => {

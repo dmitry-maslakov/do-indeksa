@@ -6,6 +6,16 @@ export type PartOutcome = (typeof partOutcomes)[number];
 
 export const isRight = (outcome: PartOutcome) => outcome === "right";
 
+export const storedReveals = [
+  "hint1",
+  "hint2",
+  "hint3",
+  "answer",
+  "solution",
+] as const;
+
+export type StoredReveal = (typeof storedReveals)[number];
+
 export const sessionKinds = ["first", "retry", "mock"] as const;
 
 export type SessionKind = (typeof sessionKinds)[number];

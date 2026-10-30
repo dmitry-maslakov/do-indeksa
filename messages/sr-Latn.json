@@ -258,6 +258,7 @@
     "allTopics": "Sve · {count, number}",
     "state": {
       "mastered": "Savladano",
+      "warming": "Zagrevanje",
       "inProgress": "U toku",
       "review": "Ponovi",
       "notStarted": "Nije početo"

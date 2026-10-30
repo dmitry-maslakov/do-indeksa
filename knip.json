@@ -3,7 +3,8 @@
   "entry": [
     "content-collections.ts!",
     "src/db/cleanup.mts!",
-    "src/db/migrate.mts!"
+    "src/db/migrate.mts!",
+    "src/**/*.fixture.ts"
   ],
   "project": ["src/**/*.{ts,tsx,mts,css}!", "*.ts"],
   "ignoreExportsUsedInFile": true,
