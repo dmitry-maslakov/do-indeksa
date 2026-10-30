@@ -56,6 +56,10 @@ const requestFailed = defineEvent("request_failed", {
   status: z.int().min(100).max(599).optional(),
 });
 
+export const analyticsOptedIn = defineEvent("analytics_opted_in", {});
+
+export const analyticsOptedOut = defineEvent("analytics_opted_out", {});
+
 export const clientEvents = [
   visitStarted,
   pageView,

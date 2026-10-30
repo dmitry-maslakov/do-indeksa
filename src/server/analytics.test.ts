@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { rowOf, trackBatch, visitorOf } from "./analytics";
+import { z } from "zod";
+import { defineEvent } from "@/lib/analytics-schema";
+import { rowOf, track, trackBatch, visitorOf } from "./analytics";
 import { insertEvents } from "./clickhouse";
 import { sendToOpenPanel } from "./openpanel";
 import { existingProfileId } from "./profile";
@@ -10,6 +12,10 @@ const pending: Promise<unknown>[] = [];
 vi.mock("next/server", async (original) => ({
   ...(await original()),
   after: (work: () => Promise<unknown>) => pending.push(work()),
+}));
+vi.mock("next/headers", () => ({
+  headers: async () => sent.headers,
+  cookies: async () => sent.cookies,
 }));
 vi.mock("./clickhouse", () => ({ insertEvents: vi.fn() }));
 vi.mock("./openpanel", () => ({ sendToOpenPanel: vi.fn() }));
@@ -21,13 +27,18 @@ const iphone =
 const googlebot =
   "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
-const visitor = (
+const requestOf = (
   headers: Record<string, string> = {},
   cookie = `aid=${aid}`,
-) => {
-  const request = new NextRequest("https://doindeksa.rs/api/events", {
+) =>
+  new NextRequest("https://doindeksa.rs/api/events", {
     headers: { "user-agent": iphone, "cf-ipcountry": "RS", cookie, ...headers },
   });
+
+let sent = requestOf();
+
+const visitor = (...args: Parameters<typeof requestOf>) => {
+  const request = requestOf(...args);
   return visitorOf(request.headers, request.cookies);
 };
 
@@ -166,5 +177,50 @@ describe("trackBatch", () => {
     await Promise.all(pending);
     expect(pending).toEqual([]);
     expect(insertEvents).not.toHaveBeenCalled();
+  });
+});
+
+describe("track", () => {
+  const opened = defineEvent("menu_opened", { from: z.enum(["bar"]) });
+
+  const fromPage = (referer: string, cookie?: string) => {
+    sent = requestOf({ host: "doindeksa.rs", referer }, cookie);
+  };
+
+  beforeEach(() => {
+    pending.length = 0;
+    vi.mocked(insertEvents).mockReset();
+  });
+
+  it("records a server event on the page that sent it", async () => {
+    fromPage("https://doindeksa.rs/ru/privacy?utm_source=ig&q=x");
+    await track(opened, { from: "bar" }, { profileId: "p1" });
+    await Promise.all(pending);
+    const [rows, token] = vi.mocked(insertEvents).mock.calls[0] ?? [];
+    expect(rows?.[0]).toMatchObject({
+      name: "menu_opened",
+      source: "server",
+      profile_id: "p1",
+      aid,
+      route: "/privacy",
+      locale: "ru",
+      utm_source: "ig",
+      props: { from: "bar" },
+    });
+    expect(token).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("leaves out the aid of an anonymous event and a page of another site", async () => {
+    fromPage("https://www.google.com/");
+    await track(opened, { from: "bar" }, { anonymous: true });
+    await Promise.all(pending);
+    const [rows] = vi.mocked(insertEvents).mock.calls[0] ?? [];
+    expect(rows?.[0]).toMatchObject({ aid: "0", route: "" });
+  });
+
+  it("sends nothing for a visitor who opted out", async () => {
+    fromPage("https://doindeksa.rs/", `aid=${aid}; analytics=off`);
+    await track(opened, { from: "bar" });
+    expect(pending).toEqual([]);
   });
 });

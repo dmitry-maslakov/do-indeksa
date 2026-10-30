@@ -2,7 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { throttle } from "es-toolkit";
 import { isbot } from "isbot";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import {
   after,
   type NextRequest,
@@ -16,7 +16,11 @@ import {
   consentCookie,
   utmOnly,
 } from "@/lib/analytics-browser";
-import type { BrowserEvent, ParsedEvent } from "@/lib/analytics-schema";
+import type {
+  BrowserEvent,
+  EventDefinition,
+  ParsedEvent,
+} from "@/lib/analytics-schema";
 import { minuteMs } from "@/lib/dates";
 import { routeOf } from "@/lib/routes";
 import { siteUrl } from "@/lib/site";
@@ -150,6 +154,32 @@ export function trackBatch(
         }),
       );
       await deliver(tracked, `${visitor.aid ?? noId}:${id}`);
+    } catch (error) {
+      reportDrop(error);
+    }
+  });
+}
+
+export async function track<Event extends EventDefinition>(
+  { name, props: schema }: Event,
+  props: z.input<Event["props"]>,
+  { profileId, anonymous }: { profileId?: string; anonymous?: boolean } = {},
+) {
+  const [request, jar] = await Promise.all([headers(), cookies()]);
+  const visitor = visitorOf(request, jar);
+  if (visitor.optedOut) return;
+  const referer = URL.parse(request.get("referer") ?? "");
+  const page =
+    referer?.host === request.get("host")
+      ? { url: utmOnly(referer) }
+      : undefined;
+  const at = Date.now();
+  after(async () => {
+    try {
+      const event = { name, props: schema.parse(props) };
+      const who = anonymous ? { ...visitor, aid: undefined } : visitor;
+      const context = { source: "server", at, profileId, page } as const;
+      await deliver([trackedOf(who, event, context)], randomUUID());
     } catch (error) {
       reportDrop(error);
     }
