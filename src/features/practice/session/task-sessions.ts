@@ -1,6 +1,7 @@
 import "server-only";
-import { and, desc, eq, gt, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, lt, type SQL, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
+import { verdictOf } from "@/features/practice/answer/verdicts";
 import { db } from "@/server/db";
 import { attemptGapMs, practiceKind, sessionLiveMs } from "./session-kind";
 
@@ -60,16 +61,16 @@ export async function liveSession(
           gt(taskSessions.lastSeenAt, alive),
         ),
       )
-      .returning({ id: taskSessions.id });
-    if (kept) return kept.id;
+      .returning({ id: taskSessions.id, kind: taskSessions.kind });
+    if (kept) return { ...kept, created: false };
   }
   const kind = await kindFor(executor, profileId, taskId);
   const [created] = await executor
     .insert(taskSessions)
     .values({ profileId, taskId, kind, tz })
-    .returning({ id: taskSessions.id });
+    .returning({ id: taskSessions.id, kind: taskSessions.kind });
   if (!created) throw new Error("task session was not created");
-  return created.id;
+  return { ...created, created: true };
 }
 
 export async function testTaskSession(
@@ -105,3 +106,50 @@ export const keepSession = (
   sessionId: string | undefined,
   tz: string | undefined,
 ) => liveSession(db, profileId, taskId, sessionId, tz);
+
+export async function sessionFacts(
+  profileId: string,
+  sessionId: string,
+  at: Date,
+) {
+  const before = (table: typeof attempts | typeof reveals, ...where: SQL[]) =>
+    and(eq(table.sessionId, sessionId), lt(table.createdAt, at), ...where);
+  const revealed = (...parts: (typeof reveals.$inferSelect.part)[]) =>
+    db.$count(reveals, before(reveals, inArray(reveals.part, parts)));
+  const last = db
+    .select({ outcomes: attempts.outcomes })
+    .from(attempts)
+    .where(before(attempts))
+    .orderBy(desc(attempts.createdAt))
+    .limit(1);
+  const [facts] = await db
+    .select({
+      kind: taskSessions.kind,
+      startedAt: taskSessions.startedAt,
+      attempts: db.$count(attempts, before(attempts)),
+      outcomes: sql`(${last})`.mapWith(attempts.outcomes),
+      hints: revealed("hint1", "hint2", "hint3"),
+      solution: revealed("solution"),
+      answer: revealed("answer"),
+    })
+    .from(taskSessions)
+    .where(
+      and(
+        eq(taskSessions.id, sessionId),
+        eq(taskSessions.profileId, profileId),
+      ),
+    );
+  if (!facts) throw new Error(`unknown task session ${sessionId}`);
+  return {
+    task_session_id: sessionId,
+    session_kind: facts.kind,
+    attempts_before: facts.attempts,
+    last_verdict: facts.outcomes
+      ? verdictOf(facts.outcomes)
+      : ("none" as const),
+    hints_before: facts.hints,
+    solution_before: facts.solution > 0,
+    answer_before: facts.answer > 0,
+    since_open_ms: Math.max(0, at.getTime() - facts.startedAt.getTime()),
+  };
+}

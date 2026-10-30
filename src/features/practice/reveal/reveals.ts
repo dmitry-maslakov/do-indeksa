@@ -40,14 +40,25 @@ export async function recordReveal(
   const stored = storedPart(taskId, part);
   if (!stored) return;
   return db.transaction(async (tx) => {
-    const sessionId =
+    const session =
       "testSessionId" in owner
-        ? await testTaskSession(tx, profileId, taskId, owner.testSessionId)
+        ? {
+            id: await testTaskSession(
+              tx,
+              profileId,
+              taskId,
+              owner.testSessionId,
+            ),
+            kind: "mock" as const,
+            created: false,
+          }
         : await liveSession(tx, profileId, taskId, owner.sessionId);
-    await tx
+    const [reveal] = await tx
       .insert(reveals)
-      .values({ profileId, taskId, part: stored, sessionId });
-    return sessionId;
+      .values({ profileId, taskId, part: stored, sessionId: session.id })
+      .returning({ part: reveals.part, createdAt: reveals.createdAt });
+    if (!reveal) throw new Error("reveal was not saved");
+    return { session, ...reveal };
   });
 }
 

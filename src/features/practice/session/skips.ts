@@ -9,7 +9,11 @@ export const recordSkip = (
   sessionId: string | undefined,
 ) =>
   db.transaction(async (tx) => {
-    const id = await liveSession(tx, profileId, taskId, sessionId);
-    await tx.insert(skips).values({ profileId, taskId, sessionId: id });
-    return id;
+    const session = await liveSession(tx, profileId, taskId, sessionId);
+    const [skip] = await tx
+      .insert(skips)
+      .values({ profileId, taskId, sessionId: session.id })
+      .returning({ createdAt: skips.createdAt });
+    if (!skip) throw new Error("skip was not saved");
+    return { session, createdAt: skip.createdAt };
   });
