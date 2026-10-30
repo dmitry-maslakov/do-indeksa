@@ -3,6 +3,7 @@
 import { clamp } from "es-toolkit";
 import { type ReactNode, useEffect, useRef } from "react";
 import { type BrowserEvents, flush, queueEvent } from "@/lib/analytics-browser";
+import { secondMs } from "@/lib/dates";
 
 type Read = BrowserEvents["theory_read"];
 type Reading = Pick<Read, "topic" | "method" | "page">;
@@ -11,6 +12,9 @@ interface TheoryArticleProps extends Reading {
   className: string;
   children: ReactNode;
 }
+
+const idleMs = 30 * secondMs;
+const activity = ["pointerdown", "pointermove", "keydown", "scroll"];
 
 const visibleNow = () =>
   document.visibilityState === "visible" ? performance.now() : undefined;
@@ -23,7 +27,9 @@ function watchReading(node: HTMLElement, reading: Reading) {
   let depth = 0;
   let reached = 0;
   let visibleMs = 0;
+  let activeMs = 0;
   let since = visibleNow();
+  let activeAt = since;
 
   const measure = () => {
     const { top, height } = node.getBoundingClientRect();
@@ -34,9 +40,16 @@ function watchReading(node: HTMLElement, reading: Reading) {
         .length,
     );
   };
+  const act = () => {
+    const now = performance.now();
+    if (activeAt !== undefined) activeMs += Math.min(now - activeAt, idleMs);
+    activeAt = since === undefined ? undefined : now;
+  };
   const send = (exit: Read["exit"]) => {
+    act();
     if (since !== undefined) visibleMs += performance.now() - since;
     since = undefined;
+    activeAt = undefined;
     queueEvent(
       "theory_read",
       {
@@ -47,6 +60,7 @@ function watchReading(node: HTMLElement, reading: Reading) {
         last_section: headings[reached - 1]?.id,
         max_scroll_pct: Math.round(depth * 100),
         visible_ms: Math.round(visibleMs),
+        active_ms: Math.round(activeMs),
         exit,
         seq: ++seq,
       },
@@ -55,7 +69,10 @@ function watchReading(node: HTMLElement, reading: Reading) {
   };
   const onVisibility = () => {
     if (document.visibilityState === "hidden") send("hidden");
-    else since = visibleNow();
+    else {
+      since = visibleNow();
+      activeAt = since;
+    }
   };
   const onPageHide = () => {
     send("pagehide");
@@ -63,13 +80,14 @@ function watchReading(node: HTMLElement, reading: Reading) {
   };
 
   measure();
-  addEventListener("scroll", measure, { passive: true });
-  document.addEventListener("visibilitychange", onVisibility);
-  addEventListener("pagehide", onPageHide);
+  const listening = new AbortController();
+  const options = { passive: true, signal: listening.signal };
+  addEventListener("scroll", measure, options);
+  for (const type of activity) addEventListener(type, act, options);
+  document.addEventListener("visibilitychange", onVisibility, options);
+  addEventListener("pagehide", onPageHide, options);
   return () => {
-    removeEventListener("scroll", measure);
-    document.removeEventListener("visibilitychange", onVisibility);
-    removeEventListener("pagehide", onPageHide);
+    listening.abort();
     send("navigate");
   };
 }
