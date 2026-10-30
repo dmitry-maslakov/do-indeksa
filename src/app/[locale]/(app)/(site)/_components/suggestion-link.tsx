@@ -1,11 +1,17 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef } from "react";
+import { noop } from "es-toolkit";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useEffect } from "react";
 import { openSuggestion, showSuggestion } from "@/features/progress/actions";
 import type { Suggestion } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
-import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
-import { useExposure } from "@/lib/use-exposure";
+import {
+  type BrowserEvents,
+  intentOf,
+  queueEvent,
+} from "@/lib/analytics-browser";
+import { useExposure, viewKey } from "@/lib/use-exposure";
 
 interface SuggestionLinkProps extends Suggestion {
   href: string;
@@ -13,6 +19,14 @@ interface SuggestionLinkProps extends Suggestion {
   className: string;
   children: ReactNode;
 }
+
+interface Shown {
+  at: number;
+  id?: string;
+  opened?: boolean;
+}
+
+const shownSuggestions = new Map<string, Shown>();
 
 export function SuggestionLink({
   topic,
@@ -22,13 +36,18 @@ export function SuggestionLink({
   className,
   children,
 }: SuggestionLinkProps) {
-  const shown = useRef<Promise<string | undefined> | null>(null);
+  const { bfcacheId } = useRouter();
   const seen = useExposure("recommendation_made", recommendation);
 
   useEffect(() => {
-    if (!shown.current)
-      shown.current = showSuggestion({ topic, reason }).then((r) => r?.data);
-  }, [topic, reason]);
+    const key = viewKey(bfcacheId, `${topic} ${reason}`);
+    if (shownSuggestions.has(key)) return;
+    const current: Shown = { at: performance.now() };
+    shownSuggestions.set(key, current);
+    showSuggestion({ topic, reason }).then((r) => {
+      current.id = r?.data;
+    }, noop);
+  }, [bfcacheId, topic, reason]);
 
   return (
     <Link
@@ -37,9 +56,19 @@ export function SuggestionLink({
       prefetch={false}
       data-intent={intentOf({ via: "picker", placement: "home_hero" })}
       className={className}
-      onClick={async () => {
-        const id = await shown.current;
-        if (id) await openSuggestion({ id });
+      onClick={() => {
+        const current = shownSuggestions.get(
+          viewKey(bfcacheId, `${topic} ${reason}`),
+        );
+        if (!current || current.opened) return;
+        current.opened = true;
+        queueEvent("suggestion_opened", {
+          suggestion_id: current.id,
+          topic,
+          reason,
+          since_shown_ms: Math.round(performance.now() - current.at),
+        });
+        if (current.id) openSuggestion({ id: current.id }).catch(noop);
       }}
     >
       {children}

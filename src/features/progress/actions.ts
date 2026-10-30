@@ -1,21 +1,24 @@
 "use server";
 
 import { z } from "zod";
-import { suggestionReasons } from "@/db/columns";
-import { idsByTopic } from "@/features/catalog/tasks";
 import { knownProfileClient } from "@/server/action-client";
+import { track } from "@/server/analytics";
+import { suggestionShown } from "./progress-events";
 import { markSuggestionOpened, recordSuggestion } from "./suggestions";
 
 export const showSuggestion = knownProfileClient
-  .inputSchema(
-    z.object({
-      topic: z.string().refine((topic) => idsByTopic.has(topic)),
-      reason: z.enum(suggestionReasons),
-    }),
-  )
-  .action(async ({ parsedInput: { topic, reason }, ctx: { profileId } }) =>
-    profileId ? recordSuggestion(profileId, topic, reason) : undefined,
-  );
+  .inputSchema(suggestionShown.props.pick({ topic: true, reason: true }))
+  .action(async ({ parsedInput: { topic, reason }, ctx: { profileId } }) => {
+    const id = profileId
+      ? await recordSuggestion(profileId, topic, reason)
+      : undefined;
+    await track(
+      suggestionShown,
+      { suggestion_id: id, topic, reason },
+      { profileId },
+    );
+    return id;
+  });
 
 export const openSuggestion = knownProfileClient
   .inputSchema(z.object({ id: z.uuid() }))

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { clientEvents as accountEvents } from "@/features/account/account-events";
 import { clientEvents as bankEvents } from "@/features/bank/bank-events";
 import { clientEvents as practiceEvents } from "@/features/practice/practice-events";
+import { clientEvents as progressEvents } from "@/features/progress/progress-events";
 import { clientEvents as testEvents } from "@/features/tests/test-events";
 import { batchBytes } from "@/lib/analytics-browser";
 import { batchParser } from "@/lib/analytics-schema";
@@ -13,6 +14,7 @@ const parseBatch = batchParser([
   ...accountEvents,
   ...practiceEvents,
   ...testEvents,
+  ...progressEvents,
   ...bankEvents,
 ]);
 
