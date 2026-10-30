@@ -13,6 +13,7 @@ import { StatusIcon } from "@/features/progress/status-icon";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
+import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
   taskId: string;
@@ -26,14 +27,6 @@ interface AnswerFormProps {
 interface Checked {
   outcomes: PartOutcome[];
   correct: boolean;
-}
-
-type Verdict = "correct" | "wrong" | "unreadable" | "incomplete";
-
-function verdictOf(outcomes: PartOutcome[]): Verdict {
-  if (outcomes.every(isRight)) return "correct";
-  if (outcomes.includes("wrong")) return "wrong";
-  return outcomes.includes("unreadable") ? "unreadable" : "incomplete";
 }
 
 const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
