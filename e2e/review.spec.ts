@@ -74,6 +74,19 @@ test("a guest is offered to save a test result", {
   expect(errors).toEqual([]);
 });
 
+test("practicing similar tasks leaves the review for a new test", async ({
+  page,
+  errors,
+}) => {
+  await finishSet(page);
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: /^Vežbaj slično/ }).click();
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+  await expect(page.locator("math-field").first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("a signed-in user reviews a finished test", {
   tag: "@responsive",
 }, async ({ page, auth, errors }) => {
