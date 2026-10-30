@@ -14,6 +14,7 @@ const read = {
   last_section: "jednacine",
   max_scroll_pct: 55,
   visible_ms: 48000,
+  active_ms: 31000,
   exit: "hidden",
   seq: 1,
 };

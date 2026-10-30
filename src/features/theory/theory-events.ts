@@ -15,6 +15,7 @@ const theoryRead = defineEvent("theory_read", {
   last_section: text.optional(),
   max_scroll_pct: z.int().min(0).max(100),
   visible_ms: z.int().min(0),
+  active_ms: z.int().min(0).optional(),
   exit: z.enum(["hidden", "pagehide", "navigate"]),
   seq: z.int().min(1),
 });
