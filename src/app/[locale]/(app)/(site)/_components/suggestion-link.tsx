@@ -4,16 +4,26 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { openSuggestion, showSuggestion } from "@/features/progress/actions";
 import type { Suggestion } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
-import { intentOf } from "@/lib/analytics-browser";
+import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
+import { useExposure } from "@/lib/use-exposure";
+
+interface SuggestionLinkProps extends Suggestion {
+  href: string;
+  recommendation?: BrowserEvents["recommendation_made"];
+  className: string;
+  children: ReactNode;
+}
 
 export function SuggestionLink({
   topic,
   reason,
   href,
+  recommendation,
   className,
   children,
-}: Suggestion & { href: string; className: string; children: ReactNode }) {
+}: SuggestionLinkProps) {
   const shown = useRef<Promise<string | undefined> | null>(null);
+  const seen = useExposure("recommendation_made", recommendation);
 
   useEffect(() => {
     if (!shown.current)
@@ -22,6 +32,7 @@ export function SuggestionLink({
 
   return (
     <Link
+      ref={seen}
       href={href}
       prefetch={false}
       data-intent={intentOf({ via: "picker", placement: "home_hero" })}

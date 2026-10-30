@@ -4,12 +4,14 @@ import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue/queue";
+import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { intentOf } from "@/lib/analytics-browser";
 import { QueueLink } from "./queue-link";
 
 interface QueueListProps {
   queue: Queue;
   current: string;
+  topic: string;
   href: (id: string) => string;
 }
 
@@ -21,7 +23,7 @@ function centerCurrent(list: HTMLElement) {
 
 const sections = ["earlier", "today", "upcoming"] as const;
 
-export function QueueList({ queue, current, href }: QueueListProps) {
+export function QueueList({ queue, current, topic, href }: QueueListProps) {
   const t = useTranslations("Solve");
   const list = useRef<HTMLDivElement>(null);
 
@@ -50,6 +52,11 @@ export function QueueList({ queue, current, href }: QueueListProps) {
                 })}
                 current={key === "today" && task.id === current}
                 next={key === "upcoming"}
+                recommendation={
+                  key === "upcoming"
+                    ? recommendationOf("rail_upcoming", topic, task, i + 1)
+                    : undefined
+                }
               />
             ))}
           </Fragment>

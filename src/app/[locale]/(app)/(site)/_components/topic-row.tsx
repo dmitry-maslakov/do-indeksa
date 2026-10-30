@@ -8,13 +8,15 @@ import type {
   TopicState,
 } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
-import { intentOf } from "@/lib/analytics-browser";
+import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
+import { useExposure } from "@/lib/use-exposure";
 
 export interface TopicRowProps
   extends Pick<TopicProgress, "topic" | "pct" | "state"> {
   name: string;
   look: TopicLook;
   href: string;
+  recommendation?: BrowserEvents["recommendation_made"];
 }
 
 const bar: Record<TopicState, string> = {
@@ -31,12 +33,21 @@ const pill: Record<TopicState, string> = {
   notStarted: "bg-muted text-subtle",
 };
 
-export function TopicRow({ name, look, pct, state, href }: TopicRowProps) {
+export function TopicRow({
+  name,
+  look,
+  pct,
+  state,
+  href,
+  recommendation,
+}: TopicRowProps) {
   const t = useTranslations("Home");
+  const seen = useExposure("recommendation_made", recommendation);
 
   return (
     <li>
       <Link
+        ref={seen}
         href={href}
         prefetch={false}
         data-intent={intentOf({ via: "picker", placement: "topic_row" })}

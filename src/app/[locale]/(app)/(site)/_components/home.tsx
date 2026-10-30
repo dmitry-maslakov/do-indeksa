@@ -1,5 +1,6 @@
 import { useLocale } from "next-intl";
-import { topicStart } from "@/features/bank/queue/queue";
+import { type nextTasks, topicStart } from "@/features/bank/queue/queue";
+import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { getTopicPlan } from "@/features/progress/progress";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
@@ -9,7 +10,7 @@ import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
 
 type HomeProps = Awaited<ReturnType<typeof getTopicPlan>> & {
-  starts: Map<string, string>;
+  starts: Awaited<ReturnType<typeof nextTasks>>;
 };
 
 export function Home({ topics, suggestion, starts }: HomeProps) {
@@ -22,6 +23,11 @@ export function Home({ topics, suggestion, starts }: HomeProps) {
         <TodayHero
           {...suggestion}
           href={topicStart(starts, suggestion.topic)}
+          recommendation={recommendationOf(
+            "home_hero",
+            suggestion.topic,
+            starts.get(suggestion.topic),
+          )}
         />
       )}
       {weekly && <WeeklyCard {...weekly} />}
@@ -33,6 +39,11 @@ export function Home({ topics, suggestion, starts }: HomeProps) {
           pct: t.pct,
           state: t.state,
           href: topicStart(starts, t.topic),
+          recommendation: recommendationOf(
+            "topic_row",
+            t.topic,
+            starts.get(t.topic),
+          ),
         }))}
       />
       <ExamYears />

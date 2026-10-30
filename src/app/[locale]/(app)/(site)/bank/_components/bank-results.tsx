@@ -8,11 +8,13 @@ import { FilterSearch } from "@/features/bank/filters/filter-search";
 import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
 import { nextTasks, topicStart } from "@/features/bank/queue/queue";
+import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { type BankQuery, findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
 import { getTaskStatuses } from "@/features/progress/progress";
 import type { TaskStatuses } from "@/features/progress/status";
+import type { BrowserEvents } from "@/lib/analytics-browser";
 import { getProfileId } from "@/server/profile";
 import { EmptyResults } from "./empty-results";
 import { ResultsHead } from "./results-head";
@@ -35,6 +37,7 @@ export async function Bank({
       tasks={findTasks(filters, statuses)}
       statuses={statuses}
       recommended={topicStart(starts, topic)}
+      recommendation={recommendationOf("bank_tab", topic, starts.get(topic))}
     />
   );
 }
@@ -44,6 +47,7 @@ interface BankResultsProps {
   tasks: TaskSummary[];
   statuses?: TaskStatuses;
   recommended?: string;
+  recommendation?: BrowserEvents["recommendation_made"];
   pending?: boolean;
 }
 
@@ -52,6 +56,7 @@ export function BankResults({
   tasks,
   statuses,
   recommended,
+  recommendation,
   pending = false,
 }: BankResultsProps) {
   const t = useTranslations("Bank");
@@ -61,7 +66,11 @@ export function BankResults({
   return (
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
-        <BankTabs recommended={recommended} />
+        <BankTabs
+          key={recommended}
+          recommended={recommended}
+          recommendation={recommendation}
+        />
         <BankFilters variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
@@ -74,7 +83,11 @@ export function BankResults({
       </aside>
       <section className="flex min-w-0 flex-col gap-3">
         <div className="flex flex-col gap-3 px-1 lg:hidden">
-          <BankTabs recommended={recommended} />
+          <BankTabs
+            key={recommended}
+            recommended={recommended}
+            recommendation={recommendation}
+          />
           <div className="flex gap-2">
             <FilterSearch
               variant="card"
