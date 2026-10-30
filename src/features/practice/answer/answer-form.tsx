@@ -14,6 +14,7 @@ import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
+import { countInput, focused, freshInput, takeInput } from "./input-stats";
 import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
@@ -29,38 +30,6 @@ interface AnswerFormProps {
 interface Checked {
   outcomes: PartOutcome[];
   correct: boolean;
-}
-
-interface InputStats {
-  focusAt?: number;
-  inputs: number;
-  deletes: number;
-  pastes: number;
-  vk_inputs: number;
-}
-
-const freshInput = (): InputStats => ({
-  inputs: 0,
-  deletes: 0,
-  pastes: 0,
-  vk_inputs: 0,
-});
-
-function focused(input: InputStats) {
-  input.focusAt ??= performance.now();
-}
-
-function countInput(
-  input: InputStats,
-  { inputType, data, isComposing }: InputEvent,
-) {
-  if (isComposing || inputType === "insertCompositionText") return;
-  const type = inputType || data || "";
-  focused(input);
-  input.inputs += 1;
-  if (type.startsWith("delete")) input.deletes += 1;
-  if (type === "insertFromPaste") input.pastes += 1;
-  if (window.mathVirtualKeyboard?.visible) input.vk_inputs += 1;
 }
 
 const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
@@ -139,7 +108,7 @@ export function AnswerForm({
         setEdited(false);
         if (!answerId.current) {
           answerId.current = crypto.randomUUID();
-          const { focusAt, ...counts } = input.current;
+          const { focusAt, ...counts } = takeInput(input);
           queueEvent("answer_input", {
             context: "practice",
             task_id: taskId,
@@ -152,7 +121,6 @@ export function AnswerForm({
                 : Math.round(performance.now() - focusAt),
             latex_len: values.join("").length,
           });
-          input.current = freshInput();
         }
         form.set("clientId", answerId.current);
         help.track(async (sessionId) => {
