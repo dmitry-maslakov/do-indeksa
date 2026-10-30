@@ -7,7 +7,7 @@ import { reportServerError } from "./report";
 
 export type ServerError = "unexpected" | "bot";
 
-const baseClient = createSafeActionClient({
+export const baseClient = createSafeActionClient({
   handleServerError: (error): ServerError => {
     reportServerError(error);
     return "unexpected";

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { PageTitle } from "@/components/page-title";
 import { alternates } from "@/i18n/alternates";
 import { contactEmail } from "@/lib/site";
+import { AnalyticsToggle } from "./_components/analytics-toggle";
 import { DeleteAccount } from "./_components/delete-account";
 
 const poverenikUrl = "https://www.poverenik.rs";
@@ -64,6 +65,7 @@ export default function PrivacyPage() {
         <Section title={t("analyticsTitle")}>
           <p>{t("analytics")}</p>
           <p>{t("analyticsOff")}</p>
+          <AnalyticsToggle />
         </Section>
         <Section title={t("rightsTitle")}>
           <p>{t.rich("rights", links)}</p>
