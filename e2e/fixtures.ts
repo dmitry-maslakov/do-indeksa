@@ -113,6 +113,9 @@ export async function answer(page: Page, value: string) {
   await field.pressSequentially(value);
 }
 
+export const mathKeys = (page: Page) =>
+  page.locator(".ML__keyboard.is-visible .MLK__layer.is-visible");
+
 export async function finish(page: Page) {
   await page.getByRole("button", { name: /^Završi( test)?$/ }).click();
   await page
