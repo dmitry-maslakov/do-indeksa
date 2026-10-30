@@ -263,6 +263,7 @@ test("theory records how far a page was read", async ({ page }) => {
       }),
     ]);
   const [read] = await propsOf(page, "theory_read");
+  expect(read?.active_ms).toBeGreaterThan(0);
   expect(read?.sections).toBeGreaterThan(0);
   expect(read?.sections_reached).toBe(read?.sections);
   expect(read?.last_section).toBe(section);
@@ -287,8 +288,26 @@ test("theory records how far a page was read", async ({ page }) => {
       .filter(({ props }) => props.page === "topic")
       .map(({ route }) => route),
   ).toEqual(["/theory/[topic]", "/theory/[topic]"]);
+  for (const { active_ms, visible_ms } of await propsOf(page, "theory_read"))
+    expect(active_ms).toBeLessThanOrEqual(Number(visible_ms));
   expect(await propsOf(page, "control_used")).toEqual([
     { control: "theory_section_link", value: section },
     { control: "theory_tab", value: "methods" },
   ]);
+});
+
+test("an idle theory page is not counted as reading", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/theory/exponential-equations");
+  await hydrated(page);
+  await page.clock.fastForward("05:00");
+  await flush(page);
+
+  await expect
+    .poll(() => propsOf(page, "theory_read"))
+    .toEqual([expect.objectContaining({ exit: "pagehide" })]);
+  const [read] = await propsOf(page, "theory_read");
+  expect(read?.visible_ms).toBeGreaterThanOrEqual(5 * 60_000);
+  expect(read?.active_ms).toBeGreaterThanOrEqual(30_000);
+  expect(read?.active_ms).toBeLessThan(35_000);
 });

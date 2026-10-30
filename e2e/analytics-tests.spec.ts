@@ -268,15 +268,22 @@ test("a test records its answers, controls and where it was started", async ({
       }),
     ]);
   const [submitted] = await propsOf(page, "answer_submitted");
-  expect(await propsOf(page, "answer_input")).toEqual([
+  const inputs = await propsOf(page, "answer_input");
+  expect(inputs).toEqual([
     expect.objectContaining({
       ...answered,
       task_id: submitted?.task_id,
       deletes: 0,
       pastes: 0,
+      vk_toggles: 0,
+      text_mode: false,
+      field_ready_ms: expect.any(Number),
+      first_focus_ms: expect.any(Number),
+      edit_ms: 0,
       latex_len: 1,
     }),
   ]);
+  expect(inputs[0]).not.toHaveProperty("structures");
 });
 
 test("tests started from home record the year or the weekly card", async ({

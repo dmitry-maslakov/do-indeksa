@@ -1,11 +1,8 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import type { MathfieldElement } from "mathlive";
-import { expect, test } from "./fixtures";
+import { expect, mathKeys, test } from "./fixtures";
 
 test.use({ hasTouch: true, isMobile: true });
-
-const keys = (page: Page) =>
-  page.locator(".ML__keyboard.is-visible .MLK__layer.is-visible");
 
 const aboveKeyboard = (field: Locator) =>
   field.evaluate(
@@ -21,14 +18,14 @@ test("the math keyboard opens on tap and closes on return", {
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").last();
   await field.tap();
-  await keys(page).locator('[data-keycap-value="2"]').tap();
+  await mathKeys(page).locator('[data-keycap-value="2"]').tap();
   await expect
     .poll(() => field.evaluate((element: MathfieldElement) => element.value))
     .toBe("2");
   await expect.poll(() => aboveKeyboard(field)).toBe(true);
 
-  await keys(page).locator('[data-command*="commit"]').tap();
-  await expect(keys(page)).toBeHidden();
+  await mathKeys(page).locator('[data-command*="commit"]').tap();
+  await expect(mathKeys(page)).toBeHidden();
   await page.getByRole("button", { name: "Proveri" }).tap();
   await expect(page.getByText("Nije tačno")).toBeVisible();
 });

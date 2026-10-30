@@ -4,6 +4,7 @@ import {
   expect,
   flush,
   hydrated,
+  mathKeys,
   needsRecorder,
   propsOf,
   type Row,
@@ -18,6 +19,15 @@ const opens = async (page: Page) =>
     via,
     placement,
   ]);
+
+const levels: Record<string, string> = {
+  lako: "easy",
+  srednje: "medium",
+  teško: "hard",
+};
+
+const answerIds = async (page: Page, name: string) =>
+  (await propsOf(page, name)).map((row) => row.answer_client_id).toSorted();
 
 const inOrder = (rows: Row["props"][]) =>
   rows.toSorted(
@@ -77,6 +87,25 @@ test("checking an answer records the input and the attempt", async ({
     .poll(() => propsOf(page, "task_opened"))
     .toEqual([expect.objectContaining({ task_id: "eks-001", via: "direct" })]);
   const [opened] = await propsOf(page, "task_opened");
+  const meta = page
+    .locator("main article")
+    .filter({ has: page.locator("math-field") });
+  const level = await meta
+    .locator("span")
+    .filter({ hasText: /^(lako|srednje|teško)$/ })
+    .textContent();
+  const exam = /Prijemni (\d{4}) · (\d+)\. zadatak/.exec(
+    (await meta.textContent()) ?? "",
+  );
+  expect({
+    level: opened?.level,
+    exam_year: opened?.exam_year,
+    exam_position: opened?.exam_position,
+  }).toEqual({
+    level: levels[level ?? ""],
+    exam_year: exam ? Number(exam[1]) : undefined,
+    exam_position: exam ? Number(exam[2]) : expect.any(Number),
+  });
   const session = { task_session_id: opened?.task_session_id };
   await expect
     .poll(() => propsOf(page, "help_revealed"))
@@ -108,23 +137,113 @@ test("checking an answer records the input and the attempt", async ({
         hints_before: 1,
       }),
     ]);
-  const ids = async (name: string) =>
-    (await propsOf(page, name)).map((row) => row.answer_client_id).toSorted();
   await expect
-    .poll(() => ids("answer_input"))
-    .toEqual(await ids("answer_submitted"));
-  const [, right] = inOrder(await propsOf(page, "answer_submitted"));
-  expect(
-    (await propsOf(page, "answer_input")).find(
-      (input) => input.answer_client_id === right?.answer_client_id,
-    ),
-  ).toMatchObject({
+    .poll(() => answerIds(page, "answer_input"))
+    .toEqual(await answerIds(page, "answer_submitted"));
+  const inputs = await propsOf(page, "answer_input");
+  const inputOf = (submitted?: Row["props"]) =>
+    inputs.find(
+      (input) => input.answer_client_id === submitted?.answer_client_id,
+    );
+  const [wrong, right] = inOrder(await propsOf(page, "answer_submitted"));
+  expect(inputOf(wrong)).toMatchObject({
+    inputs: 1,
+    field_ready_ms: expect.any(Number),
+    first_focus_ms: expect.any(Number),
+    edit_ms: 0,
+    vk_toggles: 0,
+    text_mode: false,
+  });
+  expect(inputOf(wrong)).not.toHaveProperty("structures");
+  const second = inputOf(right);
+  expect(second).toMatchObject({
     fields: 1,
+    inputs: 2,
     deletes: 1,
     pastes: 0,
     latex_len: 1,
     focus_to_submit_ms: expect.any(Number),
+    edit_ms: expect.any(Number),
   });
+  expect(second).not.toHaveProperty("field_ready_ms");
+  expect(second).not.toHaveProperty("first_focus_ms");
+});
+
+test("the answer field records the keyboard, text mode and structures", async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await answer(page, "1/2");
+  const field = page.locator("math-field").first();
+  await field.press("Shift+Alt+Space");
+  await expect(mathKeys(page)).toBeVisible();
+  await field.press("Shift+Alt+Space");
+  await expect(mathKeys(page)).toBeHidden();
+  await field.press("ArrowRight");
+  await field.press("Shift+Alt+KeyT");
+  await field.pressSequentially("ili");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect
+    .poll(async () => {
+      await flush(page);
+      return propsOf(page, "answer_input");
+    })
+    .toEqual([
+      expect.objectContaining({
+        text_mode: true,
+        vk_toggles: 1,
+        structures: ["frac", "text"],
+      }),
+    ]);
+});
+
+test.describe("on a phone", () => {
+  test.use({ hasTouch: true, isMobile: true });
+
+  test("the answer field records the math keyboard", {
+    tag: "@mobile",
+  }, async ({ page }) => {
+    await page.goto("/bank/eks-001");
+    await page.waitForFunction(() => customElements.get("math-field"));
+    const keys = mathKeys(page);
+    await page.locator("math-field").first().tap();
+    await keys.locator('[data-keycap-value="2"]').tap();
+    await keys.locator('[data-command*="commit"]').tap();
+    await expect(keys).toBeHidden();
+    await page.getByRole("button", { name: "Proveri" }).tap();
+    await expect
+      .poll(async () => {
+        await flush(page);
+        return propsOf(page, "answer_input");
+      })
+      .toEqual([expect.objectContaining({ vk_toggles: 0, latex_len: 1 })]);
+  });
+});
+
+test("an answer changed after going back is still recorded", async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await answer(page, "3");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
+  const field = page.locator("math-field").first();
+  await field.click();
+  await page.getByRole("link", { name: "Svi zadaci" }).click();
+  await expect(page).toHaveURL(/\/bank\?topic=/);
+  await page.goBack();
+  await field.press("Backspace");
+  await field.pressSequentially("2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+  await flush(page);
+
+  await expect
+    .poll(async () => (await answerIds(page, "answer_submitted")).length)
+    .toBe(2);
+  await expect
+    .poll(() => answerIds(page, "answer_input"))
+    .toEqual(await answerIds(page, "answer_submitted"));
 });
 
 test("leaving a task records how it was left", async ({ page }) => {
@@ -141,6 +260,7 @@ test("leaving a task records how it was left", async ({ page }) => {
         exit: "navigate",
         state: "typing",
         typed_len: 1,
+        field_ready_ms: expect.any(Number),
       }),
     );
   const [left] = await propsOf(page, "task_left");
