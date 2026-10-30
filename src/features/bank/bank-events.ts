@@ -6,7 +6,7 @@ import { topicIdSchema } from "@/features/catalog/topics";
 import { placements } from "@/features/practice/practice-events";
 import { defineEvent, type EventMap } from "@/lib/analytics-schema";
 import { sorts, sources, statusFilters } from "./params";
-import { algoVersion } from "./queue/recommendation";
+import { algoVersion, pickReasons } from "./queue/recommendation";
 import type { BankQuery } from "./search";
 
 const position = z.int().min(1).max(positions.length);
@@ -17,6 +17,7 @@ const recommendationMade = defineEvent("recommendation_made", {
   topic: topicIdSchema,
   algo_version: z.literal(algoVersion),
   repeat: z.boolean(),
+  reason: z.enum(pickReasons),
   slot: z.int().min(1).max(20),
 });
 

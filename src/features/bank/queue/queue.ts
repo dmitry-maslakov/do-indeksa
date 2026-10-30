@@ -4,9 +4,13 @@ import { findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
+import type { Candidate } from "@/features/progress/learning/planner/contracts";
+import { difficultyOf } from "@/features/progress/learning/types";
 import { getTouched } from "@/features/progress/progress";
 import type { TaskStatus, Touched } from "@/features/progress/status";
-import { planQueue } from "./picks";
+import { getLearning } from "@/features/progress/student-learning";
+import { type Pick, planQueue } from "./picks";
+import type { PickReason } from "./recommendation";
 import { examYear, previewHtml } from "./task-preview";
 
 export interface QueueRow {
@@ -16,6 +20,7 @@ export interface QueueRow {
   year: number | null;
   status?: TaskStatus;
   repeat?: boolean;
+  reason?: PickReason;
 }
 
 export interface Queue {
@@ -35,13 +40,33 @@ interface PoolInput {
 const topicIds = (topic: string) => findTasks({ topic }).map((t) => t.id);
 
 const poolOf = (ids: string[]) =>
-  ids.map((id) => ({ id, exam: examYear(id) !== null }));
+  ids.flatMap((id): Candidate[] => {
+    const task = getTask(id);
+    if (!task) return [];
+    return [
+      {
+        taskId: id,
+        topic: task.topic,
+        difficulty: difficultyOf(task.difficulty),
+        exam: examYear(id) !== null,
+      },
+    ];
+  });
 
 async function plan({ topic, profileId, current }: PoolInput, size = 6) {
   const ids = topicIds(topic);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
-  const touched = await getTouched(profileId, asked);
-  const queue = planQueue({ pool: poolOf(ids), touched, current, size });
+  const [touched, learning] = await Promise.all([
+    getTouched(profileId, asked),
+    getLearning(profileId),
+  ]);
+  const queue = planQueue({
+    pool: poolOf(ids),
+    learning,
+    touched,
+    current,
+    size,
+  });
   return { touched, queue };
 }
 
@@ -50,19 +75,23 @@ export async function nextTasks(profileId: string) {
     topic,
     ids: topicIds(topic),
   }));
-  const touched = await getTouched(
-    profileId,
-    topics.flatMap((t) => t.ids),
-  );
+  const [touched, learning] = await Promise.all([
+    getTouched(
+      profileId,
+      topics.flatMap((t) => t.ids),
+    ),
+    getLearning(profileId),
+  ]);
   return new Map(
     topics.flatMap(({ topic, ids }) => {
       const own = new Set(ids);
       const { upcoming } = planQueue({
         pool: poolOf(ids),
+        learning,
         touched: new Map([...touched].filter(([id]) => own.has(id))),
         size: 1,
       });
-      const next = upcoming[0] ?? (ids[0] && { id: ids[0], fallback: true });
+      const next = upcoming[0] ?? (ids[0] && { id: ids[0] });
       return next ? [[topic, next] as const] : [];
     }),
   );
@@ -77,7 +106,7 @@ export async function loadQueue(
   input: PoolInput & { locale: Locale },
 ): Promise<Queue> {
   const { touched, queue } = await plan(input);
-  const row = (id: string, repeat?: boolean): QueueRow[] => {
+  const row = (id: string, pick?: Pick): QueueRow[] => {
     const task = getTask(id);
     if (!task) return [];
     return [
@@ -87,7 +116,8 @@ export async function loadQueue(
         topic: topicName(task.topic, input.locale),
         year: examYear(id),
         status: touched.get(id)?.status,
-        repeat,
+        repeat: pick?.repeat,
+        reason: pick?.reason,
       },
     ];
   };
@@ -97,6 +127,6 @@ export async function loadQueue(
     before: before && !before.today ? before.status : undefined,
     earlier: queue.earlier.flatMap((id) => row(id)),
     today: queue.today.flatMap((id) => row(id)),
-    upcoming: queue.upcoming.flatMap((p) => row(p.id, p.repeat)),
+    upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
   };
 }

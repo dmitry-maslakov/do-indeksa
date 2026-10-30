@@ -19,9 +19,9 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 `src/features` has the product code. Each folder owns its server code, one `actions.ts`, its components and its hooks:
 
 - `catalog` reads content: exams, topics, tasks and the answer checker.
-- `progress` turns attempts into task status, topic status and statistics. The pure learning model and the policy that holds its numbers live in `progress/learning`, `progress/attempt-log.ts` reads the attempt log for it, and `getLearning` in `progress/student-learning.ts` is the one shared read that folds the log into the student's state.
+- `progress` turns attempts into task status, topic status and statistics. The pure learning model and the policy that holds its numbers live in `progress/learning`: the topic status, the ability per topic (an Elo over first attempts, where a new topic starts from the others) and the planner, which scores candidate tasks with a list of weighted signals and names the strongest one as the reason for each pick. `progress/attempt-log.ts` reads the attempt log for it, and `getLearning` in `progress/student-learning.ts` is the one shared read that folds the log into the student's state: status and ability per topic.
 - `practice` is working on one task: the answer field, hints and solutions, task sessions and reports.
-- `bank` is the task list with filters, search and the queue of what to solve next.
+- `bank` is the task list with filters, search and the queue of what to solve next. `bank/queue` builds the topic queue and the topic starts from `getLearning` and the planner, and keeps its own rule for repeating earlier mistakes.
 - `variants` lists exam variants, the weekly one and variants composed from chosen topics.
 - `tests` runs a variant as a test, grades it and shows the review.
 - `theory` renders theory pages.

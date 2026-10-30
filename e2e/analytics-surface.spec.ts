@@ -32,8 +32,9 @@ test("home records the suggestion and the picks a visitor sees", async ({
       surface: "home_hero",
       task_id: taskId,
       topic: "complex-numbers",
-      algo_version: 1,
+      algo_version: 2,
       repeat: false,
+      reason: "levelFit",
       slot: 1,
     });
   expect(await propsOf(page, "recommendation_made")).toContainEqual(
@@ -131,8 +132,9 @@ test("the task page records the picks next to a task", async ({ page }) => {
   const pick = {
     task_id: next,
     topic: "exponential-equations",
-    algo_version: 1,
+    algo_version: 2,
     repeat: false,
+    reason: "levelFit",
     slot: 1,
   };
 
