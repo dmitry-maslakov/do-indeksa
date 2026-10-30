@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { isAnswered } from "@/features/tests/state";
 import type { VariantTask } from "@/features/variants/variants";
+import { queueEvent } from "@/lib/analytics-browser";
 import type { LocalTest } from "./test-store";
 
 interface FinishDialogProps {
@@ -40,7 +41,14 @@ export function FinishDialog({
   const left = answered.filter((done) => !done).length;
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      onOpenChange={(open) =>
+        queueEvent("control_used", {
+          control: "finish_dialog",
+          value: open ? "opened" : "cancelled",
+        })
+      }
+    >
       <AlertDialogTrigger render={trigger} disabled={pending}>
         {children}
       </AlertDialogTrigger>
