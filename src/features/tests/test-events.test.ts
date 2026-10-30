@@ -12,7 +12,12 @@ const facts = {
 };
 
 const valid = {
-  test_started: { ...facts, fallback: "weak" },
+  test_started: {
+    ...facts,
+    via: "review",
+    placement: "similar",
+    fallback: "weak",
+  },
   test_resumed: { ...facts, from: "server", away_ms: 3600, answered: 2 },
   test_task_viewed: {
     test_session_id: testSessionId,
@@ -52,7 +57,7 @@ const valid = {
 };
 
 const invalid = {
-  test_started: { ...facts, variant_kind: "daily" },
+  test_started: { ...facts, via: "catalog", variant_kind: "daily" },
   test_resumed: { ...facts, from: "cloud", away_ms: 0, answered: 0 },
   test_task_viewed: { ...valid.test_task_viewed, position: 0 },
   test_task_swapped: { ...valid.test_task_swapped, test_session_id: "1" },
@@ -77,6 +82,17 @@ describe("test events", () => {
     expect(
       schemaOf("test_resumed")?.parse({ ...valid.test_resumed, away_ms: -40 }),
     ).toMatchObject({ away_ms: 0 });
+  });
+
+  it("counts a test started from an unknown place as direct", () => {
+    const started = { ...facts, via: "picker", placement: "home_hero" };
+    expect(schemaOf("test_started")?.parse(started)).toEqual({
+      ...facts,
+      via: "direct",
+    });
+    expect(schemaOf("test_started")?.parse(facts)).toMatchObject({
+      via: "direct",
+    });
   });
 
   it("covers every client event", () => {

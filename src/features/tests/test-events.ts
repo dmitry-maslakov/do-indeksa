@@ -19,6 +19,19 @@ const testFacts = {
 
 const testStarted = defineEvent("test_started", {
   ...testFacts,
+  via: z
+    .enum([
+      "catalog",
+      "exam_years",
+      "weekly",
+      "compose",
+      "review",
+      "history",
+      "share",
+      "direct",
+    ])
+    .catch("direct"),
+  placement: z.enum(["retry", "similar"]).optional().catch(undefined),
   fallback: z.enum(composeModes).optional(),
 });
 

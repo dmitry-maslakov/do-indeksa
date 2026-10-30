@@ -19,8 +19,17 @@ describe("intents", () => {
   it("do not carry over to a later navigation", () => {
     rememberIntent(picked);
     navigationStarted("push");
+    rememberIntent(null);
     navigationStarted("replace");
     expect(takeIntent()).toBeUndefined();
+  });
+
+  it("survive redirects no click started", () => {
+    rememberIntent(picked);
+    navigationStarted("push");
+    navigationStarted("replace");
+    navigationStarted("push");
+    expect(takeIntent()).toEqual(picked);
   });
 
   it("mark back and forward as history", () => {

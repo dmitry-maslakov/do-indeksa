@@ -6,6 +6,7 @@ import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
 import { ShareButton } from "./share-button";
 
@@ -95,6 +96,10 @@ export function ReviewSummary({
                 render={
                   <Link
                     href={`/variants/compose?mode=topics&${missed.map((topic) => `topic=${topic}`).join("&")}`}
+                    data-intent={intentOf({
+                      via: "review",
+                      placement: "similar",
+                    })}
                   />
                 }
                 nativeButton={false}
@@ -106,7 +111,12 @@ export function ReviewSummary({
             <Button
               variant="ghost"
               className={action}
-              render={<Link href={`/variants/${variantId}`} />}
+              render={
+                <Link
+                  href={`/variants/${variantId}`}
+                  data-intent={intentOf({ via: "review", placement: "retry" })}
+                />
+              }
               nativeButton={false}
             >
               {t("retry")}

@@ -8,10 +8,16 @@ import {
 import { answeredCount, overtimeAt } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
 import type { VariantTask } from "@/features/variants/variants";
-import { type BrowserEvents, flush, queueEvent } from "@/lib/analytics-browser";
+import {
+  type BrowserEvents,
+  flush,
+  queueEvent,
+  takeIntent,
+} from "@/lib/analytics-browser";
 import { useTestStore } from "./test-store";
 
 type Started = BrowserEvents["test_started"];
+type Entry = Partial<Pick<Started, "via" | "placement">>;
 type Nav = BrowserEvents["test_task_viewed"]["nav"];
 type Exit = BrowserEvents["test_left"]["exit"];
 
@@ -93,7 +99,8 @@ export function useTestViews(
     const fresh = swapped === id || test.startedAt >= performance.timeOrigin;
     if (!left && fresh) {
       attempt(() => sessionStorage.removeItem(swapKey));
-      queueEvent("test_started", { ...facts, fallback });
+      const { via = "direct", placement } = (takeIntent() ?? {}) as Entry;
+      queueEvent("test_started", { ...facts, via, placement, fallback });
       view("start");
       return;
     }
