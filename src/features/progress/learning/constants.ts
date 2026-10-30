@@ -3,7 +3,12 @@ import { dayMs, hourMs } from "@/lib/dates";
 
 export type Difficulty = 1 | 2 | 3 | 4;
 
-export const difficultyOf = (label: number) => clamp(label, 1, 4) as Difficulty;
+export const easiest: Difficulty = 1;
+
+export const hardest: Difficulty = 4;
+
+export const difficultyOf = (label: number) =>
+  clamp(label, easiest, hardest) as Difficulty;
 
 export const attemptGapMs = hourMs;
 
@@ -38,5 +43,3 @@ export const laterDaysNeeded = 3;
 export const spanNeededMs = 18 * hourMs;
 
 export const reviewAfterMs = 14 * dayMs;
-
-export const almostShare = 2 / 3;

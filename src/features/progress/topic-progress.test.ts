@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { dayMs } from "@/lib/dates";
-import type { Observation } from "./observations";
+import type { Observation } from "./learning/observations";
+import type { TopicState } from "./learning/topic-status";
 import { suggest, type TopicProgress, topicProgress } from "./topic-progress";
-import type { TopicState } from "./topic-status";
 
 const now = 100 * dayMs;
 
@@ -20,8 +20,8 @@ const topic = (
   name: string,
   state: TopicState,
   lastAt: number | null = null,
-  share = 0,
-): TopicProgress => ({ topic: name, state, share, lastAt });
+  almost = false,
+): TopicProgress => ({ topic: name, state, fill: 0, almost, lastAt });
 
 describe("topicProgress", () => {
   it("gives every topic a status, in the given order", () => {
@@ -69,12 +69,10 @@ describe("suggest", () => {
   });
 
   it("tells how close the last topic is", () => {
-    expect(suggest([topic("a", "inProgress", 1, 0.8)], [true])?.reason).toBe(
+    expect(suggest([topic("a", "inProgress", 1, true)], [true])?.reason).toBe(
       "almost",
     );
-    expect(suggest([topic("a", "warming", 1, 0.2)], [true])?.reason).toBe(
-      "started",
-    );
+    expect(suggest([topic("a", "warming", 1)], [true])?.reason).toBe("started");
   });
 
   it("keeps the last topic once every topic is mastered", () => {

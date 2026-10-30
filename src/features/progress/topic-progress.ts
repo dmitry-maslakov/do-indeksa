@@ -1,8 +1,11 @@
 import { maxBy } from "es-toolkit";
 import type { SuggestionReason } from "@/db/columns";
-import { almostShare } from "./learning";
-import type { Observation } from "./observations";
-import { isMastered, type TopicStatus, topicStatus } from "./topic-status";
+import type { Observation } from "./learning/observations";
+import {
+  isMastered,
+  type TopicStatus,
+  topicStatus,
+} from "./learning/topic-status";
 
 export interface TopicProgress extends TopicStatus {
   topic: string;
@@ -54,9 +57,6 @@ export function suggest(
   }
   return {
     topic: last.topic,
-    reason:
-      last.state === "inProgress" && last.share >= almostShare
-        ? "almost"
-        : "started",
+    reason: last.almost ? "almost" : "started",
   };
 }

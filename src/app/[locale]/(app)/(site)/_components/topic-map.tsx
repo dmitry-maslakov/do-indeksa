@@ -2,7 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { type ReactNode, useRef, useState } from "react";
-import { type TopicState, topicStates } from "@/features/progress/topic-status";
+import {
+  type TopicState,
+  topicStates,
+} from "@/features/progress/learning/topic-status";
 import { Link } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
 import { TopicRow, type TopicRowProps } from "./topic-row";

@@ -3,7 +3,6 @@ import { type nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { getTopicPlan } from "@/features/progress/progress";
-import { barFill } from "@/features/progress/topic-status";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import { weeklyVariant } from "@/features/variants/weekly";
 import { ExamYears } from "./exam-years";
@@ -37,7 +36,7 @@ export function Home({ topics, suggestion, starts }: HomeProps) {
           topic: t.topic,
           name: topicName(t.topic, locale),
           look: topicLook(t.topic),
-          fill: barFill(t),
+          fill: t.fill,
           state: t.state,
           href: topicStart(starts, t.topic),
           recommendation: recommendationOf(

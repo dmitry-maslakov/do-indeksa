@@ -5,7 +5,7 @@ import {
   type Difficulty,
   difficultyOf,
   helpedCredit,
-} from "./learning";
+} from "./constants";
 
 export interface LoggedSubmit {
   at: number;
@@ -51,11 +51,11 @@ const shareRight = ({ outcomes }: LoggedSubmit) =>
 const isHint = (reveal: LoggedReveal) => reveal.part.startsWith("hint");
 
 function firstSitting({ submits, reveals, skips }: FirstAttempt) {
-  const times = [
-    ...submits.map((s) => s.at),
-    ...reveals.map((r) => r.at),
-    ...skips,
-  ].toSorted((a, b) => a - b);
+  const work = [...submits.map((s) => s.at), ...reveals.map((r) => r.at)];
+  const start = Math.min(...work);
+  const times = [...work, ...skips.filter((at) => at > start)].toSorted(
+    (a, b) => a - b,
+  );
   const gap = times.findIndex(
     (at, i) => at - (times[i - 1] ?? at) >= attemptGapMs,
   );

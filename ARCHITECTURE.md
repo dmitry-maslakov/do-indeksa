@@ -19,7 +19,7 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 `src/features` has the product code. Each folder owns its server code, one `actions.ts`, its components and its hooks:
 
 - `catalog` reads content: exams, topics, tasks and the answer checker.
-- `progress` turns attempts into task status, topic status and statistics. A topic's status is computed on read from the first attempt at each of its tasks, and its thresholds live in `progress/learning.ts`.
+- `progress` turns attempts into task status, topic status and statistics. A topic's status is computed on read from the first attempt at each of its tasks, and the pure model with its thresholds lives in `progress/learning`; `progress/attempt-log.ts` reads the log for it.
 - `practice` is working on one task: the answer field, hints and solutions, task sessions and reports.
 - `bank` is the task list with filters, search and the queue of what to solve next.
 - `variants` lists exam variants, the weekly one and variants composed from chosen topics.
@@ -30,7 +30,7 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 
 `catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`. Biome rejects an import that goes the other way.
 
-`src/components` is UI shared by several features, with shadcn in `components/ui`. `src/lib` is helpers that know nothing about exams or students. `src/db` has the Drizzle schema, the column types and the migrate and cleanup scripts. `src/server` is infrastructure: the database client, env, auth, the current profile, the action clients and the analytics sinks. None of these import features or routes.
+`src/components` is UI shared by several features, with shadcn in `components/ui`. `src/lib` is helpers that know nothing about exams or students. `src/db` has the Drizzle schema, the column types, shared SQL helpers and the migrate and cleanup scripts. `src/server` is infrastructure: the database client, env, auth, the current profile, the action clients and the analytics sinks. None of these import features or routes.
 
 ## Invariants
 

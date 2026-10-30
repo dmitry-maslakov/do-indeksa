@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hourMs, minuteMs } from "@/lib/dates";
+import { dayMs, hourMs, minuteMs } from "@/lib/dates";
 import { type FirstAttempt, type LoggedSubmit, observe } from "./observations";
 
 const start = Date.parse("2026-10-20T10:00:00Z");
@@ -134,13 +134,13 @@ describe("observe", () => {
       ...submit(0, ["right"]),
       at: Date.parse("2026-10-20T23:30:00Z"),
     };
-    expect(
-      observe(attempt({ submits: [late] }), now + 2 * 86_400_000)?.day,
-    ).toBe("2026-10-21");
+    expect(observe(attempt({ submits: [late] }), now + 2 * dayMs)?.day).toBe(
+      "2026-10-21",
+    );
     expect(
       observe(
         attempt({ submits: [late], tz: "America/New_York" }),
-        now + 2 * 86_400_000,
+        now + 2 * dayMs,
       )?.day,
     ).toBe("2026-10-20");
   });
@@ -173,5 +173,13 @@ describe("observe", () => {
       now,
     );
     expect(result).toMatchObject({ result: "helped", at: at(70) });
+  });
+
+  it("doesn't start the first attempt with a skip", () => {
+    const result = observe(
+      attempt({ submits: [submit(24 * 60, ["right"])], skips: [at(0)] }),
+      now + dayMs,
+    );
+    expect(result).toMatchObject({ result: "clean", at: at(24 * 60) });
   });
 });
