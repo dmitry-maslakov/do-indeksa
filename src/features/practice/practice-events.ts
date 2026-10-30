@@ -1,11 +1,17 @@
 import { z } from "zod";
 import { partOutcomes, reportKinds, sessionKinds } from "@/db/columns";
-import { revealPart } from "@/db/schema";
+import { revealPart, testKind } from "@/db/schema";
 import { maxParts } from "@/features/catalog/parts";
 import { defineEvent, type EventMap, text } from "@/lib/analytics-schema";
 import { verdicts } from "./answer/verdicts";
 
 const count = z.int().min(0);
+
+const answered = {
+  context: z.enum(["practice", "test"]),
+  test_session_id: z.uuid().optional(),
+  position: z.int().positive().optional(),
+};
 
 export const placements = [
   "home_hero",
@@ -64,9 +70,9 @@ export const taskResumed = defineEvent("task_resumed", {
 });
 
 const answerInput = defineEvent("answer_input", {
-  context: z.literal("practice"),
+  ...answered,
   task_id: text,
-  answer_client_id: z.uuid(),
+  answer_client_id: z.uuid().optional(),
   fields: z.int().min(1).max(maxParts),
   inputs: count,
   deletes: count,
@@ -79,12 +85,15 @@ const answerInput = defineEvent("answer_input", {
 export const answerSubmitted = defineEvent("answer_submitted", {
   ...task,
   ...session,
-  context: z.literal("practice"),
+  ...answered,
   answer_client_id: z.uuid(),
   correct: z.boolean(),
   verdict: z.enum(verdicts),
   outcomes: z.array(z.enum(partOutcomes)).min(1).max(maxParts),
   checker: z.int().min(1),
+  variant_kind: z.enum(testKind.enumValues).optional(),
+  duration_ms: count.optional(),
+  visits: count.optional(),
 });
 
 export const helpRevealed = defineEvent("help_revealed", {

@@ -4,19 +4,17 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { reportKinds } from "@/db/columns";
-import { checkerVersion } from "@/features/catalog/checker";
 import { maxParts } from "@/features/catalog/parts";
 import { taskFacts, taskIdSchema } from "@/features/catalog/tasks";
 import {
+  factsAt,
   keepSession,
-  sessionFacts,
 } from "@/features/practice/session/task-sessions";
 import { getTaskStatuses } from "@/features/progress/progress";
 import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
 import { track } from "@/server/analytics";
-import { submitAnswer } from "./answer/answers";
-import { verdictOf } from "./answer/verdicts";
+import { attemptFacts, submitAnswer } from "./answer/answers";
 import {
   answerSubmitted,
   helpRevealed,
@@ -62,16 +60,6 @@ function trackOpening(
   );
 }
 
-const factsAt = async (
-  profileId: string,
-  taskId: string,
-  sessionId: string,
-  at: Date,
-) => ({
-  ...taskFacts(taskId),
-  ...(await sessionFacts(profileId, sessionId, at)),
-});
-
 export const checkAnswer = actionClient
   .inputSchema(
     zfd.formData({
@@ -95,18 +83,8 @@ export const checkAnswer = actionClient
         await track(
           answerSubmitted,
           async () => ({
-            ...(await factsAt(
-              profileId,
-              taskId,
-              session.id,
-              attempt.createdAt,
-            )),
+            ...(await attemptFacts(profileId, attempt)),
             context: "practice",
-            answer_client_id: clientId,
-            correct,
-            verdict: verdictOf(outcomes),
-            outcomes,
-            checker: checkerVersion,
           }),
           { profileId },
         );

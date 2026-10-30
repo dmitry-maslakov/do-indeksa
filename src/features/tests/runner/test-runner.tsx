@@ -134,7 +134,7 @@ export function TestRunner({
     }, 1500);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
-  const goTo = useTestViews(
+  const { goTo, recordInput, onInput } = useTestViews(
     { variantId, kind, tasks, saved, fallback },
     hydrated ? test?.testId : undefined,
   );
@@ -165,8 +165,10 @@ export function TestRunner({
     test,
     tasks,
     pending,
-    onFinish: () =>
-      submit({ ...payload(variantId, test), tz: localTimeZone() }),
+    onFinish: () => {
+      recordInput();
+      submit({ ...payload(variantId, test), tz: localTimeZone() });
+    },
   };
 
   return (
@@ -176,7 +178,10 @@ export function TestRunner({
         <RailPanel label={t("tasks")}>
           <TestRail {...rail} code={code} onGo={(i) => goTo(i, "rail")} />
         </RailPanel>
-        <div className="flex min-w-0 max-w-task flex-1 flex-col">
+        <div
+          onInput={onInput}
+          className="flex min-w-0 max-w-task flex-1 flex-col"
+        >
           {fallback && (
             <p className="pt-4.5 text-sm md:pt-3.5">
               {t("fallback", { mode: fallback })}
