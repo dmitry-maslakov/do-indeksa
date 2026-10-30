@@ -8,7 +8,7 @@ const schemaOf = (name: string) =>
 const picked = recommendationOf(
   "rail_upcoming",
   "complex-numbers",
-  { id: "kb-003", repeat: true },
+  { id: "kb-003", repeat: true, reason: "repeat" },
   2,
 );
 
@@ -18,15 +18,16 @@ describe("bank events", () => {
       surface: "rail_upcoming",
       task_id: "kb-003",
       topic: "complex-numbers",
-      algo_version: 1,
+      algo_version: 2,
       repeat: true,
+      reason: "repeat",
       slot: 2,
     });
   });
 
   it.each([
     ["no pick", undefined],
-    ["a fallback start", { id: "kb-003", fallback: true }],
+    ["a pick without a reason (the fallback start)", { id: "kb-003" }],
   ])("builds nothing from %s", (_, pick) => {
     expect(
       recommendationOf("bank_tab", "complex-numbers", pick),
@@ -36,7 +37,9 @@ describe("bank events", () => {
   it.each([
     ["an unknown task", { ...picked, task_id: "nema-001" }],
     ["an unknown surface", { ...picked, surface: "footer" }],
-    ["another algorithm", { ...picked, algo_version: 2 }],
+    ["another algorithm", { ...picked, algo_version: 1 }],
+    ["an unknown reason", { ...picked, reason: "random" }],
+    ["no reason", { ...picked, reason: undefined }],
   ])("rejects a recommendation with %s", (_, props) => {
     expect(schemaOf("recommendation_made")?.safeParse(props).success).toBe(
       false,

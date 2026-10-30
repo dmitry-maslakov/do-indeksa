@@ -81,7 +81,7 @@ export async function getSolved(profileId: string) {
 
 export async function getTopicPlan(profileId: string) {
   const learning = await getLearning(profileId);
-  const topics = [...learning].map(([topic, status]) => ({
+  const topics = [...learning].map(([topic, { status }]) => ({
     topic,
     ...status,
   }));
