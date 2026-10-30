@@ -7,6 +7,7 @@ import { TheoryMarkdown } from "@/features/theory/theory-markdown";
 import { alternates } from "@/i18n/alternates";
 import { TopicHero } from "./_components/hero";
 import { BackBar, PhoneTabs } from "./_components/phone-nav";
+import { TheoryArticle } from "./_components/theory-article";
 
 export function generateStaticParams() {
   return theories.map((t) => ({ topic: t.topic }));
@@ -44,7 +45,11 @@ export default async function TheoryTopicPage({
   return (
     <>
       <BackBar href="/theory" label={t("title")} />
-      <article className="flex flex-col gap-7.5 md:gap-10">
+      <TheoryArticle
+        topic={topic}
+        page="topic"
+        className="flex flex-col gap-7.5 md:gap-10"
+      >
         <TopicHero topic={topic} />
         <PhoneTabs
           topic={topic}
@@ -56,7 +61,7 @@ export default async function TheoryTopicPage({
           images={theory.images}
           variant="topic"
         />
-      </article>
+      </TheoryArticle>
     </>
   );
 }

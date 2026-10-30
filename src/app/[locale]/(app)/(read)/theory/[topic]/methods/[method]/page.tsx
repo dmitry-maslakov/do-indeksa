@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { plain } from "@/lib/markdown";
 import { Hero } from "../../_components/hero";
 import { BackBar } from "../../_components/phone-nav";
+import { TheoryArticle } from "../../_components/theory-article";
 
 export function generateStaticParams() {
   return theoryMethods.map((m) => ({ topic: m.topic, method: m.slug }));
@@ -54,7 +55,12 @@ export default async function MethodPage({
   return (
     <>
       <BackBar href={`/theory/${topic}/methods`} label={t("methods")} />
-      <article className="flex flex-col gap-7.5">
+      <TheoryArticle
+        topic={topic}
+        method={slug}
+        page="method"
+        className="flex flex-col gap-7.5"
+      >
         <Hero title={<InlineMarkdown source={method.name} />}>
           {t.rich("when", {
             hint: () => <InlineMarkdown source={method.when} />,
@@ -84,7 +90,7 @@ export default async function MethodPage({
             </Link>
           )}
         </nav>
-      </article>
+      </TheoryArticle>
     </>
   );
 }
