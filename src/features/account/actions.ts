@@ -5,12 +5,28 @@ import { z } from "zod";
 import { analyticsOptedIn, analyticsOptedOut } from "@/lib/site-events";
 import { baseClient } from "@/server/action-client";
 import { setAnalyticsConsent, track } from "@/server/analytics";
+import { profileMerged } from "./account-events";
 import { adoptGuestProfile } from "./adopt";
 
 export const adoptGuest = baseClient.action(async () => {
-  const merged = await adoptGuestProfile();
+  const adopted = await adoptGuestProfile();
   refresh();
-  return merged;
+  if (!adopted) return false;
+  const { outcome, from, to, guestProgress, ownProgress, guestAgeDays } =
+    adopted;
+  await track(
+    profileMerged,
+    {
+      outcome,
+      from_profile_id: from,
+      to_profile_id: to,
+      guest_had_progress: guestProgress,
+      own_had_progress: ownProgress,
+      guest_age_days: guestAgeDays,
+    },
+    { profileId: to },
+  );
+  return guestProgress && ownProgress;
 });
 
 export const setAnalytics = baseClient

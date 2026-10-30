@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { profiles } from "@/db/schema";
@@ -18,6 +18,11 @@ const profileCookieOptions = {
   path: "/",
 } as const;
 
+interface EnsuredProfile {
+  id: string;
+  created?: "guest" | "account";
+}
+
 export const tokenHashOf = (token: string) =>
   createHash("sha256").update(token).digest("base64url");
 
@@ -29,14 +34,14 @@ async function accountProfileOf(userId: string) {
   return found?.id;
 }
 
-async function createAccountProfile(userId: string) {
+async function createAccountProfile(userId: string): Promise<EnsuredProfile> {
   const [profile] = await db
     .insert(profiles)
     .values({ userId })
     .onConflictDoUpdate({ target: profiles.userId, set: { userId } })
-    .returning({ id: profiles.id });
+    .returning({ id: profiles.id, inserted: sql<boolean>`xmax = 0` });
   if (!profile) throw new Error("profile was not created");
-  return profile.id;
+  return { id: profile.id, created: profile.inserted ? "account" : undefined };
 }
 
 async function guestProfileOf(token: string) {
@@ -49,7 +54,7 @@ async function guestProfileOf(token: string) {
   return found?.id;
 }
 
-async function createGuestProfile() {
+async function createGuestProfile(): Promise<EnsuredProfile> {
   const token = randomBytes(32).toString("base64url");
   const [profile] = await db
     .insert(profiles)
@@ -60,7 +65,7 @@ async function createGuestProfile() {
     ...profileCookieOptions,
     maxAge: profileCookieAge,
   });
-  return profile.id;
+  return { id: profile.id, created: "guest" };
 }
 
 export async function guestToken() {
@@ -87,9 +92,9 @@ export const findProfileId = cache(async () => {
 
 export const getProfileId = async () => (await findProfileId()) ?? noId;
 
-export async function ensureProfileId() {
+export async function ensureProfile(): Promise<EnsuredProfile> {
   const found = await findProfileId();
-  if (found) return found;
+  if (found) return { id: found };
   const session = await getSession();
   return session ? createAccountProfile(session.user.id) : createGuestProfile();
 }
