@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { clientEvents as accountEvents } from "@/features/account/account-events";
 import { batchBytes } from "@/lib/analytics-browser";
 import { batchParser } from "@/lib/analytics-schema";
 import { clientEvents } from "@/lib/site-events";
 import { keepAid, trackBatch, visitorOf } from "@/server/analytics";
 
-const parseBatch = batchParser(clientEvents);
+const parseBatch = batchParser([...clientEvents, ...accountEvents]);
 
 function refusal(headers: Headers) {
   if (!headers.get("content-type")?.startsWith("application/json")) return 415;

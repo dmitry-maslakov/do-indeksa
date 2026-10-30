@@ -39,7 +39,7 @@ export function DeleteAccount() {
     return (
       <>
         <p className="text-sm text-subtle">{t("signedOut")}</p>
-        <GoogleSignInButton size="sm" variant="tint">
+        <GoogleSignInButton from="privacy" size="sm" variant="tint">
           {account("signIn")}
         </GoogleSignInButton>
       </>
@@ -77,7 +77,7 @@ export function DeleteAccount() {
         <AlertDialogFooter>
           <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           {status === "stale" ? (
-            <GoogleSignInButton variant="tint">
+            <GoogleSignInButton from="privacy" variant="tint">
               {account("signIn")}
             </GoogleSignInButton>
           ) : (
