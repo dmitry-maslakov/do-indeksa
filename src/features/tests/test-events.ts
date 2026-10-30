@@ -75,12 +75,20 @@ export const testFinished = defineEvent("test_finished", {
   positions_visited: count,
 });
 
+const variantComposeStarted = defineEvent("variant_compose_started", {
+  mode: z.enum(composeModes),
+  preset: z.enum(["all", "weak", "custom"]),
+  topics: z.array(text).max(30).optional(),
+  size: ordinal,
+});
+
 export const clientEvents = [
   testStarted,
   testResumed,
   testTaskViewed,
   testTaskSwapped,
   testLeft,
+  variantComposeStarted,
 ] as const;
 
 declare module "@/lib/analytics-browser" {

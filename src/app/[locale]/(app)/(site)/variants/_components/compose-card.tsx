@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { useRouter } from "@/i18n/navigation";
+import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
+
+type Preset = BrowserEvents["variant_compose_started"]["preset"];
 
 interface ComposeCardProps {
   size: number;
@@ -22,19 +25,31 @@ export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
   const router = useRouter();
   const all = topics.map((topic) => topic.id);
   const [chosen, setChosen] = useState(all);
+  const [preset, setPreset] = useState<Preset>("all");
   const [count, setCount] = useState(size);
   const counts = uniq([Math.ceil(size / 2), size]);
+  const choose = (ids: string[], next: Preset) => {
+    setChosen(ids);
+    setPreset(next);
+  };
   const flip = (id: string) =>
-    setChosen((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
+    choose(
+      chosen.includes(id) ? chosen.filter((x) => x !== id) : [...chosen, id],
+      "custom",
+    );
   const only = (ids: string[]) => isEqual([...chosen].sort(), [...ids].sort());
 
   function start() {
     const everything = chosen.length === all.length;
-    const query = new URLSearchParams({
-      mode: everything ? "exam" : "topics",
-      count: String(count),
-    });
+    const mode = everything ? "exam" : "topics";
+    const query = new URLSearchParams({ mode, count: String(count) });
     if (!everything) for (const id of chosen) query.append("topic", id);
+    queueEvent("variant_compose_started", {
+      mode,
+      preset,
+      topics: everything ? undefined : chosen,
+      size: count,
+    });
     router.push(`/variants/compose?${query}`);
   }
 
@@ -59,12 +74,16 @@ export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
       </div>
       <div className="flex gap-4 text-sm">
         <Suspense>
-          <WeakButton weak={weak} only={only} onPick={setChosen} />
+          <WeakButton
+            weak={weak}
+            only={only}
+            onPick={(ids) => choose(ids, "weak")}
+          />
         </Suspense>
         <button
           type="button"
           aria-pressed={chosen.length === all.length}
-          onClick={() => setChosen(all)}
+          onClick={() => choose(all, "all")}
           className={quick}
         >
           {t("all")}

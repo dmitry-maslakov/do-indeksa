@@ -42,6 +42,12 @@ const valid = {
     exit: "hidden",
     seq: 1,
   },
+  variant_compose_started: {
+    mode: "topics",
+    preset: "weak",
+    topics: ["eks", "log"],
+    size: 5,
+  },
 };
 
 const invalid = {
@@ -50,6 +56,7 @@ const invalid = {
   test_task_viewed: { ...valid.test_task_viewed, position: 0 },
   test_task_swapped: { ...valid.test_task_swapped, test_session_id: "1" },
   test_left: { ...valid.test_left, exit: "close" },
+  variant_compose_started: { mode: "exam", preset: "all", size: 0 },
 };
 
 const schemaOf = (name: string) =>
