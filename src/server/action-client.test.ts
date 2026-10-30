@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import { actionFailed } from "@/lib/site-events";
 import { actionClient } from "./action-client";
 import { track } from "./analytics";
 import { ensureProfile } from "./profile";
 
+vi.mock("./analytics", () => ({ track: vi.fn() }));
 vi.mock("./profile", () => ({
   ensureProfile: vi.fn(),
   findProfileId: vi.fn(),
 }));
-vi.mock("./analytics", () => ({ track: vi.fn() }));
 
 const browser = "Mozilla/5.0 (X11; Linux x86_64) Chrome/141.0 Safari/537.36";
 let userAgent = browser;
@@ -51,14 +52,20 @@ describe("action clients", () => {
       "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
     expect(await action({ n: 1 })).toEqual({ serverError: "bot" });
     expect(ensureProfile).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith(actionFailed, { reason: "bot" });
   });
 
   it("logs an unexpected error and returns only its code", async () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const failing = actionClient.action(async () => {
-      throw new Error("database is down");
+      throw new TypeError("database is down");
     });
     expect(await failing()).toEqual({ serverError: "unexpected" });
+    expect(track).toHaveBeenCalledWith(
+      actionFailed,
+      { reason: "unexpected", error: "TypeError" },
+      { profileId: "p1" },
+    );
     expect(log).toHaveBeenCalledWith(
       expect.objectContaining({ message: "database is down" }),
     );
