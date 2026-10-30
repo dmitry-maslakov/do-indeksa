@@ -41,6 +41,7 @@ export async function TestScreen({
             <TestRunner
               key={variant.id}
               variantId={variant.id}
+              kind={variant.kind}
               tasks={tasks}
               minutes={minutes}
               title={title}

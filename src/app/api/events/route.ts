@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { clientEvents as accountEvents } from "@/features/account/account-events";
 import { clientEvents as practiceEvents } from "@/features/practice/practice-events";
+import { clientEvents as testEvents } from "@/features/tests/test-events";
 import { batchBytes } from "@/lib/analytics-browser";
 import { batchParser } from "@/lib/analytics-schema";
 import { clientEvents } from "@/lib/site-events";
@@ -10,6 +11,7 @@ const parseBatch = batchParser([
   ...clientEvents,
   ...accountEvents,
   ...practiceEvents,
+  ...testEvents,
 ]);
 
 function refusal(headers: Headers) {

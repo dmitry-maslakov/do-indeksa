@@ -10,7 +10,11 @@ import { reviewHref } from "@/features/tests/review";
 import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
 import type { ComposeMode } from "@/features/variants/custom/compose";
-import type { VariantTask as Task } from "@/features/variants/variants";
+import { parseVariantId } from "@/features/variants/variant-id";
+import type {
+  ExamVariant,
+  VariantTask as Task,
+} from "@/features/variants/variants";
 import { getPathname, useRouter } from "@/i18n/navigation";
 import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
@@ -24,11 +28,13 @@ import {
   visitsAt,
 } from "./test-store";
 import { TestTask } from "./test-task";
+import { recordSwap, useTestViews } from "./use-test-views";
 
-const { start, answer, go, restore, swap, clear } = useTestStore.getState();
+const { start, answer, restore, swap, clear } = useTestStore.getState();
 
 interface TestRunnerProps {
   variantId: string;
+  kind: ExamVariant["kind"];
   tasks: Task[];
   minutes: number;
   title: string;
@@ -47,6 +53,7 @@ const payload = (variantId: string, test: LocalTest) => ({
 
 export function TestRunner({
   variantId,
+  kind,
   tasks,
   minutes,
   title,
@@ -113,6 +120,10 @@ export function TestRunner({
     }, 1500);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
+  const goTo = useTestViews(
+    { variantId, kind, tasks, saved, fallback },
+    hydrated ? test?.testId : undefined,
+  );
   const onAnswer = (part: number, value: string) =>
     answer(variantId, part, value);
 
@@ -127,23 +138,29 @@ export function TestRunner({
     ? () => {
         swap(variantId, swapTo);
         location.replace(getPathname({ href: `/variants/${swapTo}`, locale }));
+        recordSwap({
+          test_session_id: test.testId,
+          to_test_session_id: useTestStore.getState().tests[swapTo]?.testId,
+          position: test.current + 1,
+          from_task_id: task.taskId,
+          to_task_id: parseVariantId(swapTo)?.taskIds[test.current],
+        });
       }
     : undefined;
   const rail = {
     test,
     tasks,
     pending,
-    onGo: (i: number) => go(variantId, i),
     onFinish: () =>
       submit({ ...payload(variantId, test), tz: localTimeZone() }),
   };
 
   return (
     <>
-      <TestBar {...rail} />
+      <TestBar {...rail} onGo={(i) => goTo(i, "bar")} />
       <div className="flex items-start gap-14">
         <RailPanel label={t("tasks")}>
-          <TestRail {...rail} code={code} />
+          <TestRail {...rail} code={code} onGo={(i) => goTo(i, "rail")} />
         </RailPanel>
         <div className="flex min-w-0 max-w-task flex-1 flex-col">
           {fallback && (
@@ -158,8 +175,8 @@ export function TestRunner({
             last={test.current === tasks.length - 1}
             onSwap={onSwap}
             onAnswer={onAnswer}
-            onPrev={() => go(variantId, test.current - 1)}
-            onNext={() => go(variantId, test.current + 1)}
+            onPrev={() => goTo(test.current - 1, "prev")}
+            onNext={() => goTo(test.current + 1, "next")}
           />
         </div>
       </div>
