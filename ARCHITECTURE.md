@@ -1,6 +1,6 @@
 # Architecture
 
-Do indeksa is one Next.js app. Pages render on the server and call feature code directly, writes go through server actions, and the few reads the client drives go through GET route handlers. Postgres holds only what students do. Topics, exams, tasks, variants and theory are Markdown files compiled into the build.
+Do indeksa is one Next.js app. Pages render on the server and call feature code directly, writes go through server actions, and the few reads the client drives go through GET route handlers. The one write outside actions is `POST /api/events`, which takes analytics batches from the browser: they are sent with `keepalive` when the page is hidden or closed, and a server action cannot do that. Postgres holds only what students do. Topics, exams, tasks, variants and theory are Markdown files compiled into the build.
 
 Filters, sort and search live in the URL through nuqs. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page. Bank cards carry their statement as HTML from the server renderer, so the browser has no Markdown stack.
 
@@ -12,7 +12,7 @@ A weekly variant is `variants/nedelja-<Monday>.yaml` with tasks `nedelja-<Monday
 
 `messages/` has the UI strings for `sr-Latn`, `ru` and `en`.
 
-`src/app` holds routes. A `page.tsx` sets metadata, layout and Suspense boundaries, and whatever loads or renders data for one route sits next to it in `_components`. The app shell, with navigation and footer, is in `(app)/_components/shell`. Pages sit in route groups by how much of it they show on a phone: `(site)` all of it, `(read)` theory topics without the header, `(task)` a task and `(exam)` a test with neither the header nor the bottom bar. Each group's layout renders the shell for its mode, so the server sends the final chrome. `src/app/api` has route handlers for auth, the bank feed, the test history, task reveals and the health check.
+`src/app` holds routes. A `page.tsx` sets metadata, layout and Suspense boundaries, and whatever loads or renders data for one route sits next to it in `_components`. The app shell, with navigation and footer, is in `(app)/_components/shell`. Pages sit in route groups by how much of it they show on a phone: `(site)` all of it, `(read)` theory topics without the header, `(task)` a task and `(exam)` a test with neither the header nor the bottom bar. Each group's layout renders the shell for its mode, so the server sends the final chrome. `src/app/api` has route handlers for auth, the bank feed, the test history, task reveals, analytics events and the health check.
 
 A page cannot change its status once its shell has streamed, and the chrome is part of the shell. So `src/proxy.ts` answers 404 for a task, theory topic, method or variant id that the content does not have, by rewriting to the not found page. Test and set codes live in the database, so their pages check them. The not found page itself, reached through `notFound()`, still arrives with an empty body that fills in once scripts run, so only its status and `noindex` come from the server.
 
@@ -30,7 +30,7 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 
 `catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`. Biome rejects an import that goes the other way.
 
-`src/components` is UI shared by several features, with shadcn in `components/ui`. `src/lib` is helpers that know nothing about exams or students. `src/db` has the Drizzle schema, the column types and the migrate and cleanup scripts. `src/server` is infrastructure: the database client, env, auth, the current profile and the action clients. None of these import features or routes.
+`src/components` is UI shared by several features, with shadcn in `components/ui`. `src/lib` is helpers that know nothing about exams or students. `src/db` has the Drizzle schema, the column types and the migrate and cleanup scripts. `src/server` is infrastructure: the database client, env, auth, the current profile, the action clients and the analytics sinks. None of these import features or routes.
 
 ## Invariants
 

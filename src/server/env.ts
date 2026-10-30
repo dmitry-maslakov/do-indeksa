@@ -12,5 +12,9 @@ export const env = z
     OAUTH_PROXY_SECRET: z.string().min(32).optional(),
     LAUNCH_ACCESS: z.string().min(32).optional(),
     SENTRY_DSN: z.url().optional(),
+    ANALYTICS_CLICKHOUSE_URL: z.url().optional(),
+    OPENPANEL_API_URL: z.url().optional(),
+    OPENPANEL_CLIENT_ID: z.string().min(1).optional(),
+    OPENPANEL_CLIENT_SECRET: z.string().min(1).optional(),
   })
   .parse(process.env);

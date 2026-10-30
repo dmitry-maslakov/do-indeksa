@@ -8,7 +8,7 @@ export async function register() {
     ...sentryOptions,
     dsn: env.SENTRY_DSN,
     tracesSampler: ({ normalizedRequest, inheritOrSampleWith }) =>
-      normalizedRequest?.url?.endsWith("/api/healthz")
+      /\/api\/(healthz|events)$/.test(normalizedRequest?.url ?? "")
         ? 0
         : inheritOrSampleWith(1),
   });
