@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { taskFacts, tasks } from "@/features/catalog/tasks";
 import {
   answerSubmitted,
   clientEvents,
@@ -16,6 +17,7 @@ const task = {
   topic: "exponential-equations",
   task_type: "substitution",
   difficulty: 1,
+  level: "easy",
   key_rev: "a1b2c3",
   hints_available: 2,
   parts: 1,
@@ -47,6 +49,8 @@ const schemaOf = (name: string) =>
 const valid = {
   task_opened: {
     ...task,
+    exam_year: 2019,
+    exam_position: 3,
     task_session_id: id,
     session_kind: "retry",
     via: "list",
@@ -144,6 +148,14 @@ describe("practice events", () => {
       ).toBe(false);
     },
   );
+
+  it("accepts the facts of every task", () => {
+    const rejected = tasks.filter(
+      ({ id }) =>
+        !taskSkipped.props.safeParse({ ...taskFacts(id), ...session }).success,
+    );
+    expect(rejected.map(({ id }) => id)).toEqual([]);
+  });
 
   it("never uses OpenPanel's reserved keys", () => {
     const keys = events.flatMap(({ props }) => Object.keys(props.shape));

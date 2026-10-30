@@ -9,6 +9,7 @@ import { renderMarkdown } from "@/lib/markdown";
 import { numberOf } from "./exams";
 import { type Level, levelOf } from "./level";
 import { type PartLabel, splitLabel, uncheckedLetters } from "./parts";
+import { examSource } from "./source";
 import { topicName } from "./topics";
 
 export interface TaskSummary {
@@ -51,11 +52,15 @@ export const getTask = (id: string) => byId.get(id);
 export function taskFacts(id: string) {
   const task = byId.get(id);
   if (!task) throw new Error(`unknown task ${id}`);
+  const exam = examSource(task.source);
   return {
     task_id: id,
     topic: task.topic,
     task_type: task.type,
     difficulty: task.difficulty,
+    level: levelOf(task.difficulty),
+    exam_year: exam?.year,
+    exam_position: exam?.position ?? numberOf(task.topic) ?? undefined,
     key_rev: task.keyRev,
     hints_available: task.hints.length,
     parts: task.check.length,
