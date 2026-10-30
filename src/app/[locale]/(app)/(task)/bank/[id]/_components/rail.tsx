@@ -11,7 +11,7 @@ import { QueueList } from "./queue-list";
 export interface RailProps {
   current: string;
   topic: string;
-  topics: { id: string; name: string }[];
+  topics: { id: string; name: string; href: string }[];
   listQuery: string;
   queue: Queue;
   variant?: RailVariant;
@@ -43,7 +43,10 @@ export function Rail({
         <RailSelect
           label={bank("topic")}
           value={topic}
-          onChange={(e) => router.push(`/bank/start/${e.target.value}`)}
+          onChange={(e) => {
+            const next = topics.find((x) => x.id === e.target.value);
+            if (next) router.push(next.href);
+          }}
         >
           {topics.map((x) => (
             <NativeSelectOption key={x.id} value={x.id}>

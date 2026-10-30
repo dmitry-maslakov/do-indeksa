@@ -5,7 +5,7 @@ import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { serializeBankFilters } from "@/features/bank/params";
-import { loadQueue } from "@/features/bank/queue/queue";
+import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
@@ -66,12 +66,10 @@ export default async function SolvePage({
     ? undefined
     : (await getSolved(profileId)).filter((s) => s.taskId !== id).length + 1;
 
-  const queue = await loadQueue({
-    topic: task.topic,
-    profileId,
-    current: id,
-    locale,
-  });
+  const [queue, starts] = await Promise.all([
+    loadQueue({ topic: task.topic, profileId, current: id, locale }),
+    nextTasks(profileId),
+  ]);
   const topic = topicName(task.topic, locale);
   const rail = {
     current: id,
@@ -79,6 +77,7 @@ export default async function SolvePage({
     topics: positions.map((p) => ({
       id: p.topic,
       name: topicName(p.topic, locale),
+      href: topicStart(starts, p.topic),
     })),
     listQuery: serializeBankFilters({ topic: task.topic }),
     queue,

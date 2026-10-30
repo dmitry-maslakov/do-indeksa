@@ -1,6 +1,7 @@
 import "server-only";
 import type { Locale } from "next-intl";
 import { findTasks } from "@/features/bank/search";
+import { positions } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import { getTouched } from "@/features/progress/progress";
@@ -31,23 +32,44 @@ interface PoolInput {
   current?: string;
 }
 
+const topicIds = (topic: string) => findTasks({ topic }).map((t) => t.id);
+
+const poolOf = (ids: string[]) =>
+  ids.map((id) => ({ id, exam: examYear(id) !== null }));
+
 async function plan({ topic, profileId, current }: PoolInput, size = 6) {
-  const ids = findTasks({ topic }).map((t) => t.id);
+  const ids = topicIds(topic);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
   const touched = await getTouched(profileId, asked);
-  const queue = planQueue({
-    pool: ids.map((id) => ({ id, exam: examYear(id) !== null })),
-    touched,
-    current,
-    size,
-  });
+  const queue = planQueue({ pool: poolOf(ids), touched, current, size });
   return { touched, queue };
 }
 
-export async function nextTask(topic: string, profileId: string) {
-  const { queue } = await plan({ topic, profileId }, 1);
-  return queue.upcoming[0]?.id;
+export async function nextTasks(profileId: string) {
+  const topics = positions.map(({ topic }) => ({
+    topic,
+    ids: topicIds(topic),
+  }));
+  const touched = await getTouched(
+    profileId,
+    topics.flatMap((t) => t.ids),
+  );
+  return new Map(
+    topics.flatMap(({ topic, ids }) => {
+      const own = new Set(ids);
+      const { upcoming } = planQueue({
+        pool: poolOf(ids),
+        touched: new Map([...touched].filter(([id]) => own.has(id))),
+        size: 1,
+      });
+      const next = upcoming[0]?.id ?? ids[0];
+      return next ? [[topic, next] as const] : [];
+    }),
+  );
 }
+
+export const topicStart = (starts: Map<string, string>, topic: string) =>
+  `/bank/${starts.get(topic) ?? `start/${topic}`}`;
 
 export async function loadQueue(
   input: PoolInput & { locale: Locale },
