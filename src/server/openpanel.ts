@@ -1,5 +1,5 @@
 import "server-only";
-import { mapValues, retry } from "es-toolkit";
+import { compact, mapValues, omitBy, retry } from "es-toolkit";
 import { secondMs } from "@/lib/dates";
 import { siteUrl } from "@/lib/site";
 import type { Tracked } from "./analytics";
@@ -16,6 +16,7 @@ const target =
     : undefined;
 const timeoutMs = 2 * secondMs;
 const serverAgent = "do-indeksa/1";
+const identifying = new Set(["profile_created", "signed_in"]);
 
 export function toOpenPanel({ row, page, profileId, visitor }: Tracked) {
   return {
@@ -24,8 +25,9 @@ export function toOpenPanel({ row, page, profileId, visitor }: Tracked) {
       name: row.name === "page_view" ? "screen_view" : row.name,
       profileId: profileId ?? visitor.aid,
       properties: {
-        ...mapValues(row.props, (value) =>
-          Array.isArray(value) ? value.join(",") : value,
+        ...mapValues(
+          omitBy(row.props, (_, key) => key.endsWith("profile_id")),
+          (value) => (Array.isArray(value) ? value.join(",") : value),
         ),
         route: row.route,
         locale: row.locale,
@@ -38,9 +40,16 @@ export function toOpenPanel({ row, page, profileId, visitor }: Tracked) {
   };
 }
 
+export function identifyOf({ row, profileId }: Tracked) {
+  if (!profileId || !identifying.has(row.name)) return;
+  const kind = row.name === "profile_created" ? row.props.kind : "account";
+  return { type: "identify", payload: { profileId, properties: { kind } } };
+}
+
 async function post(
   { url, clientId, clientSecret }: NonNullable<typeof target>,
   tracked: Tracked,
+  body: object,
 ) {
   const browser = tracked.source === "browser";
   const { userAgent, ip } = tracked.visitor;
@@ -55,7 +64,7 @@ async function post(
       "user-agent": browser ? userAgent : serverAgent,
       ...(browser && ip && { "openpanel-client-ip": ip }),
     },
-    body: JSON.stringify(toOpenPanel(tracked)),
+    body: JSON.stringify(body),
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (response.status >= 500)
@@ -66,12 +75,13 @@ async function post(
 export async function sendToOpenPanel(tracked: Tracked[]) {
   if (!target) return;
   let refused: number | undefined;
-  for (const item of tracked.filter(({ row }) => !row.bot)) {
-    const status = await retry(() => post(target, item), {
-      retries: 1,
-      delay: () => Math.random() * secondMs,
-    });
-    if (status >= 400) refused ??= status;
-  }
+  for (const item of tracked.filter(({ row }) => !row.bot))
+    for (const body of compact([identifyOf(item), toOpenPanel(item)])) {
+      const status = await retry(() => post(target, item, body), {
+        retries: 1,
+        delay: () => Math.random() * secondMs,
+      });
+      if (status >= 400) refused ??= status;
+    }
   if (refused) throw new Error(`OpenPanel refused an event: ${refused}`);
 }
