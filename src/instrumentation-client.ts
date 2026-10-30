@@ -1,3 +1,4 @@
+import { navigationStarted, startAnalytics } from "@/lib/analytics-browser";
 import {
   keepEarlyError,
   routerTransitionStart,
@@ -13,4 +14,12 @@ if (location.host === siteUrl.host) {
   addEventListener("load", startSentry);
 }
 
-export const onRouterTransitionStart = routerTransitionStart;
+startAnalytics();
+
+export function onRouterTransitionStart(
+  href: string,
+  type: "push" | "replace" | "traverse",
+) {
+  routerTransitionStart(href, type);
+  navigationStarted(type);
+}

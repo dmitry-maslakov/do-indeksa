@@ -3,8 +3,10 @@ import { Golos_Text } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { routing } from "@/i18n/routing";
 import { siteUrl } from "@/lib/site";
+import { PageAnalytics } from "./_components/page-analytics";
 import "../globals.css";
 
 const golos = Golos_Text({
@@ -40,6 +42,9 @@ export default async function LocaleLayout({
     <html lang={locale} className={golos.variable}>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <Suspense>
+          <PageAnalytics />
+        </Suspense>
       </body>
     </html>
   );
