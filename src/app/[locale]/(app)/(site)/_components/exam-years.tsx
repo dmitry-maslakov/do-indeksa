@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { officialVariants } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 
 const shown = 8;
 
@@ -24,6 +25,7 @@ export function ExamYears() {
           <Link
             key={exam.id}
             href={`/variants/${exam.id}`}
+            data-intent={intentOf({ via: "exam_years" })}
             className="flex h-9 shrink-0 basis-17 items-center justify-center rounded-md bg-muted font-semibold text-xs"
           >
             {exam.year}

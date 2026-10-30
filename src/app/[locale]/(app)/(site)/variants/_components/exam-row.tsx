@@ -6,6 +6,7 @@ import { TopicGlyph } from "@/features/catalog/topic-icon";
 import { reviewHref } from "@/features/tests/review";
 import type { TestSummary } from "@/features/tests/summaries";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 import { belgradeDate } from "@/lib/dates";
 
 export const tableGrid =
@@ -53,6 +54,7 @@ export function ExamRow({
       <div className="flex flex-col gap-1 md:block">
         <Link
           href={test ? reviewHref(test.id) : href}
+          data-intent={test ? undefined : intentOf({ via: "catalog" })}
           className="block font-bold text-base tracking-tight outline-none after:absolute after:inset-0 focus-visible:after:ring-2 focus-visible:after:ring-ring focus-visible:after:ring-inset md:text-lg"
         >
           {title}

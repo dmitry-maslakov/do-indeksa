@@ -5,10 +5,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPathname } from "@/i18n/navigation";
-import { queueEvent } from "@/lib/analytics-browser";
+import { queueEvent, shareSource } from "@/lib/analytics-browser";
 import { secondMs } from "@/lib/dates";
 
-const shareTags = { utm_source: "share", utm_medium: "variant" };
+const shareTags = { utm_source: shareSource, utm_medium: "variant" };
 
 interface ShareButtonProps {
   title: string;

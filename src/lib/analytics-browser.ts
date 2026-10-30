@@ -8,6 +8,7 @@ export const aidCookie = "aid";
 export const consentCookie = "analytics";
 export const analyticsCookieAge = 400 * daySeconds;
 export const batchBytes = 32 * 1024;
+export const shareSource = "share";
 
 export interface BrowserEvents extends EventMap<typeof clientEvents> {}
 
@@ -52,7 +53,7 @@ let loadPath = "/";
 let pageViews = 0;
 let lastRoute: RouteTemplate | undefined;
 let transition: { nav: Navigation; at: number } | undefined;
-let pendingIntent: Intent | undefined;
+let pendingIntent: Intent | null | undefined;
 let intent: Intent | undefined;
 
 const readCookie = (name: string) =>
@@ -160,7 +161,7 @@ function startVisit() {
 
 export const intentOf = (intent: Intent) => JSON.stringify(intent);
 
-export const rememberIntent = (value: Intent) => {
+export const rememberIntent = (value: Intent | null) => {
   pendingIntent = value;
 };
 
@@ -175,12 +176,17 @@ function clicked(event: MouseEvent) {
   const value = (event.target as Element)
     .closest?.("[data-intent]")
     ?.getAttribute("data-intent");
-  pendingIntent = value ? attempt(() => JSON.parse(value))[1] : undefined;
+  pendingIntent = value ? attempt(() => JSON.parse(value))[1] : null;
 }
+
+const sharedIntent = (): Intent | undefined =>
+  new URLSearchParams(location.search).get("utm_source") === shareSource
+    ? { via: shareSource }
+    : undefined;
 
 export function startAnalytics() {
   loadPath = currentPath();
-  intent = loadNavigation() === "load" ? undefined : historyIntent;
+  intent = loadNavigation() === "load" ? sharedIntent() : historyIntent;
   addEventListener("click", clicked, true);
   addEventListener("pagehide", flush);
   document.addEventListener("visibilitychange", () => {
@@ -192,7 +198,8 @@ export function startAnalytics() {
 
 export function navigationStarted(nav: Navigation) {
   transition = { nav, at: performance.now() };
-  intent = nav === "traverse" ? historyIntent : pendingIntent;
+  if (nav === "traverse") intent = historyIntent;
+  else if (pendingIntent !== undefined) intent = pendingIntent ?? undefined;
   pendingIntent = undefined;
 }
 

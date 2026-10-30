@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { useRouter } from "@/i18n/navigation";
-import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
+import {
+  type BrowserEvents,
+  intentOf,
+  queueEvent,
+} from "@/lib/analytics-browser";
 
 type Preset = BrowserEvents["variant_compose_started"]["preset"];
 
@@ -109,6 +113,7 @@ export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
           size="sm"
           className="h-10 disabled:opacity-35"
           disabled={chosen.length === 0}
+          data-intent={intentOf({ via: "compose" })}
           onClick={start}
         >
           {t("start")}

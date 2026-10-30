@@ -5,6 +5,7 @@ import { TopicGlyph, TopicIcon } from "@/features/catalog/topic-icon";
 import { topicLook } from "@/features/catalog/topics";
 import type { WeeklyVariant } from "@/features/variants/weekly";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 import type { Segment } from "@/lib/strip";
 import { reviewHref } from "../review";
 import type { TestSummary } from "../summaries";
@@ -96,6 +97,7 @@ export function WeeklyCard({
         </div>
         <Link
           href={test ? reviewHref(test.id) : `/variants/${id}`}
+          data-intent={test ? undefined : intentOf({ via: "weekly" })}
           className="relative mt-1 inline-flex h-13 w-full items-center justify-center rounded-lg bg-card px-4 font-semibold text-sm focus-visible:outline-2 focus-visible:outline-ring @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-auto"
         >
           {test ? t("weeklyReview") : home("startWeekly")}
