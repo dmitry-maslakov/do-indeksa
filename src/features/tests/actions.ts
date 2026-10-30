@@ -3,6 +3,8 @@
 import { refresh } from "next/cache";
 import { timeZoneSchema } from "@/lib/time-zone";
 import { actionClient } from "@/server/action-client";
+import { track } from "@/server/analytics";
+import { testFinished } from "./test-events";
 import { finishTest, saveDraft, testInput } from "./test-sessions";
 
 export const saveTest = actionClient
@@ -14,6 +16,7 @@ export const saveTest = actionClient
 export const submitTest = actionClient
   .inputSchema(testInput.extend({ tz: timeZoneSchema }))
   .action(async ({ parsedInput: { tz, ...test }, ctx: { profileId } }) => {
-    await finishTest(profileId, test, tz);
+    const finished = await finishTest(profileId, test, tz);
+    if (finished) await track(testFinished, finished, { profileId });
     refresh();
   });

@@ -8,7 +8,7 @@ export interface ReviewAttempt {
   taskId: string;
   outcomes: PartOutcome[];
   correct: boolean;
-  durationMs: number;
+  durationMs?: number;
 }
 
 export interface Comparison {
