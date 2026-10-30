@@ -10,14 +10,34 @@ import {
   useState,
 } from "react";
 import { keepTaskSession } from "@/features/practice/actions";
-import { type Intent, takeIntent } from "@/lib/analytics-browser";
+import type { Verdict } from "@/features/practice/answer/verdicts";
+import {
+  type BrowserEvents,
+  type Intent,
+  queueEvent,
+  takeIntent,
+} from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { keepAliveMs } from "./session-kind";
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
 
+interface Visit {
+  shownAt?: number;
+  visibleMs: number;
+  seq: number;
+  typed: number;
+  verdict?: Verdict;
+  revealed: boolean;
+}
+
+type Exit = BrowserEvents["task_left"]["exit"];
+
 interface TaskSession {
   track: (send: Send) => Promise<string | undefined>;
+  note: (
+    change: Partial<Pick<Visit, "typed" | "verdict" | "revealed">>,
+  ) => void;
   hints: number;
   solution: boolean;
   showHint: () => void;
@@ -25,6 +45,20 @@ interface TaskSession {
 }
 
 const TaskSessionContext = createContext<TaskSession | null>(null);
+
+function stateOf({ verdict, revealed, typed }: Visit) {
+  if (verdict) return verdict === "correct" ? "solved" : verdict;
+  if (revealed) return "revealed";
+  return typed ? "typing" : "untouched";
+}
+
+function failed() {
+  queueEvent("request_failed", {
+    kind: "practice_action",
+    reason: navigator.onLine ? "network" : "offline",
+  });
+  return undefined;
+}
 
 export function TaskSessionProvider({
   taskId,
@@ -34,37 +68,83 @@ export function TaskSessionProvider({
   children: ReactNode;
 }) {
   const latest = useRef(Promise.resolve<string | undefined>(undefined));
+  const sessionId = useRef<string>(undefined);
+  const visit = useRef<Visit>({
+    visibleMs: 0,
+    seq: 0,
+    typed: 0,
+    revealed: false,
+  });
   const track = useCallback((send: Send) => {
-    latest.current = latest.current.then(
-      async (id) => (await send(id).catch(() => undefined)) ?? id,
-    );
+    latest.current = latest.current.then(async (id) => {
+      sessionId.current = (await send(id).catch(failed)) ?? id;
+      return sessionId.current;
+    });
     return latest.current;
   }, []);
   const [hints, setHints] = useState(0);
   const [solution, setSolution] = useState(false);
 
   useEffect(() => {
+    const current = visit.current;
+    const path = location.pathname;
     const keep = (intent?: Intent) => {
       if (document.visibilityState !== "visible") return;
-      track(
-        async (sessionId) =>
-          (
-            await keepTaskSession({
-              taskId,
-              sessionId,
-              tz: localTimeZone(),
-              intent,
-            })
-          )?.data,
+      track(async (id) => {
+        const kept = (
+          await keepTaskSession({
+            taskId,
+            sessionId: id,
+            tz: localTimeZone(),
+            intent,
+          })
+        )?.data;
+        if (id && kept && kept !== id)
+          Object.assign(current, {
+            visibleMs: 0,
+            verdict: undefined,
+            revealed: false,
+          });
+        return kept;
+      });
+    };
+    const show = () => {
+      current.shownAt = performance.now();
+      keep();
+    };
+    const leave = (exit: Exit) => {
+      if (current.shownAt !== undefined)
+        current.visibleMs += performance.now() - current.shownAt;
+      current.shownAt = undefined;
+      current.seq += 1;
+      queueEvent(
+        "task_left",
+        {
+          task_id: taskId,
+          task_session_id: sessionId.current,
+          seq: current.seq,
+          exit,
+          state: stateOf(current),
+          visible_ms: Math.round(current.visibleMs),
+          typed_len: current.typed,
+        },
+        path,
       );
     };
-    const onVisible = () => keep();
+    const toggle = () =>
+      document.visibilityState === "visible" ? show() : leave("hidden");
+    const hide = () => leave("pagehide");
+    if (document.visibilityState === "visible")
+      current.shownAt = performance.now();
     keep(takeIntent());
     const timer = setInterval(keep, keepAliveMs);
-    document.addEventListener("visibilitychange", onVisible);
+    document.addEventListener("visibilitychange", toggle);
+    addEventListener("pagehide", hide);
     return () => {
       clearInterval(timer);
-      document.removeEventListener("visibilitychange", onVisible);
+      document.removeEventListener("visibilitychange", toggle);
+      removeEventListener("pagehide", hide);
+      leave("navigate");
     };
   }, [taskId, track]);
 
@@ -72,6 +152,7 @@ export function TaskSessionProvider({
     <TaskSessionContext
       value={{
         track,
+        note: (change) => Object.assign(visit.current, change),
         hints,
         solution,
         showHint: () => setHints((n) => n + 1),

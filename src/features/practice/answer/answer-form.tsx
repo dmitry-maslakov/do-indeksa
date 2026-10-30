@@ -10,6 +10,7 @@ import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
+import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
@@ -27,6 +28,38 @@ interface AnswerFormProps {
 interface Checked {
   outcomes: PartOutcome[];
   correct: boolean;
+}
+
+interface InputStats {
+  focusAt?: number;
+  inputs: number;
+  deletes: number;
+  pastes: number;
+  vk_inputs: number;
+}
+
+const freshInput = (): InputStats => ({
+  inputs: 0,
+  deletes: 0,
+  pastes: 0,
+  vk_inputs: 0,
+});
+
+function focused(input: InputStats) {
+  input.focusAt ??= performance.now();
+}
+
+function countInput(
+  input: InputStats,
+  { inputType, data, isComposing }: InputEvent,
+) {
+  if (isComposing || inputType === "insertCompositionText") return;
+  const type = inputType || data || "";
+  focused(input);
+  input.inputs += 1;
+  if (type.startsWith("delete")) input.deletes += 1;
+  if (type === "insertFromPaste") input.pastes += 1;
+  if (window.mathVirtualKeyboard?.visible) input.vk_inputs += 1;
 }
 
 const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
@@ -77,10 +110,12 @@ export function AnswerForm({
   const help = useTaskSession();
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
+  const input = useRef(freshInput());
   const [values, setValues] = useState(() => parts.map(() => ""));
   const onChange = (index: number, value: string) => {
     setEdited(true);
     answerId.current = null;
+    help.note({ typed: values.with(index, value).join("").length });
     setValues((all) => all.with(index, value));
   };
 
@@ -94,13 +129,35 @@ export function AnswerForm({
 
   return (
     <form
+      onFocus={() => focused(input.current)}
+      onInput={(event) =>
+        countInput(input.current, event.nativeEvent as InputEvent)
+      }
       action={(form) => {
         setEdited(false);
-        if (!answerId.current) answerId.current = crypto.randomUUID();
+        if (!answerId.current) {
+          answerId.current = crypto.randomUUID();
+          const { focusAt, ...counts } = input.current;
+          queueEvent("answer_input", {
+            context: "practice",
+            task_id: taskId,
+            answer_client_id: answerId.current,
+            fields: parts.length,
+            ...counts,
+            focus_to_submit_ms:
+              focusAt === undefined
+                ? undefined
+                : Math.round(performance.now() - focusAt),
+            latex_len: values.join("").length,
+          });
+          input.current = freshInput();
+        }
         form.set("clientId", answerId.current);
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
-          return (await executeAsync(form))?.data?.sessionId;
+          const data = (await executeAsync(form))?.data;
+          if (data) help.note({ verdict: verdictOf(data.outcomes) });
+          return data?.sessionId;
         });
       }}
       className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
