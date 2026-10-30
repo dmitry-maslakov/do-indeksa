@@ -9,9 +9,12 @@ import { checkerVersion } from "@/features/catalog/checker";
 import { positions } from "@/features/catalog/exams";
 import { maxParts } from "@/features/catalog/parts";
 import { getTask } from "@/features/catalog/tasks";
-import { getVariant, minutesOf } from "@/features/variants/variants";
+import { getVariant, minutesOf, slotsOf } from "@/features/variants/variants";
+import { weeklyVariant } from "@/features/variants/weekly";
+import { minuteMs } from "@/lib/dates";
 import { db, type Tx } from "@/server/db";
 import { gradeTest } from "./grade";
+import { review } from "./review";
 import { overtimeAt } from "./state";
 
 export const testInput = z.object({
@@ -88,20 +91,12 @@ async function storeAttempts(
   tx: Tx,
   profileId: string,
   testSessionId: string,
-  taskIds: string[],
+  graded: ReturnType<typeof gradeTest>,
   sessions: ReturnType<typeof sessionsOf>,
-  answers: string[][],
   now: number,
   tz: string | undefined,
 ) {
-  const graded = gradeTest(
-    taskIds.map((taskId) => ({
-      taskId,
-      expected: getTask(taskId)?.check.map((c) => c.expected) ?? [],
-    })),
-    answers,
-  ).filter((g) => g.answered);
-  for (const g of graded) {
+  for (const g of graded.filter((g) => g.answered)) {
     const last = sessions.findLast((s) => s.taskId === g.taskId);
     const [session] = last
       ? [{ id: last.id }]
@@ -139,19 +134,19 @@ export async function finishTest(
   tz: string | undefined,
 ) {
   const variant = variantOf(test.variantId);
+  const minutes = minutesOf(variant);
   const now = Date.now();
-  await db.transaction(async (tx) => {
+  const finished = await db.transaction(async (tx) => {
     const [stored] = await upsert(tx, profileId, test, {
       draft: null,
       finishedAt: new Date(now),
     });
     if (!stored) return;
     const startedAt = stored.startedAt.getTime();
+    const overtime = overtimeAt({ startedAt, minutes }, now);
     await tx
       .update(testSessions)
-      .set({
-        overtime: overtimeAt({ startedAt, minutes: minutesOf(variant) }, now),
-      })
+      .set({ overtime })
       .where(
         and(
           eq(testSessions.id, test.id),
@@ -181,17 +176,41 @@ export async function finishTest(
         )
         .onConflictDoNothing();
     }
-    await storeAttempts(
-      tx,
-      profileId,
-      test.id,
-      stored.taskIds,
-      sessions,
+    const graded = gradeTest(
+      stored.taskIds.map((taskId) => ({
+        taskId,
+        expected: getTask(taskId)?.check.map((c) => c.expected) ?? [],
+      })),
       test.draft.answers,
-      now,
-      tz,
     );
+    await storeAttempts(tx, profileId, test.id, graded, sessions, now, tz);
+    return { startedAt, overtime, graded };
   });
+  if (!finished) return;
+  const { startedAt, overtime, graded } = finished;
+  const answered = graded.filter((g) => g.answered);
+  const { score, max, correct } = review(
+    slotsOf(graded.map((g) => g.taskId)),
+    answered,
+  );
+  return {
+    test_session_id: test.id,
+    variant_id: variant.id,
+    variant_kind: variant.kind,
+    tasks: graded.length,
+    minutes,
+    weekly: weeklyVariant()?.id === variant.id,
+    answered: answered.length,
+    correct,
+    score,
+    max_points: max,
+    elapsed_ms: now - startedAt,
+    overtime,
+    overtime_ms: overtime ? now - startedAt - minutes * minuteMs : undefined,
+    unanswered: graded.flatMap((g, i) => (g.answered ? [] : [i + 1])),
+    visits: test.draft.visits.length,
+    positions_visited: new Set(test.draft.visits.map((v) => v.task)).size,
+  };
 }
 
 export const getUnfinishedTest = cache(
