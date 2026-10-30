@@ -72,8 +72,14 @@ const valid = {
     deletes: 2,
     pastes: 0,
     vk_inputs: 9,
+    vk_toggles: 2,
+    text_mode: false,
+    field_ready_ms: 640,
+    first_focus_ms: 3_200,
     focus_to_submit_ms: 21_500,
+    edit_ms: 9_800,
     latex_len: 11,
+    structures: ["frac", "interval"],
   },
   answer_submitted: {
     ...task,
@@ -106,6 +112,7 @@ const valid = {
     state: "typing",
     visible_ms: 64_000,
     typed_len: 5,
+    field_ready_ms: 900,
   },
   task_reported: {
     ...task,

@@ -1,6 +1,10 @@
 import { attempt } from "es-toolkit";
 import { useEffect, useEffectEvent, useRef } from "react";
-import { freshInput, takeInput } from "@/features/practice/answer/input-stats";
+import {
+  freshInput,
+  latexStats,
+  takeInput,
+} from "@/features/practice/answer/input-stats";
 import { answeredCount, overtimeAt } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
 import type { VariantTask } from "@/features/variants/variants";
@@ -46,16 +50,16 @@ export function useTestViews(
   const recordInput = () => {
     const test = testOf(variantId);
     const task = test && tasks[test.current];
-    const { focusAt, ...counts } = takeInput(stats);
-    if (!test || !task || !counts.inputs) return;
+    const { focus_to_submit_ms, ...taken } = takeInput(stats);
+    if (!test || !task || !taken.inputs) return;
     queueEvent("answer_input", {
       context: "test",
       task_id: task.taskId,
       test_session_id: test.testId,
       position: test.current + 1,
       fields: task.parts.length,
-      ...counts,
-      latex_len: (test.answers[test.current] ?? []).join("").length,
+      ...taken,
+      ...latexStats(test.answers[test.current] ?? []),
     });
   };
   const recordInputOnLeave = useEffectEvent(recordInput);

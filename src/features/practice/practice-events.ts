@@ -4,6 +4,7 @@ import { revealPart, testKind } from "@/db/schema";
 import { levels } from "@/features/catalog/level";
 import { maxParts } from "@/features/catalog/parts";
 import { defineEvent, type EventMap, text } from "@/lib/analytics-schema";
+import { structureKinds } from "./answer/input-stats";
 import { verdicts } from "./answer/verdicts";
 
 const count = z.int().min(0);
@@ -82,8 +83,17 @@ const answerInput = defineEvent("answer_input", {
   deletes: count,
   pastes: count,
   vk_inputs: count,
+  vk_toggles: count.optional(),
+  text_mode: z.boolean().optional(),
+  field_ready_ms: count.optional(),
+  first_focus_ms: count.optional(),
   focus_to_submit_ms: count.optional(),
+  edit_ms: count.optional(),
   latex_len: count,
+  structures: z
+    .array(z.enum(structureKinds))
+    .max(structureKinds.length)
+    .optional(),
 });
 
 export const answerSubmitted = defineEvent("answer_submitted", {
@@ -126,6 +136,7 @@ const taskLeft = defineEvent("task_left", {
   ]),
   visible_ms: count,
   typed_len: count,
+  field_ready_ms: count.optional(),
 });
 
 export const taskReported = defineEvent("task_reported", {
