@@ -3,6 +3,7 @@ import {
   answer,
   expect,
   flush,
+  hydrated,
   needsRecorder,
   propsOf,
   type Row,
@@ -187,4 +188,20 @@ test("opens from the hero, the next link and a reload are told apart", async ({
       ["/bank/[id]", "revealed"],
       ["/bank/[id]", "untouched"],
     ]);
+});
+
+test("opening the report form is recorded, closing it is not", async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await hydrated(page);
+  const report = page.getByText("Prijavi grešku u zadatku");
+  await report.click();
+  await expect(page.getByRole("button", { name: "Pošalji" })).toBeVisible();
+  await report.click();
+  await expect(page.getByRole("button", { name: "Pošalji" })).toBeHidden();
+  await flush(page);
+  await expect
+    .poll(() => propsOf(page, "control_used"))
+    .toEqual([{ control: "report_form" }]);
 });
