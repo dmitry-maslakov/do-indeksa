@@ -48,6 +48,20 @@ export const idsByTopic = new Map(
 
 export const getTask = (id: string) => byId.get(id);
 
+export function taskFacts(id: string) {
+  const task = byId.get(id);
+  if (!task) throw new Error(`unknown task ${id}`);
+  return {
+    task_id: id,
+    topic: task.topic,
+    task_type: task.type,
+    difficulty: task.difficulty,
+    key_rev: task.keyRev,
+    hints_available: task.hints.length,
+    parts: task.check.length,
+  };
+}
+
 export const taskIdSchema = z
   .string()
   .refine((id) => getTask(id) !== undefined);

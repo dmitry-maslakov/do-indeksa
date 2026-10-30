@@ -26,14 +26,14 @@ export async function submitAnswer(
   );
   const correct = outcomes.every(isRight);
 
-  const session = await db.transaction(async (tx) => {
-    const id = await liveSession(tx, profileId, taskId, sessionId);
-    await tx
+  return db.transaction(async (tx) => {
+    const session = await liveSession(tx, profileId, taskId, sessionId);
+    const [attempt] = await tx
       .insert(attempts)
       .values({
         profileId,
         taskId,
-        sessionId: id,
+        sessionId: session.id,
         clientId,
         answers,
         outcomes,
@@ -44,8 +44,8 @@ export async function submitAnswer(
       })
       .onConflictDoNothing({
         target: [attempts.profileId, attempts.clientId],
-      });
-    return id;
+      })
+      .returning({ createdAt: attempts.createdAt });
+    return { outcomes, correct, session, attempt };
   });
-  return { outcomes, correct, sessionId: session };
 }
