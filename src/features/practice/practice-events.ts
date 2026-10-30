@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { partOutcomes, reportKinds, sessionKinds } from "@/db/columns";
 import { revealPart, testKind } from "@/db/schema";
+import { levels } from "@/features/catalog/level";
 import { maxParts } from "@/features/catalog/parts";
 import { defineEvent, type EventMap, text } from "@/lib/analytics-schema";
 import { verdicts } from "./answer/verdicts";
@@ -38,6 +39,9 @@ const task = {
   topic: text,
   task_type: text,
   difficulty: z.int().min(1).max(5),
+  level: z.enum(levels),
+  exam_year: z.int().positive().optional(),
+  exam_position: z.int().positive().optional(),
   key_rev: text,
   hints_available: z.int().min(0).max(3),
   parts: z.int().min(1).max(maxParts),
