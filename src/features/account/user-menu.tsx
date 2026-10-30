@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { authClient } from "./auth-client";
+import { authClient, signOut } from "./auth-client";
 import { GoogleLogo } from "./google-logo";
 import { GoogleSignInButton } from "./sign-in-button";
 import { useSignedOut } from "./use-signed-out";
@@ -69,11 +69,7 @@ export function UserMenu() {
           <ShieldIcon />
           {t("privacy")}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() =>
-            authClient.signOut({ fetchOptions: { onSuccess: signedOut } })
-          }
-        >
+        <DropdownMenuItem onClick={() => signOut(signedOut)}>
           <LogOutIcon />
           {t("signOut")}
         </DropdownMenuItem>
