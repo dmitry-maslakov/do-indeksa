@@ -7,11 +7,12 @@ import { oAuthProxy, oneTap } from "better-auth/plugins";
 import { io } from "next/cache";
 import { headers } from "next/headers";
 import { cache } from "react";
+import { analyticsErasures } from "@/db/schema";
 import { daySeconds } from "@/lib/dates";
 import { track } from "./analytics";
 import { db } from "./db";
 import { env } from "./env";
-import { signedIn } from "./identity-events";
+import { accountDeleted, signedIn } from "./identity-events";
 import { guestToken, profileIdOf } from "./profile";
 import { reportServerError } from "./report";
 import { isOneTap, signInSource, signUpSource } from "./sign-up-source";
@@ -34,7 +35,18 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 300 },
   },
   user: {
-    deleteUser: { enabled: true },
+    deleteUser: {
+      enabled: true,
+      beforeDelete: async (user) => {
+        const profileId = await profileIdOf(user.id);
+        if (profileId)
+          await db
+            .insert(analyticsErasures)
+            .values({ profileId })
+            .onConflictDoNothing();
+      },
+      afterDelete: () => track(accountDeleted, {}, { anonymous: true }),
+    },
     additionalFields: {
       signUpSource: {
         type: "string",

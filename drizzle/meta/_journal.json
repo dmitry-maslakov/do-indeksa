@@ -169,6 +169,13 @@
       "when": 1793231370247,
       "tag": "0023_drop_timed",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793333255654,
+      "tag": "0024_analytics_erasures",
+      "breakpoints": true
     }
   ]
 }
