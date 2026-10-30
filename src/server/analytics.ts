@@ -26,7 +26,7 @@ import { routeOf } from "@/lib/routes";
 import { siteUrl } from "@/lib/site";
 import { insertEvents } from "./clickhouse";
 import { sendToOpenPanel } from "./openpanel";
-import { existingProfileId, noId } from "./profile";
+import { findProfileId, noId } from "./profile";
 import { reportServerError } from "./report";
 
 type Visitor = ReturnType<typeof visitorOf>;
@@ -141,7 +141,7 @@ export function trackBatch(
   const receivedAt = Date.now();
   after(async () => {
     try {
-      const profileId = await existingProfileId();
+      const profileId = await findProfileId();
       const tracked = events.map(({ path, referrer, ago, ...event }) =>
         trackedOf(visitor, event, {
           source: "browser",

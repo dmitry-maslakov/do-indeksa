@@ -42,7 +42,7 @@ A task page gets the statement and the part labels. A server action checks answe
 
 ### Everything belongs to a profile
 
-A profile is the student, and the better-auth user is only how they sign in. Task and test sessions, attempts, reveals, skips, suggestions and reports all point at `profiles.id`. A guest gets a profile on their first action, keyed by a random token in an httpOnly `__Host-profile` cookie whose hash is stored. That cookie never opens a profile that has a user.
+A profile is the student, and the better-auth user is only how they sign in. Task and test sessions, attempts, reveals, skips, suggestions and reports all point at `profiles.id`. A guest gets a profile on their first action, keyed by a random token in an httpOnly `__Host-profile` cookie whose hash is stored. That cookie never opens a profile that has a user. An account without a profile uses the guest profile until it takes it over, or gets its own on its first action when there is no guest, so rendering a page never creates a profile.
 
 Feature functions take the profile id as an argument and scope every query to it. The id comes from `src/server/profile.ts`, from the session or the cookie, never from request input.
 
