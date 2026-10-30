@@ -36,7 +36,7 @@ export function Home({ topics, suggestion, starts }: HomeProps) {
           topic: t.topic,
           name: topicName(t.topic, locale),
           look: topicLook(t.topic),
-          pct: t.pct,
+          fill: t.fill,
           state: t.state,
           href: topicStart(starts, t.topic),
           recommendation: recommendationOf(

@@ -16,6 +16,8 @@ export const examOptions = allExams.map((e) => ({
 
 export const positions = exam.positions;
 
+export const examTopics = positions.map((p) => p.topic);
+
 const byTopic = new Map(positions.map((p) => [p.topic, p]));
 
 export const positionOf = (topic: string) => byTopic.get(topic);

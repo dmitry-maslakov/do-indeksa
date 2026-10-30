@@ -1,57 +1,14 @@
 import { maxBy } from "es-toolkit";
 import type { SuggestionReason } from "@/db/columns";
-import { dayMs } from "@/lib/dates";
-import type { TaskStat } from "./stats";
+import { isMastered, type TopicStatus } from "./learning/status/topic-status";
 
-export const topicStates = [
-  "mastered",
-  "inProgress",
-  "review",
-  "notStarted",
-] as const;
-
-export type TopicState = (typeof topicStates)[number];
-
-export interface TopicProgress {
+export interface TopicProgress extends TopicStatus {
   topic: string;
-  pct: number;
-  state: TopicState;
-  lastAt: number | null;
 }
 
 export interface Suggestion {
   topic: string;
   reason: SuggestionReason;
-}
-
-const masteredPct = 70;
-const almostPct = 55;
-const reviewAfterMs = 7 * dayMs;
-
-function stateOf(
-  pct: number,
-  mine: TaskStat[],
-  lastAt: number | null,
-  now: number,
-): TopicState {
-  if (lastAt === null) return "notStarted";
-  if (now - lastAt > reviewAfterMs && mine.some((s) => !s.latestRight))
-    return "review";
-  return pct >= masteredPct ? "mastered" : "inProgress";
-}
-
-export function topicProgress(
-  stats: TaskStat[],
-  totals: { topic: string; total: number }[],
-  now: number,
-): TopicProgress[] {
-  return totals.map(({ topic, total }) => {
-    const mine = stats.filter((s) => s.topic === topic);
-    const solved = mine.filter((s) => s.latestRight).length;
-    const pct = total === 0 ? 0 : Math.round((solved / total) * 100);
-    const lastAt = maxBy(mine, (s) => s.lastAt)?.lastAt ?? null;
-    return { topic, pct, lastAt, state: stateOf(pct, mine, lastAt, now) };
-  });
 }
 
 export const lastPracticed = (topics: TopicProgress[]) =>
@@ -71,10 +28,10 @@ export function suggest(
   }
   if (latest.filter((right) => !right).length >= 2)
     return { topic: last.topic, reason: "stuck" };
-  if (last.pct >= masteredPct) {
+  if (isMastered(last.state)) {
     const at = topics.indexOf(last);
     const next = [...topics.slice(at + 1), ...topics.slice(0, at)].find(
-      (t) => t.pct < masteredPct,
+      (t) => !isMastered(t.state),
     );
     return next
       ? { topic: next.topic, reason: "next" }
@@ -82,6 +39,6 @@ export function suggest(
   }
   return {
     topic: last.topic,
-    reason: last.pct >= almostPct ? "almost" : "started",
+    reason: last.almost ? "almost" : "started",
   };
 }

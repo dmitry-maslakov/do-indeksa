@@ -1,5 +1,6 @@
 import { createHmac, randomInt, randomUUID } from "node:crypto";
 import { test as base, type Page } from "@playwright/test";
+import { allTasks } from "content-collections";
 import { Client } from "pg";
 
 export { expect } from "@playwright/test";
@@ -84,14 +85,18 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
   },
 });
 
-export const seedAttempt = (
+const taskOf = new Map(allTasks.map((t) => [t.id, t]));
+
+export function seedAttempt(
   db: Client,
   profileId: string,
   taskId: string,
   correct: boolean,
   hoursAgo = 0,
-) =>
-  db.query(
+) {
+  const task = taskOf.get(taskId);
+  if (!task) throw new Error(`unknown task ${taskId}`);
+  return db.query(
     `with session as (
        insert into task_sessions (profile_id, task_id, kind, started_at, last_seen_at)
        values ($1, $2, 'first', now() - $4::int * interval '1 hour' - interval '1 second',
@@ -101,10 +106,11 @@ export const seedAttempt = (
      insert into attempts (profile_id, task_id, session_id, answers, outcomes, correct,
        difficulty, key_rev, checker, created_at)
      select $1, $2, id, '{1}', array[case when $3 then 'right' else 'wrong' end]::part_outcome[], $3,
-       2, 'seed', 1, now() - $4::int * interval '1 hour'
+       $5, $6, 1, now() - $4::int * interval '1 hour'
      from session`,
-    [profileId, taskId, correct, hoursAgo],
+    [profileId, taskId, correct, hoursAgo, task.difficulty, task.keyRev],
   );
+}
 
 export async function answer(page: Page, value: string) {
   await page.waitForFunction(() => customElements.get("math-field"));

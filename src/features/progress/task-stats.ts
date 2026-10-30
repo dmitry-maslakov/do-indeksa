@@ -6,11 +6,13 @@ import {
   eq,
   gte,
   inArray,
+  max,
   or,
   type SQL,
   sql,
 } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
+import { epochMs } from "@/db/sql";
 import { numberOf } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { dayMs } from "@/lib/dates";
@@ -53,10 +55,7 @@ export async function getTaskStats(profileId: string) {
       recentRight: countWhere(sql`${recent} and ${right}`),
       firstRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt}))[1]`,
       latestRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt} desc))[1]`,
-      lastAt:
-        sql`extract(epoch from max(${attempts.createdAt})) * 1000`.mapWith(
-          Number,
-        ),
+      lastAt: epochMs(max(attempts.createdAt)),
     })
     .from(attempts)
     .where(and(eq(attempts.profileId, profileId), decidesStatus))
