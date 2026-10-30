@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { countInput, focused, type InputStats } from "./input-stats";
+import { countInput, focused, type InputStats, shown } from "./input-stats";
 
 const keyboardGap = 16;
 
@@ -58,18 +58,23 @@ export function useMathField(
   });
 
   useEffect(() => {
-    loadMathlive();
     const el = field.current;
     if (!el) return;
+    loadMathlive();
+    shown(stats.current);
+    let closing = false;
     const sync = (event: Event) => {
       countInput(stats.current, event as InputEvent);
+      if (el.mode === "text") stats.current.text_mode = true;
       edited(el.value);
       const keyboard = window.mathVirtualKeyboard;
       if (
         (event as InputEvent).inputType === "insertLineBreak" &&
         keyboard?.visible
       ) {
+        closing = true;
         keyboard.hide();
+        closing = false;
         el.blur();
       }
     };
@@ -77,12 +82,24 @@ export function useMathField(
       focused(stats.current);
       requestAnimationFrame(revealAboveKeyboard);
     };
-    el.addEventListener("input", sync);
-    el.addEventListener("focus", reveal);
-    return () => {
-      el.removeEventListener("input", sync);
-      el.removeEventListener("focus", reveal);
+    const toggled = () => {
+      if (!closing && el.hasFocus() && !window.mathVirtualKeyboard.visible)
+        stats.current.vk_toggles += 1;
     };
+    const listening = new AbortController();
+    const { signal } = listening;
+    el.addEventListener("input", sync, { signal });
+    el.addEventListener("focus", reveal, { signal });
+    customElements
+      .whenDefined("math-field")
+      .then(() =>
+        window.mathVirtualKeyboard.addEventListener(
+          "virtual-keyboard-toggle",
+          toggled,
+          { signal },
+        ),
+      );
+    return () => listening.abort();
   }, [stats]);
 
   return { field, value };

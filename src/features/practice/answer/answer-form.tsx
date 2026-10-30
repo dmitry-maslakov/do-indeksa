@@ -14,7 +14,7 @@ import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
-import { freshInput, takeInput } from "./input-stats";
+import { freshInput, latexStats, takeInput } from "./input-stats";
 import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
@@ -104,18 +104,13 @@ export function AnswerForm({
         setEdited(false);
         if (!answerId.current) {
           answerId.current = crypto.randomUUID();
-          const { focusAt, ...counts } = takeInput(stats);
           queueEvent("answer_input", {
             context: "practice",
             task_id: taskId,
             answer_client_id: answerId.current,
             fields: parts.length,
-            ...counts,
-            focus_to_submit_ms:
-              focusAt === undefined
-                ? undefined
-                : Math.round(performance.now() - focusAt),
-            latex_len: values.join("").length,
+            ...takeInput(stats),
+            ...latexStats(values),
           });
         }
         form.set("clientId", answerId.current);

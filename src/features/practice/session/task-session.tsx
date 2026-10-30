@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { keepTaskSession } from "@/features/practice/actions";
+import { whenFieldReady } from "@/features/practice/answer/input-stats";
 import type { Verdict } from "@/features/practice/answer/verdicts";
 import {
   type BrowserEvents,
@@ -29,6 +30,7 @@ interface Visit {
   typed: number;
   verdict?: Verdict;
   revealed: boolean;
+  readyMs?: number;
 }
 
 type Exit = BrowserEvents["task_left"]["exit"];
@@ -127,6 +129,7 @@ export function TaskSessionProvider({
           state: stateOf(current),
           visible_ms: Math.round(current.visibleMs),
           typed_len: current.typed,
+          field_ready_ms: current.readyMs,
         },
         path,
       );
@@ -134,6 +137,9 @@ export function TaskSessionProvider({
     const toggle = () =>
       document.visibilityState === "visible" ? show() : leave("hidden");
     const hide = () => leave("pagehide");
+    whenFieldReady((ms) => {
+      current.readyMs = ms;
+    });
     if (document.visibilityState === "visible")
       current.shownAt = performance.now();
     keep(takeIntent());
