@@ -1,6 +1,6 @@
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { clamp } from "es-toolkit";
+import { clamp, sumBy } from "es-toolkit";
 import { cache } from "react";
 import { z } from "zod";
 import { testDraft, type Visit } from "@/db/columns";
@@ -96,8 +96,11 @@ async function storeAttempts(
   now: number,
   tz: string | undefined,
 ) {
-  for (const g of graded.filter((g) => g.answered)) {
-    const last = sessions.findLast((s) => s.taskId === g.taskId);
+  const stored = [];
+  for (const [index, g] of graded.entries()) {
+    if (!g.answered) continue;
+    const seen = sessions.filter((s) => s.task === index);
+    const last = seen.at(-1);
     const [session] = last
       ? [{ id: last.id }]
       : await tx
@@ -114,18 +117,29 @@ async function storeAttempts(
           .returning({ id: taskSessions.id });
     const task = getTask(g.taskId);
     if (!session || !task) continue;
-    await tx.insert(attempts).values({
-      profileId,
-      taskId: g.taskId,
-      sessionId: session.id,
-      answers: g.answers,
-      outcomes: g.outcomes,
-      correct: g.correct,
-      difficulty: task.difficulty,
-      keyRev: task.keyRev,
-      checker: checkerVersion,
-    });
+    const [attempt] = await tx
+      .insert(attempts)
+      .values({
+        profileId,
+        taskId: g.taskId,
+        sessionId: session.id,
+        answers: g.answers,
+        outcomes: g.outcomes,
+        correct: g.correct,
+        difficulty: task.difficulty,
+        keyRev: task.keyRev,
+        checker: checkerVersion,
+      })
+      .returning();
+    if (attempt)
+      stored.push({
+        attempt,
+        position: index + 1,
+        visits: seen.length,
+        duration_ms: sumBy(seen, (s) => s.end - s.start),
+      });
   }
+  return stored;
 }
 
 export async function finishTest(
@@ -183,17 +197,25 @@ export async function finishTest(
       })),
       test.draft.answers,
     );
-    await storeAttempts(tx, profileId, test.id, graded, sessions, now, tz);
-    return { startedAt, overtime, graded };
+    const attempted = await storeAttempts(
+      tx,
+      profileId,
+      test.id,
+      graded,
+      sessions,
+      now,
+      tz,
+    );
+    return { startedAt, overtime, graded, attempted };
   });
   if (!finished) return;
-  const { startedAt, overtime, graded } = finished;
+  const { startedAt, overtime, graded, attempted } = finished;
   const answered = graded.filter((g) => g.answered);
   const { score, max, correct } = review(
     slotsOf(graded.map((g) => g.taskId)),
     answered,
   );
-  return {
+  const facts = {
     test_session_id: test.id,
     variant_id: variant.id,
     variant_kind: variant.kind,
@@ -211,6 +233,7 @@ export async function finishTest(
     visits: test.draft.visits.length,
     positions_visited: new Set(test.draft.visits.map((v) => v.task)).size,
   };
+  return { facts, attempted };
 }
 
 export const getUnfinishedTest = cache(

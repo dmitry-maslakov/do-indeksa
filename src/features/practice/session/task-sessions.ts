@@ -1,6 +1,7 @@
 import "server-only";
 import { and, desc, eq, gt, inArray, lt, type SQL, sql } from "drizzle-orm";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
+import { taskFacts } from "@/features/catalog/tasks";
 import { verdictOf } from "@/features/practice/answer/verdicts";
 import { db } from "@/server/db";
 import { attemptGapMs, practiceKind, sessionLiveMs } from "./session-kind";
@@ -107,11 +108,7 @@ export const keepSession = (
   tz: string | undefined,
 ) => liveSession(db, profileId, taskId, sessionId, tz);
 
-export async function sessionFacts(
-  profileId: string,
-  sessionId: string,
-  at: Date,
-) {
+async function sessionFacts(profileId: string, sessionId: string, at: Date) {
   const before = (table: typeof attempts | typeof reveals, ...where: SQL[]) =>
     and(eq(table.sessionId, sessionId), lt(table.createdAt, at), ...where);
   const revealed = (...parts: (typeof reveals.$inferSelect.part)[]) =>
@@ -153,3 +150,13 @@ export async function sessionFacts(
     since_open_ms: Math.max(0, at.getTime() - facts.startedAt.getTime()),
   };
 }
+
+export const factsAt = async (
+  profileId: string,
+  taskId: string,
+  sessionId: string,
+  at: Date,
+) => ({
+  ...taskFacts(taskId),
+  ...(await sessionFacts(profileId, sessionId, at)),
+});

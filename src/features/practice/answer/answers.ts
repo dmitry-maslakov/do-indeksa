@@ -3,8 +3,12 @@ import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
 import { checkerVersion, gradeParts } from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
-import { liveSession } from "@/features/practice/session/task-sessions";
+import {
+  factsAt,
+  liveSession,
+} from "@/features/practice/session/task-sessions";
 import { db } from "@/server/db";
+import { verdictOf } from "./verdicts";
 
 interface Answer {
   taskId: string;
@@ -45,7 +49,24 @@ export async function submitAnswer(
       .onConflictDoNothing({
         target: [attempts.profileId, attempts.clientId],
       })
-      .returning({ createdAt: attempts.createdAt });
+      .returning();
     return { outcomes, correct, session, attempt };
   });
 }
+
+export const attemptFacts = async (
+  profileId: string,
+  attempt: typeof attempts.$inferSelect,
+) => ({
+  ...(await factsAt(
+    profileId,
+    attempt.taskId,
+    attempt.sessionId,
+    attempt.createdAt,
+  )),
+  answer_client_id: attempt.clientId,
+  correct: attempt.correct,
+  verdict: verdictOf(attempt.outcomes),
+  outcomes: attempt.outcomes,
+  checker: attempt.checker,
+});

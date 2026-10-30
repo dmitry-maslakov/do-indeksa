@@ -131,6 +131,20 @@ describe("practice events", () => {
     expect(schemaOf(name)?.safeParse(props).success).toBe(false);
   });
 
+  it.each(["answer_input", "answer_submitted"])(
+    "accepts %s given in a test and rejects one in a review",
+    (name) => {
+      const props = valid[name as keyof typeof valid];
+      const test = { context: "test", test_session_id: id, position: 4 };
+      expect(schemaOf(name)?.safeParse({ ...props, ...test }).success).toBe(
+        true,
+      );
+      expect(
+        schemaOf(name)?.safeParse({ ...props, context: "review" }).success,
+      ).toBe(false);
+    },
+  );
+
   it("never uses OpenPanel's reserved keys", () => {
     const keys = events.flatMap(({ props }) => Object.keys(props.shape));
     expect(keys.filter((key) => key.startsWith("__"))).toEqual([]);
