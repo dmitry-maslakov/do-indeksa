@@ -2,7 +2,7 @@ import "server-only";
 import { escape as escapeHtml } from "es-toolkit";
 import katex from "katex";
 import { LRUCache } from "lru-cache";
-import { examSource } from "@/features/bank/source";
+import { examSource } from "@/features/catalog/source";
 import { getTask } from "@/features/catalog/tasks";
 
 const toHtml = (part: string, index: number) =>

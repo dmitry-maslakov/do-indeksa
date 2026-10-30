@@ -1,10 +1,10 @@
 import "server-only";
 import { deburr, orderBy } from "es-toolkit";
 import type { inferParserType } from "nuqs/server";
+import { examSource } from "@/features/catalog/source";
 import { summarize, type TaskSummary, tasks } from "@/features/catalog/tasks";
 import type { TaskStatuses } from "@/features/progress/status";
 import type { bankParsers } from "./params";
-import { examSource } from "./source";
 
 export type BankQuery = Partial<inferParserType<typeof bankParsers>>;
 

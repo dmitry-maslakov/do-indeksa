@@ -7,9 +7,9 @@ import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
-import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
+import { examSource } from "@/features/catalog/source";
 import {
   getTask,
   renderTask,
