@@ -47,12 +47,14 @@ export function TheoryRail({
           label={t("title")}
           variant="fill"
           scroll
+          control="theory_tab"
           items={[
-            { href: base, label: t("theory"), active: !view },
+            { href: base, label: t("theory"), active: !view, value: "theory" },
             {
               href: first ? href(first.slug) : `${base}/methods`,
               label: t("methods"),
               active: !!view,
+              value: "methods",
             },
           ]}
         />

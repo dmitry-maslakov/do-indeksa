@@ -6,6 +6,7 @@ import type { Suggestion } from "@/features/progress/topic-progress";
 import type { BrowserEvents } from "@/lib/analytics-browser";
 import { HeroBackdrop } from "./hero-backdrop";
 import { SuggestionLink } from "./suggestion-link";
+import { TopicMapLink } from "./topic-map";
 
 interface TodayHeroProps extends Suggestion {
   href: string;
@@ -58,12 +59,9 @@ export function TodayHero({
               ? t("startTopic")
               : t("continueTopic")}
           </SuggestionLink>
-          <a
-            href="#topic-map"
-            className="text-base text-muted-foreground hover:text-foreground"
-          >
+          <TopicMapLink className="text-base text-muted-foreground hover:text-foreground">
             {t("otherTopic")}
-          </a>
+          </TopicMapLink>
         </div>
       </div>
     </section>

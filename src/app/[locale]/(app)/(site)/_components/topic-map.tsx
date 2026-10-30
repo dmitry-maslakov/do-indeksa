@@ -1,13 +1,32 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import {
   type TopicState,
   topicStates,
 } from "@/features/progress/topic-progress";
 import { Link } from "@/i18n/navigation";
+import { queueEvent } from "@/lib/analytics-browser";
 import { TopicRow, type TopicRowProps } from "./topic-row";
+
+interface TopicMapLinkProps {
+  className: string;
+  children: ReactNode;
+}
+
+export function TopicMapLink({ className, children }: TopicMapLinkProps) {
+  return (
+    <Link
+      href="#topic-map"
+      prefetch={false}
+      onClick={() => queueEvent("control_used", { control: "other_topic" })}
+      className={className}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
   const t = useTranslations("Home");
@@ -37,6 +56,10 @@ export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
             onClick={() => {
               setMinHeight((h) => Math.max(h, list.current?.offsetHeight ?? 0));
               setFilter(state);
+              queueEvent("control_used", {
+                control: "topic_map_filter",
+                value: state ?? "all",
+              });
             }}
             className="h-9 shrink-0 rounded-full bg-muted px-4 font-medium text-muted-foreground text-sm aria-pressed:bg-data-tint aria-pressed:font-bold aria-pressed:text-data"
           >

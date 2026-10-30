@@ -32,6 +32,7 @@ const valid = {
   },
   error_shown: { kind: "route_error", path: "/bank", digest: "1830472914" },
   request_failed: { kind: "reveal", reason: "server", status: 503 },
+  control_used: { control: "theory_tab", value: "methods" },
   list_page_loaded: { list: "bank", offset: 30, items: 30 },
 };
 
@@ -46,6 +47,7 @@ const invalid = {
   },
   error_shown: { kind: "crash", path: "/" },
   request_failed: { kind: "feed", reason: "offline", url: "/api/bank" },
+  control_used: { control: "share_button" },
   list_page_loaded: { list: "variants", offset: 0, items: 3 },
 };
 

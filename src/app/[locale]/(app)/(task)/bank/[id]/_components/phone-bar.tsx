@@ -7,6 +7,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { Link } from "@/i18n/navigation";
+import { queueEvent } from "@/lib/analytics-browser";
 import { Rail, type RailProps } from "./rail";
 
 interface PhoneBarProps extends RailProps {
@@ -21,7 +22,13 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
   useEffect(() => () => setOpen(false), []);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) queueEvent("control_used", { control: "rail_sheet" });
+      }}
+    >
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
           href={`/bank${rail.listQuery}`}

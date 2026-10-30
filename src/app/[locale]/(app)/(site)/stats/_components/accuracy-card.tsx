@@ -21,6 +21,7 @@ export function AccuracyCard({ rows, pending }: AccuracyCardProps) {
           label={t("weaker")}
           variant="segmented"
           param="by"
+          control="stats_by"
           items={[
             { href: "/stats", label: t("topics") },
             { href: "/stats?by=number", label: t("numbers"), value: "number" },

@@ -28,16 +28,19 @@ export function PhoneTabs({ topic, methods, active }: PhoneTabsProps) {
       <LinkTabs
         label={t("title")}
         variant="fill"
+        control="theory_tab"
         items={[
           {
             href: `/theory/${topic}`,
             label: t("theory"),
             active: active === "theory",
+            value: "theory",
           },
           {
             href: `/theory/${topic}/methods`,
             label: t("methodsCount", { count: methods }),
             active: active === "methods",
+            value: "methods",
           },
         ]}
       />
