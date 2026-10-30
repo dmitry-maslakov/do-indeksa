@@ -134,7 +134,7 @@ export function TestRunner({
     }, 1500);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
-  const { goTo, recordInput, onInput } = useTestViews(
+  const { goTo, recordInput, stats } = useTestViews(
     { variantId, kind, tasks, saved, fallback },
     hydrated ? test?.testId : undefined,
   );
@@ -178,10 +178,7 @@ export function TestRunner({
         <RailPanel label={t("tasks")}>
           <TestRail {...rail} code={code} onGo={(i) => goTo(i, "rail")} />
         </RailPanel>
-        <div
-          onInput={onInput}
-          className="flex min-w-0 max-w-task flex-1 flex-col"
-        >
+        <div className="flex min-w-0 max-w-task flex-1 flex-col">
           {fallback && (
             <p className="pt-4.5 text-sm md:pt-3.5">
               {t("fallback", { mode: fallback })}
@@ -192,6 +189,7 @@ export function TestRunner({
             answers={answers}
             first={test.current === 0}
             last={test.current === tasks.length - 1}
+            stats={stats}
             onSwap={onSwap}
             onAnswer={onAnswer}
             onPrev={() => goTo(test.current - 1, "prev")}

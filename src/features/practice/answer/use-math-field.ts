@@ -1,5 +1,12 @@
 import type { MathfieldElement } from "mathlive";
-import { useEffect, useRef, useState } from "react";
+import {
+  type RefObject,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from "react";
+import { countInput, focused, type InputStats } from "./input-stats";
 
 const keyboardGap = 16;
 
@@ -41,17 +48,22 @@ function loadMathlive() {
 export function useMathField(
   defaultValue: string,
   onEdit: (value: string) => void,
+  stats: RefObject<InputStats>,
 ) {
   const field = useRef<MathfieldElement>(null);
   const [value, setValue] = useState(defaultValue);
+  const edited = useEffectEvent((latex: string) => {
+    setValue(latex);
+    onEdit(latex);
+  });
 
   useEffect(() => {
     loadMathlive();
     const el = field.current;
     if (!el) return;
     const sync = (event: Event) => {
-      setValue(el.value);
-      onEdit(el.value);
+      countInput(stats.current, event as InputEvent);
+      edited(el.value);
       const keyboard = window.mathVirtualKeyboard;
       if (
         (event as InputEvent).inputType === "insertLineBreak" &&
@@ -61,14 +73,17 @@ export function useMathField(
         el.blur();
       }
     };
-    const reveal = () => requestAnimationFrame(revealAboveKeyboard);
+    const reveal = () => {
+      focused(stats.current);
+      requestAnimationFrame(revealAboveKeyboard);
+    };
     el.addEventListener("input", sync);
     el.addEventListener("focus", reveal);
     return () => {
       el.removeEventListener("input", sync);
       el.removeEventListener("focus", reveal);
     };
-  }, [onEdit]);
+  }, [stats]);
 
   return { field, value };
 }
