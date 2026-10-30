@@ -40,7 +40,7 @@ function HistoryRow({ test }: { test: TestSummary }) {
 
 function TestFeed({ first }: { first: Page<TestSummary> }) {
   const t = useTranslations("Bank");
-  const feed = useFeed("/api/tests", first);
+  const feed = useFeed("tests", first);
 
   return (
     <>

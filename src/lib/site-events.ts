@@ -56,6 +56,12 @@ const requestFailed = defineEvent("request_failed", {
   status: z.int().min(100).max(599).optional(),
 });
 
+const listPageLoaded = defineEvent("list_page_loaded", {
+  list: z.enum(["bank", "tests"]),
+  offset: z.int().min(1),
+  items: z.int().min(0),
+});
+
 export const analyticsOptedIn = defineEvent("analytics_opted_in", {});
 
 export const analyticsOptedOut = defineEvent("analytics_opted_out", {});
@@ -71,4 +77,5 @@ export const clientEvents = [
   webVital,
   errorShown,
   requestFailed,
+  listPageLoaded,
 ] as const;
