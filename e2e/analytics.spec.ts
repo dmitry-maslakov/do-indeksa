@@ -28,6 +28,16 @@ const visitOf = async (campaign: string) =>
 const cookie = async (context: BrowserContext, name: string) =>
   (await context.cookies()).find((c) => c.name === name)?.value;
 
+const anonymousOnPrivacy = async (name: string) =>
+  (
+    await rows(
+      (row) =>
+        row.name === name &&
+        row.route === "/privacy" &&
+        row.aid === "00000000-0000-0000-0000-000000000000",
+    )
+  ).length;
+
 const flush = (page: Page) =>
   page.evaluate(() => dispatchEvent(new Event("pagehide")));
 
@@ -107,6 +117,9 @@ test("after opting out nothing is recorded", async ({ page, browser }) => {
   ).toBeVisible();
   await expect.poll(() => cookie(page.context(), "analytics")).toBe("off");
   expect(await cookie(page.context(), "aid")).toBeUndefined();
+  await expect
+    .poll(() => anonymousOnPrivacy("analytics_opted_out"))
+    .toBeGreaterThan(0);
 
   const campaign = randomUUID();
   const control = await browser.newContext();
@@ -128,4 +141,7 @@ test("after opting out nothing is recorded", async ({ page, browser }) => {
     page.getByRole("button", { name: "Isključi analitiku" }),
   ).toBeVisible();
   await expect.poll(() => cookie(page.context(), "aid")).toBeDefined();
+  await expect
+    .poll(() => anonymousOnPrivacy("analytics_opted_in"))
+    .toBeGreaterThan(0);
 });
