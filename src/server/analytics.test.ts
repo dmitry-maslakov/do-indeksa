@@ -218,6 +218,14 @@ describe("track", () => {
     expect(rows?.[0]).toMatchObject({ aid: "0", route: "" });
   });
 
+  it("computes lazy props inside after()", async () => {
+    fromPage("https://doindeksa.rs/bank/eks-001");
+    await track(opened, async () => ({ from: "bar" }));
+    await Promise.all(pending);
+    const [rows] = vi.mocked(insertEvents).mock.calls[0] ?? [];
+    expect(rows?.[0]).toMatchObject({ props: { from: "bar" } });
+  });
+
   it("sends nothing for a visitor who opted out", async () => {
     fromPage("https://doindeksa.rs/", `aid=${aid}; analytics=off`);
     await track(opened, { from: "bar" });
