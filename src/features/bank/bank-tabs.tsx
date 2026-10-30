@@ -14,7 +14,12 @@ export function BankTabs({ recommended }: BankTabsProps) {
       label={t("title")}
       variant="fill"
       items={[
-        { href: recommended, label: t("recommended"), active: false },
+        {
+          href: recommended,
+          label: t("recommended"),
+          active: false,
+          prefetch: false,
+        },
         { href: "/bank", label: t("all"), active: true },
       ]}
     />
