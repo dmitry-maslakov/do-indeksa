@@ -58,7 +58,13 @@ export function Rail({
           ))}
         </RailSelect>
       </div>
-      <QueueList key={current} queue={queue} current={current} href={href} />
+      <QueueList
+        key={current}
+        queue={queue}
+        current={current}
+        topic={topic}
+        href={href}
+      />
     </RailContent>
   );
 }

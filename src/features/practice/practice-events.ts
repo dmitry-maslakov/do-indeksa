@@ -7,23 +7,23 @@ import { verdicts } from "./answer/verdicts";
 
 const count = z.int().min(0);
 
+export const placements = [
+  "home_hero",
+  "topic_row",
+  "bank_tab",
+  "topic_select",
+  "rail_upcoming",
+  "rail_today",
+  "rail_earlier",
+  "next",
+  "skip",
+  "card",
+  "review_row",
+] as const;
+
 export const taskIntent = z.object({
   via: z.enum(["picker", "list", "search", "review", "history"]),
-  placement: z
-    .enum([
-      "home_hero",
-      "topic_row",
-      "bank_tab",
-      "topic_select",
-      "rail_upcoming",
-      "rail_today",
-      "rail_earlier",
-      "next",
-      "skip",
-      "card",
-      "review_row",
-    ])
-    .optional(),
+  placement: z.enum(placements).optional(),
   rank: z.int().min(1).max(10_000).optional(),
 });
 

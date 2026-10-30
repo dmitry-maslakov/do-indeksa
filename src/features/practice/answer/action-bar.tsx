@@ -3,12 +3,16 @@ import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { intentOf } from "@/lib/analytics-browser";
+import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
+import { useExposure } from "@/lib/use-exposure";
+
+type Recommendation = BrowserEvents["recommendation_made"];
 
 interface ActionBarProps {
   go: boolean;
   next: string;
   skip?: string;
+  recommendation?: Recommendation;
   onSkip: () => void;
   checked: boolean;
   disabled: boolean;
@@ -24,15 +28,22 @@ const primary = cn(
 function Skip({
   href,
   checked,
+  recommendation,
   onClick,
 }: {
   href: string;
   checked: boolean;
+  recommendation?: Recommendation;
   onClick: () => void;
 }) {
   const t = useTranslations("Solve");
+  const seen = useExposure(
+    "recommendation_made",
+    recommendation && { ...recommendation, surface: "skip" },
+  );
   return (
     <Link
+      ref={seen}
       href={href}
       onClick={onClick}
       data-intent={intentOf({ via: "picker", placement: "skip" })}
@@ -52,15 +63,19 @@ export function ActionBar({
   go,
   next,
   skip,
+  recommendation,
   onSkip,
   checked,
   disabled,
 }: ActionBarProps) {
   const t = useTranslations("Solve");
+  const seen = useExposure("recommendation_made", recommendation);
   return (
     <div className={phoneBar}>
       {go ? (
         <Link
+          key={next}
+          ref={seen}
           href={next}
           data-intent={intentOf({ via: "picker", placement: "next" })}
           className={primary}
@@ -74,7 +89,15 @@ export function ActionBar({
           {t("check")}
         </Button>
       )}
-      {!go && skip && <Skip href={skip} checked={checked} onClick={onSkip} />}
+      {!go && skip && (
+        <Skip
+          key={skip}
+          href={skip}
+          checked={checked}
+          recommendation={recommendation}
+          onClick={onSkip}
+        />
+      )}
     </div>
   );
 }

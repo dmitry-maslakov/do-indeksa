@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority";
+import type { Ref } from "react";
 import { Link } from "@/i18n/navigation";
 
 const list = cva("flex", {
@@ -33,6 +34,7 @@ interface LinkTabsProps {
   label: string;
   variant: "segmented" | "fill" | "pill";
   scroll?: boolean;
+  ref?: Ref<HTMLElement>;
 }
 
 export function LinkTabs({
@@ -40,9 +42,10 @@ export function LinkTabs({
   label,
   variant,
   scroll = false,
+  ref,
 }: LinkTabsProps) {
   return (
-    <nav aria-label={label} className={list({ variant })}>
+    <nav ref={ref} aria-label={label} className={list({ variant })}>
       {items.map((item) => (
         <Link
           key={item.href}

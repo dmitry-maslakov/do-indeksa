@@ -3,14 +3,21 @@ import { useLocale, useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import { topicName } from "@/features/catalog/topics";
 import type { Suggestion } from "@/features/progress/topic-progress";
+import type { BrowserEvents } from "@/lib/analytics-browser";
 import { HeroBackdrop } from "./hero-backdrop";
 import { SuggestionLink } from "./suggestion-link";
+
+interface TodayHeroProps extends Suggestion {
+  href: string;
+  recommendation?: BrowserEvents["recommendation_made"];
+}
 
 export function TodayHero({
   topic,
   reason,
   href,
-}: Suggestion & { href: string }) {
+  recommendation,
+}: TodayHeroProps) {
   const t = useTranslations("Home");
   const locale = useLocale();
 
@@ -41,6 +48,7 @@ export function TodayHero({
             topic={topic}
             reason={reason}
             href={href}
+            recommendation={recommendation}
             className={buttonVariants({
               variant: "lime",
               className: "h-12 rounded-xl px-6 font-semibold text-base",

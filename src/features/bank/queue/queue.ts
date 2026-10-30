@@ -62,14 +62,16 @@ export async function nextTasks(profileId: string) {
         touched: new Map([...touched].filter(([id]) => own.has(id))),
         size: 1,
       });
-      const next = upcoming[0]?.id ?? ids[0];
+      const next = upcoming[0] ?? (ids[0] && { id: ids[0], fallback: true });
       return next ? [[topic, next] as const] : [];
     }),
   );
 }
 
-export const topicStart = (starts: Map<string, string>, topic: string) =>
-  `/bank/${starts.get(topic) ?? `start/${topic}`}`;
+export const topicStart = (
+  starts: Map<string, { id: string }>,
+  topic: string,
+) => `/bank/${starts.get(topic)?.id ?? `start/${topic}`}`;
 
 export async function loadQueue(
   input: PoolInput & { locale: Locale },

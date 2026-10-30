@@ -6,6 +6,7 @@ import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { serializeBankFilters } from "@/features/bank/params";
 import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
+import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { examSource } from "@/features/bank/source";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
@@ -110,6 +111,11 @@ export default async function SolvePage({
               parts={html.parts}
               unchecked={html.unchecked}
               next={queue.next && `/bank/${queue.next}`}
+              recommendation={recommendationOf(
+                "next",
+                task.topic,
+                queue.upcoming[0],
+              )}
               fallback="/bank"
               afterCorrect={solved && <TaskSignInStrip solved={solved} />}
             />

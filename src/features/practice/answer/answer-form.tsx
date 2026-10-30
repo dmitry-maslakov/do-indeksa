@@ -10,7 +10,7 @@ import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { queueEvent } from "@/lib/analytics-browser";
+import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar } from "./action-bar";
 import { AnswerField } from "./answer-field";
@@ -21,6 +21,7 @@ interface AnswerFormProps {
   parts: PartLabel[];
   unchecked: string[];
   next?: string;
+  recommendation?: BrowserEvents["recommendation_made"];
   fallback: string;
   afterCorrect?: ReactNode;
 }
@@ -100,6 +101,7 @@ export function AnswerForm({
   parts,
   unchecked,
   next,
+  recommendation,
   fallback,
   afterCorrect,
 }: AnswerFormProps) {
@@ -199,6 +201,7 @@ export function AnswerForm({
           go={Boolean(checked?.correct) || help.solution}
           next={next ?? fallback}
           skip={next}
+          recommendation={recommendation}
           onSkip={() =>
             help.track(
               async (sessionId) =>

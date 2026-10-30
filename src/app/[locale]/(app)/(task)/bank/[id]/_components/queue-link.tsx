@@ -5,6 +5,8 @@ import { MathHtml } from "@/components/math-html";
 import { RailLink } from "@/components/rail";
 import type { QueueRow } from "@/features/bank/queue/queue";
 import { StatusIcon } from "@/features/progress/status-icon";
+import type { BrowserEvents } from "@/lib/analytics-browser";
+import { useExposure } from "@/lib/use-exposure";
 
 const preview = "min-w-0 overflow-hidden whitespace-nowrap mask-r-from-85%";
 
@@ -14,6 +16,7 @@ interface QueueLinkProps {
   intent: string;
   current: boolean;
   next?: boolean;
+  recommendation?: BrowserEvents["recommendation_made"];
 }
 
 export function QueueLink({
@@ -22,10 +25,13 @@ export function QueueLink({
   intent,
   current,
   next,
+  recommendation,
 }: QueueLinkProps) {
   const t = useTranslations("Solve");
+  const seen = useExposure("recommendation_made", recommendation);
   return (
     <RailLink
+      ref={seen}
       href={href}
       data-intent={intent}
       current={current}

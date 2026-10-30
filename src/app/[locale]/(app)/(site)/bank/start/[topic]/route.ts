@@ -14,7 +14,7 @@ export async function GET(
   if (!first || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });
   }
-  const next = (await nextTasks(await getProfileId())).get(topic);
+  const next = (await nextTasks(await getProfileId())).get(topic)?.id;
   const href = getPathname({ href: `/bank/${next ?? first}`, locale });
   return new Response(null, { status: 307, headers: { Location: href } });
 }
