@@ -31,7 +31,6 @@ interface LinkTabsProps {
     href: string;
     label: string;
     active: boolean;
-    prefetch?: boolean;
     intent?: string;
     value?: string;
   }[];
@@ -56,7 +55,6 @@ export function LinkTabs({
         <Link
           key={item.href}
           href={item.href}
-          prefetch={item.prefetch}
           data-intent={item.intent}
           scroll={scroll}
           data-active={item.active}

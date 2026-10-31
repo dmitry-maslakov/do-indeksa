@@ -49,7 +49,6 @@ export function TopicRow({
       <Link
         ref={seen}
         href={href}
-        prefetch={false}
         data-intent={intentOf({ via: "picker", placement: "topic_row" })}
         className="flex items-center gap-3 border-b py-3 text-sm md:gap-4 md:text-base"
       >

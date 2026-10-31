@@ -25,7 +25,6 @@ export function BankTabs({ recommended, recommendation }: BankTabsProps) {
           href: recommended,
           label: t("recommended"),
           active: false,
-          prefetch: false,
           intent: intentOf({ via: "picker", placement: "bank_tab" }),
         },
         { href: "/bank", label: t("all"), active: true },
