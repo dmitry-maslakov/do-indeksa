@@ -7,6 +7,12 @@ export async function register() {
   Sentry.init({
     ...sentryOptions,
     dsn: env.SENTRY_DSN,
+    integrations: [
+      Sentry.httpIntegration({
+        disableIncomingRequestSpans: true,
+        sessions: false,
+      }),
+    ],
     tracesSampler: ({ normalizedRequest, inheritOrSampleWith }) =>
       /\/api\/(healthz|events)$/.test(normalizedRequest?.url ?? "")
         ? 0
