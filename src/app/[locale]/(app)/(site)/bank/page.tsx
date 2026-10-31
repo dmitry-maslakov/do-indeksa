@@ -24,9 +24,7 @@ export default async function BankPage({
     <main className="px-3 pt-4 pb-9 max-lg:min-h-dvh max-lg:bg-muted lg:px-10 lg:pt-2 lg:pb-15">
       <h1 className="sr-only">{t("title")}</h1>
       <NuqsAdapter>
-        <Suspense
-          fallback={<BankResults filters={{}} tasks={findTasks({})} pending />}
-        >
+        <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
           <Bank searchParams={searchParams} />
         </Suspense>
       </NuqsAdapter>

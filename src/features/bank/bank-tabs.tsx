@@ -1,20 +1,20 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { use } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
 
-interface BankTabsProps {
-  recommended?: string;
+export interface BankPick {
+  href: string;
   recommendation?: BrowserEvents["recommendation_made"];
 }
 
-export function BankTabs({ recommended, recommendation }: BankTabsProps) {
+function Tabs({ href, recommendation }: BankPick) {
   const t = useTranslations("Bank");
   const seen = useExposure("recommendation_made", recommendation);
-  if (!recommended) return <Skeleton className="h-10 rounded-xl" />;
   return (
     <LinkTabs
       ref={seen}
@@ -22,7 +22,7 @@ export function BankTabs({ recommended, recommendation }: BankTabsProps) {
       variant="fill"
       items={[
         {
-          href: recommended,
+          href,
           label: t("recommended"),
           active: false,
           intent: intentOf({ via: "picker", placement: "bank_tab" }),
@@ -31,4 +31,10 @@ export function BankTabs({ recommended, recommendation }: BankTabsProps) {
       ]}
     />
   );
+}
+
+export function BankTabs({ pick }: { pick?: Promise<BankPick> }) {
+  const resolved = pick && use(pick);
+  if (!resolved) return <Skeleton className="h-10 rounded-xl" />;
+  return <Tabs key={resolved.href} {...resolved} />;
 }

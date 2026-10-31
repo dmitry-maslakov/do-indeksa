@@ -9,7 +9,12 @@ export interface Page<T> {
 
 type List = BrowserEvents["list_page_loaded"]["list"];
 
-export function useFeed<T>(list: List, first: Page<T>, search = "") {
+export function useFeed<T>(
+  list: List,
+  first: Page<T>,
+  search = "",
+  keep = false,
+) {
   const locale = useLocale();
   const path = `/api/${list}`;
   return useInfiniteQuery({
@@ -35,6 +40,6 @@ export function useFeed<T>(list: List, first: Page<T>, search = "") {
     initialData: { pages: [first], pageParams: [0] },
     getNextPageParam: (last) => last.next,
     staleTime: Number.POSITIVE_INFINITY,
-    gcTime: 0,
+    gcTime: keep ? undefined : 0,
   });
 }

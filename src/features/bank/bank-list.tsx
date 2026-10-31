@@ -7,10 +7,12 @@ import { bankPage } from "./feed";
 interface BankListProps {
   tasks: TaskSummary[];
   search: string;
-  statuses?: TaskStatuses;
+  statuses: Promise<TaskStatuses>;
 }
 
 export async function BankList({ tasks, search, statuses }: BankListProps) {
-  const first = await bankPage(tasks, 0, await getLocale(), statuses);
-  return <BankFeed key={search} search={search} first={first} />;
+  const first = await bankPage(tasks, 0, await getLocale());
+  return (
+    <BankFeed key={search} search={search} first={first} statuses={statuses} />
+  );
 }

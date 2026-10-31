@@ -1,14 +1,25 @@
+"use client";
+
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { Suspense, use } from "react";
 import { ExamMark } from "@/components/exam-mark";
 import { MathHtml } from "@/components/math-html";
 import { TopicIcon } from "@/features/catalog/topic-icon";
+import type { TaskStatuses } from "@/features/progress/status";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 import { Link } from "@/i18n/navigation";
 import type { BankCard } from "./feed";
 
-function StatusMark({ status }: { status: BankCard["status"] }) {
+function StatusMark({
+  id,
+  statuses,
+}: {
+  id: string;
+  statuses: Promise<TaskStatuses>;
+}) {
   const t = useTranslations("Bank");
+  const status = use(statuses).get(id) ?? "new";
   if (status === "new") return null;
   return (
     <span
@@ -35,10 +46,11 @@ function Source({ exam }: Pick<BankCard, "exam">) {
 
 interface TaskCardProps {
   card: BankCard;
+  statuses: Promise<TaskStatuses>;
   intent: string;
 }
 
-export function TaskCard({ card, intent }: TaskCardProps) {
+export function TaskCard({ card, statuses, intent }: TaskCardProps) {
   const t = useTranslations("Bank");
 
   return (
@@ -51,7 +63,9 @@ export function TaskCard({ card, intent }: TaskCardProps) {
         <span className="order-3 flex basis-full flex-wrap items-center gap-x-3 gap-y-1 text-sm text-subtle">
           <Source exam={card.exam} />
           <span>{t("taskLevel", { level: card.level })}</span>
-          <StatusMark status={card.status} />
+          <Suspense>
+            <StatusMark id={card.id} statuses={statuses} />
+          </Suspense>
         </span>
       </div>
       <Link
