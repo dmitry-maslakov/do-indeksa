@@ -91,7 +91,7 @@ describe("keepGoing", () => {
 });
 
 describe("switchTopic", () => {
-  it("moves to the other topics not mastered after six tasks today", () => {
+  it("moves to the other open topics after six tasks today", () => {
     expect(
       scores(switchTopic, {
         a: { state: "inProgress", lastAt: 2, tasksToday: 6 },
@@ -99,7 +99,7 @@ describe("switchTopic", () => {
         c: { state: "warming", lastAt: 1 },
         d: { state: "notStarted" },
       }),
-    ).toEqual(["c", "d"]);
+    ).toEqual(["c"]);
   });
 
   it("stays quiet under six tasks today", () => {

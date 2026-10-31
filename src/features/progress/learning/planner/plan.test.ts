@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { defaultPolicy } from "../policy";
 import type { Signal } from "./contracts";
 import { candidate, learningAt, learningOf } from "./learning.fixture";
-import { plan, scoring } from "./plan";
+import { plan, signalled } from "./plan";
 import { signals } from "./signals/signals";
 import { topicSignals } from "./topic-signals/topic-signals";
 
@@ -99,14 +99,14 @@ describe("plan", () => {
   });
 });
 
-describe("scoring", () => {
+describe("signalled", () => {
   it("keeps the candidates some signal scores", () => {
     expect(
-      scoring([easy, medium, hard], learning, [
+      signalled([easy, medium, hard], learning, [
         prefers("levelFit", ["medium"]),
         prefers("examTask", ["hard"]),
       ]),
     ).toEqual([medium, hard]);
-    expect(scoring([easy], learning, [prefers("levelFit", [])])).toEqual([]);
+    expect(signalled([easy], learning, [prefers("levelFit", [])])).toEqual([]);
   });
 });
