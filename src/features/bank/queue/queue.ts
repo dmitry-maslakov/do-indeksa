@@ -48,6 +48,7 @@ const poolOf = (ids: string[]) =>
       {
         taskId: id,
         topic: task.topic,
+        type: task.type,
         difficulty: difficultyOf(task.difficulty),
         exam: examYear(id) !== null,
       },

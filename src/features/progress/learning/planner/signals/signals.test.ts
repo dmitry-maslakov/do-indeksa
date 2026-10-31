@@ -7,6 +7,7 @@ import { candidate, history, learningAt, logit } from "../learning.fixture";
 import { examTask } from "./exam-task";
 import { hardNeeded } from "./hard-needed";
 import { levelFit } from "./level-fit";
+import { newType } from "./new-type";
 import { repeatDue } from "./repeat-due";
 
 const context = (
@@ -74,6 +75,26 @@ describe("examTask", () => {
   it("scores real exam tasks", () => {
     expect(examTask.score(candidate("t", 2, true), context(0))).toBe(1);
     expect(examTask.score(candidate("t", 2), context(0))).toBe(0);
+  });
+});
+
+describe("newType", () => {
+  const ofType = (type: string) => ({ ...candidate("t", 3), type });
+  const window = [
+    obs("clean", { type: "substitution" }),
+    obs("helped", { hours: 1, type: "graph" }),
+  ];
+
+  it("scores a type without a clean result in the topic's window", () => {
+    expect(newType.score(ofType("graph"), context(0, window))).toBe(1);
+    expect(newType.score(ofType("bases"), context(0, window))).toBe(1);
+    expect(newType.score(ofType("substitution"), context(0, window))).toBe(0);
+  });
+
+  it("scores nothing for a topic it has no state for", () => {
+    expect(
+      newType.score({ ...ofType("graph"), topic: "astrology" }, context(0)),
+    ).toBe(0);
   });
 });
 

@@ -6,6 +6,7 @@ export const taskSignalNames = [
   "hardNeeded",
   "examTask",
   "repeatDue",
+  "newType",
 ] as const;
 
 const topicSignalNames = [
@@ -34,6 +35,7 @@ export interface LearningPolicy {
   lostBelowTarget: number;
   hardFrom: Difficulty;
   cleanHardNeeded: number;
+  typesNeeded: number;
   laterDaysNeeded: number;
   spanNeededMs: number;
   reviewAfterMs: number;
@@ -73,6 +75,7 @@ export const defaultPolicy: LearningPolicy = {
   lostBelowTarget: 0.2,
   hardFrom: 3,
   cleanHardNeeded: 3,
+  typesNeeded: 3,
   laterDaysNeeded: 3,
   spanNeededMs: 18 * hourMs,
   reviewAfterMs: 14 * dayMs,
@@ -109,6 +112,7 @@ export const defaultPolicy: LearningPolicy = {
     hardNeeded: 0.3,
     examTask: 0.1,
     repeatDue: 1,
+    newType: 0.3,
     stuck: 1,
     review: 0.8,
     finishTopic: 0.6,

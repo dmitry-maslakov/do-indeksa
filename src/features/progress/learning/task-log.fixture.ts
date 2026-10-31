@@ -27,6 +27,7 @@ export const reveal = (
 export const taskLog = (over: Partial<TaskLog>): TaskLog => ({
   taskId: "t1",
   topic: "logarithms",
+  type: "substitution",
   difficulty: 3,
   keyRev: "k1",
   tz: "Europe/Belgrade",

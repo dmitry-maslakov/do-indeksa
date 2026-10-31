@@ -10,6 +10,7 @@ import type { Difficulty } from "../types";
 export interface Candidate {
   taskId: string;
   topic: string;
+  type: string;
   difficulty: Difficulty;
   exam: boolean;
 }

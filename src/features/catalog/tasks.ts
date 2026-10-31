@@ -40,11 +40,17 @@ export const tasks = allTasks.filter((t) => !unreleased.has(t.id));
 
 const byId = new Map(allTasks.map((t) => [t.id, t]));
 
+const byTopic = Map.groupBy(tasks, (t) => t.topic);
+
 export const idsByTopic = new Map(
-  Array.from(
-    Map.groupBy(tasks, (t) => t.topic),
-    ([topic, group]) => [topic, group.map((t) => t.id)] as const,
-  ),
+  Array.from(byTopic, ([topic, group]) => [topic, group.map((t) => t.id)]),
+);
+
+export const typesByTopic = new Map(
+  Array.from(byTopic, ([topic, group]) => [
+    topic,
+    [...new Set(group.map((t) => t.type))],
+  ]),
 );
 
 export const getTask = (id: string) => byId.get(id);

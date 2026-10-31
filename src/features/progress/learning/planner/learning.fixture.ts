@@ -15,7 +15,13 @@ export const candidate = (
   taskId: string,
   difficulty: Difficulty,
   exam = false,
-): Candidate => ({ taskId, topic: "logarithms", difficulty, exam });
+): Candidate => ({
+  taskId,
+  topic: "logarithms",
+  type: "substitution",
+  difficulty,
+  exam,
+});
 
 export const history = (over: Partial<TaskHistory> = {}): TaskHistory => ({
   topic: "logarithms",
@@ -39,6 +45,7 @@ export const learningAt = (
       {
         status: topicStatus(
           observations,
+          1,
           observations.at(-1)?.at ?? null,
           start,
         ),
@@ -63,7 +70,7 @@ const topicAt = ({
   lastAt = state === "notStarted" ? null : start,
   ...rest
 }: TopicSetup = {}): TopicLearning => ({
-  status: { state, fill: 0, almost, missing: [], lastAt },
+  status: { state, fill: 0, almost, missing: [], cleanTypes: [], lastAt },
   ability: 0,
   tasksToday: 0,
   failStreak: 0,
