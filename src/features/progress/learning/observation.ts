@@ -3,12 +3,17 @@ import { dateIn } from "@/lib/dates";
 import { defaultPolicy, type LearningPolicy } from "./policy";
 import {
   difficultyOf,
-  type FirstAttempt,
   type LoggedReveal,
   type LoggedSubmit,
   type Observation,
-  type ObservationResult,
+  type TaskLog,
 } from "./types";
+
+interface Sitting {
+  submits: LoggedSubmit[];
+  reveals: LoggedReveal[];
+  closed: boolean;
+}
 
 const decides = ({ outcomes }: LoggedSubmit) =>
   outcomes.some((o) => o === "right" || o === "wrong");
@@ -18,15 +23,17 @@ const shareRight = ({ outcomes }: LoggedSubmit) =>
 
 const isHint = ({ part }: LoggedReveal) => part.startsWith("hint");
 
-function firstSitting(
-  { submits, reveals, skips }: FirstAttempt,
+function sittingFrom(
+  { submits, reveals, skips }: TaskLog,
+  from: number,
   now: number,
   gapMs: number,
 ) {
   const start = Math.min(
-    ...submits.filter(decides).map((s) => s.at),
-    ...reveals.filter((r) => !isHint(r)).map((r) => r.at),
+    ...submits.filter((s) => s.at >= from && decides(s)).map((s) => s.at),
+    ...reveals.filter((r) => r.at >= from && !isHint(r)).map((r) => r.at),
   );
+  if (start === Infinity) return;
   const times = [
     ...submits.map((s) => s.at),
     ...reveals.map((r) => r.at),
@@ -36,55 +43,87 @@ function firstSitting(
     .toSorted((a, b) => a - b);
   const gap = times.findIndex((at, i) => at - (times[i - 1] ?? at) >= gapMs);
   const end = times[gap] ?? Infinity;
+  const within = (at: number) => at >= from && at < end;
   return {
-    submits: submits
-      .filter((s) => s.at < end && decides(s))
-      .toSorted((a, b) => a.at - b.at),
-    reveals: reveals.filter((r) => r.at < end),
-    closed: gap >= 0 || now - (times.at(-1) ?? now) >= gapMs,
+    end,
+    sitting: {
+      submits: submits
+        .filter((s) => within(s.at) && decides(s))
+        .toSorted((a, b) => a.at - b.at),
+      reveals: reveals.filter((r) => within(r.at)),
+      closed: gap >= 0 || now - (times.at(-1) ?? now) >= gapMs,
+    },
   };
 }
 
-export function observe(
-  attempt: FirstAttempt,
+export function sittings(
+  log: TaskLog,
   now: number,
-  policy: LearningPolicy = defaultPolicy,
-): Observation | undefined {
-  const { submits, reveals, closed } = firstSitting(
-    attempt,
-    now,
-    policy.attemptGapMs,
-  );
+  gapMs: number,
+  from = -Infinity,
+): Sitting[] {
+  const next = sittingFrom(log, from, now, gapMs);
+  if (!next) return [];
+  return [next.sitting, ...sittings(log, now, gapMs, next.end)];
+}
+
+type Outcome =
+  | { at: number; result: "clean" | "helped" }
+  | { at: number; result: "fail"; shareRight: number };
+
+export type SittingResult = Outcome | { at: number; result: "studied" };
+
+export function resultOf({
+  submits,
+  reveals,
+  closed,
+}: Sitting): SittingResult | undefined {
   const first = submits[0];
-  if (!first || submits.some((s) => s.keyRev !== attempt.keyRev)) return;
   const shownAt = Math.min(
     ...reveals.filter((r) => !isHint(r)).map((r) => r.at),
   );
-  if (shownAt < first.at) return;
-
-  const outcome = (
-    at: number,
-    result: ObservationResult,
-    credit: number,
-  ): Observation => ({
-    taskId: attempt.taskId,
-    topic: attempt.topic,
-    at,
-    day: dateIn(at, attempt.tz),
-    difficulty: difficultyOf(first.difficulty),
-    result,
-    credit,
-  });
+  if (!first || shownAt < first.at) return { at: shownAt, result: "studied" };
 
   const right = submits.find((s) => s.correct && s.at < shownAt);
   if (right) {
     const hinted = reveals.some((r) => isHint(r) && r.at < right.at);
-    return right === first && !hinted
-      ? outcome(right.at, "clean", 1)
-      : outcome(right.at, "helped", policy.helpedCredit);
+    const clean = right === first && !hinted;
+    return { at: right.at, result: clean ? "clean" : "helped" };
   }
   const last = submits.findLast((s) => s.at < shownAt) ?? first;
-  const credit = policy.helpedCredit * shareRight(last);
-  if (shownAt !== Infinity) return outcome(shownAt, "fail", credit);
-  return closed ? outcome(last.at, "fail", credit) : undefined;
+  const shown = shownAt !== Infinity;
+  if (!shown && !closed) return;
+  return {
+    at: shown ? shownAt : last.at,
+    result: "fail",
+    shareRight: shareRight(last),
+  };
+}
+
+const creditOf = (judged: Outcome, policy: LearningPolicy) => {
+  if (judged.result === "clean") return 1;
+  if (judged.result === "fail") return policy.helpedCredit * judged.shareRight;
+  return policy.helpedCredit;
+};
+
+export function observe(
+  attempt: TaskLog,
+  now: number,
+  policy: LearningPolicy = defaultPolicy,
+): Observation | undefined {
+  const [sitting] = sittings(attempt, now, policy.attemptGapMs);
+  const first = sitting?.submits[0];
+  if (!sitting || !first) return;
+  if (sitting.submits.some((s) => s.keyRev !== attempt.keyRev)) return;
+  const judged = resultOf(sitting);
+  if (!judged || judged.result === "studied") return;
+  return {
+    taskId: attempt.taskId,
+    topic: attempt.topic,
+    at: judged.at,
+    day: dateIn(judged.at, attempt.tz),
+    difficulty: difficultyOf(first.difficulty),
+    result: judged.result,
+    credit: creditOf(judged, policy),
+  };
 }

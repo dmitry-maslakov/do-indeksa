@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { defaultPolicy } from "../policy";
 import { obs } from "../status/observations.fixture";
 import type { Difficulty, Observation } from "../types";
-import { abilityOf, chance } from "./elo";
+import { abilityOf, chance, levelAt } from "./elo";
 
 const lastStep = (history: Observation[], next: Observation, from = 0) => {
   const before = abilityOf(history, from);
@@ -26,6 +26,15 @@ describe("chance", () => {
   it("falls as the task gets harder", () => {
     expect(chance(0, 2)).toBeGreaterThan(chance(0, 3));
     expect(chance(0, 3)).toBeGreaterThan(chance(0, 4));
+  });
+});
+
+describe("levelAt", () => {
+  it("takes the level whose chance is closest to the target", () => {
+    expect(levelAt(-1.2)).toBe(1);
+    expect(levelAt(-0.2)).toBe(2);
+    expect(levelAt(0.8)).toBe(3);
+    expect(levelAt(3)).toBe(4);
   });
 });
 

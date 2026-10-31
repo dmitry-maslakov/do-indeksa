@@ -1,3 +1,4 @@
+import { algoVersion } from "@/features/bank/queue/recommendation";
 import {
   answer,
   expect,
@@ -32,7 +33,7 @@ test("home records the suggestion and the picks a visitor sees", async ({
       surface: "home_hero",
       task_id: taskId,
       topic: "complex-numbers",
-      algo_version: 2,
+      algo_version: algoVersion,
       repeat: false,
       reason: "levelFit",
       slot: 1,
@@ -132,7 +133,7 @@ test("the task page records the picks next to a task", async ({ page }) => {
   const pick = {
     task_id: next,
     topic: "exponential-equations",
-    algo_version: 2,
+    algo_version: algoVersion,
     repeat: false,
     reason: "levelFit",
     slot: 1,

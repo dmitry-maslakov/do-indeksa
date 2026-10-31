@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { dayMs } from "@/lib/dates";
 import { defaultPolicy } from "../../policy";
-import { obs } from "../../status/observations.fixture";
-import { candidate, learningAt } from "../learning.fixture";
+import type { TaskHistory } from "../../state";
+import { obs, start } from "../../status/observations.fixture";
+import { candidate, history, learningAt, logit } from "../learning.fixture";
 import { examTask } from "./exam-task";
 import { hardNeeded } from "./hard-needed";
 import { levelFit } from "./level-fit";
+import { repeatDue } from "./repeat-due";
 
 const context = (
   ability: number,
@@ -14,9 +17,8 @@ const context = (
   learning: learningAt(ability, observations),
   picked: [],
   policy,
+  now: start,
 });
-
-const logit = (p: number) => Math.log(p / (1 - p));
 
 describe("levelFit", () => {
   it("fits best where the chance is the target", () => {
@@ -71,5 +73,37 @@ describe("examTask", () => {
   it("scores real exam tasks", () => {
     expect(examTask.score(candidate("t", 2, true), context(0))).toBe(1);
     expect(examTask.score(candidate("t", 2), context(0))).toBe(0);
+  });
+});
+
+describe("repeatDue", () => {
+  const scoreOf = (over: Partial<TaskHistory>, taskId = "t") =>
+    repeatDue.score(candidate(taskId, 2), {
+      learning: learningAt(0, [], { t: history(over) }),
+      picked: [],
+      policy: defaultPolicy,
+      now: start,
+    });
+
+  it("scores a due task by the result of its last try", () => {
+    expect(
+      (["wrong", "partlyRight", "helped", "clean"] as const).map((lastResult) =>
+        scoreOf({ lastResult }),
+      ),
+    ).toEqual([1, 0.75, 0.5, 0.25]);
+  });
+
+  it("scores nothing before the task is due or without a history", () => {
+    expect(scoreOf({ dueAt: start + 1 })).toBe(0);
+    expect(scoreOf({}, "other")).toBe(0);
+  });
+
+  it("breaks a tie toward the longest overdue, below the next priority", () => {
+    const week = scoreOf({ dueAt: start - 7 * dayMs });
+    expect(week).toBeCloseTo(1.1);
+    expect(scoreOf({ dueAt: start - dayMs })).toBeLessThan(week);
+    expect(
+      scoreOf({ lastResult: "partlyRight", dueAt: start - 365 * dayMs }),
+    ).toBeLessThan(scoreOf({}));
   });
 });

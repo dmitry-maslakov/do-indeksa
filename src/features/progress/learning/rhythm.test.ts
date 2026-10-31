@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { hourMs } from "@/lib/dates";
-import { failStreak, idleMs, lastActivityAt, tasksToday } from "./rhythm";
+import { failStreak, lastActivityAt, tasksToday } from "./rhythm";
 import { obs } from "./status/observations.fixture";
 import type { TaskActivity } from "./types";
 
@@ -74,12 +74,5 @@ describe("failStreak", () => {
     expect(failStreak([0, 1, 2].map((hours) => obs("fail", { hours })))).toBe(
       3,
     );
-  });
-});
-
-describe("idleMs", () => {
-  it("measures the time since the last activity", () => {
-    expect(idleMs(now - hourMs, now)).toBe(hourMs);
-    expect(idleMs(null, now)).toBeNull();
   });
 });

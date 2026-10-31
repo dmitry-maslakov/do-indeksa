@@ -1,11 +1,20 @@
+import { minBy } from "es-toolkit";
 import { defaultPolicy, type LearningPolicy } from "../policy";
-import type { Difficulty, Observation } from "../types";
+import { type Difficulty, difficulties, type Observation } from "../types";
 
 export const chance = (
   ability: number,
   difficulty: Difficulty,
   { anchors }: LearningPolicy = defaultPolicy,
 ) => 1 / (1 + Math.exp(anchors[difficulty] - ability));
+
+export const levelAt = (
+  ability: number,
+  policy: LearningPolicy = defaultPolicy,
+) =>
+  minBy(difficulties, (d) =>
+    Math.abs(chance(ability, d, policy) - policy.targetChance),
+  );
 
 const stepOf = (
   evidence: number,

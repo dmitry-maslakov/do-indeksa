@@ -1,7 +1,12 @@
 import { dayMs, hourMs } from "@/lib/dates";
-import type { Difficulty } from "./types";
+import type { Difficulty, TryResult } from "./types";
 
-export const taskSignalNames = ["levelFit", "hardNeeded", "examTask"] as const;
+export const taskSignalNames = [
+  "levelFit",
+  "hardNeeded",
+  "examTask",
+  "repeatDue",
+] as const;
 
 const topicSignalNames = [
   "stuck",
@@ -44,6 +49,17 @@ export interface LearningPolicy {
   tasksPerTopicPerDay: number;
   maxOpenTopics: number;
   keepInShapeAfterMs: number;
+  repeatAfterMs: Record<TryResult, number>;
+  solvedRepeatAfterMs: number;
+  missedRepeatAfterMs: number;
+  missedAgainAfterMs: number;
+  repeatPriority: Record<TryResult, number>;
+  overdueExtra: number;
+  overdueHalfMs: number;
+  maxRepeats: number;
+  repeatsWindow: number;
+  repeatLevelsAbove: number;
+  stretchLevelsAbove: number;
   signalWeights: Record<SignalName, number>;
 }
 
@@ -72,10 +88,27 @@ export const defaultPolicy: LearningPolicy = {
   tasksPerTopicPerDay: 6,
   maxOpenTopics: 3,
   keepInShapeAfterMs: 7 * dayMs,
+  repeatAfterMs: {
+    wrong: dayMs,
+    partlyRight: 3 * dayMs,
+    helped: 7 * dayMs,
+    clean: 30 * dayMs,
+  },
+  solvedRepeatAfterMs: 30 * dayMs,
+  missedRepeatAfterMs: 3 * dayMs,
+  missedAgainAfterMs: 6 * dayMs,
+  repeatPriority: { wrong: 1, partlyRight: 0.75, helped: 0.5, clean: 0.25 },
+  overdueExtra: 0.2,
+  overdueHalfMs: 7 * dayMs,
+  maxRepeats: 2,
+  repeatsWindow: 6,
+  repeatLevelsAbove: 1,
+  stretchLevelsAbove: 3,
   signalWeights: {
     levelFit: 1,
     hardNeeded: 0.3,
     examTask: 0.1,
+    repeatDue: 1,
     stuck: 1,
     review: 0.8,
     finishTopic: 0.6,

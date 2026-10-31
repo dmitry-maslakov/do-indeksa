@@ -36,7 +36,7 @@ const reasons: Record<TopicSignalName, SuggestionReason> = {
 const isFresh = (learning: Learning) => lastPracticed(learning) === undefined;
 
 function ownReason(topic: string, learning: Learning): SuggestionReason {
-  const status = learning.get(topic)?.status;
+  const status = learning.topics.get(topic)?.status;
   if (status?.state === "notStarted") return "next";
   return status?.almost ? "almost" : "started";
 }
@@ -56,7 +56,7 @@ function fallback(
   learning: Learning,
 ): Suggestion | undefined {
   const open = topics.find((topic) => {
-    const state = learning.get(topic)?.status.state;
+    const state = learning.topics.get(topic)?.status.state;
     return state !== undefined && isOpen(state);
   });
   const [first] = topics;
@@ -68,13 +68,19 @@ function fallback(
 
 export function suggest(
   learning: Learning,
+  now: number,
   policy: LearningPolicy = defaultPolicy,
 ): Suggestion | undefined {
   const resting = restingToday(learning, policy);
-  const topics = [...learning.keys()].filter((topic) => topic !== resting);
+  const topics = [...learning.topics.keys()].filter(
+    (topic) => topic !== resting,
+  );
   const candidates: TopicCandidate[] = topics.map((topic) => ({ topic }));
-  const scored = signalled(candidates, learning, topicSignals, policy);
-  const [decision] = plan(scored, learning, topicSignals, 1, [], policy);
+  const scored = signalled(candidates, learning, topicSignals, {
+    now,
+    policy,
+  });
+  const [decision] = plan(scored, learning, topicSignals, 1, { now, policy });
   return decision
     ? {
         topic: decision.candidate.topic,

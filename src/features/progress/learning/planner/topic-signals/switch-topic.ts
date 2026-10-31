@@ -5,7 +5,7 @@ import { restingToday } from "./last-practiced";
 export const switchTopic: TopicSignal = {
   name: "switchTopic",
   score: ({ topic }, { learning, policy }) => {
-    const state = learning.get(topic)?.status.state;
+    const state = learning.topics.get(topic)?.status.state;
     const resting = restingToday(learning, policy);
     return state !== undefined &&
       isOpen(state) &&

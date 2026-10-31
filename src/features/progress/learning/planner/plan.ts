@@ -1,7 +1,14 @@
 import { maxBy, sumBy } from "es-toolkit";
 import { defaultPolicy, type LearningPolicy, type SignalName } from "../policy";
 import type { Learning } from "../state";
-import type { Decision, PlanContext, Signal } from "./contracts";
+import type { Decision, PlanContext, Rule, Signal } from "./contracts";
+
+interface PlanOptions<C> {
+  now: number;
+  picked?: C[];
+  rules?: Rule<C>[];
+  policy?: LearningPolicy;
+}
 
 const contributions = <C, N extends SignalName>(
   candidate: C,
@@ -18,16 +25,17 @@ export function plan<C, N extends SignalName>(
   learning: Learning,
   signals: Signal<C, N>[],
   size: number,
-  picked: C[] = [],
-  policy: LearningPolicy = defaultPolicy,
+  { now, picked = [], rules = [], policy = defaultPolicy }: PlanOptions<C>,
 ): Decision<C, N>[] {
   if (size <= 0) return [];
-  const context = { learning, picked, policy };
+  const context = { learning, picked, policy, now };
   const best = maxBy(
-    candidates.map((candidate) => ({
-      candidate,
-      parts: contributions(candidate, context, signals),
-    })),
+    candidates
+      .filter((candidate) => rules.every((r) => r.allows(candidate, context)))
+      .map((candidate) => ({
+        candidate,
+        parts: contributions(candidate, context, signals),
+      })),
     ({ parts }) => sumBy(parts, (p) => p.value),
   );
   const strongest = best && maxBy(best.parts, (p) => p.value);
@@ -39,8 +47,7 @@ export function plan<C, N extends SignalName>(
       learning,
       signals,
       size - 1,
-      [...picked, best.candidate],
-      policy,
+      { now, picked: [...picked, best.candidate], rules, policy },
     ),
   ];
 }
@@ -49,10 +56,12 @@ export const signalled = <C, N extends SignalName>(
   candidates: C[],
   learning: Learning,
   signals: Signal<C, N>[],
-  policy: LearningPolicy = defaultPolicy,
+  { now, policy = defaultPolicy }: Pick<PlanOptions<C>, "now" | "policy">,
 ) =>
   candidates.filter((candidate) =>
-    contributions(candidate, { learning, picked: [], policy }, signals).some(
-      (p) => p.value > 0,
-    ),
+    contributions(
+      candidate,
+      { learning, picked: [], policy, now },
+      signals,
+    ).some((p) => p.value > 0),
   );

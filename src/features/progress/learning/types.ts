@@ -1,11 +1,13 @@
 import { clamp } from "es-toolkit";
 import type { PartOutcome, StoredReveal } from "@/db/columns";
 
-export type Difficulty = 1 | 2 | 3 | 4;
+export const difficulties = [1, 2, 3, 4] as const;
 
-const easiest: Difficulty = 1;
+export type Difficulty = (typeof difficulties)[number];
 
-export const hardest: Difficulty = 4;
+const easiest = difficulties[0];
+
+export const hardest = difficulties[3];
 
 export const difficultyOf = (label: number) =>
   clamp(label, easiest, hardest) as Difficulty;
@@ -23,9 +25,10 @@ export interface LoggedReveal {
   part: StoredReveal;
 }
 
-export interface FirstAttempt {
+export interface TaskLog {
   taskId: string;
   topic: string;
+  difficulty: Difficulty;
   keyRev: string;
   tz: string | null;
   submits: LoggedSubmit[];
@@ -41,6 +44,13 @@ export interface TaskActivity {
 }
 
 export type ObservationResult = "clean" | "helped" | "fail";
+
+export type TryResult = "wrong" | "partlyRight" | "helped" | "clean";
+
+export interface Try {
+  at: number;
+  result: TryResult;
+}
 
 export interface Observation {
   taskId: string;

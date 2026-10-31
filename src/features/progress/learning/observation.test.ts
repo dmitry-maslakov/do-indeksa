@@ -2,35 +2,15 @@ import { describe, expect, it } from "vitest";
 import { dayMs, hourMs, minuteMs } from "@/lib/dates";
 import { observe } from "./observation";
 import { defaultPolicy } from "./policy";
-import type { FirstAttempt, LoggedSubmit } from "./types";
+import {
+  at,
+  taskLog as attempt,
+  days,
+  logStart as start,
+  submit,
+} from "./task-log.fixture";
 
-const start = Date.parse("2026-10-20T10:00:00Z");
 const now = start + 3 * hourMs;
-
-const submit = (
-  minutes: number,
-  outcomes: LoggedSubmit["outcomes"],
-  keyRev = "k1",
-): LoggedSubmit => ({
-  at: start + minutes * minuteMs,
-  outcomes,
-  correct: outcomes.every((o) => o === "right"),
-  difficulty: 3,
-  keyRev,
-});
-
-const attempt = (over: Partial<FirstAttempt>): FirstAttempt => ({
-  taskId: "t1",
-  topic: "logarithms",
-  keyRev: "k1",
-  tz: "Europe/Belgrade",
-  submits: [],
-  reveals: [],
-  skips: [],
-  ...over,
-});
-
-const at = (minutes: number) => start + minutes * minuteMs;
 
 describe("observe", () => {
   it("counts a first right answer without help as clean", () => {
@@ -179,10 +159,10 @@ describe("observe", () => {
 
   it("doesn't start the first attempt with a skip", () => {
     const result = observe(
-      attempt({ submits: [submit(24 * 60, ["right"])], skips: [at(0)] }),
+      attempt({ submits: [submit(days(1), ["right"])], skips: [at(0)] }),
       now + dayMs,
     );
-    expect(result).toMatchObject({ result: "clean", at: at(24 * 60) });
+    expect(result).toMatchObject({ result: "clean", at: at(days(1)) });
   });
 
   it("cuts the sitting at the policy's gap", () => {
@@ -219,19 +199,19 @@ describe("observe", () => {
   it("doesn't start the first attempt with a hint, but still counts the hint", () => {
     const result = observe(
       attempt({
-        submits: [submit(24 * 60, ["right"])],
+        submits: [submit(days(1), ["right"])],
         reveals: [{ at: at(0), part: "hint1" }],
       }),
       now + dayMs,
     );
-    expect(result).toMatchObject({ result: "helped", at: at(24 * 60) });
+    expect(result).toMatchObject({ result: "helped", at: at(days(1)) });
   });
 
   it("doesn't start the first attempt with an empty answer", () => {
     const result = observe(
-      attempt({ submits: [submit(0, ["empty"]), submit(24 * 60, ["right"])] }),
+      attempt({ submits: [submit(0, ["empty"]), submit(days(1), ["right"])] }),
       now + dayMs,
     );
-    expect(result).toMatchObject({ result: "clean", at: at(24 * 60) });
+    expect(result).toMatchObject({ result: "clean", at: at(days(1)) });
   });
 });
