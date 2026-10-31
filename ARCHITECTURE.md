@@ -60,7 +60,7 @@ In practice a session is `first` until the task has been worked on, meaning an a
 
 A running test lives in the browser (zustand with localStorage) and is saved as a draft in its `test_sessions` row, so it survives a reload or a switch to another device. The draft is never graded and stays out of history and statistics.
 
-Finishing is one transaction: each visit to a task becomes a `mock` task session, the answers are graded into attempts, the draft is cleared and `finished_at` is set. The client picks the test id, so a second submit changes nothing. The score is points times the share of correct parts. It is practice feedback and says nothing about how FTN would grade the same work.
+Finishing is one transaction: each visit to a task becomes a `mock` task session, the answers are graded into attempts, the draft is cleared and `finished_at` is set. The client picks the test id, so a second submit changes nothing. The finish action refreshes the page and redirects to the review, which arrives in the same response, and the runner drops its local copy of the test when the action rejects with that redirect. The score is points times the share of correct parts. It is practice feedback and says nothing about how FTN would grade the same work.
 
 ### Task ids never change
 

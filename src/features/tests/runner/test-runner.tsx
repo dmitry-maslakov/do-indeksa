@@ -7,7 +7,6 @@ import { useEffect, useEffectEvent, useMemo } from "react";
 import { toast } from "sonner";
 import { RailPanel } from "@/components/rail";
 import { saveTest, submitTest } from "@/features/tests/actions";
-import { reviewHref } from "@/features/tests/review";
 import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
 import { swapTask } from "@/features/variants/actions";
@@ -17,7 +16,6 @@ import type {
   ExamVariant,
   VariantTask as Task,
 } from "@/features/variants/variants";
-import { useRouter } from "@/i18n/navigation";
 import { navigationStarted, queueEvent } from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
@@ -72,16 +70,11 @@ export function TestRunner({
   fallback,
 }: TestRunnerProps) {
   const hydrated = useTestHydrated();
-  const router = useRouter();
   const test = useTestStore((s) => s.tests[variantId]);
   const t = useTranslations("Exam");
   const locale = useLocale();
   const errorText = useErrorText();
-  const { execute: submit, isPending: pending } = useAction(submitTest, {
-    onSuccess: ({ input }) => {
-      clear(variantId);
-      router.push(reviewHref(input.id));
-    },
+  const { executeAsync: submit, isPending: pending } = useAction(submitTest, {
     onError: ({ error }) => {
       failed("test_finish", error.thrownError);
       toast.error(t("finishFailed"), {
@@ -174,7 +167,14 @@ export function TestRunner({
     pending,
     onFinish: () => {
       recordInput();
-      submit({ ...payload(variantId, test), tz: localTimeZone() });
+      navigationStarted("push");
+      submit({
+        ...payload(variantId, test),
+        tz: localTimeZone(),
+        locale,
+      }).catch((error) => {
+        if (isNavigationError(error)) clear(variantId);
+      });
     },
   };
 
