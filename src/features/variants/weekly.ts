@@ -1,5 +1,6 @@
 import "server-only";
 import { sumBy } from "es-toolkit";
+import { cacheLife } from "next/cache";
 import { getTask } from "@/features/catalog/tasks";
 import { belgradeDate, dayMs } from "@/lib/dates";
 import {
@@ -32,6 +33,12 @@ export function weeklyVariant(now = new Date()) {
     points: sumBy(variant.taskIds, pointsOf),
     daysLeft: 7 - weekday,
   };
+}
+
+export async function currentWeekly() {
+  "use cache";
+  cacheLife("hours");
+  return weeklyVariant();
 }
 
 export type WeeklyVariant = NonNullable<ReturnType<typeof weeklyVariant>>;

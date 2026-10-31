@@ -1,14 +1,33 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { type ReactNode, useRef, useState } from "react";
+import { type ReactNode, Suspense, use, useRef, useState } from "react";
 import {
   type TopicState,
   topicStates,
 } from "@/features/progress/learning/status/topic-status";
 import { Link } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
+import type { HomeData } from "./personal";
 import { TopicRow, type TopicRowProps } from "./topic-row";
+
+type TopicLabel = Omit<TopicRowProps, "progress">;
+
+interface TopicRowsProps {
+  topics: TopicLabel[];
+  progress: Promise<HomeData["rows"]>;
+  filter?: TopicState;
+}
+
+function TopicRows({ topics, filter, ...props }: TopicRowsProps) {
+  const progress = use(props.progress);
+
+  return topics
+    .filter(({ topic }) => !filter || progress[topic]?.state === filter)
+    .map((label) => (
+      <TopicRow key={label.topic} {...label} progress={progress[label.topic]} />
+    ));
+}
 
 interface TopicMapLinkProps {
   className: string;
@@ -28,7 +47,7 @@ export function TopicMapLink({ className, children }: TopicMapLinkProps) {
   );
 }
 
-export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
+export function TopicMap({ topics, progress }: Omit<TopicRowsProps, "filter">) {
   const t = useTranslations("Home");
   const [filter, setFilter] = useState<TopicState>();
   const [minHeight, setMinHeight] = useState(0);
@@ -65,7 +84,7 @@ export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
           >
             {state
               ? t(`state.${state}`)
-              : t("allTopics", { count: rows.length })}
+              : t("allTopics", { count: topics.length })}
           </button>
         ))}
       </div>
@@ -74,11 +93,13 @@ export function TopicMap({ rows }: { rows: TopicRowProps[] }) {
         style={{ minHeight }}
         className="grid content-start xl:grid-cols-2 xl:gap-x-8"
       >
-        {rows
-          .filter((row) => !filter || row.state === filter)
-          .map((row) => (
-            <TopicRow key={row.topic} {...row} />
+        <Suspense
+          fallback={topics.map((label) => (
+            <TopicRow key={label.topic} {...label} />
           ))}
+        >
+          <TopicRows topics={topics} progress={progress} filter={filter} />
+        </Suspense>
       </ul>
     </section>
   );

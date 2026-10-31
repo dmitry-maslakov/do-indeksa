@@ -1,50 +1,32 @@
 import { useLocale } from "next-intl";
-import { type nextTasks, topicStart } from "@/features/bank/queue/queue";
-import { recommendationOf } from "@/features/bank/queue/recommendation";
+import { examTopics } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import type { getTopicPlan } from "@/features/progress/progress";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
-import { weeklyVariant } from "@/features/variants/weekly";
+import type { WeeklyVariant } from "@/features/variants/weekly";
 import { ExamYears } from "./exam-years";
+import type { HomeData } from "./personal";
 import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
 
-type HomeProps = Awaited<ReturnType<typeof getTopicPlan>> & {
-  starts: Awaited<ReturnType<typeof nextTasks>>;
-};
+interface HomeProps {
+  weekly?: WeeklyVariant;
+  personal: Promise<HomeData>;
+}
 
-export function Home({ topics, suggestion, starts }: HomeProps) {
+export function Home({ weekly, personal }: HomeProps) {
   const locale = useLocale();
-  const weekly = weeklyVariant();
 
   return (
     <main className="flex flex-col gap-4 px-4 pt-4 pb-6 md:gap-5 md:px-10 md:pt-6 md:pb-8">
-      {suggestion && (
-        <TodayHero
-          {...suggestion}
-          href={topicStart(starts, suggestion.topic)}
-          recommendation={recommendationOf(
-            "home_hero",
-            suggestion.topic,
-            starts.get(suggestion.topic),
-          )}
-        />
-      )}
+      <TodayHero suggestion={personal.then((p) => p.hero)} />
       {weekly && <WeeklyCard {...weekly} />}
       <TopicMap
-        rows={topics.map((t) => ({
-          topic: t.topic,
-          name: topicName(t.topic, locale),
-          look: topicLook(t.topic),
-          fill: t.fill,
-          state: t.state,
-          href: topicStart(starts, t.topic),
-          recommendation: recommendationOf(
-            "topic_row",
-            t.topic,
-            starts.get(t.topic),
-          ),
+        topics={examTopics.map((topic) => ({
+          topic,
+          name: topicName(topic, locale),
+          look: topicLook(topic),
         }))}
+        progress={personal.then((p) => p.rows)}
       />
       <ExamYears />
     </main>
