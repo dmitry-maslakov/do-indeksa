@@ -4,7 +4,7 @@ Do indeksa is one Next.js app. Pages render on the server and call feature code 
 
 Filters, sort and search live in the URL through nuqs. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page. Bank cards carry their statement as HTML from the server renderer, so the browser has no Markdown stack.
 
-A task page needs only its address to render the statement and the answer field, so Next prerenders that part once per address and keeps it in its memory cache, 50 MB per server by default. The student's queue, next task and past result on the task stream in afterwards through Suspense, and links to a recommended task prefetch the statement before the click.
+A task page needs only its address to render the statement and the answer field, so Next prerenders that part once per address and keeps it in its memory cache, 50 MB per server by default. The build prerenders the `sr-Latn` shells of the exam tasks and of each topic's 25 easiest other tasks, which a new student's queue serves first, and a server reads them from disk on a cache miss. Any other address prerenders on its first visit to each server. Each shell adds about 130 KB to the image, so the list takes a fixed number of tasks per topic and grows only with exam tasks. The student's queue, next task and past result on the task stream in afterwards through Suspense, and links to a recommended task prefetch the statement before the click.
 
 ## Code map
 

@@ -21,13 +21,21 @@ import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
 import { alternates } from "@/i18n/alternates";
+import { routing } from "@/i18n/routing";
+import { firstTasks } from "./_components/first-tasks";
 import { loadPersonal } from "./_components/personal";
 import { PhoneBar } from "./_components/phone-bar";
 import { Rail } from "./_components/rail";
 import { TaskMeta } from "./_components/task-meta";
 
-export function generateStaticParams() {
-  return tasks.slice(0, 1).map((t) => ({ id: t.id }));
+export function generateStaticParams({
+  params,
+}: {
+  params: { locale: string };
+}) {
+  const shells =
+    params.locale === routing.defaultLocale ? firstTasks() : tasks.slice(0, 1);
+  return shells.map((t) => ({ id: t.id }));
 }
 
 export async function generateMetadata({
