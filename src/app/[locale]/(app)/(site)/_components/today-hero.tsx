@@ -5,6 +5,7 @@ import { Await } from "@/components/await";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { topicName } from "@/features/catalog/topics";
+import hero from "./hero.webp";
 import { HeroBackdrop } from "./hero-backdrop";
 import type { HomeData } from "./personal";
 import { SuggestionLink } from "./suggestion-link";
@@ -76,9 +77,8 @@ export function TodayHero({
     <section className="relative pt-5 pb-7 md:pt-7 md:pb-10">
       <HeroBackdrop />
       <Image
-        src="/hero.webp"
-        width={760}
-        height={605}
+        src={hero}
+        unoptimized
         alt=""
         className="pointer-events-none absolute -top-4 -right-2 h-75 w-auto max-xl:hidden"
       />
