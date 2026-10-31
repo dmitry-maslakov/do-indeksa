@@ -24,7 +24,13 @@ export function UserMenu() {
   const signedOut = useSignedOut();
   const { data, isPending } = authClient.useSession();
 
-  if (isPending) return <Skeleton className="size-9" />;
+  if (isPending)
+    return (
+      <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-3 font-semibold text-sm *:invisible sm:px-4 [&_svg]:size-4">
+        <GoogleLogo />
+        <span>{t("signIn")}</span>
+      </Skeleton>
+    );
 
   if (!data) {
     return (
