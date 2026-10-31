@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { Suspense } from "react";
 import { resultsShown } from "@/features/bank/bank-events";
 import { BankList } from "@/features/bank/bank-list";
 import { BankTabs } from "@/features/bank/bank-tabs";
@@ -8,16 +9,11 @@ import { FilterLabel } from "@/features/bank/filters/filter-label";
 import { FilterSearch } from "@/features/bank/filters/filter-search";
 import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
 import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
-import { nextTasks, topicStart } from "@/features/bank/queue/queue";
-import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { type BankQuery, findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
-import { getTaskStatuses } from "@/features/progress/progress";
-import type { TaskStatuses } from "@/features/progress/status";
-import type { BrowserEvents } from "@/lib/analytics-browser";
-import { getProfileId } from "@/server/profile";
 import { EmptyResults } from "./empty-results";
+import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
 import { ResultsSkeleton } from "./results-skeleton";
 
@@ -25,20 +21,14 @@ export async function Bank({
   searchParams,
 }: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
   const filters = await loadBankFilters(searchParams);
-  const profileId = await getProfileId();
-  const [statuses, starts] = await Promise.all([
-    getTaskStatuses(profileId),
-    nextTasks(profileId),
-  ]);
-  const topic = filters.topic ?? positions[0]?.topic ?? "";
+  const personal = loadPersonal(filters.topic ?? positions[0]?.topic ?? "");
+  const statuses = filters.status ? (await personal).statuses : undefined;
 
   return (
     <BankResults
       filters={filters}
       tasks={findTasks(filters, statuses)}
-      statuses={statuses}
-      recommended={topicStart(starts, topic)}
-      recommendation={recommendationOf("bank_tab", topic, starts.get(topic))}
+      personal={personal}
     />
   );
 }
@@ -46,32 +36,24 @@ export async function Bank({
 interface BankResultsProps {
   filters: BankQuery;
   tasks: TaskSummary[];
-  statuses?: TaskStatuses;
-  recommended?: string;
-  recommendation?: BrowserEvents["recommendation_made"];
-  pending?: boolean;
+  personal?: ReturnType<typeof loadPersonal>;
 }
 
-export function BankResults({
-  filters,
-  tasks,
-  statuses,
-  recommended,
-  recommendation,
-  pending = false,
-}: BankResultsProps) {
+export function BankResults({ filters, tasks, personal }: BankResultsProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
   const search = serializeBankFilters(filters);
+  const pending = !personal;
+  const tabs = (
+    <Suspense fallback={<BankTabs />}>
+      <BankTabs pick={personal?.then((p) => p.pick)} />
+    </Suspense>
+  );
 
   return (
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
-        <BankTabs
-          key={recommended}
-          recommended={recommended}
-          recommendation={recommendation}
-        />
+        {tabs}
         <BankFilters variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
@@ -84,11 +66,7 @@ export function BankResults({
       </aside>
       <section className="flex min-w-0 flex-col gap-3">
         <div className="flex flex-col gap-3 px-1 lg:hidden">
-          <BankTabs
-            key={recommended}
-            recommended={recommended}
-            recommendation={recommendation}
-          />
+          {tabs}
           <div className="flex gap-2">
             <FilterSearch
               variant="card"
@@ -116,7 +94,11 @@ export function BankResults({
         ) : tasks.length === 0 ? (
           <EmptyResults />
         ) : (
-          <BankList tasks={tasks} search={search} statuses={statuses} />
+          <BankList
+            tasks={tasks}
+            search={search}
+            statuses={personal.then((p) => p.statuses)}
+          />
         )}
       </section>
     </div>

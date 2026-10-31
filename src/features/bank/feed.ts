@@ -9,7 +9,6 @@ import {
 } from "@/features/catalog/tasks";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import type { TaskStatus, TaskStatuses } from "@/features/progress/status";
 import type { Page } from "@/lib/use-feed";
 
 export interface BankCard {
@@ -18,16 +17,11 @@ export interface BankCard {
   exam: ExamSource | null;
   level: Level;
   statement: string;
-  status: TaskStatus;
 }
 
 const pageSize = 30;
 
-async function cardOf(
-  task: TaskSummary,
-  locale: Locale,
-  statuses?: TaskStatuses,
-): Promise<BankCard> {
+async function cardOf(task: TaskSummary, locale: Locale): Promise<BankCard> {
   const content = getTask(task.id);
   if (!content) throw new Error(`unknown task ${task.id}`);
   return {
@@ -40,7 +34,6 @@ async function cardOf(
     exam: examSource(content.source),
     level: task.level,
     statement: await renderStatement(content),
-    status: statuses?.get(task.id) ?? "new",
   };
 }
 
@@ -48,12 +41,11 @@ export async function bankPage(
   tasks: TaskSummary[],
   offset: number,
   locale: Locale,
-  statuses?: TaskStatuses,
 ): Promise<Page<BankCard>> {
   const end = offset + pageSize;
   return {
     items: await Promise.all(
-      tasks.slice(offset, end).map((task) => cardOf(task, locale, statuses)),
+      tasks.slice(offset, end).map((task) => cardOf(task, locale)),
     ),
     next: end < tasks.length ? end : null,
   };

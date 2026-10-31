@@ -11,9 +11,11 @@ export async function GET(request: NextRequest) {
   const query = pageQuery.safeParse(Object.fromEntries(searchParams));
   if (!query.success) return new Response(null, { status: 400 });
   const filters = loadBankFilters(searchParams);
-  const statuses = await getTaskStatuses(await getProfileId());
+  const statuses = filters.status
+    ? await getTaskStatuses(await getProfileId())
+    : undefined;
   const tasks = findTasks(filters, statuses);
   return Response.json(
-    await bankPage(tasks, query.data.offset, query.data.locale, statuses),
+    await bankPage(tasks, query.data.offset, query.data.locale),
   );
 }
