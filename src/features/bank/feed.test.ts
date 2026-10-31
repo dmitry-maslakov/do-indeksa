@@ -19,21 +19,21 @@ describe("bankPage", () => {
   });
 
   it("continues from the offset and ends on the last page", async () => {
-    const list = Array.from({ length: 65 }, () => summaries)
+    const list = Array.from({ length: 18 }, () => summaries)
       .flat()
-      .slice(0, 65);
+      .slice(0, 18);
     const pages = [
       await bankPage(list, 0, "sr-Latn"),
-      await bankPage(list, 30, "sr-Latn"),
-      await bankPage(list, 60, "sr-Latn"),
+      await bankPage(list, 3, "sr-Latn"),
+      await bankPage(list, 13, "sr-Latn"),
     ];
     expect(pages.map((page) => [page.items.length, page.next])).toEqual([
-      [30, 30],
-      [30, 60],
+      [3, 3],
+      [10, 13],
       [5, null],
     ]);
     expect(pages[1]?.items.map((card) => card.id)).toEqual(
-      list.slice(30, 60).map((task) => task.id),
+      list.slice(3, 13).map((task) => task.id),
     );
   });
 });

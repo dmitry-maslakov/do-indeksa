@@ -188,25 +188,31 @@ test("a signed-in user filters the bank by status", async ({ page, auth }) => {
   await expect(empty).toBeHidden();
 });
 
-test("the bank feed loads the next page while scrolling", async ({
+test("the bank feed loads more cards and keeps them after going back", async ({
   page,
   errors,
 }) => {
   await open(page);
   const { count, cards, links } = bank(page);
   const total = Number((await count.textContent())?.replace(/\D/g, ""));
-  test.skip(total <= 30, "the bank fits on one page");
-  await expect(cards).toHaveCount(30);
+  test.skip(total <= 3, "the bank fits on the first page");
+  await expect(cards).toHaveCount(Math.min(total, 13));
 
-  await page
-    .getByRole("button", { name: "Prikaži još" })
-    .scrollIntoViewIfNeeded();
-  await expect(cards).toHaveCount(Math.min(total, 60));
+  await cards.last().scrollIntoViewIfNeeded();
+  const loaded = Math.min(total, 23);
+  await expect(cards).toHaveCount(loaded);
   const hrefs = await links.evaluateAll((all) =>
     all.map((link) => link.getAttribute("href")),
   );
   expect(new Set(hrefs).size).toBe(hrefs.length);
   await expect(page).toHaveURL(/\/bank$/);
+
+  await links.last().click();
+  await expect(page).toHaveURL(/\/bank\/[\w-]+$/);
+  await page.goBack();
+  await expect
+    .poll(() => cards.filter({ visible: true }).count())
+    .toBeGreaterThanOrEqual(loaded);
   expect(errors).toEqual([]);
 });
 

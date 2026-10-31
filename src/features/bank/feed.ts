@@ -19,7 +19,8 @@ export interface BankCard {
   statement: string;
 }
 
-const pageSize = 30;
+const firstPageSize = 3;
+const pageSize = 10;
 
 async function cardOf(task: TaskSummary, locale: Locale): Promise<BankCard> {
   const content = getTask(task.id);
@@ -42,7 +43,7 @@ export async function bankPage(
   offset: number,
   locale: Locale,
 ): Promise<Page<BankCard>> {
-  const end = offset + pageSize;
+  const end = offset + (offset ? pageSize : firstPageSize);
   return {
     items: await Promise.all(
       tasks.slice(offset, end).map((task) => cardOf(task, locale)),
