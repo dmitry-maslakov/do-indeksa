@@ -4,7 +4,8 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { profiles } from "@/db/schema";
-import { daySeconds } from "@/lib/dates";
+import { adoptGuestCookie } from "@/lib/cookies";
+import { daySeconds, hourSeconds } from "@/lib/dates";
 import { getSession } from "./auth";
 import { db } from "./db";
 
@@ -72,11 +73,18 @@ export async function guestToken() {
   return (await cookies()).get(profileCookie)?.value;
 }
 
-export async function forgetGuest() {
-  (await cookies()).set(profileCookie, "", {
-    ...profileCookieOptions,
-    maxAge: 0,
+export async function markGuestToAdopt() {
+  (await cookies()).set(adoptGuestCookie, "1", {
+    secure: true,
+    sameSite: "lax",
+    maxAge: hourSeconds,
   });
+}
+
+export async function forgetGuest() {
+  const jar = await cookies();
+  jar.set(profileCookie, "", { ...profileCookieOptions, maxAge: 0 });
+  jar.delete(adoptGuestCookie);
 }
 
 export async function profileIdOf(userId?: string, token?: string) {

@@ -13,7 +13,7 @@ import { track } from "./analytics";
 import { db } from "./db";
 import { env } from "./env";
 import { accountDeleted, signedIn } from "./identity-events";
-import { guestToken, profileIdOf } from "./profile";
+import { guestToken, markGuestToAdopt, profileIdOf } from "./profile";
 import { reportServerError } from "./report";
 import { isOneTap, signInSource, signUpSource } from "./sign-up-source";
 
@@ -72,6 +72,7 @@ export const auth = betterAuth({
         after: async (session, ctx) => {
           try {
             const token = await guestToken();
+            if (token) await markGuestToAdopt();
             await track(
               signedIn,
               {

@@ -80,11 +80,6 @@ async function mergeGuest(userId: string, token: string) {
   });
 }
 
-export async function hasGuestToAdopt() {
-  const [session, token] = await Promise.all([getSession(), guestToken()]);
-  return Boolean(session && token);
-}
-
 export async function adoptGuestProfile() {
   const [session, token] = await Promise.all([getSession(), guestToken()]);
   if (!session || !token) return;

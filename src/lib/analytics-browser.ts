@@ -1,5 +1,6 @@
 import { attempt, noop, round } from "es-toolkit";
 import type { EventMap } from "./analytics-schema";
+import { readCookie } from "./cookies";
 import { daySeconds, secondMs } from "./dates";
 import { type RouteTemplate, routeOf } from "./routes";
 import type { clientEvents } from "./site-events";
@@ -55,9 +56,6 @@ let lastRoute: RouteTemplate | undefined;
 let transition: { nav: Navigation; at: number } | undefined;
 let pendingIntent: Intent | null | undefined;
 let intent: Intent | undefined;
-
-const readCookie = (name: string) =>
-  document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1];
 
 const isUtm = (key: string) => key.startsWith("utm_");
 

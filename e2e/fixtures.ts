@@ -2,6 +2,7 @@ import { createHmac, randomInt, randomUUID } from "node:crypto";
 import { test as base, type Page } from "@playwright/test";
 import { allTasks } from "content-collections";
 import { Client } from "pg";
+import { adoptGuestCookie } from "../src/lib/cookies";
 
 export { expect } from "@playwright/test";
 
@@ -69,12 +70,17 @@ export const test = base.extend<{ auth: Auth; errors: string[] }>({
         const signature = createHmac("sha256", BETTER_AUTH_SECRET)
           .update(token)
           .digest("base64");
+        const url = test.info().project.use.baseURL;
+        const guest = (await context.cookies()).some(
+          (c) => c.name === "__Host-profile",
+        );
         await context.addCookies([
           {
             name: "better-auth.session_token",
             value: encodeURIComponent(`${token}.${signature}`),
-            url: test.info().project.use.baseURL,
+            url,
           },
+          ...(guest ? [{ name: adoptGuestCookie, value: "1", url }] : []),
         ]);
         return { userId, profileId: rows[0].id };
       },

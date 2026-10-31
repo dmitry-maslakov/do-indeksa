@@ -20,6 +20,22 @@ for (const [from, to] of [
   });
 }
 
+test("serves pages with nothing personal whole from the cache", async ({
+  request,
+}) => {
+  for (const path of [
+    "/terms",
+    "/privacy",
+    "/theory",
+    "/ru/theory/exponential-equations",
+    "/theory/exponential-equations/methods",
+  ]) {
+    const headers = (await request.get(path)).headers();
+    expect(headers["x-nextjs-postponed"], path).toBeUndefined();
+    expect(headers["cache-control"], path).toContain("s-maxage");
+  }
+});
+
 test("serves robots and sitemap", async ({ request }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);
