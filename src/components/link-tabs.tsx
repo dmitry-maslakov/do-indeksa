@@ -1,7 +1,7 @@
 "use client";
 
 import { cva } from "class-variance-authority";
-import type { Ref } from "react";
+import type { MouseEvent, Ref } from "react";
 import { Link } from "@/i18n/navigation";
 import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 
@@ -26,6 +26,9 @@ const tab = cva("font-medium transition-colors", {
   },
 });
 
+const isModified = (event: MouseEvent) =>
+  event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+
 interface LinkTabsProps {
   items: {
     href: string;
@@ -37,6 +40,7 @@ interface LinkTabsProps {
   label: string;
   variant: "segmented" | "fill" | "pill";
   scroll?: boolean;
+  shallow?: boolean;
   control?: BrowserEvents["control_used"]["control"];
   ref?: Ref<HTMLElement>;
 }
@@ -46,6 +50,7 @@ export function LinkTabs({
   label,
   variant,
   scroll = false,
+  shallow = false,
   control,
   ref,
 }: LinkTabsProps) {
@@ -60,10 +65,14 @@ export function LinkTabs({
           data-active={item.active}
           aria-current={item.active ? "page" : undefined}
           className={tab({ variant })}
-          onClick={
-            control &&
-            (() => queueEvent("control_used", { control, value: item.value }))
-          }
+          onClick={(event) => {
+            if (control)
+              queueEvent("control_used", { control, value: item.value });
+            if (!shallow || isModified(event)) return;
+            event.preventDefault();
+            if (!item.active)
+              history.pushState(null, "", event.currentTarget.href);
+          }}
         >
           {item.label}
         </Link>
