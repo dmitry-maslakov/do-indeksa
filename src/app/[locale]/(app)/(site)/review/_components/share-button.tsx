@@ -13,10 +13,16 @@ const shareTags = { utm_source: shareSource, utm_medium: "variant" };
 interface ShareButtonProps {
   title: string;
   variantId: string;
+  href: string;
   className?: string;
 }
 
-export function ShareButton({ title, variantId, className }: ShareButtonProps) {
+export function ShareButton({
+  title,
+  variantId,
+  href,
+  className,
+}: ShareButtonProps) {
   const t = useTranslations("Share");
   const locale = useLocale();
   const [copied, setCopied] = useState(false);
@@ -27,7 +33,7 @@ export function ShareButton({ title, variantId, className }: ShareButtonProps) {
       url:
         location.origin +
         getPathname({
-          href: { pathname: `/variants/${variantId}`, query: shareTags },
+          href: { pathname: href, query: shareTags },
           locale,
         }),
     };

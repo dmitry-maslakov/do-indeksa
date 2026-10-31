@@ -13,6 +13,7 @@ import { SimilarButton } from "./similar-button";
 interface ReviewSummaryProps {
   review: Review;
   variantId: string;
+  href: string;
   title: string;
   original?: string;
   finishedAt: Date;
@@ -24,6 +25,7 @@ const action = "h-12 rounded-xl px-6 text-base max-md:w-full";
 export function ReviewSummary({
   review,
   variantId,
+  href,
   title,
   original,
   finishedAt,
@@ -99,7 +101,7 @@ export function ReviewSummary({
               className={action}
               render={
                 <Link
-                  href={`/variants/${variantId}`}
+                  href={href}
                   data-intent={intentOf({ via: "review", placement: "retry" })}
                 />
               }
@@ -110,6 +112,7 @@ export function ReviewSummary({
             <ShareButton
               title={title}
               variantId={variantId}
+              href={href}
               className={action}
             />
           </div>
