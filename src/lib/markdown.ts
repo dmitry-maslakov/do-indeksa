@@ -69,8 +69,23 @@ const flat = (source: string, math: (value: string) => string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-export const preview = (source: string) =>
-  flat(source, (value) => `$${value}$`);
+const previewLength = 140;
+
+export function preview(source: string) {
+  const parts = flat(source, (value) => `$${value}$`).split(/(\$[^$]+\$)/);
+  let kept = "";
+  for (const part of parts) {
+    if (kept.length + part.length > previewLength) {
+      if (part.startsWith("$")) return kept.trimEnd();
+      const length = previewLength - kept.length;
+      return (
+        kept + part.slice(0, length + 1).replace(/\s*\S*$/, "")
+      ).trimEnd();
+    }
+    kept += part;
+  }
+  return kept;
+}
 
 export const plain = (source: string) => flat(source, (value) => value);
 

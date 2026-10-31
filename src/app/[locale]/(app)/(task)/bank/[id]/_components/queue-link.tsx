@@ -42,7 +42,8 @@ export function QueueLink({
     >
       <StatusIcon status={next ? undefined : task.status} />
       <span className="flex min-w-0 flex-col">
-        <MathHtml as="span" html={task.html} className={preview} />
+        <MathHtml as="span" html={task.html} className={preview} aria-hidden />
+        <span className="sr-only">{task.label}</span>
         <span className="flex flex-wrap items-center gap-x-2 font-normal text-subtle text-xs leading-snug">
           {task.repeat && (
             <span className="rounded-full bg-error-tint px-2 font-medium text-error-text">

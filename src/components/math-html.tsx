@@ -12,6 +12,7 @@ interface MathHtmlProps {
   html: string;
   className?: string;
   as?: "div" | "span";
+  "aria-hidden"?: boolean;
 }
 
 function preloadFonts() {
@@ -19,17 +20,26 @@ function preloadFonts() {
     preload(font.href, { as: "font", type: "font/woff2", crossOrigin: "" });
 }
 
-export function MathHtml({ html, className, as: Tag = "div" }: MathHtmlProps) {
+export function MathHtml({
+  html,
+  className,
+  as: Tag = "div",
+  ...aria
+}: MathHtmlProps) {
   preloadFonts();
   return (
     <Tag
+      {...aria}
       className={cn("math-text", className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }
 
-export function KatexHtml({ html, className }: Omit<MathHtmlProps, "as">) {
+export function KatexHtml({
+  html,
+  className,
+}: Pick<MathHtmlProps, "html" | "className">) {
   preloadFonts();
   return (
     <span className={className} dangerouslySetInnerHTML={{ __html: html }} />

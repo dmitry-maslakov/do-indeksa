@@ -7,7 +7,7 @@ import { getTask } from "@/features/catalog/tasks";
 
 const toHtml = (part: string, index: number) =>
   index % 2
-    ? katex.renderToString(part, { throwOnError: false })
+    ? katex.renderToString(part, { throwOnError: false, output: "html" })
     : escapeHtml(part);
 
 const previews = new LRUCache<string, string>({

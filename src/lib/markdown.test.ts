@@ -71,4 +71,22 @@ describe("preview", () => {
       "Rešiti jednačinu: $4^{x}=2.$",
     );
   });
+
+  it("cuts long text between words", () => {
+    expect(preview(`Neka je $x$ ${"reč ".repeat(40)}`)).toBe(
+      `Neka je $x$ ${"reč ".repeat(31)}reč`,
+    );
+  });
+
+  it("cuts between words after a formula", () => {
+    expect(preview(`${"reč ".repeat(33)}$x$ označen je`)).toBe(
+      `${"reč ".repeat(33)}$x$`,
+    );
+  });
+
+  it("drops a formula that does not fit whole", () => {
+    expect(preview(`${"reč ".repeat(34)}$x^{2}+1$`)).toBe(
+      "reč ".repeat(34).trimEnd(),
+    );
+  });
 });
