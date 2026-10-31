@@ -76,10 +76,7 @@ export async function nextTasks(profileId: string) {
     ids: topicIds(topic),
   }));
   const [touched, learning] = await Promise.all([
-    getTouched(
-      profileId,
-      topics.flatMap((t) => t.ids),
-    ),
+    getTouched(profileId),
     getLearning(profileId),
   ]);
   return new Map(

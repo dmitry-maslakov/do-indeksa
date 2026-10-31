@@ -11,14 +11,14 @@ import { getLearning } from "./student-learning";
 import { decidesStatus, getLatestResults } from "./task-stats";
 import { lastPracticed, suggest } from "./topic-progress";
 
-async function getLastSeen(profileId: string, taskIds: string[]) {
+async function getLastSeen(profileId: string, taskIds?: string[]) {
   const rows = await db
     .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
     .from(taskSessions)
     .where(
       and(
         eq(taskSessions.profileId, profileId),
-        inArray(taskSessions.taskId, taskIds),
+        taskIds && inArray(taskSessions.taskId, taskIds),
       ),
     )
     .groupBy(taskSessions.taskId);
@@ -52,7 +52,7 @@ export async function getTaskStatuses(
   );
 }
 
-export async function getTouched(profileId: string, taskIds: string[]) {
+export async function getTouched(profileId: string, taskIds?: string[]) {
   const today = belgradeDate();
   const [seen, latest] = await Promise.all([
     getLastSeen(profileId, taskIds),
