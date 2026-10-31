@@ -108,29 +108,44 @@ export async function renderStatement(task: Task) {
   return html;
 }
 
+const labelsOf = (task: Task) =>
+  task.check.map((c, i, all) => splitLabel(c.label, i, all.length));
+
+const partLabels = new LRUCache<string, PartLabel[]>({
+  maxSize: 2 * 1024 * 1024,
+  sizeCalculation: (parts) =>
+    sumBy(parts, (p) => (p.prefix?.length ?? 0) + (p.caption?.length ?? 0)) + 1,
+});
+
+export async function renderParts(task: Task) {
+  const cached = partLabels.get(task.id);
+  if (cached) return cached;
+  const optional = (source: string | null) =>
+    source && renderMarkdown(source, task.id);
+  const parts = await Promise.all(
+    labelsOf(task).map(async (p) => ({
+      letter: p.letter,
+      prefix: await optional(p.prefix),
+      caption: await optional(p.caption),
+    })),
+  );
+  partLabels.set(task.id, parts);
+  return parts;
+}
+
 export async function renderTask(id: string) {
   const cached = rendered.get(id);
   if (cached) return cached;
   const task = getTask(id);
   if (!task) return null;
   const render = (source: string) => renderMarkdown(source, id);
-  const optional = (source: string | null) => source && render(source);
-  const labels = task.check.map((c, i, all) =>
-    splitLabel(c.label, i, all.length),
-  );
   const html = {
     statement: await renderStatement(task),
     answer: await render(task.answer),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
-    parts: await Promise.all(
-      labels.map(async (p) => ({
-        letter: p.letter,
-        prefix: await optional(p.prefix),
-        caption: await optional(p.caption),
-      })),
-    ),
-    unchecked: uncheckedLetters(task.text, labels),
+    parts: await renderParts(task),
+    unchecked: uncheckedLetters(task.text, labelsOf(task)),
   };
   rendered.set(id, html);
   return html;
