@@ -178,7 +178,7 @@
     "cancel": "Nastavi",
     "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se beleži.",
     "answerHint": "Kucaj / za razlomak, sqrt za koren, pi za π, ^ za stepen. Ekvivalentni oblici se priznaju, npr. 1/2 i 0,5.",
-    "fallback": "{mode, select, weak {Još nema dovoljno pokušaja po temama u poslednjih 30 dana, pa je sastavljen test kao na ispitu.} unsolved {U banci nema nerešenih zadataka, pa je sastavljen test kao na ispitu.} other {Nijedan zadatak ne odgovara izboru, pa je sastavljen test kao na ispitu.}}",
+    "fallback": "Nijedan zadatak ne odgovara izboru, pa je sastavljen test kao na ispitu.",
     "swap": "Zameni zadatak {number, number}"
   },
   "Review": {

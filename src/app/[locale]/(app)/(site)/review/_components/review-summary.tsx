@@ -1,14 +1,14 @@
 import { cn } from "cn";
-import { ArrowRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
-import { controlOf, intentOf } from "@/lib/analytics-browser";
+import { intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
 import { ShareButton } from "./share-button";
+import { SimilarButton } from "./similar-button";
 
 interface ReviewSummaryProps {
   review: Review;
@@ -90,24 +90,9 @@ export function ReviewSummary({
           </div>
           <div className="flex flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center md:gap-3">
             {missed.length > 0 && (
-              <Button
-                variant="lime"
-                className={action}
-                render={
-                  <Link
-                    href={`/variants/compose?mode=topics&${missed.map((topic) => `topic=${topic}`).join("&")}`}
-                    data-intent={intentOf({
-                      via: "review",
-                      placement: "similar",
-                    })}
-                    data-control={controlOf({ control: "practice_similar" })}
-                  />
-                }
-                nativeButton={false}
-              >
+              <SimilarButton topics={missed} className={action}>
                 {t("similar", { count: review.rows.length - review.correct })}
-                <ArrowRightIcon />
-              </Button>
+              </SimilarButton>
             )}
             <Button
               variant="ghost"

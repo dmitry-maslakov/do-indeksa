@@ -19,7 +19,6 @@ describe("proxy", () => {
     "/theory/exponential-equations/methods/substitution",
     "/variants/ftn-p1-2025",
     "/variants/set-eks-001.log-001",
-    "/variants/compose",
     "/bank/start/logarithms",
     "/bank",
     "/theory",

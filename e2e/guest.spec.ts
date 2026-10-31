@@ -282,14 +282,6 @@ test("a guest cannot compose a test without topics", async ({ page }) => {
   await expect(card.getByRole("button", { name: "Počni →" })).toBeEnabled();
 });
 
-test("a guest is told when a personal mode falls back", async ({ page }) => {
-  await page.goto("/variants/compose?mode=weak");
-  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}\?fallback=weak$/);
-  await expect(
-    page.getByText("Još nema dovoljno pokušaja po temama", { exact: false }),
-  ).toBeVisible();
-});
-
 test("a guest signs in straight with google", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
   await page.goto("/bank/eks-001");

@@ -1,27 +1,7 @@
 import "server-only";
-import { z } from "zod";
-import { positions } from "@/features/catalog/exams";
 import { getTask, idsByTopic } from "@/features/catalog/tasks";
-import { topics } from "@/features/catalog/topics";
-import { setId } from "@/features/variants/variant-id";
 import { byNumber, byPosition } from "@/features/variants/variants";
-import { compose, composeModes, swap } from "./compose";
-
-const topicIds = topics.map((t) => t.id);
-
-export const composeSchema = z.object({
-  mode: z.enum(composeModes).catch("exam"),
-  topic: z
-    .union([z.string(), z.array(z.string())])
-    .optional()
-    .transform((t) => topicIds.filter((id) => [t].flat().includes(id))),
-  count: z.coerce
-    .number()
-    .int()
-    .positive()
-    .max(positions.length)
-    .catch(positions.length),
-});
+import { compose, swap } from "./compose";
 
 export const composeTaskIds = (
   input: Parameters<typeof compose>[1],
@@ -36,8 +16,6 @@ export const composeTaskIds = (
 };
 
 export const swapIds = (ids: string[]) =>
-  ids.map((id, i) => {
-    const same = idsByTopic.get(getTask(id)?.topic ?? "") ?? [];
-    const swapped = swap(same, ids, i);
-    return swapped && setId(swapped);
-  });
+  ids.map((id, i) =>
+    swap(idsByTopic.get(getTask(id)?.topic ?? "") ?? [], ids, i),
+  );
