@@ -6,6 +6,8 @@ Filters, sort and search live in the URL through nuqs. Lists that grow on the cl
 
 A task page needs only its address to render the statement and the answer field, so Next prerenders that part once per address and keeps it in its memory cache, 50 MB per server by default. The build prerenders the `sr-Latn` shells of the exam tasks and of each topic's 25 easiest other tasks, which a new student's queue serves first, and a server reads them from disk on a cache miss. Any other address prerenders on its first visit to each server. Each shell adds about 130 KB to the image, so the list takes a fixed number of tasks per topic and grows only with exam tasks. The student's queue, next task and past result on the task stream in afterwards through Suspense, and links to a recommended task prefetch the statement before the click.
 
+Pages with nothing personal, theory, privacy and terms, are prerendered whole and served from the cache with `s-maxage`. The shared layouts read no cookie or header, because one such read anywhere in them makes every page render on each request.
+
 ## Code map
 
 `content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`. Theory is `theory/<topic>/index.md` with `##` sections plus `theory/<topic>/methods/<slug>.md`, and uses the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`. Each topic lists its task types in `types` and every task names one in `type`: the slug of the method that is the key to solving it, or a kind of task that no method covers.
@@ -48,7 +50,7 @@ A profile is the student, and the better-auth user is only how they sign in. Tas
 
 Feature functions take the profile id as an argument and scope every query to it. The id comes from `src/server/profile.ts`, from the session or the cookie, never from request input.
 
-When someone signs in while holding a guest cookie, the account takes over the guest profile. If the account already has a profile, the guest's sessions, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts or tests. Deleting an account puts its profile id in `analytics_erasures`, and the same job then deletes the analytics of that profile, of the guest profiles merged into it and of the browsers it was used in: the events in ClickHouse and the rows in every OpenPanel table the cleanup user is granted.
+When someone signs in while holding a guest cookie, the account takes over the guest profile. Sign-in sets a short-lived readable cookie for this, and the first page that loads after it runs the merge from the browser. If the account already has a profile, the guest's sessions, reports and suggestions move into it and the guest profile is deleted. Session foreign keys cascade on update, so attempts, reveals and skips follow their sessions. A scheduled job deletes guest profiles idle for 30 days, or for 400 days if they have attempts or tests. Deleting an account puts its profile id in `analytics_erasures`, and the same job then deletes the analytics of that profile, of the guest profiles merged into it and of the browsers it was used in: the events in ClickHouse and the rows in every OpenPanel table the cleanup user is granted.
 
 ### A sitting on a task is a task session
 

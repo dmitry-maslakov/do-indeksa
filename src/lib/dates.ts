@@ -6,6 +6,8 @@ export const hourMs = 60 * minuteMs;
 
 export const dayMs = 24 * hourMs;
 
+export const hourSeconds = hourMs / secondMs;
+
 export const daySeconds = dayMs / secondMs;
 
 export const toMinutes = (ms: number) => Math.round(ms / minuteMs);

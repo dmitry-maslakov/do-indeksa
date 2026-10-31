@@ -2,11 +2,15 @@ import { getOAuthState } from "better-auth/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { track } from "./analytics";
 import { auth } from "./auth";
-import { guestToken, profileIdOf } from "./profile";
+import { guestToken, markGuestToAdopt, profileIdOf } from "./profile";
 import { reportServerError } from "./report";
 
 vi.mock("./analytics", () => ({ track: vi.fn() }));
-vi.mock("./profile", () => ({ guestToken: vi.fn(), profileIdOf: vi.fn() }));
+vi.mock("./profile", () => ({
+  guestToken: vi.fn(),
+  markGuestToAdopt: vi.fn(),
+  profileIdOf: vi.fn(),
+}));
 vi.mock("./report", () => ({ reportServerError: vi.fn() }));
 vi.mock("./db", () => ({ db: {} }));
 vi.mock("./env", () => ({
@@ -34,6 +38,7 @@ const signedIn = (props: object, profileId?: string) =>
   );
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.mocked(getOAuthState).mockResolvedValue(null);
   vi.mocked(guestToken).mockResolvedValue(undefined);
   vi.mocked(profileIdOf).mockResolvedValue(undefined);
@@ -62,5 +67,18 @@ describe("signed_in", () => {
     vi.mocked(profileIdOf).mockRejectedValue(new Error("db down"));
     await expect(signIn("/callback/:id")).resolves.toBeUndefined();
     expect(reportServerError).toHaveBeenCalled();
+  });
+});
+
+describe("guest adoption", () => {
+  it("marks the guest for adoption when signing in with a guest cookie", async () => {
+    vi.mocked(guestToken).mockResolvedValue("token");
+    await signIn("/one-tap/callback");
+    expect(markGuestToAdopt).toHaveBeenCalled();
+  });
+
+  it("leaves no mark without a guest cookie", async () => {
+    await signIn("/callback/:id");
+    expect(markGuestToAdopt).not.toHaveBeenCalled();
   });
 });
