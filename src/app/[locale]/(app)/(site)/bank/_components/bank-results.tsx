@@ -17,11 +17,13 @@ import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
 import { ResultsSkeleton } from "./results-skeleton";
 
-export async function Bank({
-  searchParams,
-}: Pick<PageProps<"/[locale]/bank">, "searchParams">) {
-  const filters = await loadBankFilters(searchParams);
-  const personal = loadPersonal(filters.topic ?? positions[0]?.topic ?? "");
+interface BankProps extends Pick<PageProps<"/[locale]/bank">, "searchParams"> {
+  topic: string | null;
+}
+
+export async function Bank({ topic, searchParams }: BankProps) {
+  const filters = { ...(await loadBankFilters(searchParams)), topic };
+  const personal = loadPersonal(topic ?? positions[0]?.topic ?? "");
   const statuses = filters.status ? (await personal).statuses : undefined;
 
   return (

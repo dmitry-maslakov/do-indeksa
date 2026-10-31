@@ -6,6 +6,8 @@ import { LinkTabs } from "@/components/link-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
+import { useBankState } from "./filters/bank-state";
+import { bankHref } from "./params";
 
 export interface BankPick {
   href: string;
@@ -15,6 +17,7 @@ export interface BankPick {
 function Tabs({ href, recommendation }: BankPick) {
   const t = useTranslations("Bank");
   const seen = useExposure("recommendation_made", recommendation);
+  const [topic] = useBankState().topic;
   return (
     <LinkTabs
       ref={seen}
@@ -27,7 +30,7 @@ function Tabs({ href, recommendation }: BankPick) {
           active: false,
           intent: intentOf({ via: "picker", placement: "bank_tab" }),
         },
-        { href: "/bank", label: t("all"), active: true },
+        { href: bankHref({ topic }), label: t("all"), active: true },
       ]}
     />
   );

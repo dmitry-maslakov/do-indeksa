@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
-import { serializeBankFilters } from "@/features/bank/params";
+import { bankHref } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
@@ -79,7 +79,7 @@ export default async function SolvePage({
       id: p.topic,
       name: topicName(p.topic, locale),
     })),
-    listQuery: serializeBankFilters({ topic: task.topic }),
+    listHref: bankHref({ topic: task.topic }),
     queue: personal.then((p) => p.queue),
     starts: personal.then((p) => p.starts),
   };

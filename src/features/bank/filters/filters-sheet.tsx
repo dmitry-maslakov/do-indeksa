@@ -11,6 +11,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { queueEvent } from "@/lib/analytics-browser";
+import { useBankState } from "./bank-state";
 
 interface FiltersSheetProps {
   active: number;
@@ -20,12 +21,15 @@ interface FiltersSheetProps {
 
 export function FiltersSheet({ active, count, children }: FiltersSheetProps) {
   const t = useTranslations("Bank");
+  const [open, setOpen] = useBankState().sheet;
 
   return (
     <Drawer
-      onOpenChange={(open) =>
-        open && queueEvent("control_used", { control: "bank_filters_sheet" })
-      }
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) queueEvent("control_used", { control: "bank_filters_sheet" });
+      }}
     >
       <DrawerTrigger
         render={

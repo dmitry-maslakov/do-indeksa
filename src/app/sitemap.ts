@@ -1,7 +1,9 @@
 import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
+import { bankHref } from "@/features/bank/params";
 import { tasks } from "@/features/catalog/tasks";
+import { topics } from "@/features/catalog/topics";
 import { launchPages } from "@/features/launch/launch";
 import { theories, theoryMethods } from "@/features/theory/theory";
 import { contentVariants } from "@/features/variants/variants";
@@ -16,6 +18,7 @@ const urlsPerSitemap = 10_000;
 const pages = [
   "/",
   "/bank",
+  ...topics.map((t) => bankHref({ topic: t.id })),
   "/variants",
   "/privacy",
   "/terms",

@@ -21,6 +21,8 @@ describe("proxy", () => {
     "/variants/set-eks-001.log-001",
     "/bank/start/logarithms",
     "/bank",
+    "/bank/topic/logarithms",
+    "/ru/bank/topic/logarithms?level=easy",
     "/theory",
     "/variants",
     "/ru/theory/exponential-equations",
@@ -39,6 +41,8 @@ describe("proxy", () => {
     ["/ru/theory/nema-teme", "ru"],
     ["/en/variants/nema-varijante", "en"],
     ["/sr-Latn/bank/nema-zadatka", "sr-Latn"],
+    ["/bank/topic/nema-teme", "sr-Latn"],
+    ["/en/bank/topic/nema-teme", "en"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });

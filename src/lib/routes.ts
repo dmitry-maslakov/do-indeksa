@@ -4,6 +4,7 @@ export const routeTemplates = [
   "/",
   "/bank",
   "/bank/[id]",
+  "/bank/topic/[topic]",
   "/launch",
   "/privacy",
   "/review",

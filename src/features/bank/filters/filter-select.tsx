@@ -1,9 +1,11 @@
 "use client";
 
 import { cn } from "cn";
-import { type ComponentProps, Suspense } from "react";
+import { type ComponentProps, Suspense, startTransition } from "react";
 import { NativeSelect } from "@/components/ui/native-select";
-import { bankParsers } from "@/features/bank/params";
+import { bankHref, bankParsers } from "@/features/bank/params";
+import { useRouter } from "@/i18n/navigation";
+import { useBankState } from "./bank-state";
 import { FilterLabel } from "./filter-label";
 import { useBankFilters } from "./use-bank-filters";
 
@@ -17,15 +19,24 @@ interface LabeledSelectProps extends FilterSelectProps {
 
 function UrlSelect({ name, ...props }: FilterSelectProps) {
   const [filters, setFilters] = useBankFilters();
+  const [, showTopic] = useBankState().topic;
+  const router = useRouter();
 
   return (
     <NativeSelect
       {...props}
       name={name}
       value={String(filters[name] ?? "")}
-      onChange={(e) =>
-        setFilters({ [name]: bankParsers[name].parse(e.currentTarget.value) })
-      }
+      onChange={(e) => {
+        const { value } = e.currentTarget;
+        if (name === "topic") {
+          const topic = bankParsers.topic.parse(value);
+          startTransition(() => {
+            showTopic(topic);
+            router.push(bankHref({ ...filters, topic }));
+          });
+        } else setFilters({ [name]: bankParsers[name].parse(value) });
+      }}
     />
   );
 }

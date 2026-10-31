@@ -31,7 +31,7 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
     >
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
-          href={`/bank${rail.listQuery}`}
+          href={rail.listHref}
           aria-label={t("back")}
           className="flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-muted"
         >
