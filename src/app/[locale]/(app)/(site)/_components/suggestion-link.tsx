@@ -53,7 +53,6 @@ export function SuggestionLink({
     <Link
       ref={seen}
       href={href}
-      prefetch={false}
       data-intent={intentOf({ via: "picker", placement: "home_hero" })}
       className={className}
       onClick={() => {
