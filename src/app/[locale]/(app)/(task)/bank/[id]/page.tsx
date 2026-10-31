@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { serializeBankFilters } from "@/features/bank/params";
-import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
-import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { positions } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
@@ -21,15 +20,11 @@ import { AnswerForm } from "@/features/practice/answer/answer-form";
 import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
-import { getSolved } from "@/features/progress/progress";
 import { alternates } from "@/i18n/alternates";
-import { getSession } from "@/server/auth";
-import { getProfileId } from "@/server/profile";
+import { loadPersonal } from "./_components/personal";
 import { PhoneBar } from "./_components/phone-bar";
 import { Rail } from "./_components/rail";
 import { TaskMeta } from "./_components/task-meta";
-
-export const instant = false;
 
 export function generateStaticParams() {
   return tasks.slice(0, 1).map((t) => ({ id: t.id }));
@@ -56,32 +51,29 @@ export default async function SolvePage({
   const task = getTask(id);
   if (!task) notFound();
 
-  const [profileId, locale, html, bank] = await Promise.all([
-    getProfileId(),
+  const [locale, html, bank] = await Promise.all([
     getLocale(),
     renderTask(id),
     getTranslations("Bank"),
   ]);
   if (!html) notFound();
-  const solved = (await getSession())
-    ? undefined
-    : (await getSolved(profileId)).filter((s) => s.taskId !== id).length + 1;
-
-  const [queue, starts] = await Promise.all([
-    loadQueue({ topic: task.topic, profileId, current: id, locale }),
-    nextTasks(profileId),
-  ]);
+  const personal = loadPersonal({ id, topic: task.topic, locale });
   const topic = topicName(task.topic, locale);
+  const meta = {
+    topic,
+    exam: examSource(task.source),
+    level: levelOf(task.difficulty),
+  };
   const rail = {
     current: id,
     topic: task.topic,
     topics: positions.map((p) => ({
       id: p.topic,
       name: topicName(p.topic, locale),
-      href: topicStart(starts, p.topic),
     })),
     listQuery: serializeBankFilters({ topic: task.topic }),
-    queue,
+    queue: personal.then((p) => p.queue),
+    starts: personal.then((p) => p.starts),
   };
 
   return (
@@ -95,12 +87,12 @@ export default async function SolvePage({
         <TaskSessionProvider key={id} taskId={id}>
           <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
             <div className="flex min-h-10 items-start md:items-center">
-              <TaskMeta
-                topic={topic}
-                exam={examSource(task.source)}
-                level={levelOf(task.difficulty)}
-                before={queue.before}
-              />
+              <Suspense fallback={<TaskMeta {...meta} />}>
+                <TaskMeta
+                  {...meta}
+                  before={personal.then((p) => p.queue.before)}
+                />
+              </Suspense>
             </div>
             <MathHtml
               html={html.statement}
@@ -110,14 +102,13 @@ export default async function SolvePage({
               taskId={id}
               parts={html.parts}
               unchecked={html.unchecked}
-              next={queue.next && `/bank/${queue.next}`}
-              recommendation={recommendationOf(
-                "next",
-                task.topic,
-                queue.upcoming[0],
-              )}
+              next={personal.then((p) => p.next)}
               fallback="/bank"
-              afterCorrect={solved && <TaskSignInStrip solved={solved} />}
+              afterCorrect={
+                <Suspense>
+                  <TaskSignInStrip solved={personal.then((p) => p.solved)} />
+                </Suspense>
+              }
             />
             <HelpPanel taskId={id} hintCount={html.hints.length} />
             <div className="mt-6">

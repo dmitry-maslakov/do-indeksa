@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Fragment, useLayoutEffect, useRef } from "react";
+import { Fragment, use, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
 import type { Queue } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
@@ -9,7 +9,7 @@ import { intentOf } from "@/lib/analytics-browser";
 import { QueueLink } from "./queue-link";
 
 interface QueueListProps {
-  queue: Queue;
+  queue: Promise<Queue>;
   current: string;
   topic: string;
   href: (id: string) => string;
@@ -23,8 +23,9 @@ function centerCurrent(list: HTMLElement) {
 
 const sections = ["earlier", "today", "upcoming"] as const;
 
-export function QueueList({ queue, current, topic, href }: QueueListProps) {
+export function QueueList({ current, topic, href, ...props }: QueueListProps) {
   const t = useTranslations("Solve");
+  const queue = use(props.queue);
   const list = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {

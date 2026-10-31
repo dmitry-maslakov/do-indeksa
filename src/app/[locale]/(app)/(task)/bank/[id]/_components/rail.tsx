@@ -1,9 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Suspense } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
 import { rememberIntent } from "@/lib/analytics-browser";
@@ -12,10 +14,21 @@ import { QueueList } from "./queue-list";
 export interface RailProps {
   current: string;
   topic: string;
-  topics: { id: string; name: string; href: string }[];
+  topics: { id: string; name: string }[];
   listQuery: string;
-  queue: Queue;
+  queue: Promise<Queue>;
+  starts: Promise<Record<string, string>>;
   variant?: RailVariant;
+}
+
+function QueueSkeleton() {
+  return (
+    <div className="flex flex-1 flex-col gap-2 border-t px-4 pt-4">
+      {[1, 2, 3, 4, 5, 6].map((n) => (
+        <Skeleton key={n} className="h-12 rounded-lg" />
+      ))}
+    </div>
+  );
 }
 
 export function Rail({
@@ -24,6 +37,7 @@ export function Rail({
   topics,
   listQuery,
   queue,
+  starts,
   variant,
 }: RailProps) {
   const bank = useTranslations("Bank");
@@ -45,10 +59,9 @@ export function Rail({
           label={bank("topic")}
           value={topic}
           onChange={(e) => {
-            const next = topics.find((x) => x.id === e.target.value);
-            if (!next) return;
+            const next = e.target.value;
             rememberIntent({ via: "picker", placement: "topic_select" });
-            router.push(next.href);
+            starts.then((all) => all[next] && router.push(all[next]));
           }}
         >
           {topics.map((x) => (
@@ -58,13 +71,15 @@ export function Rail({
           ))}
         </RailSelect>
       </div>
-      <QueueList
-        key={current}
-        queue={queue}
-        current={current}
-        topic={topic}
-        href={href}
-      />
+      <Suspense fallback={<QueueSkeleton />}>
+        <QueueList
+          key={current}
+          queue={queue}
+          current={current}
+          topic={topic}
+          href={href}
+        />
+      </Suspense>
     </RailContent>
   );
 }

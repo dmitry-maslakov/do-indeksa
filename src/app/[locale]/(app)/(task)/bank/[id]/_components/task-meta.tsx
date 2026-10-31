@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { use } from "react";
 import { ExamMark } from "@/components/exam-mark";
 import type { Level } from "@/features/catalog/level";
 import type { ExamSource } from "@/features/catalog/source";
@@ -9,15 +10,16 @@ interface TaskMetaProps {
   topic: string;
   exam: ExamSource | null;
   level: Level;
-  before?: Touched["status"];
+  before?: Promise<Touched["status"] | undefined>;
 }
 
 function Dot() {
   return <span className="size-1 shrink-0 rounded-full bg-input" />;
 }
 
-export function TaskMeta({ topic, exam, level, before }: TaskMetaProps) {
+export function TaskMeta({ topic, exam, level, ...props }: TaskMetaProps) {
   const t = useTranslations("Solve");
+  const before = props.before && use(props.before);
   const bank = useTranslations("Bank");
   return (
     <div className="flex min-w-0 flex-1 items-center gap-x-2 gap-y-1 overflow-hidden whitespace-nowrap pt-2 text-subtle text-xs leading-snug md:flex-wrap md:pt-0 md:text-sm">
