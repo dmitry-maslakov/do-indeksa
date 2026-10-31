@@ -7,7 +7,7 @@ import { bankPage } from "./feed";
 interface BankListProps {
   tasks: TaskSummary[];
   search: string;
-  statuses: Promise<TaskStatuses>;
+  statuses?: Promise<TaskStatuses>;
 }
 
 export async function BankList({ tasks, search, statuses }: BankListProps) {

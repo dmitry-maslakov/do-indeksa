@@ -53,6 +53,7 @@ test("a task opened from Preporučeno is a picker pick", async ({ page }) => {
 
 test("a task opened from a bank card is a list pick", async ({ page }) => {
   await page.goto("/bank");
+  await hydrated(page);
   const card = page.locator("main article a").first();
   const href = await card.getAttribute("href");
   await card.click();

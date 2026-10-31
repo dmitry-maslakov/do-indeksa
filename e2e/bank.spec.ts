@@ -42,6 +42,25 @@ function bank(page: Page) {
   };
 }
 
+const firstBankFrame = (page: Page) =>
+  page.evaluate(
+    () =>
+      new Promise<string[]>((resolve) => {
+        const shown = (selector: string) =>
+          Array.from(document.querySelectorAll(selector)).filter((node) =>
+            node.checkVisibility(),
+          );
+        const frame = () => {
+          if (shown("main input[type=search]").length)
+            resolve(
+              shown("main article").map((card) => card.textContent ?? ""),
+            );
+          else requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }),
+  );
+
 test("the bank keeps topic, source and level in the URL", async ({
   page,
   errors,
@@ -124,6 +143,25 @@ test("a task opens from the filtered list", async ({ page, errors }) => {
   expect(errors).toEqual([]);
 });
 
+test("going back from a task shows the topic's cards at once", async ({
+  page,
+  errors,
+}) => {
+  await open(page, "/bank/topic/logarithms");
+  const { cards, links } = bank(page);
+  await links.first().click();
+  await expect(page).toHaveURL(/\/bank\/[\w-]+$/);
+
+  const first = firstBankFrame(page);
+  await page.goBack();
+  const shown = await first;
+  expect(shown.length).toBeGreaterThan(0);
+  for (const card of shown) expect(card).toContain("Logaritmi");
+  await expect(page).toHaveURL(/\/bank\/topic\/logarithms$/);
+  await expect(cards.first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("an old topic link moves to the topic page", async ({ request }) => {
   const response = await request.get("/ru/bank?topic=logarithms&level=easy", {
     maxRedirects: 0,
@@ -132,6 +170,17 @@ test("an old topic link moves to the topic page", async ({ request }) => {
   expect(response.headers().location).toMatch(
     /\/ru\/bank\/topic\/logarithms\?level=easy$/,
   );
+});
+
+test.describe("before scripts run", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("a topic page arrives with its first cards", async ({ page }) => {
+    await page.goto("/bank/topic/logarithms");
+    const { cards } = bank(page);
+    await expect(cards.first()).toBeVisible();
+    await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
+  });
 });
 
 test("back and forward restore the bank filters", async ({ page }) => {
