@@ -16,6 +16,7 @@ import { examYear, previewHtml } from "./task-preview";
 export interface QueueRow {
   id: string;
   html: string;
+  label: string;
   topic: string;
   year: number | null;
   status?: TaskStatus;
@@ -113,6 +114,7 @@ export async function loadQueue(
       {
         id,
         html: previewHtml(id),
+        label: task.preview.replaceAll("$", ""),
         topic: topicName(task.topic, input.locale),
         year: examYear(id),
         status: touched.get(id)?.status,
