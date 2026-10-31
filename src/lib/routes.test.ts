@@ -8,7 +8,6 @@ describe("routeOf", () => {
     ["/ru", "ru", "/"],
     ["/bank/eks-001", "sr-Latn", "/bank/[id]"],
     ["/en/theory/logarithms/methods", "en", "/theory/[topic]/methods"],
-    ["/variants/compose", "sr-Latn", "/variants/compose"],
     ["/variants/ftn-p1-2025", "sr-Latn", "/variants/[id]"],
     ["/rush", "sr-Latn", "/[...rest]"],
     ["/wp-admin/setup.php", "sr-Latn", "/[...rest]"],

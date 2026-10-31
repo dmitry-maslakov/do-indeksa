@@ -16,7 +16,6 @@ export const routeTemplates = [
   "/theory/[topic]/methods/[method]",
   "/v/[code]",
   "/variants",
-  "/variants/compose",
   "/variants/[id]",
 ] as const;
 

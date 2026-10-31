@@ -16,7 +16,7 @@ const valid = {
     ...facts,
     via: "review",
     placement: "similar",
-    fallback: "weak",
+    fallback: "topics",
   },
   test_resumed: { ...facts, from: "server", away_ms: 3600, answered: 2 },
   test_task_viewed: {

@@ -178,7 +178,7 @@
     "cancel": "Keep going",
     "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded.",
     "answerHint": "Type / for a fraction, sqrt for a root, pi for π, ^ for a power. Equivalent forms like 1/2 and 0.5 count.",
-    "fallback": "{mode, select, weak {Not enough attempts per topic in the last 30 days yet, so this is an exam-like test.} unsolved {No unsolved tasks are left in the bank, so this is an exam-like test.} other {No task matches your choice, so this is an exam-like test.}}",
+    "fallback": "No task matches your choice, so this is an exam-like test.",
     "swap": "Swap task {number, number}"
   },
   "Review": {

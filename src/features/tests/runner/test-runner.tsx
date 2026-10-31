@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { isNavigationError } from "next-safe-action";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useEffectEvent, useMemo } from "react";
 import { toast } from "sonner";
@@ -9,14 +10,15 @@ import { saveTest, submitTest } from "@/features/tests/actions";
 import { reviewHref } from "@/features/tests/review";
 import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
+import { swapTask } from "@/features/variants/actions";
 import type { ComposeMode } from "@/features/variants/custom/compose";
-import { parseVariantId } from "@/features/variants/variant-id";
+import { setId } from "@/features/variants/variant-id";
 import type {
   ExamVariant,
   VariantTask as Task,
 } from "@/features/variants/variants";
-import { getPathname, useRouter } from "@/i18n/navigation";
-import { queueEvent } from "@/lib/analytics-browser";
+import { useRouter } from "@/i18n/navigation";
+import { navigationStarted, queueEvent } from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
 import { TestBar } from "./test-bar";
@@ -41,7 +43,7 @@ interface TestRunnerProps {
   title: string;
   code?: string;
   saved?: UnfinishedTest;
-  swaps?: (string | undefined)[];
+  swaps?: (string[] | undefined)[];
   fallback?: ComposeMode;
 }
 
@@ -86,6 +88,9 @@ export function TestRunner({
         description: errorText(),
       });
     },
+  });
+  const { executeAsync: swapTasks } = useAction(swapTask, {
+    onError: () => toast.error(errorText()),
   });
   const meta = {
     title,
@@ -147,14 +152,19 @@ export function TestRunner({
   const swapTo = isAnswered(answers) ? undefined : swaps?.[test.current];
   const onSwap = swapTo
     ? () => {
-        swap(variantId, swapTo);
-        location.replace(getPathname({ href: `/variants/${swapTo}`, locale }));
-        recordSwap({
-          test_session_id: test.testId,
-          to_test_session_id: useTestStore.getState().tests[swapTo]?.testId,
-          position: test.current + 1,
-          from_task_id: task.taskId,
-          to_task_id: parseVariantId(swapTo)?.taskIds[test.current],
+        const to = setId(swapTo);
+        navigationStarted("replace");
+        swapTasks({ taskIds: swapTo, locale }).catch((error) => {
+          const { tests } = useTestStore.getState();
+          if (!isNavigationError(error) || !tests[variantId]) return;
+          swap(variantId, to);
+          recordSwap({
+            test_session_id: test.testId,
+            to_test_session_id: useTestStore.getState().tests[to]?.testId,
+            position: test.current + 1,
+            from_task_id: task.taskId,
+            to_task_id: swapTo[test.current],
+          });
         });
       }
     : undefined;
@@ -177,9 +187,7 @@ export function TestRunner({
         </RailPanel>
         <div className="flex min-w-0 max-w-task flex-1 flex-col">
           {fallback && (
-            <p className="pt-4.5 text-sm md:pt-3.5">
-              {t("fallback", { mode: fallback })}
-            </p>
+            <p className="pt-4.5 text-sm md:pt-3.5">{t("fallback")}</p>
           )}
           <TestTask
             task={task}

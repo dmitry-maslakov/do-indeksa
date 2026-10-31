@@ -6,7 +6,7 @@ import { Suspense, use, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TopicGlyph } from "@/features/catalog/topic-icon";
 import type { TopicLook } from "@/features/catalog/topic-look";
-import { useRouter } from "@/i18n/navigation";
+import { useComposeVariant } from "@/features/variants/custom/use-compose-variant";
 import {
   type BrowserEvents,
   intentOf,
@@ -26,7 +26,7 @@ const quick =
 
 export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
   const t = useTranslations("Compose");
-  const router = useRouter();
+  const composeVariant = useComposeVariant();
   const all = topics.map((topic) => topic.id);
   const [chosen, setChosen] = useState(all);
   const [preset, setPreset] = useState<Preset>("all");
@@ -46,15 +46,13 @@ export function ComposeCard({ size, topics, weak }: ComposeCardProps) {
   function start() {
     const everything = chosen.length === all.length;
     const mode = everything ? "exam" : "topics";
-    const query = new URLSearchParams({ mode, count: String(count) });
-    if (!everything) for (const id of chosen) query.append("topic", id);
     queueEvent("variant_compose_started", {
       mode,
       preset,
       topics: everything ? undefined : chosen,
       size: count,
     });
-    router.push(`/variants/compose?${query}`);
+    composeVariant({ mode, topics: everything ? [] : chosen, count });
   }
 
   return (

@@ -9,12 +9,7 @@ const pool = {
     ["c", ["c1"]],
   ]),
 };
-const input = {
-  mode: "exam" as const,
-  topics: [],
-  weak: [],
-  solved: new Set<string>(),
-};
+const input = { mode: "exam" as const, topics: [] };
 
 describe("compose", () => {
   it("takes one task per position like the exam", () => {
@@ -23,7 +18,7 @@ describe("compose", () => {
     expect(fallback).toBe(false);
   });
 
-  it("draws only from chosen or weak topics", () => {
+  it("draws only from chosen topics", () => {
     const topics = compose(
       pool,
       { ...input, mode: "topics", topics: ["b"] },
@@ -31,37 +26,20 @@ describe("compose", () => {
     );
     expect(topics.ids.sort()).toEqual(["b1", "b2"]);
     expect(topics.fallback).toBe(false);
-    expect(compose(pool, { ...input, mode: "weak", weak: ["c"] }, "s")).toEqual(
-      { ids: ["c1"], fallback: false },
-    );
   });
 
   it("limits the test to the chosen size", () => {
     expect(compose(pool, { ...input, size: 2 }, "s").ids).toHaveLength(2);
   });
 
-  it("skips solved tasks", () => {
-    const solved = new Set(["a1", "b1", "b2"]);
+  it("falls back to the exam when nothing matches", () => {
     const { ids, fallback } = compose(
       pool,
-      { ...input, mode: "unsolved", solved },
+      { ...input, mode: "topics", topics: ["z"] },
       "s",
     );
-    expect(ids.sort()).toEqual(["a2", "c1"]);
-    expect(fallback).toBe(false);
-  });
-
-  it("falls back to the exam when nothing matches", () => {
-    const solved = new Set(pool.byPosition.flat());
-    for (const next of [
-      { ...input, mode: "topics" as const, topics: ["z"] },
-      { ...input, mode: "weak" as const },
-      { ...input, mode: "unsolved" as const, solved },
-    ]) {
-      const { ids, fallback } = compose(pool, next, "s");
-      expect(ids).toHaveLength(3);
-      expect(fallback).toBe(true);
-    }
+    expect(ids).toHaveLength(3);
+    expect(fallback).toBe(true);
   });
 });
 
