@@ -11,6 +11,13 @@ const rewrite = async (path: string) => {
 
 const missing = (locale: string) => `https://doindeksa.rs/${locale}/404`;
 
+const redirect = async (path: string) => {
+  const response = await proxy(
+    new NextRequest(new URL(path, "https://doindeksa.rs")),
+  );
+  return [response.status, response.headers.get("location")];
+};
+
 describe("proxy", () => {
   it.each([
     "/bank/eks-001",
@@ -45,5 +52,28 @@ describe("proxy", () => {
     ["/en/bank/topic/nema-teme", "en"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
+  });
+
+  it.each([
+    ["/bank?topic=logarithms", "/bank/topic/logarithms"],
+    [
+      "/bank?q=log&topic=logarithms&level=easy",
+      "/bank/topic/logarithms?q=log&level=easy",
+    ],
+    [
+      "/ru/bank?topic=logarithms&sort=hard",
+      "/ru/bank/topic/logarithms?sort=hard",
+    ],
+    ["/sr-Latn/bank?topic=logarithms", "/sr-Latn/bank/topic/logarithms"],
+    [
+      "/en/bank?utm_source=ig&topic=logarithms",
+      "/en/bank/topic/logarithms?utm_source=ig",
+    ],
+    ["/bank?topic=&level=easy", "/bank?level=easy"],
+  ])("moves %s to %s", async (path, location) => {
+    expect(await redirect(path)).toEqual([
+      308,
+      `https://doindeksa.rs${location}`,
+    ]);
   });
 });
