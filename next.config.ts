@@ -23,8 +23,8 @@ const nextConfig: NextConfig = {
   deploymentId: process.env.GIT_SHA,
   agentRules: false,
   cacheComponents: true,
+  partialPrefetching: false,
   reactCompiler: { panicThreshold: "all_errors" },
-  cacheMaxMemorySize: 0,
   experimental: { isrFlushToDisk: false },
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
