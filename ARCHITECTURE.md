@@ -4,6 +4,8 @@ Do indeksa is one Next.js app. Pages render on the server and call feature code 
 
 Filters, sort and search live in the URL through nuqs. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page. Bank cards carry their statement as HTML from the server renderer, so the browser has no Markdown stack.
 
+A task page needs only its address to render the statement and the answer field, so Next prerenders that part once per address and keeps it in its memory cache, 50 MB per server by default. The student's queue, next task and past result on the task stream in afterwards through Suspense, and links to a recommended task prefetch the statement before the click.
+
 ## Code map
 
 `content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`. Theory is `theory/<topic>/index.md` with `##` sections plus `theory/<topic>/methods/<slug>.md`, and uses the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`. Each topic lists its task types in `types` and every task names one in `type`: the slug of the method that is the key to solving it, or a kind of task that no method covers.
