@@ -3,16 +3,16 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
-import { type ReactNode, useRef, useState } from "react";
+import { type ReactNode, Suspense, useRef, useState } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
-import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
+import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
-import { ActionBar } from "./action-bar";
+import { ActionBar, type NextTask } from "./action-bar";
 import { AnswerField } from "./answer-field";
 import { freshInput, latexStats, takeInput } from "./input-stats";
 import { type Verdict, verdictOf } from "./verdicts";
@@ -21,8 +21,7 @@ interface AnswerFormProps {
   taskId: string;
   parts: PartLabel[];
   unchecked: string[];
-  next?: string;
-  recommendation?: BrowserEvents["recommendation_made"];
+  next: Promise<NextTask>;
   fallback: string;
   afterCorrect?: ReactNode;
 }
@@ -70,7 +69,6 @@ export function AnswerForm({
   parts,
   unchecked,
   next,
-  recommendation,
   fallback,
   afterCorrect,
 }: AnswerFormProps) {
@@ -97,6 +95,17 @@ export function AnswerForm({
   }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const stateOf = (i: number): PartOutcome => checked?.outcomes[i] ?? "empty";
+  const bar = {
+    go: Boolean(checked?.correct) || help.solution,
+    fallback,
+    onSkip: () =>
+      help.track(
+        async (sessionId) => (await saveSkip({ taskId, sessionId }))?.data,
+      ),
+    checked: Boolean(checked),
+    disabled:
+      isPending || values.every((v) => !v.trim()) || checked?.correct === false,
+  };
 
   return (
     <form
@@ -157,24 +166,9 @@ export function AnswerForm({
         </p>
       )}
       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
-        <ActionBar
-          go={Boolean(checked?.correct) || help.solution}
-          next={next ?? fallback}
-          skip={next}
-          recommendation={recommendation}
-          onSkip={() =>
-            help.track(
-              async (sessionId) =>
-                (await saveSkip({ taskId, sessionId }))?.data,
-            )
-          }
-          checked={Boolean(checked)}
-          disabled={
-            isPending ||
-            values.every((v) => !v.trim()) ||
-            checked?.correct === false
-          }
-        />
+        <Suspense fallback={<ActionBar {...bar} />}>
+          <ActionBar {...bar} next={next} />
+        </Suspense>
         {hasErrored && (
           <span role="alert" className="text-error-text">
             {errorText()}

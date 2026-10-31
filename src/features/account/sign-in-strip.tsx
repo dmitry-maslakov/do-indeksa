@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, use, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
@@ -95,8 +95,13 @@ export function SignInStrip({ from, solved, children }: SignInStripProps) {
   );
 }
 
-export function TaskSignInStrip({ solved }: { solved: number }) {
+export function TaskSignInStrip({
+  solved: count,
+}: {
+  solved: Promise<number | undefined>;
+}) {
   const t = useTranslations("SignInStrip");
+  const solved = use(count) ?? 0;
   const [show] = useState(
     () => solved >= nudgeAfterSolved && !sessionStorage.getItem(taskStripShown),
   );
