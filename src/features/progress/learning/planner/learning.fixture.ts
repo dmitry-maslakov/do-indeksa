@@ -1,3 +1,4 @@
+import { dayMs } from "@/lib/dates";
 import { defaultPolicy } from "../policy";
 import type { Learning, TaskHistory, TopicLearning } from "../state";
 import { start } from "../status/observations.fixture";
@@ -22,6 +23,8 @@ export const history = (over: Partial<TaskHistory> = {}): TaskHistory => ({
   lastResult: "wrong",
   dueAt: start,
   tries: 1,
+  lastTryAt: start - dayMs,
+  tz: null,
   ...over,
 });
 

@@ -14,7 +14,17 @@ describe("taskHistory", () => {
       lastResult: "wrong",
       dueAt: at(days(2)) + 3 * dayMs,
       tries: 2,
+      lastTryAt: at(days(2)),
+      tz: "Europe/Belgrade",
     });
+  });
+
+  it("keeps the time zone of the last session", () => {
+    const log = taskLog({
+      submits: [submit(0, ["wrong"]), submit(days(2), ["wrong"])],
+      lastTz: "America/New_York",
+    });
+    expect(taskHistory(log, at(days(5)))?.tz).toBe("America/New_York");
   });
 
   it("brings a task studied without an answer back the next day", () => {

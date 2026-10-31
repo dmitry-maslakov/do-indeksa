@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayMs } from "@/lib/dates";
+import { dayMs, hourMs } from "@/lib/dates";
 import { defaultPolicy } from "../../policy";
 import type { TaskHistory } from "../../state";
 import { start as now } from "../../status/observations.fixture";
@@ -10,12 +10,28 @@ import { repeatLevelCap } from "./repeat-level-cap";
 
 const levelOne = abilityAt(1);
 
+const unpicked = (tasks: Record<string, TaskHistory>, picked: Candidate[]) =>
+  Object.entries(tasks)
+    .filter(([id]) => !picked.some((p) => p.taskId === id))
+    .map(([id, task]) => ({
+      ...candidate(id, task.difficulty),
+      topic: task.topic,
+    }));
+
 const context = (
   tasks: Record<string, TaskHistory>,
-  picked: Candidate[] = [],
-  ability = levelOne,
-  policy = defaultPolicy,
-) => ({ learning: learningAt(ability, [], tasks), picked, policy, now });
+  {
+    picked = [] as Candidate[],
+    candidates = unpicked(tasks, picked),
+    policy = defaultPolicy,
+  } = {},
+) => ({
+  learning: learningAt(levelOne, [], tasks),
+  candidates,
+  picked,
+  policy,
+  now,
+});
 
 const fresh = (n: number) =>
   Array.from({ length: n }, (_, i) => candidate(`new${i}`, 1));
@@ -25,29 +41,43 @@ describe("maxRepeats", () => {
   const r = (id: string) => candidate(id, 1);
 
   it("lets a new task in whatever was picked", () => {
-    expect(maxRepeats.allows(r("new"), context(due, [r("r1"), r("r2")]))).toBe(
-      true,
-    );
+    expect(
+      maxRepeats.allows(r("new"), context(due, { picked: [r("r1"), r("r2")] })),
+    ).toBe(true);
   });
 
   it("allows two repeats in every six tasks", () => {
-    expect(maxRepeats.allows(r("r3"), context(due, [r("r1")]))).toBe(true);
     expect(
-      maxRepeats.allows(r("r3"), context(due, [r("r1"), ...fresh(3), r("r2")])),
+      maxRepeats.allows(r("r3"), context(due, { picked: [r("r1")] })),
+    ).toBe(true);
+    expect(
+      maxRepeats.allows(
+        r("r3"),
+        context(due, { picked: [r("r1"), ...fresh(3), r("r2")] }),
+      ),
     ).toBe(false);
     expect(
-      maxRepeats.allows(r("r3"), context(due, [r("r1"), ...fresh(4), r("r2")])),
+      maxRepeats.allows(
+        r("r3"),
+        context(due, { picked: [r("r1"), ...fresh(4), r("r2")] }),
+      ),
     ).toBe(true);
   });
 
   it("counts a task tried again today as a repeat", () => {
     const tasks = { ...due, again: history({ tries: 2, dueAt: now + dayMs }) };
     expect(
-      maxRepeats.allows(r("r3"), context(tasks, [r("again"), r("r1")])),
+      maxRepeats.allows(
+        r("r3"),
+        context(tasks, { picked: [r("again"), r("r1")] }),
+      ),
     ).toBe(false);
     const once = { ...due, once: history({ dueAt: now + dayMs }) };
     expect(
-      maxRepeats.allows(r("r3"), context(once, [r("once"), r("r1")])),
+      maxRepeats.allows(
+        r("r3"),
+        context(once, { picked: [r("once"), r("r1")] }),
+      ),
     ).toBe(true);
   });
 });
@@ -84,9 +114,8 @@ describe("repeatLevelCap", () => {
     expect(
       repeatLevelCap.allows(
         candidate("hardest", 4),
-        context(tasks, [], levelOne, {
-          ...defaultPolicy,
-          stretchLevelsAbove: 2,
+        context(tasks, {
+          policy: { ...defaultPolicy, stretchLevelsAbove: 2 },
         }),
       ),
     ).toBe(false);
@@ -99,7 +128,10 @@ describe("repeatLevelCap", () => {
     };
     expect(repeatLevelCap.allows(stretch, context(tasks))).toBe(false);
     expect(
-      repeatLevelCap.allows(stretch, context(tasks, [candidate("near", 1)])),
+      repeatLevelCap.allows(
+        stretch,
+        context(tasks, { picked: [candidate("near", 1)] }),
+      ),
     ).toBe(true);
   });
 
@@ -109,10 +141,48 @@ describe("repeatLevelCap", () => {
       done: history({ difficulty: 4, tries: 2, dueAt: now + dayMs }),
     };
     expect(
-      repeatLevelCap.allows(stretch, context(tasks, [candidate("done", 4)])),
+      repeatLevelCap.allows(
+        stretch,
+        context(tasks, { picked: [candidate("done", 4)] }),
+      ),
     ).toBe(false);
     expect(
-      repeatLevelCap.allows(stretch, context(tasks, [candidate("new", 4)])),
+      repeatLevelCap.allows(
+        stretch,
+        context(tasks, { picked: [candidate("new", 4)] }),
+      ),
     ).toBe(true);
+  });
+
+  it("doesn't wait for a due task the queue can't offer", () => {
+    const tasks = {
+      unreleased: history({ difficulty: 1 }),
+      hard: history({ difficulty: 3 }),
+    };
+    expect(
+      repeatLevelCap.allows(stretch, context(tasks, { candidates: [stretch] })),
+    ).toBe(true);
+  });
+
+  it("counts a stretch from earlier today that is no longer picked", () => {
+    const earlier = (over: Partial<TaskHistory>) => ({
+      hard: history({ difficulty: 3 }),
+      earlier: history({
+        difficulty: 4,
+        tries: 2,
+        dueAt: now + dayMs,
+        lastTryAt: now - 9.5 * hourMs,
+        ...over,
+      }),
+    });
+    const allows = (over: Partial<TaskHistory>) =>
+      repeatLevelCap.allows(
+        stretch,
+        context(earlier(over), { picked: fresh(4) }),
+      );
+    expect(allows({})).toBe(false);
+    expect(allows({ tz: "America/New_York" })).toBe(true);
+    expect(allows({ lastTryAt: now - dayMs })).toBe(true);
+    expect(allows({ tries: 1 })).toBe(true);
   });
 });

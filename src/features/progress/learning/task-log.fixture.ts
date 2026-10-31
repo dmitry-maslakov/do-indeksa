@@ -30,6 +30,7 @@ export const taskLog = (over: Partial<TaskLog>): TaskLog => ({
   difficulty: 3,
   keyRev: "k1",
   tz: "Europe/Belgrade",
+  lastTz: "Europe/Belgrade",
   submits: [],
   reveals: [],
   skips: [],

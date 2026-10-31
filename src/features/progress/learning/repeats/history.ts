@@ -18,6 +18,8 @@ export function taskHistory(
     lastResult: last.result,
     dueAt: last.at + intervalAfter(all, policy),
     tries: all.length,
+    lastTryAt: last.at,
+    tz: log.lastTz,
   };
 }
 

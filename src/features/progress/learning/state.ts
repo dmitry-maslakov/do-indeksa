@@ -14,6 +14,8 @@ export interface TaskHistory {
   lastResult: TryResult;
   dueAt: number;
   tries: number;
+  lastTryAt: number;
+  tz: string | null;
 }
 
 export interface Learning {

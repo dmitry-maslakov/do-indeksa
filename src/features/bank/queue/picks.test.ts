@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  abilityAt,
   candidate,
   history,
   learningAt,
@@ -129,6 +130,19 @@ describe("planQueue", () => {
       }).upcoming.map((p) => p.id);
     expect(ids(-1.5)).toEqual(["d1", "d2"]);
     expect(ids(0.8)).toEqual(["d3", "d4"]);
+  });
+
+  it("doesn't hold a stretch back for a due task outside the pool", () => {
+    const queue = planQueue({
+      pool: [candidate("hard", 3)],
+      learning: learningAt(abilityAt(1), [], {
+        hard: history({ difficulty: 3 }),
+        unreleased: history({ difficulty: 1 }),
+      }),
+      touched: new Map([["hard", touch("wrong", 1)]]),
+      now,
+    });
+    expect(ids(queue.upcoming)).toEqual(["hard"]);
   });
 
   it("splits touched tasks into earlier and today", () => {

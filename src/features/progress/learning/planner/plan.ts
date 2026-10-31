@@ -28,7 +28,7 @@ export function plan<C, N extends SignalName>(
   { now, picked = [], rules = [], policy = defaultPolicy }: PlanOptions<C>,
 ): Decision<C, N>[] {
   if (size <= 0) return [];
-  const context = { learning, picked, policy, now };
+  const context = { learning, candidates, picked, policy, now };
   const best = maxBy(
     candidates
       .filter((candidate) => rules.every((r) => r.allows(candidate, context)))
@@ -61,7 +61,7 @@ export const signalled = <C, N extends SignalName>(
   candidates.filter((candidate) =>
     contributions(
       candidate,
-      { learning, picked: [], policy, now },
+      { learning, candidates, picked: [], policy, now },
       signals,
     ).some((p) => p.value > 0),
   );
