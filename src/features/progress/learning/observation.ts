@@ -120,6 +120,7 @@ export function observe(
   return {
     taskId: attempt.taskId,
     topic: attempt.topic,
+    type: attempt.type,
     at: judged.at,
     day: dateIn(judged.at, attempt.tz),
     difficulty: difficultyOf(first.difficulty),

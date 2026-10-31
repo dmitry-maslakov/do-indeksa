@@ -14,6 +14,7 @@ import {
   taskIdSchema,
   tasks,
   taskTitle,
+  typesByTopic,
 } from "./tasks";
 
 vi.mock("@/lib/markdown", async (importOriginal) => {
@@ -46,6 +47,14 @@ describe("task index", () => {
     }
     expect([...idsByTopic.values()].flat().sort()).toEqual(
       tasks.map((t) => t.id).sort(),
+    );
+  });
+
+  it("lists each topic's types once, from the tasks it serves", () => {
+    expect(typesByTopic.get("exponential-equations")).toEqual(["substitution"]);
+    expect(typesByTopic.get("trigonometry")).toEqual(["roots-in-interval"]);
+    expect([...typesByTopic.keys()].sort()).toEqual(
+      [...idsByTopic.keys()].sort(),
     );
   });
 });

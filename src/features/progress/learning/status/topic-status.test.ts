@@ -15,16 +15,20 @@ const spread = (results: ObservationResult[], difficulty: Difficulty = 3) =>
 const lastAtOf = (observations: Observation[]) =>
   observations.at(-1)?.at ?? start;
 
-const statusAfter = (observations: Observation[], ms = hourMs) =>
+const statusAfter = (observations: Observation[], typeCount = 1, ms = hourMs) =>
   topicStatus(
     observations,
+    typeCount,
     lastAtOf(observations),
     lastAtOf(observations) + ms,
   );
 
+const typed = (observations: Observation[], types: string[]) =>
+  observations.map((o, i) => ({ ...o, type: types[i % types.length] ?? "" }));
+
 describe("topicStatus", () => {
   it("has no status without activity", () => {
-    expect(topicStatus([], null, start)).toMatchObject({
+    expect(topicStatus([], 1, null, start)).toMatchObject({
       state: "notStarted",
       fill: 0,
       almost: false,
@@ -33,7 +37,7 @@ describe("topicStatus", () => {
   });
 
   it("is warming once the student has answered, before any observation", () => {
-    expect(topicStatus([], start, start)).toMatchObject({
+    expect(topicStatus([], 1, start, start)).toMatchObject({
       state: "warming",
       fill: 0,
     });
@@ -54,7 +58,12 @@ describe("topicStatus", () => {
   it("is in progress from eight observations", () => {
     expect(statusAfter(spread(Array(8).fill("fail")))).toMatchObject({
       state: "inProgress",
-      missing: ["fullWindow", "solvesAtTarget", "cleanHardEnough"],
+      missing: [
+        "fullWindow",
+        "solvesAtTarget",
+        "cleanHardEnough",
+        "typesCovered",
+      ],
     });
   });
 
@@ -69,7 +78,7 @@ describe("topicStatus", () => {
     const observations = spread(Array(4).fill("clean"));
     const lastAt = lastAtOf(observations);
     expect(
-      topicStatus(observations, lastAt, lastAt, {
+      topicStatus(observations, 1, lastAt, lastAt, {
         ...defaultPolicy,
         warmingBelow: 3,
       }).state,
@@ -95,6 +104,45 @@ describe("topicStatus", () => {
     });
   });
 
+  it("needs clean results in three types when the topic serves them", () => {
+    const tenClean = spread(Array(10).fill("clean"));
+    expect(statusAfter(tenClean, 4)).toMatchObject({
+      state: "inProgress",
+      almost: false,
+      missing: ["typesCovered"],
+    });
+    expect(statusAfter(typed(tenClean, ["a", "b", "c"]), 4)).toMatchObject({
+      state: "mastered",
+      missing: [],
+    });
+  });
+
+  it("needs only the types the topic serves when it has fewer than three", () => {
+    const tenClean = spread(Array(10).fill("clean"));
+    expect(statusAfter(typed(tenClean, ["a", "b"]), 2).state).toBe("mastered");
+    expect(statusAfter(tenClean, 0).state).toBe("mastered");
+  });
+
+  it("doesn't call it almost while a type lacks a clean result", () => {
+    const sitting = Array.from({ length: 10 }, (_, i) =>
+      obs("clean", { hours: i / 6 }),
+    );
+    expect(statusAfter(sitting, 3)).toMatchObject({
+      almost: false,
+      missing: ["typesCovered", "spreadOverDays", "spansHours"],
+    });
+  });
+
+  it("names the types with a clean result in the window", () => {
+    const observations = typed(spread(["clean", "helped", "fail", "clean"]), [
+      "a",
+      "b",
+      "c",
+      "d",
+    ]);
+    expect(statusAfter(observations, 4).cleanTypes).toEqual(["a", "d"]);
+  });
+
   it("holds mastered at d4 with a lower target", () => {
     const climb = spread([
       ...Array(10).fill("clean"),
@@ -116,9 +164,9 @@ describe("topicStatus", () => {
   });
 
   it("asks for review two weeks after the last task", () => {
-    expect(statusAfter(spread(Array(10).fill("clean")), 14 * dayMs).state).toBe(
-      "review",
-    );
+    expect(
+      statusAfter(spread(Array(10).fill("clean")), 1, 14 * dayMs).state,
+    ).toBe("review");
   });
 
   it("compares the score with the target without float error", () => {

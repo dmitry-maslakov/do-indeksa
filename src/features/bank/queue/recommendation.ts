@@ -1,7 +1,7 @@
 import type { placements } from "@/features/practice/practice-events";
 import { taskSignalNames } from "@/features/progress/learning/policy";
 
-export const algoVersion = 3 as const;
+export const algoVersion = 4 as const;
 
 export const pickReasons = [...taskSignalNames, "seen"] as const;
 

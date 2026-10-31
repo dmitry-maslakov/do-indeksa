@@ -2,7 +2,11 @@ import { atLeast, weightedMean } from "@/lib/numbers";
 import type { LearningPolicy } from "../policy";
 import type { Observation } from "../types";
 
-type Condition = (window: Observation[], policy: LearningPolicy) => boolean;
+type Condition = (
+  window: Observation[],
+  policy: LearningPolicy,
+  typeCount: number,
+) => boolean;
 
 export const scoreOf = (window: Observation[], { weights }: LearningPolicy) =>
   weightedMean(
@@ -32,6 +36,13 @@ const cleanHardEnough: Condition = (window, { hardFrom, cleanHardNeeded }) =>
   window.filter((o) => o.result === "clean" && o.difficulty >= hardFrom)
     .length >= cleanHardNeeded;
 
+export const cleanTypesOf = (window: Observation[]) => [
+  ...new Set(window.filter((o) => o.result === "clean").map((o) => o.type)),
+];
+
+const typesCovered: Condition = (window, { typesNeeded }, typeCount) =>
+  cleanTypesOf(window).length >= Math.min(typesNeeded, typeCount);
+
 const spreadOverDays: Condition = (window, { laterDaysNeeded }) => {
   const first = window[0];
   return (
@@ -54,6 +65,7 @@ export const masteredConditions = {
   fullWindow,
   solvesAtTarget,
   cleanHardEnough,
+  typesCovered,
   spreadOverDays,
   spansHours,
 };
@@ -63,12 +75,14 @@ export type ConditionName = keyof typeof masteredConditions;
 export const qualityConditions: ConditionName[] = [
   "solvesAtTarget",
   "cleanHardEnough",
+  "typesCovered",
 ];
 
 export const unmetConditions = (
   window: Observation[],
+  typeCount: number,
   policy: LearningPolicy,
 ) =>
   Object.entries(masteredConditions).flatMap(([name, holds]) =>
-    holds(window, policy) ? [] : [name as ConditionName],
+    holds(window, policy, typeCount) ? [] : [name as ConditionName],
   );

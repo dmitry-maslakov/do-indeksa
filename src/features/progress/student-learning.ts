@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { examTopics } from "@/features/catalog/exams";
+import { typesByTopic } from "@/features/catalog/tasks";
 import { getActivity, getTaskLogs } from "./attempt-log";
 import { topicAbilities } from "./learning/ability/starting";
 import { observe } from "./learning/observation";
@@ -25,10 +26,11 @@ export const getLearning = cache(
     const topics = [...abilities].map(([topic, ability]) => {
       const mine = observations.get(topic) ?? [];
       const done = activityOf.get(topic) ?? [];
+      const typeCount = typesByTopic.get(topic)?.length ?? 0;
       return [
         topic,
         {
-          status: topicStatus(mine, lastActivityAt(done), now),
+          status: topicStatus(mine, typeCount, lastActivityAt(done), now),
           ability,
           tasksToday: tasksToday(done, now),
           failStreak: failStreak(mine),

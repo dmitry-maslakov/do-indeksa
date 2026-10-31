@@ -24,6 +24,12 @@ describe("observe", () => {
     });
   });
 
+  it("carries the task's topic and type", () => {
+    expect(
+      observe(attempt({ submits: [submit(1, ["right"])] }), now),
+    ).toMatchObject({ topic: "logarithms", type: "substitution" });
+  });
+
   it("counts a right answer after a hint as helped", () => {
     const result = observe(
       attempt({

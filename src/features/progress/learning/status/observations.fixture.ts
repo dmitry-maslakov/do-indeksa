@@ -12,12 +12,17 @@ const credits: Record<ObservationResult, number> = {
 
 export function obs(
   result: ObservationResult,
-  { difficulty = 3, hours = 0 }: { difficulty?: Difficulty; hours?: number },
+  {
+    difficulty = 3,
+    hours = 0,
+    type = "substitution",
+  }: { difficulty?: Difficulty; hours?: number; type?: string },
 ): Observation {
   const at = start + hours * hourMs;
   return {
     taskId: `t${hours}`,
     topic: "logarithms",
+    type,
     at,
     day: new Date(at).toISOString().slice(0, 10),
     difficulty,

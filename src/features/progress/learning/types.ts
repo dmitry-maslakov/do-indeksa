@@ -28,6 +28,7 @@ export interface LoggedReveal {
 export interface TaskLog {
   taskId: string;
   topic: string;
+  type: string;
   difficulty: Difficulty;
   keyRev: string;
   tz: string | null;
@@ -56,6 +57,7 @@ export interface Try {
 export interface Observation {
   taskId: string;
   topic: string;
+  type: string;
   at: number;
   day: string;
   difficulty: Difficulty;

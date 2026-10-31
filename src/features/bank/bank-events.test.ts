@@ -18,7 +18,7 @@ describe("bank events", () => {
       surface: "rail_upcoming",
       task_id: "kb-003",
       topic: "complex-numbers",
-      algo_version: 3,
+      algo_version: 4,
       repeat: true,
       reason: "repeatDue",
       slot: 2,

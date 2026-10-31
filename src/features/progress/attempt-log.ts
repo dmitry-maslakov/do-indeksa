@@ -37,6 +37,7 @@ function toTaskLogs(
     return {
       taskId,
       topic: task.topic,
+      type: task.type,
       difficulty: difficultyOf(task.difficulty),
       keyRev: task.keyRev,
       tz: mine.find((s) => s.tz)?.tz ?? null,
