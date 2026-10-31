@@ -10,7 +10,7 @@ import { PageAnalytics } from "./_components/page-analytics";
 import "../globals.css";
 
 const golos = Golos_Text({
-  subsets: ["latin", "latin-ext", "cyrillic"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-sans",
 });
 
