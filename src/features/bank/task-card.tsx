@@ -46,7 +46,7 @@ function Source({ exam }: Pick<BankCard, "exam">) {
 
 interface TaskCardProps {
   card: BankCard;
-  statuses: Promise<TaskStatuses>;
+  statuses?: Promise<TaskStatuses>;
   intent: string;
 }
 
@@ -64,9 +64,11 @@ export function TaskCard({ card, statuses, intent }: TaskCardProps) {
         <span className="order-3 flex basis-full flex-wrap items-center gap-x-3 gap-y-1 text-sm text-subtle">
           <Source exam={card.exam} />
           <span>{t("taskLevel", { level: card.level })}</span>
-          <Suspense>
-            <StatusMark id={card.id} statuses={statuses} />
-          </Suspense>
+          {statuses && (
+            <Suspense>
+              <StatusMark id={card.id} statuses={statuses} />
+            </Suspense>
+          )}
         </span>
       </div>
       <Link

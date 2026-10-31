@@ -38,8 +38,9 @@ export function useFeed<T>(
     },
     initialPageParam: 0,
     initialData: { pages: [first], pageParams: [0] },
+    initialDataUpdatedAt: 0,
     getNextPageParam: (last) => last.next,
-    staleTime: Number.POSITIVE_INFINITY,
+    staleTime: "static",
     gcTime: keep ? undefined : 0,
   });
 }

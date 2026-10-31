@@ -15,7 +15,6 @@ import type { TaskSummary } from "@/features/catalog/tasks";
 import { EmptyResults } from "./empty-results";
 import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
-import { ResultsSkeleton } from "./results-skeleton";
 
 interface BankProps extends Pick<PageProps<"/[locale]/bank">, "searchParams"> {
   topic: string | null;
@@ -91,15 +90,13 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
           shown={pending ? undefined : resultsShown(filters, tasks.length)}
           pending={pending}
         />
-        {pending ? (
-          <ResultsSkeleton />
-        ) : tasks.length === 0 ? (
+        {tasks.length === 0 ? (
           <EmptyResults />
         ) : (
           <BankList
             tasks={tasks}
             search={search}
-            statuses={personal.then((p) => p.statuses)}
+            statuses={personal?.then((p) => p.statuses)}
           />
         )}
       </section>
