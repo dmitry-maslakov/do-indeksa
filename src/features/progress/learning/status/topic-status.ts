@@ -31,6 +31,9 @@ export interface TopicStatus {
 export const isMastered = (state: TopicState) =>
   state === "mastered" || state === "review";
 
+export const isOpen = (state: TopicState) =>
+  state !== "notStarted" && !isMastered(state);
+
 const windows = (observations: Observation[], size: number) =>
   observations.map((_, i) =>
     observations.slice(Math.max(0, i + 1 - size), i + 1),

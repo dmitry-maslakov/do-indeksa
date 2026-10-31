@@ -45,7 +45,7 @@ export function plan<C, N extends SignalName>(
   ];
 }
 
-export const scoring = <C, N extends SignalName>(
+export const signalled = <C, N extends SignalName>(
   candidates: C[],
   learning: Learning,
   signals: Signal<C, N>[],

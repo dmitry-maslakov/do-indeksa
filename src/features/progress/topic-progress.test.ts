@@ -145,4 +145,28 @@ describe("suggest", () => {
   it("suggests nothing without topics", () => {
     expect(suggest(new Map())).toBeUndefined();
   });
+
+  it("switches only to an open topic, not a fourth new one", () => {
+    expect(
+      suggest(
+        learningOf({
+          a: {},
+          b: { state: "inProgress", lastAt: 1 },
+          c: { state: "inProgress", lastAt: 3, tasksToday: 6 },
+          d: { state: "inProgress", lastAt: 2 },
+        }),
+      ),
+    ).toEqual({ topic: "b", reason: "started" });
+  });
+
+  it("moves off an almost topic after six tasks today", () => {
+    expect(
+      suggest(
+        learningOf({
+          a: { state: "inProgress", lastAt: 1 },
+          b: { state: "inProgress", lastAt: 3, tasksToday: 6, almost: true },
+        }),
+      ),
+    ).toEqual({ topic: "a", reason: "started" });
+  });
 });
