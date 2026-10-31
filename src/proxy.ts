@@ -8,6 +8,7 @@ import {
 } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
+import { bankHref } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
 import { launchCookie, launchGate } from "@/features/launch/launch";
 import { customTaskIds } from "@/features/variants/variant-id";
@@ -66,6 +67,13 @@ async function respond(request: NextRequest) {
     return response;
   }
   const { locale, route, params } = routeOf(request.nextUrl.pathname);
+  const topic = request.nextUrl.searchParams.get("topic");
+  if (route === "/bank" && topic !== null) {
+    const url = request.nextUrl.clone();
+    url.pathname = url.pathname.replace(/\/bank$/, bankHref({ topic }));
+    url.searchParams.delete("topic");
+    return NextResponse.redirect(url, 308);
+  }
   return contentPages[route]?.(...params) === false
     ? NextResponse.rewrite(new URL(`/${locale}/404`, request.url))
     : intl(request);

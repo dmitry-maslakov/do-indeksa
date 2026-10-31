@@ -124,6 +124,16 @@ test("a task opens from the filtered list", async ({ page, errors }) => {
   expect(errors).toEqual([]);
 });
 
+test("an old topic link moves to the topic page", async ({ request }) => {
+  const response = await request.get("/ru/bank?topic=logarithms&level=easy", {
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(308);
+  expect(response.headers().location).toMatch(
+    /\/ru\/bank\/topic\/logarithms\?level=easy$/,
+  );
+});
+
 test("back and forward restore the bank filters", async ({ page }) => {
   await open(page);
   const { topic, level, search, cards, empty } = bank(page);
