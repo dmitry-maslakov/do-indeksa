@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { dayMs } from "@/lib/dates";
 import { defaultPolicy } from "../../policy";
+import { start as now } from "../../status/observations.fixture";
 import type { TopicSignal } from "../contracts";
 import { learningOf } from "../learning.fixture";
 import { finishTopic } from "./finish-topic";
@@ -20,7 +21,7 @@ const scores = (
     (topic) =>
       signal.score(
         { topic },
-        { learning: learningOf(topics), picked: [], policy },
+        { learning: learningOf(topics), picked: [], policy, now },
       ) > 0,
   );
 
@@ -144,9 +145,9 @@ describe("keepInShape", () => {
   it("fires for a mastered topic untouched for a week", () => {
     expect(
       scores(keepInShape, {
-        a: { state: "mastered", idleMs: 6 * dayMs },
-        b: { state: "mastered", idleMs: 7 * dayMs },
-        c: { state: "inProgress", idleMs: 8 * dayMs },
+        a: { state: "mastered", lastAt: now - 6 * dayMs },
+        b: { state: "mastered", lastAt: now - 7 * dayMs },
+        c: { state: "inProgress", lastAt: now - 8 * dayMs },
       }),
     ).toEqual(["b"]);
   });

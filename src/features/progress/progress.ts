@@ -80,11 +80,11 @@ export async function getSolved(profileId: string) {
 
 export async function getTopicPlan(profileId: string) {
   const learning = await getLearning(profileId);
-  const topics = [...learning].map(([topic, { status }]) => ({
+  const topics = [...learning.topics].map(([topic, { status }]) => ({
     topic,
     ...status,
   }));
-  return { topics, suggestion: suggest(learning) };
+  return { topics, suggestion: suggest(learning, Date.now()) };
 }
 
 const weakCount = 3;

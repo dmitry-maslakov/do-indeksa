@@ -16,6 +16,3 @@ export function failStreak(observations: Observation[]) {
   const sorted = observations.toSorted((a, b) => a.at - b.at);
   return sorted.length - 1 - sorted.findLastIndex((o) => o.result !== "fail");
 }
-
-export const idleMs = (lastAt: number | null, now: number) =>
-  lastAt === null ? null : now - lastAt;

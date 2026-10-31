@@ -64,6 +64,7 @@ async function plan({ topic, profileId, current }: PoolInput, size = 6) {
     pool: poolOf(ids),
     learning,
     touched,
+    now: Date.now(),
     current,
     size,
   });
@@ -79,6 +80,7 @@ export async function nextTasks(profileId: string) {
     getTouched(profileId),
     getLearning(profileId),
   ]);
+  const now = Date.now();
   return new Map(
     topics.flatMap(({ topic, ids }) => {
       const own = new Set(ids);
@@ -86,6 +88,7 @@ export async function nextTasks(profileId: string) {
         pool: poolOf(ids),
         learning,
         touched: new Map([...touched].filter(([id]) => own.has(id))),
+        now,
         size: 1,
       });
       const next = upcoming[0] ?? (ids[0] && { id: ids[0] });

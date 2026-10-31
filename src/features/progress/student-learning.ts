@@ -1,23 +1,19 @@
 import "server-only";
 import { cache } from "react";
 import { examTopics } from "@/features/catalog/exams";
-import { getActivity, getFirstAttempts } from "./attempt-log";
+import { getActivity, getTaskLogs } from "./attempt-log";
 import { topicAbilities } from "./learning/ability/starting";
 import { observe } from "./learning/observation";
-import {
-  failStreak,
-  idleMs,
-  lastActivityAt,
-  tasksToday,
-} from "./learning/rhythm";
+import { taskHistory } from "./learning/repeats/history";
+import { failStreak, lastActivityAt, tasksToday } from "./learning/rhythm";
 import type { Learning } from "./learning/state";
 import { topicStatus } from "./learning/status/topic-status";
 
 export const getLearning = cache(
   async (profileId: string): Promise<Learning> => {
     const now = Date.now();
-    const [firstAttempts, activity] = await Promise.all([
-      getFirstAttempts(profileId),
+    const [{ firstAttempts, taskLogs }, activity] = await Promise.all([
+      getTaskLogs(profileId),
       getActivity(profileId),
     ]);
     const activityOf = Map.groupBy(activity, (a) => a.topic);
@@ -26,22 +22,23 @@ export const getLearning = cache(
       (o) => o.topic,
     );
     const abilities = topicAbilities(examTopics, observations);
-    return new Map(
-      [...abilities].map(([topic, ability]) => {
-        const mine = observations.get(topic) ?? [];
-        const done = activityOf.get(topic) ?? [];
-        const lastAt = lastActivityAt(done);
-        return [
-          topic,
-          {
-            status: topicStatus(mine, lastAt, now),
-            ability,
-            tasksToday: tasksToday(done, now),
-            failStreak: failStreak(mine),
-            idleMs: idleMs(lastAt, now),
-          },
-        ];
-      }),
-    );
+    const topics = [...abilities].map(([topic, ability]) => {
+      const mine = observations.get(topic) ?? [];
+      const done = activityOf.get(topic) ?? [];
+      return [
+        topic,
+        {
+          status: topicStatus(mine, lastActivityAt(done), now),
+          ability,
+          tasksToday: tasksToday(done, now),
+          failStreak: failStreak(mine),
+        },
+      ] as const;
+    });
+    const tasks = taskLogs.flatMap((log) => {
+      const history = taskHistory(log, now);
+      return history ? [[log.taskId, history] as const] : [];
+    });
+    return { topics: new Map(topics), tasks: new Map(tasks) };
   },
 );

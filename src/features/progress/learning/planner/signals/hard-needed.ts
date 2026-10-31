@@ -5,7 +5,7 @@ import type { Signal } from "../contracts";
 export const hardNeeded: Signal = {
   name: "hardNeeded",
   score: ({ topic, difficulty }, { learning, policy }) => {
-    const state = learning.get(topic);
+    const state = learning.topics.get(topic);
     return state &&
       difficulty >= policy.hardFrom &&
       state.status.missing.includes("cleanHardEnough") &&

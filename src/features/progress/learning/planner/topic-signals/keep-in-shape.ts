@@ -2,10 +2,10 @@ import type { TopicSignal } from "../contracts";
 
 export const keepInShape: TopicSignal = {
   name: "keepInShape",
-  score: ({ topic }, { learning, policy }) => {
-    const state = learning.get(topic);
+  score: ({ topic }, { learning, policy, now }) => {
+    const state = learning.topics.get(topic);
     return state?.status.state === "mastered" &&
-      (state.idleMs ?? 0) >= policy.keepInShapeAfterMs
+      now - (state.status.lastAt ?? now) >= policy.keepInShapeAfterMs
       ? 1
       : 0;
   },

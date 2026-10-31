@@ -8,7 +8,7 @@ const schemaOf = (name: string) =>
 const picked = recommendationOf(
   "rail_upcoming",
   "complex-numbers",
-  { id: "kb-003", repeat: true, reason: "repeat" },
+  { id: "kb-003", repeat: true, reason: "repeatDue" },
   2,
 );
 
@@ -18,9 +18,9 @@ describe("bank events", () => {
       surface: "rail_upcoming",
       task_id: "kb-003",
       topic: "complex-numbers",
-      algo_version: 2,
+      algo_version: 3,
       repeat: true,
-      reason: "repeat",
+      reason: "repeatDue",
       slot: 2,
     });
   });
@@ -37,7 +37,7 @@ describe("bank events", () => {
   it.each([
     ["an unknown task", { ...picked, task_id: "nema-001" }],
     ["an unknown surface", { ...picked, surface: "footer" }],
-    ["another algorithm", { ...picked, algo_version: 1 }],
+    ["another algorithm", { ...picked, algo_version: 2 }],
     ["an unknown reason", { ...picked, reason: "random" }],
     ["no reason", { ...picked, reason: undefined }],
   ])("rejects a recommendation with %s", (_, props) => {

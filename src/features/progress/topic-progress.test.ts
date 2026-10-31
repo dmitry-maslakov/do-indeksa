@@ -5,6 +5,8 @@ import { reasonOf, suggest } from "./topic-progress";
 
 const fresh = learningOf({ a: {}, b: {} });
 
+const now = 3;
+
 describe("reasonOf", () => {
   it("maps each topic signal to a reason", () => {
     const started = learningOf({ a: { state: "warming" } });
@@ -49,7 +51,7 @@ describe("reasonOf", () => {
 
 describe("suggest", () => {
   it("starts with the first topic on a first visit", () => {
-    expect(suggest(fresh)).toEqual({ topic: "a", reason: "first" });
+    expect(suggest(fresh, now)).toEqual({ topic: "a", reason: "first" });
   });
 
   it("returns to a topic after four fails in a row, not three", () => {
@@ -59,6 +61,7 @@ describe("suggest", () => {
           a: { state: "inProgress", lastAt: 1 },
           b: { state: "warming", lastAt: 2, failStreak },
         }),
+        now,
       );
     expect(withStreak(3)).toEqual({ topic: "b", reason: "started" });
     expect(withStreak(4)).toEqual({ topic: "b", reason: "stuck" });
@@ -72,6 +75,7 @@ describe("suggest", () => {
           b: { state: "warming", lastAt: 2, tasksToday },
           c: { state: "mastered", lastAt: 0 },
         }),
+        now,
       );
     expect(withToday(5)).toEqual({ topic: "b", reason: "started" });
     expect(withToday(6)).toEqual({ topic: "a", reason: "started" });
@@ -84,6 +88,7 @@ describe("suggest", () => {
           a: { state: "warming", lastAt: 2 },
           b: { state: "review", lastAt: 1 },
         }),
+        now,
       ),
     ).toEqual({ topic: "b", reason: "review" });
   });
@@ -95,13 +100,17 @@ describe("suggest", () => {
       c: { state: "inProgress" as const, lastAt: 1 },
       d: {},
     };
-    expect(suggest(learningOf(open))).toEqual({ topic: "d", reason: "next" });
+    expect(suggest(learningOf(open), now)).toEqual({
+      topic: "d",
+      reason: "next",
+    });
     expect(
       suggest(
         learningOf({
           ...open,
           a: { state: "warming", lastAt: 2, tasksToday: 6 },
         }),
+        now,
       ),
     ).toEqual({ topic: "b", reason: "started" });
   });
@@ -111,8 +120,9 @@ describe("suggest", () => {
       suggest(
         learningOf({
           a: { state: "mastered", lastAt: 2 },
-          b: { state: "mastered", lastAt: 1, idleMs: 7 * dayMs },
+          b: { state: "mastered", lastAt: now - 7 * dayMs },
         }),
+        now,
       ),
     ).toEqual({ topic: "b", reason: "review" });
   });
@@ -127,6 +137,7 @@ describe("suggest", () => {
           d: { state: "warming", lastAt: 1 },
           e: {},
         }),
+        now,
       ),
     ).toEqual({ topic: "b", reason: "started" });
   });
@@ -138,12 +149,15 @@ describe("suggest", () => {
           a: { state: "mastered", lastAt: 1 },
           b: { state: "mastered", lastAt: 2 },
         }),
+        now,
       ),
     ).toEqual({ topic: "a", reason: "done" });
   });
 
   it("suggests nothing without topics", () => {
-    expect(suggest(new Map())).toBeUndefined();
+    expect(
+      suggest({ topics: new Map(), tasks: new Map() }, now),
+    ).toBeUndefined();
   });
 
   it("switches only to an open topic, not a fourth new one", () => {
@@ -155,6 +169,7 @@ describe("suggest", () => {
           c: { state: "inProgress", lastAt: 3, tasksToday: 6 },
           d: { state: "inProgress", lastAt: 2 },
         }),
+        now,
       ),
     ).toEqual({ topic: "b", reason: "started" });
   });
@@ -166,6 +181,7 @@ describe("suggest", () => {
           a: { state: "inProgress", lastAt: 1 },
           b: { state: "inProgress", lastAt: 3, tasksToday: 6, almost: true },
         }),
+        now,
       ),
     ).toEqual({ topic: "a", reason: "started" });
   });

@@ -1,21 +1,58 @@
 import "server-only";
-import { and, eq, max } from "drizzle-orm";
+import { eq, max } from "drizzle-orm";
+import type { SessionKind } from "@/db/columns";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
 import { db } from "@/server/db";
-import type { FirstAttempt, TaskActivity } from "./learning/types";
+import {
+  difficultyOf,
+  type LoggedReveal,
+  type LoggedSubmit,
+  type TaskActivity,
+  type TaskLog,
+} from "./learning/types";
 
-const inFirstSession = (profileId: string) =>
-  and(eq(taskSessions.profileId, profileId), eq(taskSessions.kind, "first"));
+interface Row {
+  taskId: string;
+  at: number;
+}
 
-export async function getFirstAttempts(
-  profileId: string,
-): Promise<FirstAttempt[]> {
+const isFirst = ({ kind }: { kind: SessionKind }) => kind === "first";
+
+function toTaskLogs(
+  submits: (LoggedSubmit & Row & { tz: string | null })[],
+  reveals: (LoggedReveal & Row)[],
+  skips: Row[],
+): TaskLog[] {
+  const submitsOf = Map.groupBy(submits, (s) => s.taskId);
+  const revealsOf = Map.groupBy(reveals, (r) => r.taskId);
+  const skipsOf = Map.groupBy(skips, (s) => s.taskId);
+  const taskIds = new Set([...submitsOf.keys(), ...revealsOf.keys()]);
+  return [...taskIds].flatMap((taskId) => {
+    const task = getTask(taskId);
+    if (!task) return [];
+    const mine = submitsOf.get(taskId) ?? [];
+    return {
+      taskId,
+      topic: task.topic,
+      difficulty: difficultyOf(task.difficulty),
+      keyRev: task.keyRev,
+      tz: mine.find((s) => s.tz)?.tz ?? null,
+      submits: mine,
+      reveals: revealsOf.get(taskId) ?? [],
+      skips: skipsOf.get(taskId)?.map((s) => s.at) ?? [],
+    };
+  });
+}
+
+export async function getTaskLogs(profileId: string) {
+  const ofProfile = eq(taskSessions.profileId, profileId);
   const [submits, opened, skipped] = await Promise.all([
     db
       .select({
         taskId: attempts.taskId,
+        kind: taskSessions.kind,
         at: epochMs(attempts.createdAt),
         outcomes: attempts.outcomes,
         correct: attempts.correct,
@@ -25,38 +62,35 @@ export async function getFirstAttempts(
       })
       .from(attempts)
       .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
-      .where(inFirstSession(profileId)),
+      .where(ofProfile),
     db
       .select({
         taskId: reveals.taskId,
+        kind: taskSessions.kind,
         at: epochMs(reveals.createdAt),
         part: reveals.part,
       })
       .from(reveals)
       .innerJoin(taskSessions, eq(taskSessions.id, reveals.sessionId))
-      .where(inFirstSession(profileId)),
+      .where(ofProfile),
     db
-      .select({ taskId: skips.taskId, at: epochMs(skips.createdAt) })
+      .select({
+        taskId: skips.taskId,
+        kind: taskSessions.kind,
+        at: epochMs(skips.createdAt),
+      })
       .from(skips)
       .innerJoin(taskSessions, eq(taskSessions.id, skips.sessionId))
-      .where(inFirstSession(profileId)),
+      .where(ofProfile),
   ]);
-  const submitsOf = Map.groupBy(submits, (s) => s.taskId);
-  const revealsOf = Map.groupBy(opened, (r) => r.taskId);
-  const skipsOf = Map.groupBy(skipped, (s) => s.taskId);
-  return [...submitsOf].flatMap(([taskId, mine]) => {
-    const task = getTask(taskId);
-    if (!task) return [];
-    return {
-      taskId,
-      topic: task.topic,
-      keyRev: task.keyRev,
-      tz: mine.find((s) => s.tz)?.tz ?? null,
-      submits: mine,
-      reveals: revealsOf.get(taskId) ?? [],
-      skips: skipsOf.get(taskId)?.map((s) => s.at) ?? [],
-    };
-  });
+  return {
+    firstAttempts: toTaskLogs(
+      submits.filter(isFirst),
+      opened.filter(isFirst),
+      skipped.filter(isFirst),
+    ),
+    taskLogs: toTaskLogs(submits, opened, skipped),
+  };
 }
 
 export async function getActivity(profileId: string): Promise<TaskActivity[]> {

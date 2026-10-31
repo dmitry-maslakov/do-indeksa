@@ -22,11 +22,16 @@ export interface PlanContext<C = Candidate> {
   learning: Learning;
   picked: C[];
   policy: LearningPolicy;
+  now: number;
 }
 
 export interface Signal<C = Candidate, N extends SignalName = TaskSignalName> {
   name: N;
   score: (candidate: C, context: PlanContext<C>) => number;
+}
+
+export interface Rule<C = Candidate> {
+  allows: (candidate: C, context: PlanContext<C>) => boolean;
 }
 
 export type TopicSignal = Signal<TopicCandidate, TopicSignalName>;
