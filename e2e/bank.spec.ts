@@ -1,8 +1,10 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
-const params = (page: Page) =>
-  Object.fromEntries(new URL(page.url()).searchParams);
+const at = (page: Page) => {
+  const { pathname, searchParams } = new URL(page.url());
+  return { path: pathname, ...Object.fromEntries(searchParams) };
+};
 
 const hydrated = (page: Page) =>
   page.waitForFunction(() =>
@@ -23,15 +25,20 @@ async function reload(page: Page) {
 }
 
 function bank(page: Page) {
+  const cards = page.locator("main article").filter({ visible: true });
   return {
     topic: page.getByRole("combobox", { name: "Tema", exact: true }),
     level: page.getByRole("combobox", { name: "Težina", exact: true }),
     source: page.getByRole("combobox", { name: "Izvor", exact: true }),
     search: page.getByRole("searchbox"),
-    cards: page.locator("main article"),
-    links: page.locator("main article a"),
-    count: page.getByText(/^\d+(\.\d{3})* zadat(ak|ka|aka)$/),
-    empty: page.getByText("Nema zadataka za ove filtere."),
+    cards,
+    links: cards.locator("a"),
+    count: page
+      .getByText(/^\d+(\.\d{3})* zadat(ak|ka|aka)$/)
+      .filter({ visible: true }),
+    empty: page
+      .getByText("Nema zadataka za ove filtere.")
+      .filter({ visible: true }),
   };
 }
 
@@ -44,20 +51,20 @@ test("the bank keeps topic, source and level in the URL", async ({
   const first = await cards.first().textContent();
 
   await topic.selectOption({ label: "Logaritmi" });
-  await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank/topic/logarithms" });
   await expect(cards.first()).toContainText("Logaritmi");
   await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
 
   await level.selectOption({ label: "lako" });
   await expect
-    .poll(() => params(page))
-    .toEqual({ topic: "logarithms", level: "easy" });
+    .poll(() => at(page))
+    .toEqual({ path: "/bank/topic/logarithms", level: "easy" });
   await expect(cards.filter({ hasNotText: "lako" })).toHaveCount(0);
 
   await source.selectOption({ label: "Do indeksa" });
   await expect
-    .poll(() => params(page))
-    .toEqual({ topic: "logarithms", level: "easy", source: "ours" });
+    .poll(() => at(page))
+    .toEqual({ path: "/bank/topic/logarithms", level: "easy", source: "ours" });
   await expect(cards.filter({ hasNotText: "Do indeksa" })).toHaveCount(0);
 
   await reload(page);
@@ -66,9 +73,13 @@ test("the bank keeps topic, source and level in the URL", async ({
   await expect(source).toHaveValue("ours");
 
   await topic.selectOption({ label: "Sve teme" });
+  await expect
+    .poll(() => at(page))
+    .toEqual({ path: "/bank", level: "easy", source: "ours" });
+  await expect(level).toHaveValue("easy");
   await level.selectOption({ label: "Bilo koja" });
   await source.selectOption({ label: "Svi" });
-  await expect.poll(() => params(page)).toEqual({});
+  await expect.poll(() => at(page)).toEqual({ path: "/bank" });
   await expect(cards.first()).toHaveText(first ?? "");
   expect(errors).toEqual([]);
 });
@@ -82,12 +93,14 @@ test("the bank searches while typing and keeps the query in the URL", async ({
   const all = await count.textContent();
 
   await search.fill("nema-takve-reci");
-  await expect.poll(() => params(page)).toEqual({ q: "nema-takve-reci" });
+  await expect
+    .poll(() => at(page))
+    .toEqual({ path: "/bank", q: "nema-takve-reci" });
   await expect(empty).toBeVisible();
   await expect(cards).toHaveCount(0);
 
   await search.fill("jednacinu");
-  await expect.poll(() => params(page)).toEqual({ q: "jednacinu" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank", q: "jednacinu" });
   await expect(empty).toBeHidden();
   await expect(cards.first()).toBeVisible();
 
@@ -95,14 +108,14 @@ test("the bank searches while typing and keeps the query in the URL", async ({
   await expect(search).toHaveValue("jednacinu");
 
   await page.getByRole("link", { name: "Poništi filtere" }).click();
-  await expect.poll(() => params(page)).toEqual({});
+  await expect.poll(() => at(page)).toEqual({ path: "/bank" });
   await expect(search).toHaveValue("");
   await expect(count).toHaveText(all ?? "");
   expect(errors).toEqual([]);
 });
 
 test("a task opens from the filtered list", async ({ page, errors }) => {
-  await open(page, "/bank?topic=logarithms&level=easy");
+  await open(page, "/bank/topic/logarithms?level=easy");
   const { links } = bank(page);
   await expect(links.first()).toHaveAttribute("href", /\/bank\/[\w-]+$/);
 
@@ -117,37 +130,41 @@ test("back and forward restore the bank filters", async ({ page }) => {
   await expect(cards.first()).toBeVisible();
 
   await topic.selectOption({ label: "Logaritmi" });
-  await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank/topic/logarithms" });
   await level.selectOption({ label: "lako" });
   await expect
-    .poll(() => params(page))
-    .toEqual({ topic: "logarithms", level: "easy" });
+    .poll(() => at(page))
+    .toEqual({ path: "/bank/topic/logarithms", level: "easy" });
   await search.fill("nema-takve-reci");
   await expect(empty).toBeVisible();
 
   await page.goBack();
   await expect
-    .poll(() => params(page))
-    .toEqual({ topic: "logarithms", level: "easy" });
+    .poll(() => at(page))
+    .toEqual({ path: "/bank/topic/logarithms", level: "easy" });
   await expect(search).toHaveValue("");
   await expect(empty).toBeHidden();
   await expect(cards.first()).toContainText("lako");
 
   await page.goBack();
-  await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank/topic/logarithms" });
   await expect(level).toHaveValue("");
   await expect(topic).toHaveValue("logarithms");
 
   await page.goBack();
-  await expect.poll(() => params(page)).toEqual({});
+  await expect.poll(() => at(page)).toEqual({ path: "/bank" });
   await expect(topic).toHaveValue("");
 
   await page.goForward();
   await page.goForward();
   await page.goForward();
   await expect
-    .poll(() => params(page))
-    .toEqual({ topic: "logarithms", level: "easy", q: "nema-takve-reci" });
+    .poll(() => at(page))
+    .toEqual({
+      path: "/bank/topic/logarithms",
+      level: "easy",
+      q: "nema-takve-reci",
+    });
   await expect(topic).toHaveValue("logarithms");
   await expect(level).toHaveValue("easy");
   await expect(search).toHaveValue("nema-takve-reci");
@@ -179,11 +196,13 @@ test("a signed-in user filters the bank by status", async ({ page, auth }) => {
   await expect(cards.first()).toBeVisible();
 
   await status.selectOption({ label: "Tačno rešeni" });
-  await expect.poll(() => params(page)).toEqual({ status: "solved" });
+  await expect
+    .poll(() => at(page))
+    .toEqual({ path: "/bank", status: "solved" });
   await expect(empty).toBeVisible();
 
   await status.selectOption({ label: "Nerešeni" });
-  await expect.poll(() => params(page)).toEqual({ status: "new" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank", status: "new" });
   await expect(cards.first()).toBeVisible();
   await expect(empty).toBeHidden();
 });
@@ -226,7 +245,7 @@ test("the bank filters open in a sheet on a phone @mobile", async ({
 
   await page.getByRole("button", { name: "Filteri", exact: true }).click();
   await topic.selectOption({ label: "Logaritmi" });
-  await expect.poll(() => params(page)).toEqual({ topic: "logarithms" });
+  await expect.poll(() => at(page)).toEqual({ path: "/bank/topic/logarithms" });
   const shown = page.getByRole("button", { name: /^Prikaži / });
   await expect(async () =>
     expect(await shown.textContent()).toBe(
@@ -251,7 +270,7 @@ test("Preporučeno opens the recommended task of the topic", async ({
   page,
   errors,
 }) => {
-  await page.goto("/bank?topic=logarithms");
+  await page.goto("/bank/topic/logarithms");
   await page.getByRole("link", { name: "Preporučeno" }).first().click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect(page.getByLabel("Tema").filter({ visible: true })).toHaveValue(

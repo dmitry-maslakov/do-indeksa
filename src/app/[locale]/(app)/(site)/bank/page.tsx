@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { findTasks } from "@/features/bank/search";
 import { alternates } from "@/i18n/alternates";
@@ -15,19 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BankPage({
+export default function BankPage({
   searchParams,
 }: PageProps<"/[locale]/bank">) {
-  const t = await getTranslations("Bank");
-
   return (
-    <main className="px-3 pt-4 pb-9 max-lg:min-h-dvh max-lg:bg-muted lg:px-10 lg:pt-2 lg:pb-15">
-      <h1 className="sr-only">{t("title")}</h1>
-      <NuqsAdapter>
-        <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
-          <Bank searchParams={searchParams} />
-        </Suspense>
-      </NuqsAdapter>
-    </main>
+    <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
+      <Bank topic={null} searchParams={searchParams} />
+    </Suspense>
   );
 }

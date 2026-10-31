@@ -193,7 +193,7 @@ test("the bank records its pick, results and filter changes", async ({
   await page
     .getByRole("combobox", { name: "Tema", exact: true })
     .selectOption({ label: "Logaritmi" });
-  await expect(page).toHaveURL(/topic=logarithms/);
+  await expect(page).toHaveURL(/\/bank\/topic\/logarithms$/);
   await expect
     .poll(async () => {
       await flush(page);

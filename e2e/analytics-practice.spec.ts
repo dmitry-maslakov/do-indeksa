@@ -35,7 +35,7 @@ const inOrder = (rows: Row["props"][]) =>
   );
 
 test("a task opened from Preporučeno is a picker pick", async ({ page }) => {
-  await page.goto("/bank?topic=logarithms");
+  await page.goto("/bank/topic/logarithms");
   await page.getByRole("link", { name: "Preporučeno" }).first().click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect
@@ -230,7 +230,7 @@ test("an answer changed after going back is still recorded", async ({
   const field = page.locator("math-field").first();
   await field.click();
   await page.getByRole("link", { name: "Svi zadaci" }).click();
-  await expect(page).toHaveURL(/\/bank\?topic=/);
+  await expect(page).toHaveURL(/\/bank\/topic\//);
   await page.goBack();
   await field.press("Backspace");
   await field.pressSequentially("2");
@@ -288,7 +288,7 @@ test("opens from the hero, the next link and a reload are told apart", async ({
   await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
   await page.reload();
   await page.getByRole("link", { name: "Svi zadaci" }).click();
-  await expect(page).toHaveURL(/\/bank\?topic=/);
+  await expect(page).toHaveURL(/\/bank\/topic\//);
   await flush(page);
   await expect
     .poll(() => opens(page))

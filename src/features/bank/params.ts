@@ -1,3 +1,4 @@
+import { omit } from "es-toolkit";
 import {
   createLoader,
   createParser,
@@ -5,6 +6,7 @@ import {
   parseAsStringLiteral,
 } from "nuqs/server";
 import { levels } from "@/features/catalog/level";
+import type { BankQuery } from "./search";
 
 export const sorts = ["easy", "hard"] as const;
 
@@ -34,6 +36,13 @@ export const bankParsers = {
   status: parseAsStringLiteral(statusFilters),
 };
 
+export const queryParsers = omit(bankParsers, ["topic"]);
+
 export const loadBankFilters = createLoader(bankParsers);
 
 export const serializeBankFilters = createSerializer(bankParsers);
+
+const serializeQuery = createSerializer(queryParsers);
+
+export const bankHref = ({ topic, ...query }: BankQuery) =>
+  serializeQuery(topic ? `/bank/topic/${topic}` : "/bank", query);

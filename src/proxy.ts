@@ -3,6 +3,7 @@ import {
   allMethodSlugs,
   allTaskIds,
   allTheoryIds,
+  allTopics,
   allVariants,
 } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
@@ -19,12 +20,14 @@ const idsOf = (items: { id: string }[]) => new Set(items.map((i) => i.id));
 const taskIds = idsOf(allTaskIds);
 const topicIds = idsOf(allTheoryIds);
 const variantIds = idsOf(allVariants);
+const bankTopicIds = idsOf(allTopics);
 const topicExists = (topic: string) => topicIds.has(topic);
 
 const contentPages: Partial<
   Record<RouteTemplate, (...ids: string[]) => boolean>
 > = {
   "/bank/[id]": (id) => taskIds.has(id),
+  "/bank/topic/[topic]": (topic) => bankTopicIds.has(topic),
   "/theory/[topic]": topicExists,
   "/theory/[topic]/methods": topicExists,
   "/theory/[topic]/methods/[method]": (topic, slug) =>

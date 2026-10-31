@@ -15,7 +15,7 @@ export interface RailProps {
   current: string;
   topic: string;
   topics: { id: string; name: string }[];
-  listQuery: string;
+  listHref: string;
   queue: Promise<Queue>;
   starts: Promise<Record<string, string>>;
   variant?: RailVariant;
@@ -35,7 +35,7 @@ export function Rail({
   current,
   topic,
   topics,
-  listQuery,
+  listHref,
   queue,
   starts,
   variant,
@@ -52,7 +52,7 @@ export function Rail({
           variant="fill"
           items={[
             { href: href(current), label: bank("recommended"), active: true },
-            { href: `/bank${listQuery}`, label: bank("all"), active: false },
+            { href: listHref, label: bank("all"), active: false },
           ]}
         />
         <RailSelect

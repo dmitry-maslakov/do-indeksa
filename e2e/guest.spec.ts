@@ -192,7 +192,7 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   const sheet = await openSheet(page, /Eksponencijalne/);
   await expect(sheet.getByRole("link", { name: "Svi zadaci" })).toHaveAttribute(
     "href",
-    /\/bank\?topic=exponential-equations$/,
+    /\/bank\/topic\/exponential-equations$/,
   );
   await expect(
     sheet
