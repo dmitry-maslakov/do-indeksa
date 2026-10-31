@@ -12,11 +12,7 @@ import {
   type TopicSignalName,
 } from "./learning/policy";
 import type { Learning } from "./learning/state";
-import { isOpen, type TopicStatus } from "./learning/status/topic-status";
-
-export interface TopicProgress extends TopicStatus {
-  topic: string;
-}
+import { isOpen } from "./learning/status/topic-status";
 
 export interface Suggestion {
   topic: string;

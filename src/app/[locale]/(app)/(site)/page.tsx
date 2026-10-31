@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { Await } from "@/components/await";
-import { nextTasks } from "@/features/bank/queue/queue";
-import { getTopicPlan } from "@/features/progress/progress";
+import { currentWeekly } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
-import { getProfileId } from "@/server/profile";
 import { Home } from "./_components/home";
-import { HomeSkeleton } from "./_components/home-skeleton";
 import { OneTapGate } from "./_components/one-tap-gate";
+import { loadHome } from "./_components/personal";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -19,21 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function loadHome() {
-  const profileId = await getProfileId();
-  const [plan, starts] = await Promise.all([
-    getTopicPlan(profileId),
-    nextTasks(profileId),
-  ]);
-  return { ...plan, starts };
-}
+export default async function HomePage() {
+  const weekly = await currentWeekly();
 
-export default function HomePage() {
   return (
     <>
-      <Suspense fallback={<HomeSkeleton />}>
-        <Await promise={loadHome()}>{(home) => <Home {...home} />}</Await>
-      </Suspense>
+      <Home weekly={weekly} personal={loadHome()} />
       <Suspense>
         <OneTapGate />
       </Suspense>
