@@ -4,7 +4,12 @@ import { orderBy, sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { numberOf, positionOf, positions } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
-import { getTask, idsByTopic, renderTask } from "@/features/catalog/tasks";
+import {
+  getTask,
+  idsByTopic,
+  renderParts,
+  renderStatement,
+} from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import { customTaskIds } from "./variant-id";
 
@@ -84,14 +89,14 @@ export async function tasksFor(
 ): Promise<VariantTask[]> {
   const tasks = await Promise.all(
     taskIds.map(async (taskId) => {
+      const task = getTask(taskId);
       const slot = slotOf(taskId);
-      const html = await renderTask(taskId);
-      if (!slot || !html) return [];
+      if (!task || !slot) return [];
       return {
         ...slot,
         topicName: topicName(slot.topic, locale),
-        statement: html.statement,
-        parts: html.parts,
+        statement: await renderStatement(task),
+        parts: await renderParts(task),
       };
     }),
   );
