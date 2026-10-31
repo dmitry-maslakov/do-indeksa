@@ -21,7 +21,13 @@ const scores = (
     (topic) =>
       signal.score(
         { topic },
-        { learning: learningOf(topics), picked: [], policy, now },
+        {
+          learning: learningOf(topics),
+          candidates: [],
+          picked: [],
+          policy,
+          now,
+        },
       ) > 0,
   );
 

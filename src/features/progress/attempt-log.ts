@@ -32,13 +32,14 @@ function toTaskLogs(
   return [...taskIds].flatMap((taskId) => {
     const task = getTask(taskId);
     if (!task) return [];
-    const mine = submitsOf.get(taskId) ?? [];
+    const mine = (submitsOf.get(taskId) ?? []).toSorted((a, b) => a.at - b.at);
     return {
       taskId,
       topic: task.topic,
       difficulty: difficultyOf(task.difficulty),
       keyRev: task.keyRev,
       tz: mine.find((s) => s.tz)?.tz ?? null,
+      lastTz: mine.findLast((s) => s.tz)?.tz ?? null,
       submits: mine,
       reveals: revealsOf.get(taskId) ?? [],
       skips: skipsOf.get(taskId)?.map((s) => s.at) ?? [],

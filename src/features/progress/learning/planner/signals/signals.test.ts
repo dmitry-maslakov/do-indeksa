@@ -15,6 +15,7 @@ const context = (
   policy = defaultPolicy,
 ) => ({
   learning: learningAt(ability, observations),
+  candidates: [],
   picked: [],
   policy,
   now: start,
@@ -80,6 +81,7 @@ describe("repeatDue", () => {
   const scoreOf = (over: Partial<TaskHistory>, taskId = "t") =>
     repeatDue.score(candidate(taskId, 2), {
       learning: learningAt(0, [], { t: history(over) }),
+      candidates: [],
       picked: [],
       policy: defaultPolicy,
       now: start,

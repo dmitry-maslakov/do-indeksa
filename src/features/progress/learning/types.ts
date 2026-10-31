@@ -31,6 +31,7 @@ export interface TaskLog {
   difficulty: Difficulty;
   keyRev: string;
   tz: string | null;
+  lastTz: string | null;
   submits: LoggedSubmit[];
   reveals: LoggedReveal[];
   skips: number[];

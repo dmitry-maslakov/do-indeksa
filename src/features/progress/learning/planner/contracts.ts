@@ -20,6 +20,7 @@ export interface TopicCandidate {
 
 export interface PlanContext<C = Candidate> {
   learning: Learning;
+  candidates: C[];
   picked: C[];
   policy: LearningPolicy;
   now: number;
