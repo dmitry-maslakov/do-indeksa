@@ -5,6 +5,7 @@ import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
 import { db } from "@/server/db";
+import { noId } from "@/server/profile";
 import {
   difficultyOf,
   type LoggedReveal,
@@ -48,6 +49,7 @@ function toTaskLogs(
 }
 
 export async function getTaskLogs(profileId: string) {
+  if (profileId === noId) return { firstAttempts: [], taskLogs: [] };
   const ofProfile = eq(taskSessions.profileId, profileId);
   const [submits, opened, skipped] = await Promise.all([
     db
@@ -95,6 +97,7 @@ export async function getTaskLogs(profileId: string) {
 }
 
 export async function getActivity(profileId: string): Promise<TaskActivity[]> {
+  if (profileId === noId) return [];
   const rows = await db
     .select({
       taskId: attempts.taskId,

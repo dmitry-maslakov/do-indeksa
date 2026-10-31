@@ -22,6 +22,8 @@ vi.mock("@/server/db", () => {
   return { db: { select: (fields: object) => query(rowsOf(fields)) } };
 });
 
+vi.mock("@/server/profile", () => ({ noId: "0" }));
+
 const tz = "Europe/Belgrade";
 
 rows.submits = [
