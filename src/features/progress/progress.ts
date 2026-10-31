@@ -1,9 +1,11 @@
 import "server-only";
 import { and, desc, eq, inArray, max } from "drizzle-orm";
+import { cache } from "react";
 import { attempts, taskSessions } from "@/db/schema";
 import { examTopics } from "@/features/catalog/exams";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
+import { noId } from "@/server/profile";
 import { type TaskStat, weakest } from "./stats";
 import type { TaskStatus, TaskStatuses, Touched } from "./status";
 import { getLearning } from "./student-learning";
@@ -11,6 +13,7 @@ import { decidesStatus } from "./task-stats";
 import { suggest } from "./topic-progress";
 
 async function getLastSeen(profileId: string, taskIds?: string[]) {
+  if (profileId === noId) return [];
   const rows = await db
     .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
     .from(taskSessions)
@@ -24,7 +27,7 @@ async function getLastSeen(profileId: string, taskIds?: string[]) {
   return rows.flatMap((r) => (r.at ? [{ taskId: r.taskId, at: r.at }] : []));
 }
 
-const getLatestAttempts = (profileId: string, taskIds?: string[]) =>
+const latestAttemptsOf = (profileId: string, taskIds?: string[]) =>
   db
     .selectDistinctOn([attempts.taskId], {
       taskId: attempts.taskId,
@@ -40,6 +43,17 @@ const getLatestAttempts = (profileId: string, taskIds?: string[]) =>
       ),
     )
     .orderBy(attempts.taskId, desc(attempts.createdAt));
+
+const allLatestAttempts = cache(async (profileId: string) =>
+  latestAttemptsOf(profileId),
+);
+
+async function getLatestAttempts(profileId: string, taskIds?: string[]) {
+  if (profileId === noId) return [];
+  return taskIds
+    ? latestAttemptsOf(profileId, taskIds)
+    : allLatestAttempts(profileId);
+}
 
 export async function getTaskStatuses(
   profileId: string,
