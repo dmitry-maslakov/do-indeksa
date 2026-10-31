@@ -2,7 +2,7 @@
 
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
-import { Suspense, use } from "react";
+import { Suspense, use, useState } from "react";
 import { ExamMark } from "@/components/exam-mark";
 import { MathHtml } from "@/components/math-html";
 import { TopicIcon } from "@/features/catalog/topic-icon";
@@ -52,6 +52,7 @@ interface TaskCardProps {
 
 export function TaskCard({ card, statuses, intent }: TaskCardProps) {
   const t = useTranslations("Bank");
+  const [intended, setIntended] = useState(false);
 
   return (
     <article className="flex flex-col gap-3 rounded-2xl bg-card px-4 pt-4 pb-4 [contain-intrinsic-size:auto_200px] [content-visibility:auto] lg:bg-muted lg:px-5 lg:pt-4 lg:pb-5">
@@ -70,7 +71,9 @@ export function TaskCard({ card, statuses, intent }: TaskCardProps) {
       </div>
       <Link
         href={`/bank/${card.id}`}
-        prefetch={false}
+        prefetch={intended ? null : false}
+        onMouseEnter={() => setIntended(true)}
+        onFocus={() => setIntended(true)}
         data-intent={intent}
         className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
       >
