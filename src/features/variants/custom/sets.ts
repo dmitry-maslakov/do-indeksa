@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { invariant } from "es-toolkit";
 import { cache } from "react";
 import { sets } from "@/db/schema";
@@ -18,6 +18,14 @@ export async function saveSet(taskIds: string[]) {
     .returning({ id: sets.id });
   invariant(row, "saving a set returned no row");
   return setCode(row.id);
+}
+
+export async function findSetCode(taskIds: string[]) {
+  const [row] = await db
+    .select({ id: sets.id })
+    .from(sets)
+    .where(and(eq(sets.taskIds, taskIds), isNull(sets.code)));
+  return row && setCode(row.id);
 }
 
 export const findSet = cache(async (code: string) => {

@@ -3,6 +3,7 @@ import { SignInStrip } from "@/features/account/sign-in-strip";
 import { comparisonsOf } from "@/features/tests/comparisons";
 import type { getTest } from "@/features/tests/finished-tests";
 import { review } from "@/features/tests/review";
+import { findSetCode } from "@/features/variants/custom/sets";
 import { variantTitle } from "@/features/variants/variant-title";
 import { getVariant, tasksFor } from "@/features/variants/variants";
 import { ReviewRows } from "./review-rows";
@@ -18,15 +19,19 @@ export async function TestReview({
 }) {
   const locale = await getLocale();
   const strip = await getTranslations("SignInStrip");
-  const tasks = await tasksFor(found.test.taskIds, locale);
-  const result = review(tasks, found.attempts);
   const variant = getVariant(found.test.variantId);
+  const [tasks, code] = await Promise.all([
+    tasksFor(found.test.taskIds, locale),
+    variant?.kind === "custom" && findSetCode(variant.taskIds),
+  ]);
+  const result = review(tasks, found.attempts);
 
   return (
     <div className="flex flex-col gap-10 pt-2 md:gap-12 md:pt-5">
       <ReviewSummary
         review={result}
         variantId={found.test.variantId}
+        href={code ? `/v/${code}` : `/variants/${found.test.variantId}`}
         title={
           variant ? await variantTitle(variant, locale) : found.test.variantId
         }
