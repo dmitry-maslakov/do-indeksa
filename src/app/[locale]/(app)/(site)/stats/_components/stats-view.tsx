@@ -40,10 +40,7 @@ async function loadStats() {
 
 type Stats = Awaited<ReturnType<typeof loadStats>>;
 
-export async function StatsView({
-  searchParams,
-}: Pick<PageProps<"/[locale]/stats">, "searchParams">) {
-  const byNumber = (await searchParams).by === "number";
+export async function StatsView() {
   const stats = await loadStats();
   const guest = !(await getSession());
   const strip = await getTranslations("SignInStrip");
@@ -55,37 +52,32 @@ export async function StatsView({
           {strip("stats")}
         </SignInStrip>
       )}
-      <StatsCards byNumber={byNumber} stats={stats} />
+      <StatsCards stats={stats} />
     </div>
   );
 }
 
-export function StatsCards({
-  byNumber,
-  stats,
-}: {
-  byNumber?: boolean;
-  stats?: Stats;
-}) {
+export function StatsCards({ stats }: { stats?: Stats }) {
   const locale = useLocale();
   const exam = useTranslations("Exam");
   const byTask = stats?.byTask ?? [];
   const numbers = positions.map((p) => p.number);
-  const accuracy = byNumber
-    ? accuracyBy(byTask, numbers, (s) => s.number).map((a) => ({
-        ...a,
-        label: exam("task", { number: Number(a.key) }),
-      }))
-    : accuracyBy(byTask, examTopics, (s) => s.topic).map((a) => ({
-        ...a,
-        label: topicName(String(a.key), locale),
-      }));
   const summary = stats && totals(byTask);
 
   return (
     <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
-        <AccuracyCard rows={accuracy} pending={!stats} />
+        <AccuracyCard
+          topics={accuracyBy(byTask, examTopics, (s) => s.topic).map((a) => ({
+            ...a,
+            label: topicName(String(a.key), locale),
+          }))}
+          numbers={accuracyBy(byTask, numbers, (s) => s.number).map((a) => ({
+            ...a,
+            label: exam("task", { number: Number(a.key) }),
+          }))}
+          pending={!stats}
+        />
         <TimeBars
           bars={meanTimeByNumber(byTask, numbers).map((bar) => ({
             ...bar,

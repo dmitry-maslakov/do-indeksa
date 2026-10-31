@@ -1,30 +1,59 @@
+"use client";
+
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { LinkTabs } from "@/components/link-tabs";
 import { ProgressBar } from "@/components/progress-bar";
-import { SearchTabs } from "@/components/search-tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WithSearchParams } from "@/components/with-url";
 import { type Accuracy, minSample } from "@/features/progress/stats";
 
+type Rows = (Accuracy & { label: string })[];
+
 interface AccuracyCardProps {
-  rows: (Accuracy & { label: string })[];
+  topics: Rows;
+  numbers: Rows;
   pending?: boolean;
 }
 
-export function AccuracyCard({ rows, pending }: AccuracyCardProps) {
+export function AccuracyCard(props: AccuracyCardProps) {
+  return (
+    <WithSearchParams>
+      {(params) => (
+        <AccuracyView
+          {...props}
+          by={params && (params.get("by") === "number" ? "numbers" : "topics")}
+        />
+      )}
+    </WithSearchParams>
+  );
+}
+
+function AccuracyView({
+  by,
+  pending,
+  ...groups
+}: AccuracyCardProps & { by?: "topics" | "numbers" }) {
   const t = useTranslations("Stats");
+  const rows = groups[by ?? "topics"];
   return (
     <Card size="lg" className="gap-5">
       <CardHeader>
         <CardTitle>{t("weaker")}</CardTitle>
-        <SearchTabs
+        <LinkTabs
           label={t("weaker")}
           variant="segmented"
-          param="by"
           control="stats_by"
+          shallow
           items={[
-            { href: "/stats", label: t("topics") },
-            { href: "/stats?by=number", label: t("numbers"), value: "number" },
+            { href: "/stats", label: t("topics"), active: by === "topics" },
+            {
+              href: "/stats?by=number",
+              label: t("numbers"),
+              value: "number",
+              active: by === "numbers",
+            },
           ]}
         />
       </CardHeader>

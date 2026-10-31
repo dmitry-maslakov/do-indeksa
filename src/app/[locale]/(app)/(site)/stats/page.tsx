@@ -9,16 +9,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function StatsPage({
-  searchParams,
-}: PageProps<"/[locale]/stats">) {
+export default async function StatsPage() {
   const t = await getTranslations("Stats");
 
   return (
     <main className="px-4 pb-9 md:px-9">
       <PageTitle className="pt-4 pb-5">{t("title")}</PageTitle>
       <Suspense fallback={<StatsCards />}>
-        <StatsView searchParams={searchParams} />
+        <StatsView />
       </Suspense>
     </main>
   );
