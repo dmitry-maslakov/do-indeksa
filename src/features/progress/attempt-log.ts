@@ -4,7 +4,7 @@ import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
 import { db } from "@/server/db";
-import type { FirstAttempt } from "./learning/types";
+import type { FirstAttempt, TaskActivity } from "./learning/types";
 
 const inFirstSession = (profileId: string) =>
   and(eq(taskSessions.profileId, profileId), eq(taskSessions.kind, "first"));
@@ -59,26 +59,19 @@ export async function getFirstAttempts(
   });
 }
 
-export async function getLastActivity(profileId: string) {
+export async function getActivity(profileId: string): Promise<TaskActivity[]> {
   const rows = await db
     .select({
       taskId: attempts.taskId,
+      tz: taskSessions.tz,
       at: epochMs(max(attempts.createdAt)),
     })
     .from(attempts)
+    .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
     .where(eq(attempts.profileId, profileId))
-    .groupBy(attempts.taskId);
-  const byTopic = Map.groupBy(
-    rows.flatMap(({ taskId, at }) => {
-      const task = getTask(taskId);
-      return task ? { topic: task.topic, at } : [];
-    }),
-    (r) => r.topic,
-  );
-  return new Map(
-    [...byTopic].map(([topic, mine]) => [
-      topic,
-      Math.max(...mine.map((r) => r.at)),
-    ]),
-  );
+    .groupBy(attempts.taskId, taskSessions.tz);
+  return rows.flatMap((row) => {
+    const task = getTask(row.taskId);
+    return task ? { ...row, topic: task.topic } : [];
+  });
 }

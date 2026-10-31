@@ -1,16 +1,5 @@
 import "server-only";
-import {
-  and,
-  count,
-  desc,
-  eq,
-  gte,
-  inArray,
-  max,
-  or,
-  type SQL,
-  sql,
-} from "drizzle-orm";
+import { and, count, eq, gte, max, or, type SQL, sql } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { numberOf } from "@/features/catalog/exams";
@@ -74,23 +63,3 @@ export async function getTaskTimes(profileId: string) {
     .groupBy(taskSessions.taskId);
   return new Map(rows.map((r) => [r.taskId, r.ms]));
 }
-
-export const getLatestResults = async (
-  profileId: string,
-  taskIds: string[],
-  limit: number,
-) =>
-  (
-    await db
-      .select({ correct: attempts.correct })
-      .from(attempts)
-      .where(
-        and(
-          eq(attempts.profileId, profileId),
-          inArray(attempts.taskId, taskIds),
-          decidesStatus,
-        ),
-      )
-      .orderBy(desc(attempts.createdAt))
-      .limit(limit)
-  ).map((row) => row.correct);

@@ -1,4 +1,9 @@
-import type { LearningPolicy, SignalName } from "../policy";
+import type {
+  LearningPolicy,
+  SignalName,
+  TaskSignalName,
+  TopicSignalName,
+} from "../policy";
 import type { Learning } from "../state";
 import type { Difficulty } from "../types";
 
@@ -9,18 +14,27 @@ export interface Candidate {
   exam: boolean;
 }
 
-export interface PlanContext {
+export interface TopicCandidate {
+  topic: string;
+}
+
+export interface PlanContext<C = Candidate> {
   learning: Learning;
-  picked: Candidate[];
+  picked: C[];
   policy: LearningPolicy;
 }
 
-export interface Signal {
-  name: SignalName;
-  score: (candidate: Candidate, context: PlanContext) => number;
+export interface Signal<C = Candidate, N extends SignalName = TaskSignalName> {
+  name: N;
+  score: (candidate: C, context: PlanContext<C>) => number;
 }
 
-export interface Decision {
-  candidate: Candidate;
-  reason: SignalName;
+export type TopicSignal = Signal<TopicCandidate, TopicSignalName>;
+
+export interface Decision<
+  C = Candidate,
+  N extends SignalName = TaskSignalName,
+> {
+  candidate: C;
+  reason: N;
 }

@@ -1,9 +1,23 @@
 import { dayMs, hourMs } from "@/lib/dates";
 import type { Difficulty } from "./types";
 
-export const signalNames = ["levelFit", "hardNeeded", "examTask"] as const;
+export const taskSignalNames = ["levelFit", "hardNeeded", "examTask"] as const;
 
-export type SignalName = (typeof signalNames)[number];
+const topicSignalNames = [
+  "stuck",
+  "review",
+  "finishTopic",
+  "keepGoing",
+  "switchTopic",
+  "startNext",
+  "keepInShape",
+] as const;
+
+export type TaskSignalName = (typeof taskSignalNames)[number];
+
+export type TopicSignalName = (typeof topicSignalNames)[number];
+
+export type SignalName = TaskSignalName | TopicSignalName;
 
 export interface LearningPolicy {
   attemptGapMs: number;
@@ -26,6 +40,10 @@ export interface LearningPolicy {
   stepFloor: number;
   evidenceHalfLifeMs: number;
   hardChanceFrom: number;
+  stuckAfter: number;
+  tasksPerTopicPerDay: number;
+  maxOpenTopics: number;
+  keepInShapeAfterMs: number;
   signalWeights: Record<SignalName, number>;
 }
 
@@ -50,5 +68,20 @@ export const defaultPolicy: LearningPolicy = {
   stepFloor: 0.3,
   evidenceHalfLifeMs: 7 * dayMs,
   hardChanceFrom: 0.4,
-  signalWeights: { levelFit: 1, hardNeeded: 0.3, examTask: 0.1 },
+  stuckAfter: 4,
+  tasksPerTopicPerDay: 6,
+  maxOpenTopics: 3,
+  keepInShapeAfterMs: 7 * dayMs,
+  signalWeights: {
+    levelFit: 1,
+    hardNeeded: 0.3,
+    examTask: 0.1,
+    stuck: 1,
+    review: 0.8,
+    finishTopic: 0.6,
+    keepGoing: 0.5,
+    switchTopic: 0.5,
+    startNext: 0.4,
+    keepInShape: 0.2,
+  },
 };

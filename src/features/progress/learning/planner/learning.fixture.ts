@@ -1,6 +1,6 @@
-import type { Learning } from "../state";
+import type { Learning, TopicLearning } from "../state";
 import { start } from "../status/observations.fixture";
-import { topicStatus } from "../status/topic-status";
+import { type TopicState, topicStatus } from "../status/topic-status";
 import type { Difficulty, Observation } from "../types";
 import type { Candidate } from "./contracts";
 
@@ -24,6 +24,34 @@ export const learningAt = (
           start,
         ),
         ability,
+        tasksToday: 0,
+        failStreak: 0,
+        idleMs: null,
       },
     ],
   ]);
+
+interface TopicSetup extends Partial<Omit<TopicLearning, "status">> {
+  state?: TopicState;
+  almost?: boolean;
+  lastAt?: number | null;
+}
+
+const topicAt = ({
+  state = "notStarted",
+  almost = false,
+  lastAt = state === "notStarted" ? null : start,
+  ...rest
+}: TopicSetup = {}): TopicLearning => ({
+  status: { state, fill: 0, almost, missing: [], lastAt },
+  ability: 0,
+  tasksToday: 0,
+  failStreak: 0,
+  idleMs: lastAt === null ? null : 0,
+  ...rest,
+});
+
+export const learningOf = (topics: Record<string, TopicSetup>): Learning =>
+  new Map(
+    Object.entries(topics).map(([topic, setup]) => [topic, topicAt(setup)]),
+  );

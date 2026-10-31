@@ -33,6 +33,13 @@ export interface FirstAttempt {
   skips: number[];
 }
 
+export interface TaskActivity {
+  taskId: string;
+  topic: string;
+  tz: string | null;
+  at: number;
+}
+
 export type ObservationResult = "clean" | "helped" | "fail";
 
 export interface Observation {

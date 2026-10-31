@@ -245,7 +245,8 @@
       "next": "Prethodna tema je gotova — ovo je sledeća.",
       "almost": "Još malo i tema je gotova.",
       "started": "Tema je započeta — vredi je završiti pre sledeće.",
-      "done": "Sve teme su savladane — kratko ponavljanje ih drži svežim."
+      "done": "Sve teme su savladane — kratko ponavljanje ih drži svežim.",
+      "review": "Savladana pre nekog vremena — kratko ponavljanje je čuva."
     },
     "continueTopic": "Nastavi →",
     "startTopic": "Počni →",
