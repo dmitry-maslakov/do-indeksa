@@ -1,5 +1,14 @@
-import { maxBy } from "es-toolkit";
 import type { SuggestionReason } from "@/db/columns";
+import type { TopicCandidate } from "./learning/planner/contracts";
+import { plan, scoring } from "./learning/planner/plan";
+import { lastPracticed } from "./learning/planner/topic-signals/last-practiced";
+import { topicSignals } from "./learning/planner/topic-signals/topic-signals";
+import {
+  defaultPolicy,
+  type LearningPolicy,
+  type TopicSignalName,
+} from "./learning/policy";
+import type { Learning } from "./learning/state";
 import { isMastered, type TopicStatus } from "./learning/status/topic-status";
 
 export interface TopicProgress extends TopicStatus {
@@ -11,34 +20,58 @@ export interface Suggestion {
   reason: SuggestionReason;
 }
 
-export const lastPracticed = (topics: TopicProgress[]) =>
-  maxBy(
-    topics.filter((t) => t.lastAt !== null),
-    (t) => t.lastAt ?? 0,
+const reasons: Record<TopicSignalName, SuggestionReason> = {
+  stuck: "stuck",
+  review: "review",
+  finishTopic: "almost",
+  keepGoing: "started",
+  switchTopic: "started",
+  startNext: "next",
+  keepInShape: "review",
+};
+
+const isFresh = (learning: Learning) => lastPracticed(learning) === undefined;
+
+function ownReason(topic: string, learning: Learning): SuggestionReason {
+  const status = learning.get(topic)?.status;
+  if (status?.state === "notStarted") return "next";
+  return status?.almost ? "almost" : "started";
+}
+
+export function reasonOf(
+  signal: TopicSignalName,
+  topic: string,
+  learning: Learning,
+): SuggestionReason {
+  if (signal === "startNext" && isFresh(learning)) return "first";
+  if (signal === "switchTopic") return ownReason(topic, learning);
+  return reasons[signal];
+}
+
+function fallback(learning: Learning): Suggestion | undefined {
+  const topics = [...learning];
+  const open = topics.find(
+    ([, t]) => t.status.state !== "notStarted" && !isMastered(t.status.state),
   );
+  const [first] = topics;
+  if (isFresh(learning)) return first && { topic: first[0], reason: "first" };
+  if (open) return { topic: open[0], reason: "started" };
+  return first && { topic: first[0], reason: "done" };
+}
 
 export function suggest(
-  topics: TopicProgress[],
-  latest: boolean[],
+  learning: Learning,
+  policy: LearningPolicy = defaultPolicy,
 ): Suggestion | undefined {
-  const last = lastPracticed(topics);
-  if (!last) {
-    const first = topics[0];
-    return first && { topic: first.topic, reason: "first" };
-  }
-  if (latest.filter((right) => !right).length >= 2)
-    return { topic: last.topic, reason: "stuck" };
-  if (isMastered(last.state)) {
-    const at = topics.indexOf(last);
-    const next = [...topics.slice(at + 1), ...topics.slice(0, at)].find(
-      (t) => !isMastered(t.state),
-    );
-    return next
-      ? { topic: next.topic, reason: "next" }
-      : { topic: last.topic, reason: "done" };
-  }
-  return {
-    topic: last.topic,
-    reason: last.almost ? "almost" : "started",
-  };
+  const candidates: TopicCandidate[] = [...learning.keys()].map((topic) => ({
+    topic,
+  }));
+  const scored = scoring(candidates, learning, topicSignals, policy);
+  const [decision] = plan(scored, learning, topicSignals, 1, [], policy);
+  return decision
+    ? {
+        topic: decision.candidate.topic,
+        reason: reasonOf(decision.reason, decision.candidate.topic, learning),
+      }
+    : fallback(learning);
 }

@@ -2,14 +2,13 @@ import "server-only";
 import { and, desc, eq, inArray, max } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
 import { examTopics } from "@/features/catalog/exams";
-import { idsByTopic } from "@/features/catalog/tasks";
 import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { type TaskStat, weakest } from "./stats";
 import type { TaskStatus, TaskStatuses, Touched } from "./status";
 import { getLearning } from "./student-learning";
-import { decidesStatus, getLatestResults } from "./task-stats";
-import { lastPracticed, suggest } from "./topic-progress";
+import { decidesStatus } from "./task-stats";
+import { suggest } from "./topic-progress";
 
 async function getLastSeen(profileId: string, taskIds?: string[]) {
   const rows = await db
@@ -85,11 +84,7 @@ export async function getTopicPlan(profileId: string) {
     topic,
     ...status,
   }));
-  const last = lastPracticed(topics);
-  const latest = last
-    ? await getLatestResults(profileId, idsByTopic.get(last.topic) ?? [], 3)
-    : [];
-  return { topics, suggestion: suggest(topics, latest) };
+  return { topics, suggestion: suggest(learning) };
 }
 
 const weakCount = 3;

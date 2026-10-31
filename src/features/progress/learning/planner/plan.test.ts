@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { defaultPolicy } from "../policy";
 import type { Signal } from "./contracts";
-import { candidate, learningAt } from "./learning.fixture";
-import { plan } from "./plan";
+import { candidate, learningAt, learningOf } from "./learning.fixture";
+import { plan, scoring } from "./plan";
 import { signals } from "./signals/signals";
+import { topicSignals } from "./topic-signals/topic-signals";
 
 const learning = learningAt(0);
 
@@ -36,7 +37,12 @@ describe("plan", () => {
       [],
       {
         ...defaultPolicy,
-        signalWeights: { levelFit: 0.4, hardNeeded: 0.5, examTask: 0.1 },
+        signalWeights: {
+          ...defaultPolicy.signalWeights,
+          levelFit: 0.4,
+          hardNeeded: 0.5,
+          examTask: 0.1,
+        },
       },
     );
     expect(picks).toEqual([
@@ -80,5 +86,27 @@ describe("plan", () => {
     expect(plan([medium, hard], learningAt(-0.5), signals, 1)).toEqual([
       { candidate: medium, reason: "levelFit" },
     ]);
+  });
+
+  it("plans over topic candidates as well", () => {
+    const topics = learningOf({ a: {}, b: { state: "review" } });
+    expect(
+      plan([{ topic: "a" }, { topic: "b" }], topics, topicSignals, 2),
+    ).toEqual([
+      { candidate: { topic: "b" }, reason: "review" },
+      { candidate: { topic: "a" }, reason: "startNext" },
+    ]);
+  });
+});
+
+describe("scoring", () => {
+  it("keeps the candidates some signal scores", () => {
+    expect(
+      scoring([easy, medium, hard], learning, [
+        prefers("levelFit", ["medium"]),
+        prefers("examTask", ["hard"]),
+      ]),
+    ).toEqual([medium, hard]);
+    expect(scoring([easy], learning, [prefers("levelFit", [])])).toEqual([]);
   });
 });

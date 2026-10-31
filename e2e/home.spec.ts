@@ -40,7 +40,6 @@ test("the home page suggests a topic and maps progress", async ({
   const { profileId: id } = await auth.signIn();
   await seedAttempt(auth.db, id, "plan-001", false, 240);
   await seedAttempt(auth.db, id, "fun-002", true, 3);
-  await seedAttempt(auth.db, id, "eks-001", false, 2);
   await seedAttempt(auth.db, id, "eks-001", false, 1);
   await page.goto("/");
 
@@ -51,7 +50,7 @@ test("the home page suggests a topic and maps progress", async ({
     }),
   ).toBeVisible();
   await expect(
-    page.getByText("Ovde je zapelo — bolje sad, dok je sveže."),
+    page.getByText("Tema je započeta — vredi je završiti pre sledeće."),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Nastavi →" })).toBeVisible();
 

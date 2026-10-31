@@ -27,6 +27,7 @@ export const suggestionReasons = [
   "almost",
   "started",
   "done",
+  "review",
 ] as const;
 
 export type SuggestionReason = (typeof suggestionReasons)[number];
