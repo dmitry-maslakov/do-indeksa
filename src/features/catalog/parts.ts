@@ -49,11 +49,21 @@ const lettered = /^([a-zđ]\))\s*(.*)$/u;
 export const statementLetters = (text: string) =>
   uniq(Array.from(text.matchAll(/\*\*([a-zđ]\))\*\*/gu), (m) => m[1] ?? ""));
 
-function symbolOf(rest: string) {
+const word = /^\p{L}\p{Ll}{2,}$/u;
+const lowercase = /^\p{Ll}+\.?$/u;
+
+function nameOf(rest: string) {
   const bare = rest.replace(/\s*=\s*$/, "");
+  const equation = bare !== rest;
+  const words = bare.split(/\s+/);
+  const symbol = words.pop() ?? "";
+  if (word.test(symbol)) return { caption: bare, symbol: null };
+  if (equation && words.length && words.every((w) => lowercase.test(w)))
+    return { caption: words.join(" "), symbol };
   const short = rest.length <= 8 && !/\s/.test(bare);
-  const equation = /=\s*$/.test(rest) && rest.length <= 18;
-  return rest && (short || equation) ? bare : null;
+  return short || (equation && rest.length <= 18)
+    ? { caption: null, symbol: bare || null }
+    : { caption: rest || null, symbol: null };
 }
 
 const capital = /^\$?[A-Z](?:\([^)]*\)|_\{?\w+\}?)?\$?$/;
@@ -84,10 +94,12 @@ export function labelOf(
   const match = lettered.exec(label ?? "");
   const rest = (match ? (match[2] ?? "") : (label ?? "")).trim();
   const fallback = count > 1 ? `${index + 1}.` : "";
-  const symbol = variable ? `$${variable}$` : symbolOf(rest);
+  const { caption, symbol } = variable
+    ? { caption: rest || null, symbol: `$${variable}$` }
+    : nameOf(rest);
   return {
     letter: part ? `${part})` : (match?.[1] ?? fallback),
-    caption: rest && (variable || !symbol) ? rest : null,
+    caption,
     ...frame(kind, symbol, unit),
   };
 }
