@@ -117,6 +117,7 @@
     "repeat": "ponavljanje",
     "exam": "Prijemni {year}",
     "visitSummary": "{done, plural, one {# zadatak} few {# zadatka} other {# zadataka}}{right, plural, =0 {} other { · <ok># tačno</ok>}}",
+    "visitPosition": "{position, number}. zadatak{right, plural, =0 {} other { · <ok># tačno</ok>}}",
     "current": "Sada rešavaš",
     "upcoming": "Na redu",
     "back": "Nazad",

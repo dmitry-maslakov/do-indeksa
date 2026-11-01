@@ -117,6 +117,7 @@
     "repeat": "повторение",
     "exam": "Экзамен {year}",
     "visitSummary": "{done, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}}{right, plural, =0 {} other { · <ok># верно</ok>}}",
+    "visitPosition": "{position, number}-я задача{right, plural, =0 {} other { · <ok># верно</ok>}}",
     "current": "Сейчас решаешь",
     "upcoming": "На очереди",
     "back": "Назад",
