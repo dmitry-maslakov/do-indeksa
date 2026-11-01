@@ -94,6 +94,7 @@ describe("planQueue", () => {
     ]);
     expect(ids(before.upcoming)).toEqual(["a", "b", "e", "f", "g", "h"]);
     expect(after.visit).toEqual(["a"]);
+    expect(after.repeated).toEqual(["a"]);
     expect(ids(after.upcoming)).toEqual(["b", "e", "f", "g", "h", "c"]);
   });
 
@@ -306,7 +307,13 @@ describe("planQueue", () => {
         statuses: new Map(),
         current: "a",
       });
-      expect(queue).toEqual({ visit: ["a"], upcoming: [], returning: false });
+      expect(queue).toEqual({
+        visit: ["a"],
+        upcoming: [],
+        returning: false,
+        repeated: [],
+        begun: at(-10),
+      });
     });
 
     it("starts the topic where the rail starts while the visit lasts", () => {

@@ -120,7 +120,7 @@
     "current": "Solving now",
     "back": "Back",
     "sheet": "Topic tasks",
-    "before": "{status, select, solved {solved before} other {wrong before}}",
+    "before": "{status, select, solved {solved before} repeat {review} other {wrong before}}",
     "next": "Next",
     "upNext": "Next",
     "nextTask": "Next task",

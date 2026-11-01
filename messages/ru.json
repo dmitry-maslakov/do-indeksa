@@ -120,7 +120,7 @@
     "current": "Сейчас решаешь",
     "back": "Назад",
     "sheet": "Задачи темы",
-    "before": "{status, select, solved {решена раньше} other {раньше неверно}}",
+    "before": "{status, select, solved {решена раньше} repeat {повторение} other {раньше неверно}}",
     "next": "Дальше",
     "upNext": "Следующая",
     "nextTask": "Следующая задача",

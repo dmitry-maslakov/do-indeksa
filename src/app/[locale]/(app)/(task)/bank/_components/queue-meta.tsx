@@ -51,7 +51,7 @@ export function QueueMeta({
           {t("status", { status: result })}
         </Part>
       )}
-      {upcoming && task.repeat && (
+      {task.repeat && !result && (
         <Part className="gap-0.5 text-progress-text">
           <RotateCcwIcon aria-hidden className="size-3 stroke-[2.4]" />
           {t("repeat")}

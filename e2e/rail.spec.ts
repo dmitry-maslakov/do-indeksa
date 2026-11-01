@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { answer, expect, test } from "./fixtures";
+import { answer, expect, seedAttempt, test } from "./fixtures";
 
 const bankOnly = () =>
   test.skip(
@@ -120,6 +120,26 @@ test("a wrong answer is named in words", async ({ page }) => {
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "netačno",
   );
+});
+
+test("a repeat stays a repeat once it is opened", async ({ page, auth }) => {
+  const { profileId } = await auth.signIn();
+  await seedAttempt(auth.db, profileId, "eks-001", false, 48);
+  await page.goto("/bank/eks-002");
+  const { rows, current } = rail(page);
+  const repeat = rows.and(page.locator('[data-id="eks-001"]'));
+  await expect(repeat).toContainText("ponavljanje");
+
+  await repeat.click();
+  await expect(current).toHaveAttribute("data-id", "eks-001");
+  await expect(current).toContainText("ponavljanje");
+  await expect(current).not.toContainText("netačno");
+  await expect(page.getByText("ponavljanje", { exact: true })).toHaveCount(2);
+  await expect(page.getByText("ranije netačno")).toHaveCount(0);
+
+  await page.reload();
+  await expect(current).toContainText("ponavljanje");
+  await expect(current).not.toContainText("netačno");
 });
 
 test("a task whose result was shown says so", async ({ page }) => {

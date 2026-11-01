@@ -5,7 +5,7 @@ import { type Level, levelOf } from "@/features/catalog/level";
 import { getTask } from "@/features/catalog/tasks";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { difficultyOf } from "@/features/progress/learning/types";
-import { getTouched, getTouchStatuses } from "@/features/progress/progress";
+import { getTouched, getVisitStatuses } from "@/features/progress/progress";
 import type { Answered, TouchStatus } from "@/features/progress/status";
 import { getTimeline } from "@/features/progress/student-learning";
 import { type Pick, planQueue, startSize, upcomingSize } from "./picks";
@@ -24,9 +24,11 @@ export interface QueueRow {
   reason?: PickReason;
 }
 
+export type Before = Answered | "repeat";
+
 export interface Queue {
   next?: string;
-  before?: Answered;
+  before?: Before;
   visit: QueueRow[];
   upcoming: QueueRow[];
 }
@@ -106,8 +108,11 @@ export const topicStart = (
 export async function loadQueue(input: PoolInput): Promise<Queue> {
   const { touched, queue } = await plan(input);
   const { current, profileId } = input;
-  const listed = [...queue.visit, ...queue.upcoming.map((p) => p.id)];
-  const statuses = await getTouchStatuses(profileId, listed, touched);
+  const statuses = await getVisitStatuses(profileId, queue.visit, queue.begun);
+  const beforeOf = (id: string): Before | undefined => {
+    if (queue.repeated.includes(id)) return "repeat";
+    return queue.returning ? touched.statuses.get(id) : undefined;
+  };
   const row = (id: string, pick?: Pick): QueueRow[] => {
     const task = getTask(id);
     if (!task) return [];
@@ -119,17 +124,14 @@ export async function loadQueue(input: PoolInput): Promise<Queue> {
         year: examYear(id),
         level: levelOf(task.difficulty),
         status: statuses.get(id),
-        repeat: pick?.repeat,
+        repeat: pick?.repeat ?? queue.repeated.includes(id),
         reason: pick?.reason,
       },
     ];
   };
   return {
     next: queue.upcoming[0]?.id,
-    before:
-      current !== undefined && queue.returning
-        ? touched.statuses.get(current)
-        : undefined,
+    before: current === undefined ? undefined : beforeOf(current),
     visit: queue.visit.flatMap((id) => row(id)),
     upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
   };

@@ -120,7 +120,7 @@
     "current": "Sada rešavaš",
     "back": "Nazad",
     "sheet": "Zadaci teme",
-    "before": "{status, select, solved {rešen ranije} other {ranije netačno}}",
+    "before": "{status, select, solved {rešen ranije} repeat {ponavljanje} other {ranije netačno}}",
     "next": "Sledeći",
     "upNext": "Sledeći",
     "nextTask": "Sledeći zadatak",

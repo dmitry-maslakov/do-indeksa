@@ -89,6 +89,7 @@ export function planQueue({
       : [];
   const steps = [...touches.filter((t) => t.from >= begun), ...added];
   const opened: string[] = [];
+  const repeated: string[] = [];
   let upcoming: Pick[] = [];
 
   const topUp = (moment: number) => {
@@ -118,6 +119,8 @@ export function planQueue({
   for (const { taskId, from } of steps) {
     if (opened.includes(taskId)) continue;
     opened.push(taskId);
+    if (upcoming.some((p) => p.id === taskId && p.repeat))
+      repeated.push(taskId);
     upcoming = upcoming.filter((p) => p.id !== taskId);
     topUp(from);
   }
@@ -125,5 +128,7 @@ export function planQueue({
     visit: uniq(steps.filter(isPractice).map((t) => t.taskId)),
     upcoming,
     returning: added.length > 0,
+    repeated,
+    begun,
   };
 }
