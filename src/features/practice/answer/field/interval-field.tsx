@@ -189,7 +189,9 @@ export function IntervalField({
         <TrayButton
           onPress={() => add(true)}
         >{`{a} ${t("addIsolated")}`}</TrayButton>
-        <TrayButton onPress={() => commit({ kind: "none" })}>∅</TrayButton>
+        <TrayButton math onPress={() => commit({ kind: "none" })}>
+          ∅
+        </TrayButton>
       </SymbolTray>
     </>
   );
