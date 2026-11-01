@@ -143,6 +143,7 @@ export function AnswerForm({
       )}
       <AnswerStatus
         taskId={taskId}
+        answerText={unchecked.length > 0}
         outcomes={checked?.outcomes}
         solved={solved.filter(Boolean).length}
         total={parts.length}

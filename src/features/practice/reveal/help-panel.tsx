@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { saveReveal } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
-import { isHint, offered } from "./help";
+import { cardsOf, isHint, offered } from "./help";
 import { RevealContent } from "./reveal";
 import type { RevealPart } from "./reveals";
 
@@ -83,7 +83,7 @@ function Chip({
 
 export function HelpPanel({ taskId, hintCount, answerText }: HelpPanelProps) {
   const t = useTranslations("Solve");
-  const { track, note, opened, solution, correct, open } = useTaskSession();
+  const { track, note, opened, correct, open } = useTaskSession();
   const choose = (part: RevealPart) => () => {
     if (!isHint(part)) note({ revealed: true });
     track(
@@ -93,9 +93,7 @@ export function HelpPanel({ taskId, hintCount, answerText }: HelpPanelProps) {
     );
     open(part);
   };
-  const cards = opened.filter(
-    (part) => part !== "answer" || (answerText && !solution),
-  );
+  const cards = cardsOf(opened, answerText);
   const chips = offered({ opened, hintCount, correct });
 
   return (
@@ -129,7 +127,7 @@ export function HelpPanel({ taskId, hintCount, answerText }: HelpPanelProps) {
         <div className="flex flex-wrap gap-2">
           {chips.map((part) => (
             <Chip
-              key={part}
+              key={kindOf(part)}
               part={part}
               label={t(kindOf(part))}
               count={

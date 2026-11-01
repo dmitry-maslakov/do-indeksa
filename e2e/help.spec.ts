@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { answer, expect, test } from "./fixtures";
+import { answer, expect, hydrated, test } from "./fixtures";
 
 const chip = (page: Page, name: string | RegExp) =>
   page.getByRole("button", { name });
@@ -70,6 +70,14 @@ test("hints are numbered and the cards keep the order they were opened in", asyn
   await expect(
     page.locator("article").getByRole("heading", { level: 2 }),
   ).toHaveText(["Nagoveštaj 1 od 2", "Nagoveštaj 2 od 2", "Rešenje"]);
+});
+
+test("the next hint chip keeps the keyboard focus", async ({ page }) => {
+  await page.goto("/bank/eks-001");
+  await hydrated(page);
+  await chip(page, "Nagoveštaj 1/2").focus();
+  await page.keyboard.press("Enter");
+  await expect(chip(page, "Nagoveštaj 2/2")).toBeFocused();
 });
 
 test("Rezultat puts the answer into the field and locks it", async ({

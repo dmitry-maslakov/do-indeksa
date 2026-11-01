@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { helpOf, offered } from "./help";
+import { cardsOf, helpOf, offered } from "./help";
 
 describe("helpOf", () => {
   it("counts hints and finds what shows the answer", () => {
@@ -53,5 +53,16 @@ describe("offered", () => {
     expect(offered({ ...ladder, opened: ["solution"], correct: true })).toEqual(
       [],
     );
+  });
+});
+
+describe("cardsOf", () => {
+  it("keeps the answer card only for text the fields cannot show", () => {
+    expect(cardsOf([0, "answer"], true)).toEqual([0, "answer"]);
+    expect(cardsOf([0, "answer"], false)).toEqual([0]);
+  });
+
+  it("drops the answer card next to an open solution", () => {
+    expect(cardsOf(["answer", "solution"], true)).toEqual(["solution"]);
   });
 });

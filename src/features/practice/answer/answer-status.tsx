@@ -5,6 +5,7 @@ import { EyeIcon, LightbulbIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
+import { cardsOf } from "@/features/practice/reveal/help";
 import { RevealError } from "@/features/practice/reveal/reveal";
 import { useReveal } from "@/features/practice/reveal/use-reveal";
 import { useTaskSession } from "@/features/practice/session/task-session";
@@ -14,6 +15,7 @@ import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerStatusProps {
   taskId: string;
+  answerText: boolean;
   outcomes?: PartOutcome[];
   solved: number;
   total: number;
@@ -47,11 +49,17 @@ function Note({ children }: { children: ReactNode }) {
   );
 }
 
-function Content({ taskId, outcomes, solved, total }: AnswerStatusProps) {
+function Content({
+  taskId,
+  answerText,
+  outcomes,
+  solved,
+  total,
+}: AnswerStatusProps) {
   const t = useTranslations("Solve");
-  const { hints, shown, solution } = useTaskSession();
+  const { hints, shown, solution, opened } = useTaskSession();
   const { isError, refetch } = useReveal(taskId, shown);
-  const opened = t(solution ? "solutionOpened" : "answerShown");
+  const helpLabel = t(solution ? "solutionOpened" : "answerShown");
 
   if (solved === total)
     return (
@@ -69,7 +77,7 @@ function Content({ taskId, outcomes, solved, total }: AnswerStatusProps) {
         {shown && (
           <Tag shown>
             <EyeIcon aria-hidden />
-            {opened}
+            {helpLabel}
           </Tag>
         )}
       </>
@@ -79,12 +87,14 @@ function Content({ taskId, outcomes, solved, total }: AnswerStatusProps) {
       <>
         <span className="flex items-center gap-2 text-data">
           <EyeIcon aria-hidden className="size-5" />
-          {opened}
+          {helpLabel}
         </span>
         {total > 1 && solved > 0 && (
           <Note>{t("ownParts", { own: solved, total })}</Note>
         )}
-        {isError && <RevealError onRetry={() => refetch()} />}
+        {isError && !cardsOf(opened, answerText).includes(shown) && (
+          <RevealError onRetry={() => refetch()} />
+        )}
       </>
     );
   if (!outcomes) return null;
