@@ -127,7 +127,13 @@
     "placeholder": "Ответ",
     "unchecked": "{parts} здесь не вводится — сверь своё решение с разбором.",
     "partsRight": "{right, number} из {total, number} верно",
-    "further": "Дальше"
+    "further": "Дальше",
+    "hintTitle": "Подсказка {number, number} из {total, number}",
+    "hintStep": "{next, number}/{total, number}",
+    "answerShown": "Показан ответ",
+    "solutionOpened": "Решение открыто",
+    "ownParts": "{own, number} из {total, number} твои",
+    "withHint": "с подсказкой"
   },
   "Variants": {
     "title": "Варианты",

@@ -127,7 +127,13 @@
     "placeholder": "Odgovor",
     "unchecked": "{parts} se ovde ne unosi — uporedi svoj rad sa rešenjem.",
     "partsRight": "{right, number} od {total, number} tačno",
-    "further": "Dalje"
+    "further": "Dalje",
+    "hintTitle": "Nagoveštaj {number, number} od {total, number}",
+    "hintStep": "{next, number}/{total, number}",
+    "answerShown": "Prikazan rezultat",
+    "solutionOpened": "Rešenje otvoreno",
+    "ownParts": "{own, number} od {total, number} tvoje",
+    "withHint": "uz nagoveštaj"
   },
   "Variants": {
     "title": "Probni testovi",

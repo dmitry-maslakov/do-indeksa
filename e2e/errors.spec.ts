@@ -28,6 +28,23 @@ test("a hint that fails to load offers a retry", async ({ page, context }) => {
   await expect(page.getByText("kvadrat od", { exact: false })).toBeVisible();
 });
 
+test("a result that fails to load keeps the field locked and offers a retry", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/bank/eks-001");
+  await page.waitForFunction(() => customElements.get("math-field"));
+  await context.setOffline(true);
+  await page.getByRole("button", { name: "Rezultat" }).click();
+  const field = page.locator("math-field").first();
+  await expect(field).toHaveJSProperty("readOnly", true);
+  await expect(page.getByText(offline)).toBeVisible();
+  await context.setOffline(false);
+  await page.getByRole("button", { name: "Pokušaj ponovo" }).click();
+  await expect(page.getByText(offline)).toBeHidden();
+  await expect(field).toHaveJSProperty("value", "2");
+});
+
 test("finishing a test offline keeps it open", async ({ page, context }) => {
   const submit = page
     .getByRole("alertdialog")

@@ -49,6 +49,7 @@ export function useMathField(
   defaultValue: string,
   onEdit: (value: string) => void,
   stats: RefObject<InputStats>,
+  fill?: string,
 ) {
   const field = useRef<MathfieldElement>(null);
   const [value, setValue] = useState(defaultValue);
@@ -101,6 +102,14 @@ export function useMathField(
       );
     return () => listening.abort();
   }, [stats]);
+
+  useEffect(() => {
+    const el = field.current;
+    if (!el || fill === undefined) return;
+    customElements.whenDefined("math-field").then(() => {
+      el.value = fill;
+    });
+  }, [fill]);
 
   return { field, value };
 }

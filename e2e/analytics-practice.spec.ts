@@ -170,6 +170,22 @@ test("checking an answer records the input and the attempt", async ({
   expect(second).not.toHaveProperty("first_focus_ms");
 });
 
+test("opening Rezultat records the answer as revealed", async ({ page }) => {
+  await page.goto("/bank/eks-001");
+  await page.getByRole("button", { name: "Rezultat" }).click();
+  await flush(page);
+  await expect
+    .poll(() => propsOf(page, "help_revealed"))
+    .toEqual([
+      expect.objectContaining({ part: "answer", context: "practice" }),
+    ]);
+  await expect
+    .poll(async () =>
+      (await recorded(page, "task_left")).map(({ props }) => props.state),
+    )
+    .toContain("revealed");
+});
+
 test("the answer field records the keyboard, text mode and structures", async ({
   page,
 }) => {
