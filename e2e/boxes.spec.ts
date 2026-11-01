@@ -351,6 +351,7 @@ test.describe("on a phone", () => {
     await cap(page, "sledeće ⇥").tap();
     await expect(fields(page)).toHaveCount(2);
     await expect(fields(page).nth(1)).toBeFocused();
+    await page.waitForTimeout(150);
     await key(page, "2").tap();
     await expect(sent(page)).toHaveValue("4;2");
     await cap(page, "∅").tap();
@@ -373,6 +374,7 @@ test.describe("on a phone", () => {
     await cap(page, "∪").tap();
     await expect(fields(page)).toHaveCount(4);
     await expect(fields(page).nth(2)).toBeFocused();
+    await page.waitForTimeout(150);
     await cap(page, "∞").tap();
     await expect(sent(page)).toHaveValue("[1;2)\\cup(\\infty;)");
   });
