@@ -132,7 +132,7 @@
     "hintStep": "{next, number}/{total, number}",
     "answerShown": "Показан ответ",
     "solutionOpened": "Решение открыто",
-    "ownParts": "{own, number} из {total, number} твои",
+    "ownParts": "Самостоятельно: {own, number} из {total, number}",
     "withHint": "с подсказкой"
   },
   "Variants": {
