@@ -206,6 +206,19 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   await expect(sheet.getByLabel("Tema")).toHaveValue("logarithms");
 });
 
+test("the sheet opens with the list already in place", {
+  tag: "@mobile",
+}, async ({ page }) => {
+  await page.goto("/bank/eks-001");
+  await page
+    .locator("aside a[href^='/bank/']:not(nav a)")
+    .first()
+    .waitFor({ state: "attached" });
+  const sheet = await openSheet(page, /Eksponencijalne/);
+  await expect(sheet.locator("[aria-current=page]:not(nav a)")).toBeVisible();
+  await expect(sheet.locator("[data-slot=skeleton]")).toHaveCount(0);
+});
+
 test("a guest finishes a test", { tag: "@mobile" }, async ({ page }) => {
   const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
   await page.goto("/variants/ftn-p1-2025");

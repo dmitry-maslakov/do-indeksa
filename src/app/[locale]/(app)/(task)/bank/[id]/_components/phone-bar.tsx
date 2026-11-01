@@ -8,14 +8,15 @@ import { TopicIcon } from "@/features/catalog/topic-icon";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { Link } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
-import { Rail, type RailProps } from "./rail";
+import { Rail } from "../../_components/rail";
 
-interface PhoneBarProps extends RailProps {
+interface PhoneBarProps {
   title: string;
+  listHref: string;
   look: { icon: TopicIconData; tone: Tone };
 }
 
-export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
+export function PhoneBar({ title, listHref, look }: PhoneBarProps) {
   const t = useTranslations("Solve");
   const [open, setOpen] = useState(false);
 
@@ -31,7 +32,7 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
     >
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
-          href={rail.listHref}
+          href={listHref}
           aria-label={t("back")}
           className="flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-muted"
         >
@@ -44,7 +45,7 @@ export function PhoneBar({ title, look, ...rail }: PhoneBarProps) {
         </DrawerTrigger>
       </div>
       <DrawerContent title={t("sheet")} className="h-full">
-        <Rail {...rail} variant="sheet" />
+        <Rail variant="sheet" />
       </DrawerContent>
     </Drawer>
   );

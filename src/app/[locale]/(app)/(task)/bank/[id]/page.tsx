@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
-import { RailPanel } from "@/components/rail";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
@@ -22,10 +21,10 @@ import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
+import { QueueFeed } from "../_components/queue-store";
 import { firstTasks } from "./_components/first-tasks";
 import { loadPersonal } from "./_components/personal";
 import { PhoneBar } from "./_components/phone-bar";
-import { Rail } from "./_components/rail";
 import { TaskMeta } from "./_components/task-meta";
 
 export function generateStaticParams({
@@ -59,11 +58,7 @@ export default async function SolvePage({
   const task = getTask(id);
   if (!task) notFound();
 
-  const [locale, html, bank] = await Promise.all([
-    getLocale(),
-    renderTask(id),
-    getTranslations("Bank"),
-  ]);
+  const [locale, html] = await Promise.all([getLocale(), renderTask(id)]);
   if (!html) notFound();
   const personal = loadPersonal({ id, topic: task.topic, locale });
   const topic = topicName(task.topic, locale);
@@ -73,8 +68,7 @@ export default async function SolvePage({
     exam: examSource(task.source),
     level: levelOf(task.difficulty),
   };
-  const rail = {
-    current: id,
+  const feed = {
     topic: task.topic,
     topics: positions.map((p) => ({
       id: p.topic,
@@ -86,51 +80,45 @@ export default async function SolvePage({
   };
 
   return (
-    <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
-      <h1 className="sr-only">{bank("title")}</h1>
-      <PhoneBar key={id} title={topic} look={topicLook(task.topic)} {...rail} />
-      <div className="flex items-start gap-14">
-        <RailPanel label={bank("all")}>
-          <Rail {...rail} />
-        </RailPanel>
-        <TaskSessionProvider key={id} taskId={id}>
-          <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
-            <div className="flex min-h-10 items-start md:items-center">
-              <Suspense fallback={<TaskMeta {...meta} />}>
-                <TaskMeta
-                  {...meta}
-                  before={personal.then((p) => p.queue.before)}
-                />
-              </Suspense>
-            </div>
-            <MathHtml
-              html={html.statement}
-              className="mt-3 overflow-x-auto text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
-            />
-            <AnswerForm
-              taskId={id}
-              parts={html.parts}
-              unchecked={html.unchecked}
-              answerText={html.answerText}
-              next={personal.then((p) => p.next)}
-              fallback="/bank"
-              afterCorrect={
-                <Suspense>
-                  <TaskSignInStrip solved={personal.then((p) => p.solved)} />
-                </Suspense>
-              }
-            />
-            <HelpPanel
-              taskId={id}
-              hintCount={html.hints.length}
-              answerText={html.answerText}
-            />
-            <div className="mt-6">
-              <ReportTask taskId={id} />
-            </div>
-          </article>
-        </TaskSessionProvider>
-      </div>
-    </main>
+    <TaskSessionProvider key={id} taskId={id}>
+      <QueueFeed {...feed} />
+      <PhoneBar
+        title={topic}
+        listHref={feed.listHref}
+        look={topicLook(task.topic)}
+      />
+      <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
+        <div className="flex min-h-10 items-start md:items-center">
+          <Suspense fallback={<TaskMeta {...meta} />}>
+            <TaskMeta {...meta} before={personal.then((p) => p.queue.before)} />
+          </Suspense>
+        </div>
+        <MathHtml
+          html={html.statement}
+          className="mt-3 overflow-x-auto text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
+        />
+        <AnswerForm
+          taskId={id}
+          parts={html.parts}
+          unchecked={html.unchecked}
+          answerText={html.answerText}
+          next={personal.then((p) => p.next)}
+          fallback="/bank"
+          afterCorrect={
+            <Suspense>
+              <TaskSignInStrip solved={personal.then((p) => p.solved)} />
+            </Suspense>
+          }
+        />
+        <HelpPanel
+          taskId={id}
+          hintCount={html.hints.length}
+          answerText={html.answerText}
+        />
+        <div className="mt-6">
+          <ReportTask taskId={id} />
+        </div>
+      </article>
+    </TaskSessionProvider>
   );
 }
