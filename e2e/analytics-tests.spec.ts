@@ -61,6 +61,15 @@ test("a composed test records its start, views, swap and finish", async ({
   await expect(page).not.toHaveURL(first);
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await answer(page, "1");
+  await expect(page.locator("input[name=answer]").first()).not.toHaveValue("");
+  const sentLength = await page
+    .locator("input[name=answer]")
+    .evaluateAll((inputs) =>
+      inputs.reduce(
+        (sum, input) => sum + (input as HTMLInputElement).value.length,
+        0,
+      ),
+    );
   await finish(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   await page.getByRole("button", { name: "Podeli" }).click();
@@ -154,7 +163,7 @@ test("a composed test records its start, views, swap and finish", async ({
     expect.objectContaining({
       ...answered,
       fields: submitted?.parts,
-      latex_len: 1,
+      latex_len: sentLength,
     }),
   ]);
   const score = String(finished?.props.score).replace(".", ",");

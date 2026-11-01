@@ -127,6 +127,7 @@ test.describe("a list of values", () => {
   }) => {
     await enter(page, fields(page).first(), "4;3");
     await fields(page).first().click();
+    await expect(fields(page).first()).toBeFocused();
     const frame = page.locator("[data-field]").first();
     const { width, height } = (await frame.boundingBox()) ?? {
       width: 0,
