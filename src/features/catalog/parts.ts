@@ -2,7 +2,15 @@ import { compact, uniq } from "es-toolkit";
 import { z } from "zod";
 import { squash, topLevel } from "@/lib/tex";
 import { arityOf } from "./boxes";
-import { inferKind, type Kind, kindProblem, kinds } from "./kinds";
+import {
+  inferKind,
+  isYesNo,
+  type Kind,
+  kindProblem,
+  mathKinds,
+  type YesNo,
+  yesNo,
+} from "./kinds";
 import type { AnswerSymbol } from "./symbols";
 
 export const maxParts = 6;
@@ -34,19 +42,40 @@ const tex = z
   .min(1)
   .refine((source) => !source.includes("$"), "TeX without $…$");
 
-export const partSchema = z.object({
+const partFields = {
   part: z
     .string()
     .regex(/^[a-zđ]$/u, "a single lowercase letter")
     .optional(),
-  var: tex.optional(),
-  kind: z.enum(kinds).optional(),
-  unit: tex.optional(),
   label: z
     .string()
     .refine((label) => !hasBareTex(label), "TeX outside $…$")
     .optional(),
+};
+
+const mathPart = z.object({
+  ...partFields,
+  var: tex.optional(),
+  kind: z.enum(mathKinds).optional(),
+  unit: tex.optional(),
   expected: z.string().min(1),
+});
+
+const yesNoPart = z.strictObject({
+  ...partFields,
+  kind: z.literal("yesno"),
+  expected: z.enum(yesNo),
+});
+
+export const partSchema = z.discriminatedUnion("kind", [mathPart, yesNoPart]);
+
+export const markupOf = (part: z.infer<typeof partSchema>) => ({
+  expected: part.expected,
+  label: part.label ?? null,
+  part: part.part ?? null,
+  kind: part.kind ?? null,
+  var: part.kind === "yesno" ? null : (part.var ?? null),
+  unit: part.kind === "yesno" ? null : (part.unit ?? null),
 });
 
 const lettered = /^([a-zđ]\))\s*(.*)$/u;
@@ -100,9 +129,10 @@ export function labelOf(
   const match = lettered.exec(label ?? "");
   const rest = (match ? (match[2] ?? "") : (label ?? "")).trim();
   const fallback = count > 1 ? `${index + 1}.` : "";
-  const { caption, symbol } = variable
-    ? { caption: rest || null, symbol: `$${variable}$` }
-    : nameOf(rest);
+  const { caption, symbol } =
+    variable || kind === "yesno"
+      ? { caption: rest || null, symbol: variable ? `$${variable}$` : null }
+      : nameOf(rest);
   return {
     kind,
     arity: kind === "point" || kind === "points" ? arityOf(markup) : 0,
@@ -112,6 +142,13 @@ export function labelOf(
     ...frame(kind, symbol, unit),
   };
 }
+
+const answerText: Record<YesNo, string> = { yes: "da", no: "ne" };
+
+const shownValue = ({ kind, expected }: PartMarkup) =>
+  kind === "yesno" && isYesNo(expected)
+    ? answerText[expected]
+    : `$${expected}$`;
 
 export function resultOf(parts: PartMarkup[]) {
   return parts
@@ -125,7 +162,7 @@ export function resultOf(parts: PartMarkup[]) {
         letter && `**${letter}**`,
         caption,
         prefix,
-        `$${markup.expected}$`,
+        shownValue(markup),
         suffix,
       ]).join(" ");
     })
@@ -137,8 +174,11 @@ export function partProblem(markup: PartMarkup, letters: string[]) {
   if (part && !letters.includes(`${part})`)) {
     return `the statement has no part "${part})", it has ${letters.join(" ") || "no lettered parts"}`;
   }
-  return kindProblem(kind, expected, variable);
+  if (kind !== "yesno") return kindProblem(kind, expected, variable);
 }
+
+export const onlyYesNo = (parts: PartMarkup[]) =>
+  parts.every((part) => part.kind === "yesno");
 
 const maths = (text: string) => text.match(/\$\$?[^$]+\$\$?/g) ?? [];
 

@@ -22,7 +22,7 @@ import {
   sentForm,
   sentOf,
 } from "./boxes";
-import { type Kind, kindOf } from "./kinds";
+import { isYesNo, type Kind, kindOf } from "./kinds";
 
 const ce = new ComputeEngine();
 
@@ -299,10 +299,16 @@ function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
   };
 }
 
+function gradeYesNo(part: GradedPart, input: string): Graded {
+  if (!isYesNo(input)) return { outcome: "unreadable" };
+  return { outcome: input === part.expected ? "right" : "wrong" };
+}
+
 function gradePart(part: GradedPart, answer: string): Graded {
   const input = withoutUnit(answer, part.unit);
   if (!isFilled(input)) return { outcome: "empty" };
   const kind = kindOf(part);
+  if (kind === "yesno") return gradeYesNo(part, input);
   return isBoxKind(kind)
     ? gradeBoxes(part, kind, input)
     : gradeSingle(input, part.expected);

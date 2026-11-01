@@ -7,7 +7,9 @@ import { z } from "zod";
 import { answerProblem, parseMath } from "./src/features/catalog/checker";
 import {
   labelOf,
+  markupOf,
   maxParts,
+  onlyYesNo,
   partProblem,
   partSchema,
   resultOf,
@@ -69,7 +71,9 @@ const tasks = defineCollection({
     if (!topic.types.includes(task.type)) {
       throw new Error(`${origin}: unknown type "${task.type}"`);
     }
-    const invalid = check.find((c) => !parseMath(c.expected).isValid);
+    const invalid = check.find(
+      (c) => c.kind !== "yesno" && !parseMath(c.expected).isValid,
+    );
     if (invalid) {
       throw new Error(`${origin}: cannot parse expected "${invalid.expected}"`);
     }
@@ -81,14 +85,12 @@ const tasks = defineCollection({
           () => true,
         ),
       );
-    const markup = check.map((c) => ({
-      expected: c.expected,
-      label: c.label ?? null,
-      part: c.part ?? null,
-      var: c.var ?? null,
-      kind: c.kind ?? null,
-      unit: c.unit ?? null,
-    }));
+    const markup = check.map(markupOf);
+    if (onlyYesNo(markup)) {
+      throw new Error(
+        `${origin}: a yes/no part needs a part that justifies it`,
+      );
+    }
     const letters = statementLetters(content);
     markup.forEach((c, i) => {
       const problem = partProblem(c, letters);

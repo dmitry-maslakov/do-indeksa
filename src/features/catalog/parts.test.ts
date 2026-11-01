@@ -3,6 +3,7 @@ import {
   answerAddsText,
   hasBareTex,
   labelOf,
+  onlyYesNo,
   type PartMarkup,
   partProblem,
   partSchema,
@@ -20,6 +21,9 @@ const markup = (part: Partial<PartMarkup>): PartMarkup => ({
   unit: null,
   ...part,
 });
+
+const yesno = (part: Partial<PartMarkup> = {}) =>
+  markup({ kind: "yesno", expected: "yes", ...part });
 
 const shown = (
   letter: string,
@@ -198,8 +202,45 @@ describe("resultOf", () => {
   });
 });
 
+describe("a yes/no part", () => {
+  it("shows its label as the caption", () => {
+    const label = labelOf(
+      yesno({ label: "g) Da li je $ABC$ pravougli?" }),
+      0,
+      2,
+    );
+    expect(label).toMatchObject({
+      kind: "yesno",
+      letter: "g)",
+      caption: "Da li je $ABC$ pravougli?",
+      prefix: null,
+      suffix: null,
+    });
+  });
+
+  it("writes the Serbian word of its option into the result", () => {
+    expect(
+      resultOf([
+        markup({ part: "a", var: "m", expected: "4" }),
+        yesno({ part: "b", label: "Da li je $m$ paran?" }),
+      ]),
+    ).toBe("**a)** $m$ $=$ $4$\n\n**b)** Da li je $m$ paran? da");
+  });
+
+  it("is never the only kind of part", () => {
+    expect(onlyYesNo([yesno()])).toBe(true);
+    expect(onlyYesNo([yesno(), yesno({ expected: "no" })])).toBe(true);
+    expect(onlyYesNo([markup({}), yesno()])).toBe(false);
+  });
+});
+
 describe("partProblem", () => {
   const letters = ["a)", "b)", "v)"];
+
+  it("accepts a yes/no part whose expected is yes or no", () => {
+    expect(partProblem(yesno(), letters)).toBeUndefined();
+    expect(partProblem(yesno({ expected: "no" }), letters)).toBeUndefined();
+  });
 
   it("accepts a part the statement has and a kind that fits", () => {
     expect(partProblem(markup({ part: "v" }), letters)).toBeUndefined();
@@ -263,18 +304,26 @@ describe("partSchema", () => {
         label: "na $[0,2\\pi)$",
       }).success,
     ).toBe(true);
+    expect(parse({ kind: "yesno", expected: "no" }).success).toBe(true);
   });
 
   it.each([
     [{ part: "ab" }, "a single lowercase letter"],
     [{ part: "A" }, "a single lowercase letter"],
     [{ part: "" }, "a single lowercase letter"],
-    [{ kind: "set" }, "Invalid option"],
+    [{ kind: "set" }, "Invalid discriminator value"],
     [{ var: "$x$" }, "TeX without $…$"],
     [{ unit: "^\\circ$" }, "TeX without $…$"],
     [{ var: "" }, "Too small"],
     [{ label: "x^2" }, "TeX outside $…$"],
     [{ label: "$x$ i y_1" }, "TeX outside $…$"],
+    [{ kind: "yesno", expected: "maybe" }, 'expected one of "yes"|"no"'],
+    [{ kind: "yesno", expected: "Yes" }, 'expected one of "yes"|"no"'],
+    [{ kind: "yesno", expected: "yes", var: "x" }, 'Unrecognized key: "var"'],
+    [
+      { kind: "yesno", expected: "no", unit: "\\text{cm}" },
+      'Unrecognized key: "unit"',
+    ],
   ])("rejects %j", (part, message) => {
     const result = parse(part);
     expect(result.success).toBe(false);

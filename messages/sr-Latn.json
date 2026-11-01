@@ -157,7 +157,9 @@
     "problemEnd": "Kraj intervala je prazan.",
     "problemCoordinate": "Koordinata je prazna.",
     "problemDecimal": "Zarez iza cifre je decimalni, pa je ovo jedan broj. Za sledeće polje ukucaj ; ili zarez i razmak.",
-    "problemExpression": "Ovo polje nije broj ni izraz — proveri zapis."
+    "problemExpression": "Ovo polje nije broj ni izraz — proveri zapis.",
+    "yes": "Da",
+    "no": "Ne"
   },
   "Variants": {
     "title": "Probni testovi",
