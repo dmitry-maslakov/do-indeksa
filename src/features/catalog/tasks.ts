@@ -10,8 +10,9 @@ import { numberOf } from "./exams";
 import { type Level, levelOf } from "./level";
 import {
   answerAddsText,
+  labelOf,
   type PartLabel,
-  splitLabel,
+  resultOf,
   uncheckedLetters,
 } from "./parts";
 import { examSource } from "./source";
@@ -101,7 +102,7 @@ const rendered = new LRUCache<string, RenderedTask>({
         html.answer,
         html.solution,
         ...html.hints,
-        ...html.parts.flatMap((p) => [p.prefix, p.caption]),
+        ...html.parts.flatMap((p) => [p.prefix, p.suffix, p.caption]),
       ],
       (part) => part?.length ?? 0,
     ) + 1,
@@ -121,12 +122,18 @@ export async function renderStatement(task: Task) {
 }
 
 const labelsOf = (task: Task) =>
-  task.check.map((c, i, all) => splitLabel(c.label, i, all.length));
+  task.check.map((c, i, all) => labelOf(c, i, all.length));
 
 const partLabels = new LRUCache<string, PartLabel[]>({
   maxSize: 2 * 1024 * 1024,
   sizeCalculation: (parts) =>
-    sumBy(parts, (p) => (p.prefix?.length ?? 0) + (p.caption?.length ?? 0)) + 1,
+    sumBy(
+      parts,
+      (p) =>
+        (p.prefix?.length ?? 0) +
+        (p.suffix?.length ?? 0) +
+        (p.caption?.length ?? 0),
+    ) + 1,
 });
 
 export async function renderParts(task: Task) {
@@ -138,6 +145,7 @@ export async function renderParts(task: Task) {
     labelsOf(task).map(async (p) => ({
       letter: p.letter,
       prefix: await optional(p.prefix),
+      suffix: await optional(p.suffix),
       caption: await optional(p.caption),
     })),
   );
@@ -154,17 +162,18 @@ export async function renderTask(id: string) {
   const unchecked = uncheckedLetters(task.text, labelsOf(task));
   const html = {
     statement: await renderStatement(task),
-    answer: await render(task.answer),
+    answer: await render(task.answer ?? resultOf(task.check)),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
     parts: await renderParts(task),
     unchecked,
     answerText:
       unchecked.length > 0 ||
-      answerAddsText(
-        task.answer,
-        task.check.map((c) => c.expected),
-      ),
+      (task.answer !== null &&
+        answerAddsText(
+          task.answer,
+          task.check.map((c) => c.expected),
+        )),
   };
   rendered.set(id, html);
   return html;

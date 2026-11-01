@@ -2,10 +2,17 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
-import { uniqBy } from "es-toolkit";
+import { compact, uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { parseMath } from "./src/features/catalog/checker";
-import { hasBareTex, maxParts, splitLabel } from "./src/features/catalog/parts";
+import { kinds } from "./src/features/catalog/kinds";
+import {
+  hasBareTex,
+  labelOf,
+  maxParts,
+  partProblem,
+  statementLetters,
+} from "./src/features/catalog/parts";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
@@ -18,6 +25,11 @@ const keyRevOf = (expected: string[]) =>
     .slice(0, 12);
 
 const root = process.env.CONTENT_DIR ?? "content";
+
+const tex = z
+  .string()
+  .min(1)
+  .refine((source) => !source.includes("$"), "TeX without $…$");
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
 
@@ -44,10 +56,17 @@ const tasks = defineCollection({
     topic: z.string(),
     difficulty: z.number().int().min(1).max(5),
     source: z.string().min(1),
-    answer: z.string().min(1),
+    answer: z.string().min(1).optional(),
     check: z
       .array(
         z.object({
+          part: z
+            .string()
+            .regex(/^[a-zđ]$/u)
+            .optional(),
+          var: tex.optional(),
+          kind: z.enum(kinds).optional(),
+          unit: tex.optional(),
           label: z
             .string()
             .refine((label) => !hasBareTex(label), "TeX outside $…$")
@@ -78,21 +97,30 @@ const tasks = defineCollection({
     const title = headline(content);
     if (!title) throw new Error(`${origin}: statement must start with words`);
     const render = (source: string) => renderMarkdown(source, origin);
+    const markup = check.map((c) => ({
+      expected: c.expected,
+      label: c.label ?? null,
+      part: c.part ?? null,
+      var: c.var ?? null,
+      kind: c.kind ?? null,
+      unit: c.unit ?? null,
+    }));
+    const letters = statementLetters(content);
+    markup.forEach((c, i) => {
+      const problem = partProblem(c, letters);
+      if (problem) throw new Error(`${origin}: part ${i + 1}: ${problem}`);
+    });
     await cache(
-      [
+      compact([
         content,
         answer,
         solution,
         ...hints,
-        ...check.flatMap((c, i, all) => {
-          const { prefix, caption } = splitLabel(
-            c.label ?? null,
-            i,
-            all.length,
-          );
-          return [prefix ?? "", caption ?? ""];
+        ...markup.flatMap((c, i, all) => {
+          const { prefix, suffix, caption } = labelOf(c, i, all.length);
+          return [prefix, suffix, caption];
         }),
-      ],
+      ]),
       (sources) => Promise.all(sources.map(render)).then(() => true),
     );
     return {
@@ -102,13 +130,10 @@ const tasks = defineCollection({
       excerpt: excerpt(content),
       preview: preview(content),
       headline: title,
-      answer,
+      answer: answer ?? null,
       hints,
       solution,
-      check: check.map(({ label, expected }) => ({
-        expected,
-        label: label ?? null,
-      })),
+      check: markup,
       keyRev: keyRevOf(check.map((c) => c.expected)),
     };
   },
