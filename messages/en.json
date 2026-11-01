@@ -55,7 +55,6 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "account": "Account",
-    "stats": "Statistics",
     "privacy": "Privacy",
     "merged": "Progress from this device was merged into your account."
   },
@@ -64,7 +63,6 @@
     "save": "Save",
     "close": "Close",
     "result": "This test result is only on this device",
-    "stats": "These statistics are only on this device",
     "task": "{count, plural, one {# solved task is} other {# solved tasks are}} only on this device"
   },
   "Bank": {
@@ -196,7 +194,6 @@
     "showTime": "Show",
     "overtime": "Overtime",
     "tasks": "Tasks",
-    "task": "Task {number, number}",
     "taskState": "Task {number, number}, {state, select, done {answered} other {not answered}}",
     "answerState": "{state, select, done {answered} other {not answered}}",
     "answered": "{count, number} of {total, number} answered",
@@ -240,34 +237,6 @@
     "unreadableOne": "answer couldn't be read",
     "toTask": "Open the task"
   },
-  "Stats": {
-    "title": "Stats",
-    "weaker": "Weaker topics",
-    "topics": "By topic",
-    "numbers": "By task number",
-    "attempts": "{count, plural, one {# attempt} other {# attempts}}",
-    "sample": "A percentage shows after {count, number} attempts.",
-    "time": "Where the time goes",
-    "timeNote": "your average per task · line: about {norm, number} min on the exam",
-    "minutes": "{minutes, number} min",
-    "overNorm": "{count, plural, one {On average over {minutes, number} min: task {numbers}.} other {On average over {minutes, number} min: tasks {numbers}.}}",
-    "inNorm": "On average no task takes over {minutes, number} min.",
-    "solved": "tasks solved",
-    "firstTry": "right on the first try",
-    "tests": "tests finished",
-    "spent": "in total",
-    "hours": "{hours, number} h",
-    "bank": "Task bank",
-    "bankOf": "{solved, number} of {size, number}",
-    "bankSolved": "solved",
-    "bankWrong": "with a mistake",
-    "bankNew": "not tried",
-    "recent": "Recent tests",
-    "all": "all →",
-    "noTests": "No finished tests yet.",
-    "score": "{score, number} points",
-    "repeated": "{count, plural, one {Mistakes repeat in task {numbers}.} other {Mistakes repeat in tasks {numbers}.}}"
-  },
   "Home": {
     "timeEmpty": "Finish your first test to see which tasks take the most time.",
     "startTest": "Pick a test",
@@ -288,7 +257,6 @@
     "weeklyMeta": "{tasks, plural, one {# task} other {# tasks}} · {hours, plural, one {# hour} other {# hours}} · {points, plural, one {# point} other {# points}} · {days, plural, one {# day} other {# days}} left",
     "startWeekly": "Start the variant →",
     "topicMap": "Topic map",
-    "stats": "Statistics →",
     "allTopics": "All · {count, number}",
     "state": {
       "mastered": "Mastered",

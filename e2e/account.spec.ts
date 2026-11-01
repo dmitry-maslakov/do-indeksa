@@ -68,25 +68,21 @@ test("a stale session signs in again before deleting", async ({
   expect(await count(auth.db, "attempts", "profile_id", profileId)).toBe(1);
 });
 
-test("signing out hides the account statistics", async ({ page, auth }) => {
+const solvedTask = (page: Page, id: string) =>
+  page.getByRole("main").locator(`a[href$="/bank/${id}"]`);
+
+test("signing out hides the account's progress", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "eks-001", true);
-  await page.goto("/stats");
-  await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
-  const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
-  await expect(strip).toHaveCount(0);
+  await page.goto("/bank?status=solved");
+  await expect(solvedTask(page, "eks-001").first()).toBeVisible();
 
-  const nav = page.getByRole("banner").getByRole("navigation");
-  await nav.getByRole("link", { name: "Početna" }).click();
   await page.getByRole("button", { name: "Nalog" }).click();
   await page.getByRole("menuitem", { name: "Odjavi se" }).click();
   await expect(
     page.getByRole("banner").getByRole("button", { name: "Prijavi se" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Statistika →" }).click();
-
-  await expect(page.getByText(/^0 od [\d.]+$/)).toBeVisible();
-  await expect(strip).toHaveCount(0);
+  await expect(solvedTask(page, "eks-001")).toHaveCount(0);
 });
 
 const solveAsGuest = async (page: Page) => {
@@ -102,9 +98,10 @@ const hasGuestCookie = async (page: Page) =>
 test("signing in keeps what a guest solved", async ({ page, auth }) => {
   await solveAsGuest(page);
   await auth.signIn();
-  await page.goto("/stats");
-  await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
+  await page.goto("/bank?status=solved");
   await expect.poll(() => hasGuestCookie(page)).toBe(false);
+  await page.reload();
+  await expect(solvedTask(page, "eks-001").first()).toBeVisible();
   await expect(page.getByText("spojen sa nalogom")).toHaveCount(0);
 });
 
@@ -115,10 +112,12 @@ test("signing in to an account with history merges both", async ({
   await solveAsGuest(page);
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "fun-002", true);
-  await page.goto("/stats");
+  await page.goto("/bank?status=solved");
   await expect(
     page.getByText("Napredak sa ovog uređaja je spojen sa nalogom."),
   ).toBeVisible();
-  await expect(page.getByText(/^2 od [\d.]+$/)).toBeVisible();
   expect(await hasGuestCookie(page)).toBe(false);
+  await page.reload();
+  await expect(solvedTask(page, "eks-001").first()).toBeVisible();
+  await expect(solvedTask(page, "fun-002").first()).toBeVisible();
 });

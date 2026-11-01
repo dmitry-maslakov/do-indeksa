@@ -55,7 +55,6 @@
     "signIn": "Prijavi se",
     "signOut": "Odjavi se",
     "account": "Nalog",
-    "stats": "Statistika",
     "privacy": "Privatnost",
     "merged": "Napredak sa ovog uređaja je spojen sa nalogom."
   },
@@ -64,7 +63,6 @@
     "save": "Sačuvaj",
     "close": "Zatvori",
     "result": "Rezultat testa je samo na ovom uređaju",
-    "stats": "Statistika je samo na ovom uređaju",
     "task": "{count, plural, one {# rešen zadatak je} few {# rešena zadatka su} other {# rešenih zadataka je}} samo na ovom uređaju"
   },
   "Bank": {
@@ -196,7 +194,6 @@
     "showTime": "Prikaži",
     "overtime": "Prekoračenje",
     "tasks": "Zadaci",
-    "task": "Zadatak {number, number}",
     "taskState": "Zadatak {number, number}, {state, select, done {odgovoren} other {bez odgovora}}",
     "answerState": "{state, select, done {odgovoren} other {bez odgovora}}",
     "answered": "Odgovoreno {count, number} od {total, number}",
@@ -240,34 +237,6 @@
     "unreadableOne": "odgovor nije pročitan",
     "toTask": "Otvori zadatak"
   },
-  "Stats": {
-    "title": "Statistika",
-    "weaker": "Slabije teme",
-    "topics": "Po temi",
-    "numbers": "Po broju zadatka",
-    "attempts": "{count, plural, one {# pokušaj} few {# pokušaja} other {# pokušaja}}",
-    "sample": "Procenat se prikazuje posle {count, number} pokušaja.",
-    "time": "Gde odlazi vreme",
-    "timeNote": "tvoj prosek po zadatku · crta: oko {norm, number} min na ispitu",
-    "minutes": "{minutes, number} min",
-    "overNorm": "{count, plural, one {U proseku duže od {minutes, number} min: zadatak {numbers}.} other {U proseku duže od {minutes, number} min: zadaci {numbers}.}}",
-    "inNorm": "U proseku nijedan zadatak ne traje duže od {minutes, number} min.",
-    "solved": "zadataka rešeno",
-    "firstTry": "tačno iz prvog puta",
-    "tests": "testova završeno",
-    "spent": "ukupno vremena",
-    "hours": "{hours, number} h",
-    "bank": "Banka zadataka",
-    "bankOf": "{solved, number} od {size, number}",
-    "bankSolved": "rešeno",
-    "bankWrong": "sa greškom",
-    "bankNew": "bez pokušaja",
-    "recent": "Poslednji testovi",
-    "all": "svi →",
-    "noTests": "Još nema završenih testova.",
-    "score": "{score, number} bodova",
-    "repeated": "{count, plural, one {Greške se ponavljaju u zadatku {numbers}.} other {Greške se ponavljaju u zadacima {numbers}.}}"
-  },
   "Home": {
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",
     "startTest": "Izaberi test",
@@ -288,7 +257,6 @@
     "weeklyMeta": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · {points, plural, one {# poen} few {# poena} other {# poena}} · još {days, plural, one {# dan} few {# dana} other {# dana}}",
     "startWeekly": "Počni varijantu →",
     "topicMap": "Mapa tema",
-    "stats": "Statistika →",
     "allTopics": "Sve · {count, number}",
     "state": {
       "mastered": "Savladano",

@@ -20,7 +20,7 @@ test("a guest checks an answer", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
-test("a guest finds a solved task in statistics after a reload", async ({
+test("a guest finds a solved task in the bank after a reload", async ({
   page,
 }) => {
   await page.goto("/bank/eks-001");
@@ -28,11 +28,10 @@ test("a guest finds a solved task in statistics after a reload", async ({
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
   await page.reload();
-  await page.goto("/stats");
-  await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
+  await page.goto("/bank?status=solved");
   await expect(
-    page.getByRole("region", { name: "Sačuvaj napredak" }),
-  ).toContainText("Statistika je samo na ovom uređaju");
+    page.getByRole("main").locator('a[href$="/bank/eks-001"]').first(),
+  ).toBeVisible();
 });
 
 async function guestProfileId(context: BrowserContext, db: Client) {
@@ -194,7 +193,7 @@ test("browsing without a task creates no profile", async ({
   page,
   context,
 }) => {
-  for (const path of ["/", "/bank", "/variants", "/stats"]) {
+  for (const path of ["/", "/bank", "/variants", "/theory"]) {
     await page.goto(path);
     await expect(page.getByRole("main")).toBeVisible();
   }

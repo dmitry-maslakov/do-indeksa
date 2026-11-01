@@ -7,7 +7,7 @@ import { siteUrl } from "@/lib/site";
 import { env } from "@/server/env";
 import { generateSitemaps } from "./sitemap";
 
-const personal = ["/review", "/stats", "/v/", "/variants/set-"];
+const personal = ["/review", "/v/", "/variants/set-"];
 
 const open = {
   allow: "/",

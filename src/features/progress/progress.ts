@@ -133,4 +133,4 @@ const weakCount = 3;
 export const weakTopics = (stats: TaskStat[]) =>
   weakest(stats, examTopics)
     .slice(0, weakCount)
-    .map((w) => String(w.key));
+    .map((w) => w.topic);

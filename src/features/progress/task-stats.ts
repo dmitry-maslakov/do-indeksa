@@ -5,15 +5,12 @@ import {
   eq,
   gte,
   inArray,
-  max,
   notInArray,
   or,
   type SQL,
   sql,
 } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
-import { epochMs } from "@/db/sql";
-import { numberOf } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
@@ -37,14 +34,10 @@ export async function decisiveAttempts(profileId: string, taskIds?: string[]) {
   );
 }
 
-type TaskTotals = Omit<TaskStat, "number" | "topic">;
-
-function taskStats(rows: TaskTotals[]): TaskStat[] {
+function taskStats(rows: Omit<TaskStat, "topic">[]): TaskStat[] {
   return rows.flatMap((row) => {
     const task = getTask(row.taskId);
-    return task
-      ? { ...row, topic: task.topic, number: numberOf(task.topic) }
-      : [];
+    return task ? { ...row, topic: task.topic } : [];
   });
 }
 
@@ -58,32 +51,14 @@ export async function getTaskStats(profileId: string) {
     attempts.createdAt,
     new Date(Date.now() - accuracyDays * dayMs),
   );
-  const right = eq(attempts.correct, true);
   const rows = await db
     .select({
       taskId: attempts.taskId,
       attempts: count(),
-      right: countWhere(right),
-      recentAttempts: countWhere(recent),
-      recentRight: countWhere(sql`${recent} and ${right}`),
-      firstRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt}))[1]`,
-      latestRight: sql<boolean>`(array_agg(${attempts.correct} order by ${attempts.createdAt} desc))[1]`,
-      lastAt: epochMs(max(attempts.createdAt)),
+      right: countWhere(eq(attempts.correct, true)),
     })
     .from(attempts)
-    .where(await decisiveAttempts(profileId))
+    .where(and(await decisiveAttempts(profileId), recent))
     .groupBy(attempts.taskId);
   return taskStats(rows);
-}
-
-export async function getTaskTimes(profileId: string) {
-  const rows = await db
-    .select({
-      taskId: taskSessions.taskId,
-      ms: sql<number>`sum(${sessionMs})`.mapWith(Number),
-    })
-    .from(taskSessions)
-    .where(eq(taskSessions.profileId, profileId))
-    .groupBy(taskSessions.taskId);
-  return new Map(rows.map((r) => [r.taskId, r.ms]));
 }

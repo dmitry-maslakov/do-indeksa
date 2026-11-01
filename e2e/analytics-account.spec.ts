@@ -3,6 +3,7 @@ import type { Client } from "pg";
 import {
   answer,
   expect,
+  finish,
   flush,
   needsRecorder,
   noId,
@@ -52,7 +53,7 @@ test("a new account takes over the guest profile", async ({ page, auth }) => {
   const guest = await solveAsGuest(page);
   const { userId, profileId } = await auth.signIn();
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
-  await page.goto("/stats");
+  await page.goto("/bank");
   await expect
     .poll(() => named("profile_merged", (row) => row.profile_id === guest))
     .toEqual([
@@ -96,7 +97,7 @@ test("signing in on a task page takes over the guest profile", async ({
 test("an account with a profile takes in the guest", async ({ page, auth }) => {
   const guest = await solveAsGuest(page);
   const { profileId } = await auth.signIn();
-  await page.goto("/stats");
+  await page.goto("/bank");
   await expect
     .poll(() => named("profile_merged", (row) => row.profile_id === profileId))
     .toEqual([
@@ -116,7 +117,12 @@ test("an account with a profile takes in the guest", async ({ page, auth }) => {
 test("the sign-in strip is recorded once per visit to the page", async ({
   page,
 }) => {
-  await solveAsGuest(page);
+  await page.goto("/variants/set-eks-001");
+  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
+  await answer(page, "0");
+  await finish(page);
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
+  const review = new URL(page.url()).pathname;
   const prompts = async () =>
     (
       await Promise.all(
@@ -128,21 +134,20 @@ test("the sign-in strip is recorded once per visit to the page", async ({
   const strip = page.getByRole("region", { name: "Sačuvaj napredak" });
   const nav = page.getByRole("banner").getByRole("navigation");
 
-  await page.goto("/stats");
   await expect(strip).toBeVisible();
   await nav.getByRole("link", { name: "Početna" }).click();
-  await expect(page).not.toHaveURL(/\/stats$/);
+  await expect(page).not.toHaveURL(/\/review\//);
   await page.goBack();
   await expect(strip).toBeVisible();
   await flush(page);
-  await expect.poll(prompts).toEqual([["stats"], []]);
+  await expect.poll(prompts).toEqual([["result"], []]);
 
-  await nav.getByRole("link", { name: "Početna" }).click();
-  await page.getByRole("link", { name: "Statistika →" }).click();
+  await page.goto("/variants?tab=history");
+  await page.locator(`main a[href$="${review}"]`).click();
   await strip.getByRole("button", { name: "Zatvori" }).click();
   await expect(strip).toHaveCount(0);
   await flush(page);
-  await expect.poll(prompts).toEqual([["stats", "stats"], ["stats"]]);
+  await expect.poll(prompts).toEqual([["result", "result"], ["result"]]);
 });
 
 test("a Google button records where sign-in started", async ({ page }) => {
@@ -163,7 +168,7 @@ test("a Google button records where sign-in started", async ({ page }) => {
 
 test("signing out is recorded with the profile", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/stats");
+  await page.goto("/bank");
   await page.getByRole("button", { name: "Nalog" }).click();
   await page.getByRole("menuitem", { name: "Odjavi se" }).click();
   await expect(
