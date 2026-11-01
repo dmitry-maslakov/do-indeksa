@@ -1,7 +1,7 @@
 import { defaultPolicy, type LearningPolicy } from "../policy";
 import type { Try, TryResult } from "../types";
 
-const isSolved = (result: TryResult) =>
+export const isSolved = (result: TryResult) =>
   result === "clean" || result === "helped";
 
 export function intervalAfter(

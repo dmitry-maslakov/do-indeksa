@@ -154,7 +154,7 @@ test("after a correct answer only Rešenje stays and keeps the field green", asy
 
   await chip(page, "Rešenje").click();
   await expect(page.getByRole("heading", { name: "Rešenje" })).toBeVisible();
-  await expect(status(page)).toHaveText(/^Tačno\s*Rešenje otvoreno$/);
+  await expect(status(page)).toHaveText("Tačno");
   await expect(box(field)).toHaveClass(/bg-success-tint/);
   await expect(field).toHaveJSProperty("value", "2");
 });

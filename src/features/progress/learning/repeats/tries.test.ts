@@ -75,6 +75,21 @@ describe("tries", () => {
     expect(resultsOf({ reveals: [reveal(1, "solution")] })).toEqual(["wrong"]);
   });
 
+  it("does not count a look at the solution after a solved try", () => {
+    expect(
+      resultsOf({
+        submits: [submit(0, ["right"])],
+        reveals: [reveal(3 * 60, "solution"), reveal(days(2), "answer")],
+      }),
+    ).toEqual(["clean"]);
+    expect(
+      resultsOf({
+        submits: [submit(0, ["wrong"])],
+        reveals: [reveal(3 * 60, "solution")],
+      }),
+    ).toEqual(["wrong", "wrong"]);
+  });
+
   it("leaves out a try that is still open", () => {
     const log = taskLog({
       submits: [submit(0, ["right"]), submit(days(1), ["wrong"])],
