@@ -236,7 +236,7 @@ test("an answer that follows a reveal in the same sitting does not make a task s
     page
       .getByRole("complementary")
       .locator('a[href$="/bank/eks-001"]')
-      .getByRole("img", { name: "nije rešen", exact: true }),
+      .getByText("pogledan odgovor", { exact: true }),
   ).toBeVisible();
 
   await page.goto("/stats");
