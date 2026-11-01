@@ -11,9 +11,10 @@ import { useTaskSession } from "@/features/practice/session/task-session";
 import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar, type NextTask } from "./action-bar";
-import { AnswerField, type FieldState } from "./answer-field";
+import { AnswerField } from "./answer-field";
 import { AnswerStatus } from "./answer-status";
-import { freshInput, latexStats, takeInput } from "./input-stats";
+import type { FieldState } from "./field/field-frame";
+import { boxStats, freshInput, latexStats, takeInput } from "./input-stats";
 import { verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
@@ -90,6 +91,10 @@ export function AnswerForm({
             task_id: taskId,
             answer_client_id: answerId.current,
             fields: parts.length,
+            ...boxStats(
+              parts.map((p) => p.kind),
+              values,
+            ),
             ...takeInput(stats),
             ...latexStats(values),
           });
@@ -134,6 +139,7 @@ export function AnswerForm({
                 : `\\text{${t("placeholder")}}`
             }
             state={stateOf(i)}
+            problem={checked?.problems[i]}
             locked={solved[i] !== undefined || filled}
             fill={fillOf(i)}
             stats={stats}

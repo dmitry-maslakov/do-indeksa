@@ -11,7 +11,7 @@ const aboveKeyboard = (field: Locator) =>
       window.innerHeight - window.mathVirtualKeyboard.boundingRect.height,
   );
 
-test("the math keyboard opens on tap and closes on return", {
+test("the math keyboard opens on tap and closes when the answer is checked", {
   tag: "@mobile",
 }, async ({ page }) => {
   await page.goto("/bank/kv-002");
@@ -24,8 +24,7 @@ test("the math keyboard opens on tap and closes on return", {
     .toBe("2");
   await expect.poll(() => aboveKeyboard(field)).toBe(true);
 
-  await mathKeys(page).locator('[data-command*="commit"]').tap();
-  await expect(mathKeys(page)).toBeHidden();
   await page.getByRole("button", { name: "Proveri" }).tap();
+  await expect(mathKeys(page)).toBeHidden();
   await expect(page.getByText("Nije tačno")).toBeVisible();
 });

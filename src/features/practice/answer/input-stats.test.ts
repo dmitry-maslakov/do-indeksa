@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  boxStats,
   countInput,
   focused,
   freshInput,
@@ -30,6 +31,8 @@ describe("latexStats", () => {
     ["\\left(1{,}2\\right\\rbrack", ["interval"]],
     ["\\left\\lbrack1{,}2\\right)", ["interval"]],
     ["\\left(-\\infty{,}2\\right)", ["interval"]],
+    ["(-\\infty;-1)\\cup(0;1)", ["interval"]],
+    ["(0;1]", ["interval"]],
     ["\\left\\lbrace1{,}2\\right\\rbrace", ["set"]],
     ["\\text{nema rešenja}", ["text"]],
     ["12", undefined],
@@ -42,6 +45,17 @@ describe("latexStats", () => {
       latex_len: 20,
       structures: ["frac", "pow"],
     });
+  });
+});
+
+describe("boxStats", () => {
+  it("lists the kinds and counts the boxes that have something", () => {
+    expect(
+      boxStats(
+        ["values", "interval", null, "point"],
+        ["1;;3", "(0;1]\\cup\\{5\\}", "\\frac12", ""],
+      ),
+    ).toEqual({ kinds: ["values", "interval", "value", "point"], boxes: 6 });
   });
 });
 

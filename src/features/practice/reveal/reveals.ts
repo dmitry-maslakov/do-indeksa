@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { reveals } from "@/db/schema";
+import { sentForm } from "@/features/catalog/boxes";
 import { getTask, renderTask } from "@/features/catalog/tasks";
 import {
   liveSession,
@@ -78,5 +79,8 @@ export async function renderReveal(
     const hint = html.hints[part];
     return hint === undefined ? null : { html: hint, values: [] };
   }
-  return { html: html[part], values: task.check.map((c) => c.expected) };
+  return {
+    html: html[part],
+    values: task.check.map((c) => sentForm(c) ?? c.expected),
+  };
 }

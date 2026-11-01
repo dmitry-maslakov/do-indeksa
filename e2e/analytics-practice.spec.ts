@@ -148,6 +148,8 @@ test("checking an answer records the input and the attempt", async ({
     );
   const [wrong, right] = inOrder(await propsOf(page, "answer_submitted"));
   expect(inputOf(wrong)).toMatchObject({
+    kinds: ["value"],
+    boxes: 1,
     inputs: 1,
     field_ready_ms: expect.any(Number),
     first_focus_ms: expect.any(Number),
@@ -253,9 +255,8 @@ test.describe("on a phone", () => {
     const keys = mathKeys(page);
     await page.locator("math-field").first().tap();
     await keys.locator('[data-keycap-value="2"]').tap();
-    await keys.locator('[data-command*="commit"]').tap();
-    await expect(keys).toBeHidden();
     await page.getByRole("button", { name: "Proveri" }).tap();
+    await expect(keys).toBeHidden();
     await expect
       .poll(async () => {
         await flush(page);

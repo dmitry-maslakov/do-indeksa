@@ -1,19 +1,14 @@
 import type { MathfieldElement } from "mathlive";
-import {
-  type RefObject,
-  useEffect,
-  useEffectEvent,
-  useRef,
-  useState,
-} from "react";
-import { countInput, focused, type InputStats, shown } from "./input-stats";
+import { type RefObject, useEffect, useEffectEvent } from "react";
+import { trimComma } from "@/features/catalog/boxes";
+import { countInput, focused, type InputStats, shown } from "../input-stats";
+import { attachKeys, type BoxKeys } from "./box-keys";
+import { type KeyboardKind, keyboardFor } from "./keyboards";
 
 const keyboardGap = 16;
 
 let setup: Promise<unknown> | undefined;
-
-export const decimalComma = (latex: string) =>
-  latex.replace(/(\d)\.(?=\d)/g, "$1{,}");
+let selected = "";
 
 function publishKeyboardHeight() {
   const keyboard = window.mathVirtualKeyboard;
@@ -34,6 +29,12 @@ function revealAboveKeyboard() {
   if (overlap > 0) window.scrollBy({ top: overlap, behavior: "smooth" });
 }
 
+function submitForm(el: HTMLElement) {
+  const form = el.closest("form");
+  const button = form?.querySelector<HTMLButtonElement>("button[type=submit]");
+  if (form && button && !button.disabled) form.requestSubmit(button);
+}
+
 function loadMathlive() {
   setup ??= import("mathlive").then(({ MathfieldElement }) => {
     MathfieldElement.fontsDirectory = "/mathlive-fonts";
@@ -48,18 +49,32 @@ function loadMathlive() {
   return setup;
 }
 
-export function useMathField(
-  defaultValue: string,
-  onEdit: (value: string) => void,
-  stats: RefObject<InputStats>,
-  fill?: string,
+function selectKeyboard(kind: KeyboardKind, next: string) {
+  const keyboard = window.mathVirtualKeyboard;
+  const id = `${kind}/${next}`;
+  if (!keyboard || selected === id) return;
+  selected = id;
+  keyboard.layouts = keyboardFor(kind, next);
+}
+
+interface MathBoxOptions {
+  active: RefObject<MathfieldElement | null>;
+  value: string;
+  keyboard: KeyboardKind;
+  next: string;
+  keys?: BoxKeys;
+  stats: RefObject<InputStats>;
+  onEdit: (latex: string) => void;
+}
+
+export function useMathBox(
+  field: RefObject<MathfieldElement | null>,
+  { active, value, keyboard, next, keys, stats, onEdit }: MathBoxOptions,
 ) {
-  const field = useRef<MathfieldElement>(null);
-  const [value, setValue] = useState(defaultValue);
-  const edited = useEffectEvent((latex: string) => {
-    setValue(latex);
-    onEdit(latex);
-  });
+  const boxed = Boolean(keys);
+  const edited = useEffectEvent((latex: string) => onEdit(latex));
+  const keysNow = useEffectEvent(() => keys);
+  const choose = useEffectEvent(() => selectKeyboard(keyboard, next));
 
   useEffect(() => {
     const el = field.current;
@@ -71,18 +86,19 @@ export function useMathField(
       countInput(stats.current, event as InputEvent);
       if (el.mode === "text") stats.current.text_mode = true;
       edited(el.value);
-      const keyboard = window.mathVirtualKeyboard;
-      if (
-        (event as InputEvent).inputType === "insertLineBreak" &&
-        keyboard?.visible
-      ) {
+      if ((event as InputEvent).inputType !== "insertLineBreak") return;
+      submitForm(el);
+      const vk = window.mathVirtualKeyboard;
+      if (vk?.visible) {
         closing = true;
-        keyboard.hide();
+        vk.hide();
         closing = false;
         el.blur();
       }
     };
     const reveal = () => {
+      active.current = el;
+      choose();
       focused(stats.current);
       requestAnimationFrame(revealAboveKeyboard);
     };
@@ -94,26 +110,26 @@ export function useMathField(
     const { signal } = listening;
     el.addEventListener("input", sync, { signal });
     el.addEventListener("focus", reveal, { signal });
-    customElements
-      .whenDefined("math-field")
-      .then(() =>
-        window.mathVirtualKeyboard.addEventListener(
-          "virtual-keyboard-toggle",
-          toggled,
-          { signal },
-        ),
+    el.addEventListener("pointerdown", () => choose(), {
+      capture: true,
+      signal,
+    });
+    customElements.whenDefined("math-field").then(() => {
+      window.mathVirtualKeyboard.addEventListener(
+        "virtual-keyboard-toggle",
+        toggled,
+        { signal },
       );
+      if (boxed) attachKeys(el, keysNow, signal);
+    });
     return () => listening.abort();
-  }, [stats]);
+  }, [field, active, stats, boxed]);
 
   useEffect(() => {
     const el = field.current;
-    if (!el || fill === undefined) return;
+    if (!el) return;
     customElements.whenDefined("math-field").then(() => {
-      el.value = decimalComma(fill);
-      setValue(el.value);
+      if (trimComma(el.value) !== trimComma(value)) el.value = value;
     });
-  }, [fill]);
-
-  return { field, value };
+  }, [field, value]);
 }

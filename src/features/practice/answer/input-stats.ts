@@ -1,4 +1,7 @@
+import { sumBy } from "es-toolkit";
 import type { RefObject } from "react";
+import { filledCount } from "@/features/catalog/boxes";
+import type { Kind } from "@/features/catalog/kinds";
 import { secondMs } from "@/lib/dates";
 
 export interface InputStats {
@@ -28,6 +31,7 @@ export const structureKinds = [
 type StructureKind = (typeof structureKinds)[number];
 
 const marks: Partial<Record<StructureKind, RegExp>> = {
+  interval: /\\cup|\\infty|[[\]]/,
   frac: /\\[cdt]?frac(?![a-z])/,
   sqrt: /\\sqrt(?![a-z])/,
   pow: /\^/,
@@ -126,3 +130,8 @@ export function latexStats(values: string[]) {
     structures: structures.length ? structures : undefined,
   };
 }
+
+export const boxStats = (kinds: (Kind | null)[], values: string[]) => ({
+  kinds: kinds.map((kind) => kind ?? "value"),
+  boxes: sumBy(values, (text, i) => filledCount(kinds[i] ?? null, text)),
+});
