@@ -10,15 +10,13 @@ type Mark = "here" | "next" | "later" | "repeat" | TouchStatus;
 const resolved: TouchStatus[] = ["solved", "wrong", "revealed"];
 
 export function resultOf({ status }: QueueRow, state: RowState) {
-  if (state === "past") return status;
+  if (state === "past") return status ?? "opened";
   if (state === "current" && status && resolved.includes(status)) return status;
 }
 
 function markOf(task: QueueRow, state: RowState): Mark {
-  const result = resultOf(task, state);
-  if (result) return result;
-  if (state === "past") return "opened";
-  if (state === "current") return "here";
+  if (state === "past" || state === "current")
+    return resultOf(task, state) ?? "here";
   return task.repeat ? "repeat" : state;
 }
 

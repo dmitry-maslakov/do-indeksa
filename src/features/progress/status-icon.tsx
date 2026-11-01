@@ -24,8 +24,8 @@ export const statusTones = {
   solved: "text-success-text",
   wrong: "text-error-text",
   revealed: "text-data",
-  skipped: "text-subtle",
-  opened: "text-subtle",
+  skipped: "text-muted-foreground",
+  opened: "text-muted-foreground",
 } as const;
 
 interface StatusIconProps {
