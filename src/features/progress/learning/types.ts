@@ -38,6 +38,11 @@ export interface TaskLog {
   skips: number[];
 }
 
+export interface TaskLogs {
+  firstAttempts: TaskLog[];
+  taskLogs: TaskLog[];
+}
+
 export interface TaskActivity {
   taskId: string;
   topic: string;

@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, max } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { SessionKind } from "@/db/columns";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
@@ -103,12 +103,11 @@ export async function getActivity(profileId: string): Promise<TaskActivity[]> {
     .select({
       taskId: attempts.taskId,
       tz: taskSessions.tz,
-      at: epochMs(max(attempts.createdAt)),
+      at: epochMs(attempts.createdAt),
     })
     .from(attempts)
     .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
-    .where(eq(attempts.profileId, profileId))
-    .groupBy(attempts.taskId, taskSessions.tz);
+    .where(eq(attempts.profileId, profileId));
   return rows.flatMap((row) => {
     const task = getTask(row.taskId);
     return task ? { ...row, topic: task.topic } : [];
