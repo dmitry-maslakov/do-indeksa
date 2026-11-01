@@ -4,8 +4,15 @@ import { rules } from "@/features/progress/learning/planner/rules/rules";
 import { signals } from "@/features/progress/learning/planner/signals/signals";
 import { isDue, isRepeat } from "@/features/progress/learning/repeats/history";
 import type { Learning } from "@/features/progress/learning/state";
-import type { Touched } from "@/features/progress/status";
+import {
+  isAnswered,
+  type Touch,
+  type TouchStatuses,
+} from "@/features/progress/status";
 import type { PickReason } from "./recommendation";
+import { visitOf } from "./visit";
+
+export const upcomingSize = 6;
 
 export interface Pick {
   id: string;
@@ -13,29 +20,32 @@ export interface Pick {
   reason: PickReason;
 }
 
-interface QueueInput {
+interface Moment {
   pool: Candidate[];
   learning: Learning;
-  touched: Map<string, Touched>;
+  seen: Map<string, number>;
+  statuses: TouchStatuses;
+  now: number;
+}
+
+interface QueueInput {
+  pool: Candidate[];
+  learningAt: (moment: number) => Learning;
+  touches: Touch[];
+  statuses: TouchStatuses;
   now: number;
   current?: string;
   size?: number;
 }
 
-const byTime = (touched: Map<string, Touched>, today: boolean) =>
-  [...touched]
-    .filter(([, t]) => t.today === today)
-    .sort(([, a], [, b]) => a.at.getTime() - b.at.getTime())
-    .map(([id]) => id);
-
 function pickNext(
-  { pool, learning, touched, now }: QueueInput,
+  { pool, learning, seen, statuses, now }: Moment,
   taken: Set<string>,
   picked: Candidate[],
 ): Pick | null {
   const open = pool.filter((t) => !taken.has(t.taskId));
   const due = (t: Candidate) => isDue(learning.tasks.get(t.taskId), now);
-  const candidates = open.filter((t) => !touched.has(t.taskId) || due(t));
+  const candidates = open.filter((t) => !seen.has(t.taskId) || due(t));
   const [planned] = plan(candidates, learning, signals, 1, {
     now,
     picked,
@@ -46,38 +56,69 @@ function pickNext(
     const repeat = isRepeat(id, learning, now);
     return { id, repeat, reason: repeat ? "repeatDue" : planned.reason };
   }
-  const seen = open
+  const [oldest] = open
     .filter(
       (t) =>
-        touched.has(t.taskId) &&
-        !touched.get(t.taskId)?.status &&
+        seen.has(t.taskId) &&
+        !isAnswered(statuses.get(t.taskId)) &&
         !learning.tasks.has(t.taskId),
     )
-    .sort(
-      (a, b) =>
-        (touched.get(a.taskId)?.at.getTime() ?? 0) -
-        (touched.get(b.taskId)?.at.getTime() ?? 0),
-    );
-  return seen[0] ? { id: seen[0].taskId, repeat: false, reason: "seen" } : null;
+    .sort((a, b) => (seen.get(a.taskId) ?? 0) - (seen.get(b.taskId) ?? 0));
+  return oldest ? { id: oldest.taskId, repeat: false, reason: "seen" } : null;
 }
 
-export function planQueue(input: QueueInput) {
-  const { pool, touched, current, size = 6 } = input;
-  const today = byTime(touched, true);
-  if (current && !today.includes(current)) today.push(current);
-  const earlier = byTime(touched, false)
-    .filter((id) => id !== current)
-    .slice(-4);
-  const taken = new Set(today);
-  const upcoming: Pick[] = [];
-  const picked = today.flatMap((id) => pool.filter((t) => t.taskId === id));
-  while (upcoming.length < size) {
-    const next = pickNext(input, taken, picked);
-    if (!next) break;
-    taken.add(next.id);
-    upcoming.push(next);
-    const task = pool.find((t) => t.taskId === next.id);
-    if (task) picked.push(task);
+const seenBefore = (touches: Touch[], moment: number) =>
+  new Map(
+    touches.filter((t) => t.from < moment).map((t) => [t.taskId, t.from]),
+  );
+
+export function planQueue({
+  pool,
+  learningAt,
+  touches,
+  statuses,
+  now,
+  current,
+  size = upcomingSize,
+}: QueueInput) {
+  const run = visitOf(touches, now);
+  const begun = run[0]?.from ?? now;
+  const steps = touches.filter((t) => t.from >= begun);
+  if (current && !run.some((t) => t.taskId === current))
+    steps.push({ taskId: current, kind: "first", from: now, to: now });
+  const opened: string[] = [];
+  let upcoming: Pick[] = [];
+
+  const topUp = (moment: number) => {
+    if (upcoming.length >= size) return;
+    const context = {
+      pool,
+      statuses,
+      learning: learningAt(moment),
+      seen: seenBefore(touches, moment),
+      now: Math.min(moment, now),
+    };
+    const taken = new Set([...opened, ...upcoming.map((p) => p.id)]);
+    const picked = [...taken].flatMap((id) =>
+      pool.filter((t) => t.taskId === id),
+    );
+    while (upcoming.length < size) {
+      const next = pickNext(context, taken, picked);
+      if (!next) break;
+      taken.add(next.id);
+      upcoming.push(next);
+      picked.push(...pool.filter((t) => t.taskId === next.id));
+    }
+  };
+
+  topUp(begun);
+  for (const { taskId, from } of steps) {
+    if (!opened.includes(taskId)) opened.push(taskId);
+    upcoming = upcoming.filter((p) => p.id !== taskId);
+    topUp(from);
   }
-  return { earlier, today, upcoming };
+  const members = new Set(
+    steps.filter((t) => t.kind !== "mock").map((t) => t.taskId),
+  );
+  return { visit: opened.filter((id) => members.has(id)), upcoming };
 }

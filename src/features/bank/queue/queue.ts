@@ -7,11 +7,16 @@ import { topicName } from "@/features/catalog/topics";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { difficultyOf } from "@/features/progress/learning/types";
 import { getTouched } from "@/features/progress/progress";
-import type { TaskStatus, Touched } from "@/features/progress/status";
-import { getLearning } from "@/features/progress/student-learning";
-import { type Pick, planQueue } from "./picks";
+import {
+  type Answered,
+  isAnswered,
+  type TouchStatus,
+} from "@/features/progress/status";
+import { getTimeline } from "@/features/progress/student-learning";
+import { type Pick, planQueue, upcomingSize } from "./picks";
 import type { PickReason } from "./recommendation";
 import { examYear, previewHtml } from "./task-preview";
+import { visitOf } from "./visit";
 
 export interface QueueRow {
   id: string;
@@ -19,16 +24,15 @@ export interface QueueRow {
   label: string;
   topic: string;
   year: number | null;
-  status?: TaskStatus;
+  status?: TouchStatus;
   repeat?: boolean;
   reason?: PickReason;
 }
 
 export interface Queue {
   next?: string;
-  before?: Touched["status"];
-  earlier: QueueRow[];
-  today: QueueRow[];
+  before?: Answered;
+  visit: QueueRow[];
   upcoming: QueueRow[];
 }
 
@@ -55,22 +59,21 @@ const poolOf = (ids: string[]) =>
     ];
   });
 
-async function plan({ topic, profileId, current }: PoolInput, size = 6) {
+async function plan({ topic, profileId, current }: PoolInput) {
   const ids = topicIds(topic);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
-  const [touched, learning] = await Promise.all([
+  const [touched, { now, learningAt }] = await Promise.all([
     getTouched(profileId, asked),
-    getLearning(profileId),
+    getTimeline(profileId),
   ]);
   const queue = planQueue({
     pool: poolOf(ids),
-    learning,
-    touched,
-    now: Date.now(),
+    learningAt,
+    ...touched,
+    now,
     current,
-    size,
   });
-  return { touched, queue };
+  return { touched, queue, now };
 }
 
 export async function nextTasks(profileId: string) {
@@ -78,20 +81,21 @@ export async function nextTasks(profileId: string) {
     topic,
     ids: topicIds(topic),
   }));
-  const [touched, learning] = await Promise.all([
+  const [{ touches, statuses }, { now, learningAt }] = await Promise.all([
     getTouched(profileId),
-    getLearning(profileId),
+    getTimeline(profileId),
   ]);
-  const now = Date.now();
   return new Map(
     topics.flatMap(({ topic, ids }) => {
       const own = new Set(ids);
+      const mine = touches.filter((t) => own.has(t.taskId));
       const { upcoming } = planQueue({
         pool: poolOf(ids),
-        learning,
-        touched: new Map([...touched].filter(([id]) => own.has(id))),
+        learningAt,
+        touches: mine,
+        statuses,
         now,
-        size: 1,
+        size: visitOf(mine, now).length ? upcomingSize : 1,
       });
       const next = upcoming[0] ?? (ids[0] && { id: ids[0] });
       return next ? [[topic, next] as const] : [];
@@ -107,7 +111,7 @@ export const topicStart = (
 export async function loadQueue(
   input: PoolInput & { locale: Locale },
 ): Promise<Queue> {
-  const { touched, queue } = await plan(input);
+  const { touched, queue, now } = await plan(input);
   const row = (id: string, pick?: Pick): QueueRow[] => {
     const task = getTask(id);
     if (!task) return [];
@@ -118,18 +122,21 @@ export async function loadQueue(
         label: task.preview.replaceAll("$", ""),
         topic: topicName(task.topic, input.locale),
         year: examYear(id),
-        status: touched.get(id)?.status,
+        status: touched.statuses.get(id),
         repeat: pick?.repeat,
         reason: pick?.reason,
       },
     ];
   };
-  const before = input.current ? touched.get(input.current) : undefined;
+  const { current } = input;
+  const returning =
+    current !== undefined &&
+    !visitOf(touched.touches, now).some((t) => t.taskId === current);
+  const earlier = returning ? touched.statuses.get(current) : undefined;
   return {
     next: queue.upcoming[0]?.id,
-    before: before && !before.today ? before.status : undefined,
-    earlier: queue.earlier.flatMap((id) => row(id)),
-    today: queue.today.flatMap((id) => row(id)),
+    before: isAnswered(earlier) ? earlier : undefined,
+    visit: queue.visit.flatMap((id) => row(id)),
     upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
   };
 }

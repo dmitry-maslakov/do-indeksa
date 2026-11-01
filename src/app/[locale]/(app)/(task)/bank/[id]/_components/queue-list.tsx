@@ -21,7 +21,7 @@ function centerCurrent(list: HTMLElement) {
     list.scrollTop = row.offsetTop - (list.clientHeight - row.offsetHeight) / 2;
 }
 
-const sections = ["earlier", "today", "upcoming"] as const;
+const sections = ["visit", "upcoming"] as const;
 
 export function QueueList({ current, topic, href, ...props }: QueueListProps) {
   const t = useTranslations("Solve");
@@ -51,7 +51,7 @@ export function QueueList({ current, topic, href, ...props }: QueueListProps) {
                   placement: `rail_${key}`,
                   rank: i + 1,
                 })}
-                current={key === "today" && task.id === current}
+                current={key === "visit" && task.id === current}
                 next={key === "upcoming"}
                 recommendation={
                   key === "upcoming"

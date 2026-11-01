@@ -126,7 +126,7 @@ test("a task seen before comes after the ones not seen yet", async ({
   expect(page.url()).not.toBe(seen);
 });
 
-test("a skipped task stays in today's list before the current one", async ({
+test("a skipped task stays in the visit before the current one", async ({
   page,
   context,
 }) => {

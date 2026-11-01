@@ -3,7 +3,7 @@ import { use } from "react";
 import { ExamMark } from "@/components/exam-mark";
 import type { Level } from "@/features/catalog/level";
 import type { ExamSource } from "@/features/catalog/source";
-import type { Touched } from "@/features/progress/status";
+import type { Answered } from "@/features/progress/status";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 
 interface TaskMetaProps {
@@ -11,7 +11,7 @@ interface TaskMetaProps {
   topic: string;
   exam: ExamSource | null;
   level: Level;
-  before?: Promise<Touched["status"] | undefined>;
+  before?: Promise<Answered | undefined>;
 }
 
 function Dot() {
