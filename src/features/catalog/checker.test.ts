@@ -23,7 +23,6 @@ describe("a part without a kind", () => {
     ["[-1,\\frac{6}{2}]", "[-1,3]"],
     ["\\left\\lbrack0{,}2\\right\\rbrack", "[0,2]"],
     ["\\left(1{,}2\\right\\rbrack", "(1,2]"],
-    ["-1{,}1", "-1, 1"],
     ["0{,}5", "\\frac{1}{2}"],
   ])("accepts %s for %s", (input, expected) => {
     expect(isEquivalent(input, expected)).toBe(true);
@@ -40,6 +39,7 @@ describe("a part without a kind", () => {
     ["(-1,3)", "[-1,3]"],
     ["\\left\\lbrack0{,}3\\right\\rbrack", "[0,2]"],
     ["0{,}2", "[0,2]"],
+    ["-1{,}1", "-1, 1"],
     ["\\frac{1", "1"],
     ["", "1"],
   ])("rejects %s for %s", (input, expected) => {
@@ -66,7 +66,6 @@ describe("gradeParts", () => {
       "\\left(-\\infty,-1\\right)\\cup\\left(0{,}1\\right)\\cup\\left(1{,}+\\infty\\right)",
       "(-\\infty,-1)\\cup(0,1)\\cup(1,+\\infty)",
     ],
-    ["1{,}2{,}3", "1, 2, 3"],
   ])("grades %s as right for %s", (input, expected) => {
     expect(grade(expected, input)).toBe("right");
   });
@@ -92,7 +91,10 @@ describe("values", () => {
     ["x_1=1;4", "1, 4"],
     ["x\\in\\{1;4\\}", "1, 4"],
     ["1,4", "1, 4"],
-    ["1{,}4", "1, 4"],
+    ["1{,}4", "1.4"],
+    ["-1{,}5;0{,}25", "0.25, -1.5"],
+    ["\\frac{1{,}5}{3}", "0.5"],
+    ["2^{0{,}5}", "\\sqrt{2}"],
     ["\\frac12;3", "\\frac{1}{2}, 3"],
     ["0{,}5;3", "\\frac{1}{2}, 3"],
     ["\\pm2", "2, -2"],
@@ -107,6 +109,7 @@ describe("values", () => {
     ["1", "1, 4"],
     ["1;4;5", "1, 4"],
     ["1{,}4;2", "1, 4"],
+    ["1{,}4", "1, 4"],
     ["\\emptyset", "1, 4"],
     ["1;4", "\\emptyset"],
   ])("rejects %s for %s", (input, expected) => {
@@ -284,6 +287,12 @@ describe("interval", () => {
     expect(grade("(-\\infty,0)\\cup\\{1\\}", "(-\\infty;0)", "interval")).toBe(
       "wrong",
     );
+  });
+
+  it("reads a decimal comma in an end or a point as one number", () => {
+    expect(grade("(0.5,2)", "(0{,}5;2)", "interval")).toBe("right");
+    expect(grade("\\{1.4\\}", "\\{1{,}4\\}", "interval")).toBe("right");
+    expect(grade("\\{1,4\\}", "\\{1{,}4\\}", "interval")).toBe("wrong");
   });
 
   it("accepts no solution", () => {

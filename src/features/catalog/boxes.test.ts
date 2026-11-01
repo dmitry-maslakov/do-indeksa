@@ -8,6 +8,7 @@ import {
   grown,
   type Layout,
   layoutOf,
+  pastedComma,
   pastedLayout,
   sentForm,
   sentOf,
@@ -59,12 +60,15 @@ describe("sentForm", () => {
 describe("layoutOf and sentOf", () => {
   it.each([
     ["values", "1{,}5;2"],
+    ["values", "1{,}4"],
     ["values", "1;"],
     ["point", "(3;2)"],
     ["point", "(\\frac{1}{2};\\sqrt{2};-1)"],
+    ["point", "(1{,}5;2)"],
     ["points", "(1;2);(3;4)"],
     ["interval", "(-\\infty;-1)\\cup(0;1]"],
     ["interval", "[0;2)\\cup\\{3\\}"],
+    ["interval", "(0{,}5;1)\\cup\\{1{,}4\\}"],
     ["interval", "(;)\\cup(0;1)"],
     ["values", "\\emptyset"],
     ["interval", "\\emptyset"],
@@ -109,6 +113,24 @@ describe("layoutOf and sentOf", () => {
     expect(layoutOf("interval", "\\left(1,2\\right\\rbrack")).toEqual({
       kind: "interval",
       pieces: [{ open: "(", from: "1", to: "2", close: "]" }],
+    });
+  });
+
+  it("splits a lone decimal of an old tuple or interval, which cannot be one number", () => {
+    expect(layoutOf("point", "(1{,}2)")).toEqual({
+      kind: "point",
+      boxes: ["1", "2"],
+    });
+    expect(layoutOf("points", "(1{,}2);(\\frac{1{,}5}{2}{,}3)")).toEqual({
+      kind: "points",
+      rows: [
+        ["1", "2"],
+        ["\\frac{1{,}5}{2}", "3"],
+      ],
+    });
+    expect(layoutOf("interval", "\\left\\lbrack0{,}2\\right\\rbrack")).toEqual({
+      kind: "interval",
+      pieces: [{ open: "[", from: "0", to: "2", close: "]" }],
     });
   });
 
@@ -218,7 +240,11 @@ describe("pastedLayout", () => {
       "(-\\infty;-1)\\cup(0;1)\\cup(1;+\\infty)",
     ],
     ["point", "(3,2)", "(3;2)"],
+    ["point", "(1,4)", "(1;4)"],
     ["points", "(1,2),(3,4)", "(1;2);(3;4)"],
+    ["values", "1, 4", "1;4"],
+    ["values", "1;4", "1;4"],
+    ["values", "x = 0,25, -1,5", "0{,}25;-1{,}5"],
   ] as const)("lays %s %s out in boxes", (kind, text, sent) => {
     const layout = pastedLayout(kind, text, 2);
     expect(layout && sentOf(layout)).toBe(sent);
@@ -226,12 +252,28 @@ describe("pastedLayout", () => {
 
   it.each([
     ["values", "1,4"],
+    ["values", "-1,5"],
     ["interval", "5"],
     ["interval", "\\emptyset"],
     ["point", "(1,2,3)"],
     ["point", "7"],
   ] as const)("leaves %s %s to the field", (kind, text) => {
     expect(pastedLayout(kind, text, 2)).toBeNull();
+  });
+});
+
+describe("pastedComma", () => {
+  it("reads a comma between digits as the decimal comma of the field", () => {
+    expect(pastedComma("1,4")).toBe("1{,}4");
+    expect(pastedComma("-1,5")).toBe("-1{,}5");
+    expect(pastedComma("0,25")).toBe("0{,}25");
+    expect(pastedComma("\\frac{1,5}{2}")).toBe("\\frac{1{,}5}{2}");
+  });
+
+  it("leaves a comma with a space or next to a letter as it is", () => {
+    expect(pastedComma("1, 4")).toBe("1, 4");
+    expect(pastedComma("2\\pi,3")).toBe("2\\pi,3");
+    expect(pastedComma("x,1")).toBe("x,1");
   });
 });
 

@@ -5,7 +5,6 @@ import {
   isSymbol,
 } from "@cortex-js/compute-engine";
 import type { PartOutcome } from "@/db/columns";
-import { topLevel } from "@/lib/tex";
 import {
   type BoxKind,
   boxesOf,
@@ -235,33 +234,20 @@ function problemOf(layout: Layout): Problem | undefined {
 const withoutUnit = (input: string, unit?: string | null) =>
   unit ? input.replaceAll(unit, "") : input;
 
-const isSeparated = (kind: BoxKind, text: string) =>
-  kind === "point" || kind === "points"
-    ? topLevel(text, ";").some((tuple) => tuple.includes(";"))
-    : text.includes(";");
-
 function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
-  const layouts = (isSeparated(kind, text) ? [text] : readings(text)).flatMap(
-    (reading) => layoutOf(kind, reading) ?? [],
-  );
-  const [first] = layouts;
-  if (!first)
+  const layout = layoutOf(kind, text);
+  if (!layout)
     return {
       outcome: "unreadable",
       problem: { box: 0, reason: "expression" },
     };
-  if (first.kind !== "none" && !boxesOf(first).some(isFilled))
+  if (layout.kind !== "none" && !boxesOf(layout).some(isFilled))
     return { outcome: "empty" };
-  const problems = layouts.map(problemOf);
-  const readable = layouts.filter((_, i) => !problems[i]);
-  if (readable.length === 0)
-    return { outcome: "unreadable", problem: problems.find(Boolean) };
+  const problem = problemOf(layout);
+  if (problem) return { outcome: "unreadable", problem };
   const target = layoutOf(kind, part.expected);
   return {
-    outcome:
-      target && readable.some((layout) => sameLayout(target, layout))
-        ? "right"
-        : "wrong",
+    outcome: target && sameLayout(target, layout) ? "right" : "wrong",
   };
 }
 
@@ -274,7 +260,7 @@ function gradePart(part: GradedPart, answer: string): Graded {
     : gradeSingle(input, part.expected);
 }
 
-export const checkerVersion = 4;
+export const checkerVersion = 5;
 
 export const gradeParts = (parts: GradedPart[], answers: string[]) =>
   parts.map((part, i) => gradePart(part, answers[i] ?? ""));
