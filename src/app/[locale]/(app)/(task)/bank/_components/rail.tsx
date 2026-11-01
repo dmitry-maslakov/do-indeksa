@@ -36,8 +36,10 @@ function QueueSkeleton() {
 export function Rail({ variant }: { variant?: RailVariant }) {
   const bank = useTranslations("Bank");
   const router = useRouter();
-  const { id: current } = useParams<{ id: string }>();
+  const { id: current } = useParams<{ id?: string }>();
   const { meta, loaded } = useQueue();
+
+  if (!current) return null;
 
   if (!meta)
     return (
