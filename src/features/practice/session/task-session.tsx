@@ -1,5 +1,6 @@
 "use client";
 
+import { union } from "es-toolkit";
 import {
   createContext,
   type ReactNode,
@@ -9,11 +10,13 @@ import {
   useRef,
   useState,
 } from "react";
+import { isRight, type PartOutcome } from "@/db/columns";
 import { keepTaskSession } from "@/features/practice/actions";
 import { whenFieldReady } from "@/features/practice/answer/input-stats";
 import type { Verdict } from "@/features/practice/answer/verdicts";
-import { helpOf } from "@/features/practice/reveal/help";
+import { helpOf, openedOf } from "@/features/practice/reveal/help";
 import type { RevealPart } from "@/features/practice/reveal/reveals";
+import type { SittingState } from "@/features/progress/learning/sitting-state";
 import {
   type BrowserEvents,
   type Intent,
@@ -46,9 +49,11 @@ interface TaskSession {
   hints: number;
   shown?: "answer" | "solution";
   solution: boolean;
+  solved: (string | undefined)[];
   correct: boolean;
   open: (part: RevealPart) => void;
-  markCorrect: () => void;
+  solve: (outcomes: PartOutcome[], sent: string[]) => void;
+  restore: (sitting: SittingState) => void;
 }
 
 const TaskSessionContext = createContext<TaskSession | null>(null);
@@ -90,7 +95,7 @@ export function TaskSessionProvider({
     return latest.current;
   }, []);
   const [opened, setOpened] = useState<RevealPart[]>([]);
-  const [correct, setCorrect] = useState(false);
+  const [solved, setSolved] = useState<(string | undefined)[]>([]);
 
   useEffect(() => {
     const current = visit.current;
@@ -166,9 +171,16 @@ export function TaskSessionProvider({
         note: (change) => Object.assign(visit.current, change),
         opened,
         ...helpOf(opened),
-        correct,
+        solved,
+        correct:
+          solved.length > 0 && solved.every((text) => text !== undefined),
         open: (part) => setOpened((all) => [...all, part]),
-        markCorrect: () => setCorrect(true),
+        solve: (outcomes, sent) =>
+          setSolved(outcomes.map((o, i) => (isRight(o) ? sent[i] : undefined))),
+        restore: (sitting) => {
+          setOpened((all) => union(openedOf(sitting), all));
+          setSolved(sitting.solved);
+        },
       }}
     >
       {children}

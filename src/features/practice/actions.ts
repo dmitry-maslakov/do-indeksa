@@ -74,10 +74,14 @@ export const checkAnswer = actionClient
       parsedInput: { taskId, answer, sessionId, clientId },
       ctx: { profileId },
     }) => {
-      const { session, attempt, outcomes, correct } = await submitAnswer(
-        profileId,
-        { taskId, answers: answer, sessionId, clientId },
-      );
+      const submitted = await submitAnswer(profileId, {
+        taskId,
+        answers: answer,
+        sessionId,
+        clientId,
+      });
+      if ("sitting" in submitted) return { sitting: submitted.sitting };
+      const { session, attempt, outcomes, correct } = submitted;
       await trackOpening(profileId, taskId, session, sessionId);
       if (attempt)
         await track(

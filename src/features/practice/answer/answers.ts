@@ -7,6 +7,8 @@ import {
   factsAt,
   liveSession,
 } from "@/features/practice/session/task-sessions";
+import { isClosed } from "@/features/progress/learning/sitting-state";
+import { getSittingState } from "@/features/progress/sitting";
 import { db } from "@/server/db";
 import { verdictOf } from "./verdicts";
 
@@ -23,6 +25,9 @@ export async function submitAnswer(
 ) {
   const task = getTask(taskId);
   if (!task) throw new Error(`unknown task ${taskId}`);
+
+  const sitting = await getSittingState(profileId, taskId);
+  if (isClosed(sitting)) return { sitting };
 
   const outcomes = gradeParts(
     task.check.map((c) => c.expected),

@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { cardsOf, helpOf, offered } from "./help";
+import { openSitting } from "@/features/progress/learning/sitting-state";
+import { cardsOf, helpOf, offered, openedOf } from "./help";
+
+describe("openedOf", () => {
+  it("opens the hints, then the result, then the solution", () => {
+    expect(openedOf(openSitting)).toEqual([]);
+    expect(openedOf({ ...openSitting, hints: 2 })).toEqual([0, 1]);
+    expect(
+      openedOf({ ...openSitting, hints: 1, answer: true, solution: true }),
+    ).toEqual([0, "answer", "solution"]);
+  });
+});
 
 describe("helpOf", () => {
   it("counts hints and finds what shows the answer", () => {

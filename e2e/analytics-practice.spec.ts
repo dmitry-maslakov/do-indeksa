@@ -192,6 +192,28 @@ test("opening Rezultat records the answer as revealed", async ({ page }) => {
     );
 });
 
+test("an answer sent after Rezultat was opened elsewhere is not recorded", async ({
+  page,
+  auth,
+}) => {
+  await auth.signIn();
+  await page.goto("/bank/eks-001");
+  await hydrated(page);
+  await page.waitForFunction(() => customElements.get("math-field"));
+  const other = await page.context().newPage();
+  await other.goto("/bank/eks-001");
+  await other.getByRole("button", { name: "Rezultat" }).click();
+  await flush(other);
+  await expect
+    .poll(() => propsOf(page, "help_revealed"))
+    .toEqual([expect.objectContaining({ part: "answer" })]);
+
+  await answer(page, "2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Prikazan rezultat")).toBeVisible();
+  expect(await propsOf(page, "answer_submitted")).toEqual([]);
+});
+
 test("the answer field records the keyboard, text mode and structures", async ({
   page,
 }) => {

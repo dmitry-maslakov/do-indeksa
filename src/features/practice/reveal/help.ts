@@ -1,3 +1,5 @@
+import { range } from "es-toolkit";
+import type { SittingState } from "@/features/progress/learning/sitting-state";
 import type { RevealPart } from "./reveals";
 
 export const isHint = (part: RevealPart): part is number =>
@@ -10,6 +12,16 @@ export function helpOf(opened: RevealPart[]) {
     solution: opened.includes("solution"),
   };
 }
+
+export const openedOf = ({
+  hints,
+  answer,
+  solution,
+}: SittingState): RevealPart[] => [
+  ...range(hints),
+  ...(answer ? (["answer"] as const) : []),
+  ...(solution ? (["solution"] as const) : []),
+];
 
 export const cardsOf = (opened: RevealPart[], answerText: boolean) =>
   opened.filter(

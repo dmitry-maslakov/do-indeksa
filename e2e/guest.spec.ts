@@ -65,18 +65,25 @@ test("a guest with five solved tasks is offered to save them once a visit", asyn
   const profileId = await guestProfileId(context, auth.db);
   for (const taskId of ["eks-002", "kb-003", "log-001", "trig-001"])
     await seedAttempt(auth.db, profileId, taskId, true);
+  const solveAgain = async (on: Page) => {
+    await auth.db.query(
+      "update attempts set created_at = created_at - interval '2 hours' where profile_id = $1",
+      [profileId],
+    );
+    await solveFirst(on);
+  };
 
-  await solveFirst(page);
+  await solveAgain(page);
   await expect(strip).toContainText(
     "5 rešenih zadataka je samo na ovom uređaju",
   );
   await strip.getByRole("button", { name: "Zatvori" }).click();
   await expect(strip).toBeHidden();
-  await solveFirst(page);
+  await solveAgain(page);
   await expect(strip).toHaveCount(0);
 
   const next = await context.newPage();
-  await solveFirst(next);
+  await solveAgain(next);
   await expect(
     next.getByRole("region", { name: "Sačuvaj napredak" }),
   ).toBeVisible();
@@ -101,7 +108,9 @@ test("a guest back on another day with five solved tasks gets Google One Tap", a
     await seedAttempt(auth.db, profileId, taskId, true, 30);
 
   await page.goto("/bank/eks-001");
-  await expect(page.getByRole("button", { name: "Proveri" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Sledeći zadatak" }),
+  ).toBeVisible();
   await page.goto("/");
   await expect.poll(() => prompts).toEqual(["/"]);
   await page.reload();

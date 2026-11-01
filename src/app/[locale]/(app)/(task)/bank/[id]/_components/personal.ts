@@ -4,6 +4,7 @@ import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { positions } from "@/features/catalog/exams";
 import { getSolved } from "@/features/progress/progress";
+import { getSittingState } from "@/features/progress/sitting";
 import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
 
@@ -21,10 +22,11 @@ async function solvedBefore(profileId: string, id: string) {
 
 export async function loadPersonal({ id, topic, locale }: PersonalInput) {
   const profileId = await getProfileId();
-  const [queue, starts, solved] = await Promise.all([
+  const [queue, starts, solved, sitting] = await Promise.all([
     loadQueue({ topic, profileId, current: id, locale }),
     nextTasks(profileId),
     solvedBefore(profileId, id),
+    getSittingState(profileId, id),
   ]);
   return {
     queue,
@@ -36,5 +38,6 @@ export async function loadPersonal({ id, topic, locale }: PersonalInput) {
       recommendation: recommendationOf("next", topic, queue.upcoming[0]),
     },
     solved,
+    sitting,
   };
 }

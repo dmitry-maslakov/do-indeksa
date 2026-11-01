@@ -118,6 +118,27 @@ export function seedAttempt(
   );
 }
 
+export function seedReveal(
+  db: Client,
+  profileId: string,
+  taskId: string,
+  part: "answer" | "solution",
+  hoursAgo = 0,
+) {
+  return db.query(
+    `with session as (
+       insert into task_sessions (profile_id, task_id, kind, started_at, last_seen_at)
+       values ($1, $2, 'first', now() - $4::int * interval '1 hour' - interval '11 minutes',
+         now() - $4::int * interval '1 hour' - interval '10 minutes')
+       returning id
+     )
+     insert into reveals (profile_id, task_id, session_id, part, created_at)
+     select $1, $2, id, $3::reveal_part, now() - $4::int * interval '1 hour' - interval '10 minutes'
+     from session`,
+    [profileId, taskId, part, hoursAgo],
+  );
+}
+
 export async function answer(page: Page, value: string) {
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").first();

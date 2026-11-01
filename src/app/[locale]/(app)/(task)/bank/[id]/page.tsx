@@ -18,6 +18,7 @@ import { topicLook, topicName } from "@/features/catalog/topics";
 import { AnswerForm } from "@/features/practice/answer/answer-form";
 import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
+import { SittingFeed } from "@/features/practice/session/sitting-feed";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
@@ -82,6 +83,9 @@ export default async function SolvePage({
   return (
     <TaskSessionProvider key={id} taskId={id}>
       <QueueFeed {...feed} />
+      <Suspense>
+        <SittingFeed sitting={personal.then((p) => p.sitting)} />
+      </Suspense>
       <PhoneBar
         title={topic}
         listHref={feed.listHref}

@@ -4,7 +4,6 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { type ReactNode, Suspense, useRef, useState } from "react";
-import { isRight } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useReveal } from "@/features/practice/reveal/use-reveal";
@@ -42,7 +41,6 @@ export function AnswerForm({
   const errorText = useErrorText();
   const help = useTaskSession();
   const { data: reveal } = useReveal(taskId, help.shown);
-  const [solved, setSolved] = useState(() => parts.map(() => false));
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
   const stats = useRef(freshInput());
@@ -54,16 +52,18 @@ export function AnswerForm({
     setValues((all) => all.with(index, value));
   };
 
-  const checked = edited ? undefined : result.data;
+  const checked =
+    !edited && result.data && !result.data.sitting ? result.data : undefined;
   const fields = parts.map((part, i) => ({
     part,
     id: `answer-${taskId}-${i}`,
   }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const filled = help.shown !== undefined;
-  const fillOf = (i: number) => (solved[i] ? undefined : reveal?.values[i]);
+  const { solved } = help;
+  const fillOf = (i: number) => solved[i] ?? reveal?.values[i];
   const stateOf = (i: number): FieldState => {
-    if (solved[i]) return "right";
+    if (solved[i] !== undefined) return "right";
     if (fillOf(i) !== undefined) return "shown";
     return checked?.outcomes[i] ?? "empty";
   };
@@ -95,15 +95,18 @@ export function AnswerForm({
           });
         }
         form.set("clientId", answerId.current);
+        const sent = form.getAll("answer").map(String);
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
           const data = (await executeAsync(form))?.data;
-          if (data) {
-            help.note({ verdict: verdictOf(data.outcomes) });
-            setSolved(data.outcomes.map(isRight));
-            if (data.correct) help.markCorrect();
+          if (!data) return;
+          if (data.sitting) {
+            help.restore(data.sitting);
+            return;
           }
-          return data?.sessionId;
+          help.note({ verdict: verdictOf(data.outcomes) });
+          help.solve(data.outcomes, sent);
+          return data.sessionId;
         });
       }}
       className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
@@ -131,7 +134,7 @@ export function AnswerForm({
                 : `\\text{${t("placeholder")}}`
             }
             state={stateOf(i)}
-            locked={solved[i] || filled}
+            locked={solved[i] !== undefined || filled}
             fill={fillOf(i)}
             stats={stats}
             onChange={onChange}
@@ -147,7 +150,7 @@ export function AnswerForm({
         taskId={taskId}
         answerText={answerText}
         outcomes={checked?.outcomes}
-        solved={solved.filter(Boolean).length}
+        solved={solved.filter((text) => text !== undefined).length}
         total={parts.length}
       />
       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
