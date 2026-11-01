@@ -3,11 +3,11 @@ import {
   abilityAt,
   candidate,
   history,
-  learningAt,
+  learningAt as learningFor,
 } from "@/features/progress/learning/planner/learning.fixture";
 import type { Learning, TaskHistory } from "@/features/progress/learning/state";
 import { start as now } from "@/features/progress/learning/status/observations.fixture";
-import type { Touch, TouchStatus } from "@/features/progress/status";
+import type { Answered, Touch } from "@/features/progress/status";
 import { dayMs, minuteMs } from "@/lib/dates";
 import { planQueue } from "./picks";
 
@@ -15,7 +15,7 @@ const pool = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id) =>
   candidate(id, 2, id === "e"),
 );
 
-const learning = learningAt(-1);
+const learning = learningFor(-1);
 
 const days = (n: number) => (n * dayMs) / minuteMs;
 
@@ -27,13 +27,13 @@ const touch = (
   kind: Touch["kind"] = "first",
 ): Touch => ({ taskId, kind, from: at(minutes), to: at(minutes) });
 
-const statuses = (found: Record<string, TouchStatus>) =>
+const statuses = (found: Record<string, Answered>) =>
   new Map(Object.entries(found));
 
 const constant = (state: Learning) => () => state;
 
 const repeats = (tasks: Record<string, TaskHistory>) =>
-  constant(learningAt(-1, [], tasks));
+  constant(learningFor(-1, [], tasks));
 
 const ids = (picks: { id: string }[]) => picks.map((p) => p.id);
 
@@ -117,7 +117,7 @@ describe("planQueue", () => {
         b: history({ dueAt: now + dayMs }),
       }),
       touches: pool.map((t, i) => touch(t.taskId, -days(10 - i))),
-      statuses: new Map(pool.map((t) => [t.taskId, "revealed"])),
+      statuses: new Map(),
       size: 2,
     });
     expect(queue.upcoming).toEqual([
@@ -136,7 +136,7 @@ describe("planQueue", () => {
     const ids = (ability: number) =>
       planQueue({
         pool: levels,
-        learningAt: constant(learningAt(ability)),
+        learningAt: constant(learningFor(ability)),
         touches: [],
         statuses: new Map(),
         now,
@@ -150,7 +150,7 @@ describe("planQueue", () => {
     const queue = planQueue({
       pool: [candidate("hard", 3)],
       learningAt: constant(
-        learningAt(abilityAt(1), [], {
+        learningFor(abilityAt(1), [], {
           hard: history({ difficulty: 3 }),
           unreleased: history({ difficulty: 1 }),
         }),
@@ -166,7 +166,7 @@ describe("planQueue", () => {
     const queue = planQueue({
       ...input,
       touches: [touch("a", -30), touch("e", -20)],
-      statuses: statuses({ a: "opened", e: "skipped" }),
+      statuses: new Map(),
       current: "b",
       size: 2,
     });
@@ -178,7 +178,7 @@ describe("planQueue", () => {
     const queue = planQueue({
       ...input,
       touches: pool.map((t, i) => touch(t.taskId, -days(10 - i))),
-      statuses: new Map(pool.map((t) => [t.taskId, "opened"])),
+      statuses: new Map(),
       current: "h",
       size: 1,
     });
@@ -191,12 +191,8 @@ describe("planQueue", () => {
 
   it("picks the same first row whatever the size without a visit", () => {
     const touches = [touch("a", -days(2)), touch("b", -days(3))];
-    const statuses = new Map<string, TouchStatus>([
-      ["a", "opened"],
-      ["b", "opened"],
-    ]);
-    const one = planQueue({ ...input, touches, statuses, size: 1 });
-    const six = planQueue({ ...input, touches, statuses });
+    const one = planQueue({ ...input, touches, statuses: new Map(), size: 1 });
+    const six = planQueue({ ...input, touches, statuses: new Map() });
     expect(one.upcoming).toEqual(six.upcoming.slice(0, 1));
   });
 
@@ -211,12 +207,7 @@ describe("planQueue", () => {
           touch("c", -30),
           touch("f", -20, "mock"),
         ],
-        statuses: statuses({
-          a: "solved",
-          b: "wrong",
-          c: "opened",
-          f: "opened",
-        }),
+        statuses: statuses({ a: "solved", b: "wrong" }),
         current: "d",
       });
       expect(queue.visit).toEqual(["c", "b", "d"]);
@@ -262,11 +253,110 @@ describe("planQueue", () => {
       const queue = planQueue({
         ...input,
         touches: [touch("a", -30), touch("b", -20, "mock")],
-        statuses: statuses({ a: "opened", b: "opened" }),
+        statuses: new Map(),
         current: "c",
       });
       expect(queue.visit).toEqual(["a", "c"]);
       expect(ids(queue.upcoming)).not.toContain("b");
+    });
+
+    it("places a task by its first touch outside a test", () => {
+      const queue = planQueue({
+        ...input,
+        touches: [
+          touch("a", -50),
+          touch("z", -40, "mock"),
+          touch("b", -30),
+          touch("z", -20),
+        ],
+        statuses: new Map(),
+        current: "c",
+      });
+      expect(queue.visit).toEqual(["a", "b", "z", "c"]);
+    });
+
+    it("tells whether the current task is new to the visit", () => {
+      const touches = [touch("a", -30), touch("b", -20)];
+      const plan = (current: string) =>
+        planQueue({ ...input, touches, statuses: new Map(), current });
+      expect(plan("b").returning).toBe(false);
+      expect(plan("c").returning).toBe(true);
+      expect(
+        planQueue({ ...input, touches, statuses: new Map() }).returning,
+      ).toBe(false);
+    });
+
+    it("lists an open task outside the topic and offers the whole pool", () => {
+      const queue = planQueue({
+        ...input,
+        touches: [touch("a", -10)],
+        statuses: new Map(),
+        current: "elsewhere",
+      });
+      expect(queue.visit).toEqual(["a", "elsewhere"]);
+      expect(ids(queue.upcoming)).not.toContain("a");
+      expect(queue.upcoming).toHaveLength(6);
+    });
+
+    it("offers nothing from an empty pool", () => {
+      const queue = planQueue({
+        ...input,
+        pool: [],
+        touches: [touch("a", -10)],
+        statuses: new Map(),
+        current: "a",
+      });
+      expect(queue).toEqual({ visit: ["a"], upcoming: [], returning: false });
+    });
+
+    it("starts the topic where the rail starts while the visit lasts", () => {
+      const touches = [touch("a", -30), touch("b", -20)];
+      const start = planQueue({ ...input, touches, statuses: new Map() });
+      const rail = planQueue({
+        ...input,
+        touches,
+        statuses: new Map(),
+        current: "b",
+      });
+      expect(start.upcoming).toEqual(rail.upcoming);
+      expect(start.visit).toEqual(["a", "b"]);
+    });
+
+    it("builds the state once for each task opened, not for each session", () => {
+      const moments: number[] = [];
+      const touches = [
+        touch("x", -days(5)),
+        touch("y", -days(5) + 1),
+        ...["a", "b", "a", "b", "a", "b"].map((id, i) => touch(id, -40 + i)),
+      ];
+      planQueue({
+        ...input,
+        pool: [...pool.slice(0, 2), candidate("x", 2), candidate("y", 2)],
+        learningAt: (moment) => {
+          moments.push(moment);
+          return learning;
+        },
+        touches,
+        statuses: statuses({ x: "solved", y: "solved" }),
+        current: "b",
+      });
+      expect(moments).toHaveLength(3);
+    });
+
+    it("builds no state once every task of the pool is taken", () => {
+      const moments: number[] = [];
+      planQueue({
+        ...input,
+        pool: pool.slice(0, 3),
+        learningAt: (moment) => {
+          moments.push(moment);
+          return learning;
+        },
+        touches: ["a", "b", "c"].map((id, i) => touch(id, -30 + i)),
+        statuses: new Map(),
+        current: "c",
+      });
+      expect(moments).toHaveLength(1);
     });
 
     it("never offers a task of the visit, even when it is due again", () => {
@@ -292,12 +382,12 @@ describe("planQueue", () => {
     ];
     const answered = now - 5 * minuteMs;
     const timeline = (moment: number) =>
-      moment <= answered ? learningAt(-1.5) : learningAt(0.9);
+      moment <= answered ? learningFor(-1.5) : learningFor(0.9);
     const base = {
       pool: wide,
       learningAt: timeline,
       now,
-      statuses: statuses({ now: "opened" }),
+      statuses: new Map(),
     };
 
     it("stay when the current task is answered", () => {
@@ -312,7 +402,7 @@ describe("planQueue", () => {
       const fresh = planQueue({
         ...base,
         touches: [],
-        learningAt: constant(learningAt(0.9)),
+        learningAt: constant(learningFor(0.9)),
         current: "now",
       });
       expect(after.upcoming).toEqual(shown.upcoming);
@@ -336,13 +426,6 @@ describe("planQueue", () => {
       expect(ids(second.upcoming).slice(0, 5)).toEqual([one, two, ...rest]);
       expect(second.upcoming).toHaveLength(6);
       expect(ids(second.upcoming)).not.toContain(three);
-    });
-
-    it("stay the same on every render of the visit", () => {
-      const touches = [touch("now", -10), touch("e1", -3)];
-      const render = () =>
-        planQueue({ ...base, touches, current: "e1" }).upcoming;
-      expect(render()).toEqual(render());
     });
   });
 });

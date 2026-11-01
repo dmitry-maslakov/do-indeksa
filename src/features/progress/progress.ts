@@ -91,27 +91,37 @@ export async function getTouched(
   taskIds?: string[],
 ): Promise<Touched> {
   if (profileId === noId) return { touches: [], statuses: new Map() };
-  const [touches, answered, shown, skipped] = await Promise.all([
+  const [touches, statuses] = await Promise.all([
     touchesOf(profileId, taskIds),
     getTaskStatuses(profileId, taskIds),
+  ]);
+  return { touches, statuses };
+}
+
+export async function getTouchStatuses(
+  profileId: string,
+  taskIds: string[],
+  { touches, statuses }: Touched,
+) {
+  const touched = new Set(touches.map((touch) => touch.taskId));
+  const ids = taskIds.filter((id) => touched.has(id));
+  if (!ids.length) return new Map<string, TouchStatus>();
+  const [shown, skipped] = await Promise.all([
     tasksWith(
       reveals,
       profileId,
-      taskIds,
+      ids,
       inArray(reveals.part, ["answer", "solution"]),
     ),
-    tasksWith(skips, profileId, taskIds),
+    tasksWith(skips, profileId, ids),
   ]);
   const statusOf = (taskId: string): TouchStatus => {
-    const decided = answered.get(taskId);
+    const decided = statuses.get(taskId);
     if (decided) return decided;
     if (shown.has(taskId)) return "revealed";
     return skipped.has(taskId) ? "skipped" : "opened";
   };
-  return {
-    touches,
-    statuses: new Map(touches.map(({ taskId }) => [taskId, statusOf(taskId)])),
-  };
+  return new Map(ids.map((id) => [id, statusOf(id)]));
 }
 
 export async function getSolved(profileId: string) {

@@ -13,9 +13,7 @@ export const getTimeline = cache(async (profileId: string) => {
   return { now, learningAt: learningAsOf({ logs, activity }, now) };
 });
 
-export const getLearning = cache(
-  async (profileId: string): Promise<Learning> => {
-    const { now, learningAt } = await getTimeline(profileId);
-    return learningAt(now);
-  },
-);
+export async function getLearning(profileId: string): Promise<Learning> {
+  const { now, learningAt } = await getTimeline(profileId);
+  return learningAt(now);
+}
