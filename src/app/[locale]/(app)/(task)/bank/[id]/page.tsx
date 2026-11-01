@@ -111,6 +111,7 @@ export default async function SolvePage({
               taskId={id}
               parts={html.parts}
               unchecked={html.unchecked}
+              answerText={html.answerText}
               next={personal.then((p) => p.next)}
               fallback="/bank"
               afterCorrect={
@@ -122,7 +123,7 @@ export default async function SolvePage({
             <HelpPanel
               taskId={id}
               hintCount={html.hints.length}
-              answerText={html.unchecked.length > 0}
+              answerText={html.answerText}
             />
             <div className="mt-6">
               <ReportTask taskId={id} />

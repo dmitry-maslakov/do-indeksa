@@ -8,7 +8,12 @@ import { z } from "zod";
 import { renderMarkdown } from "@/lib/markdown";
 import { numberOf } from "./exams";
 import { type Level, levelOf } from "./level";
-import { type PartLabel, splitLabel, uncheckedLetters } from "./parts";
+import {
+  answerAddsText,
+  type PartLabel,
+  splitLabel,
+  uncheckedLetters,
+} from "./parts";
 import { examSource } from "./source";
 import { topicName } from "./topics";
 
@@ -84,6 +89,7 @@ type RenderedTask = {
   solution: string;
   parts: PartLabel[];
   unchecked: string[];
+  answerText: boolean;
 };
 
 const rendered = new LRUCache<string, RenderedTask>({
@@ -145,13 +151,20 @@ export async function renderTask(id: string) {
   const task = getTask(id);
   if (!task) return null;
   const render = (source: string) => renderMarkdown(source, id);
+  const unchecked = uncheckedLetters(task.text, labelsOf(task));
   const html = {
     statement: await renderStatement(task),
     answer: await render(task.answer),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
     parts: await renderParts(task),
-    unchecked: uncheckedLetters(task.text, labelsOf(task)),
+    unchecked,
+    answerText:
+      unchecked.length > 0 ||
+      answerAddsText(
+        task.answer,
+        task.check.map((c) => c.expected),
+      ),
   };
   rendered.set(id, html);
   return html;

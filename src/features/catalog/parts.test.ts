@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { hasBareTex, splitLabel, uncheckedLetters } from "./parts";
+import {
+  answerAddsText,
+  hasBareTex,
+  splitLabel,
+  uncheckedLetters,
+} from "./parts";
 
 describe("splitLabel", () => {
   it.each([
@@ -53,5 +58,34 @@ describe("uncheckedLetters", () => {
     expect(uncheckedLetters("**a)** foo **b)** bar **c)** baz", parts)).toEqual(
       ["a)"],
     );
+  });
+});
+
+describe("answerAddsText", () => {
+  it.each([
+    ["$x = 2$", ["2"]],
+    ["$x_1 = 1$, $x_2 = 4$", ["1, 4"]],
+    ["$x \\in \\left(1, 4\\right]$", ["(1,4]"]],
+    ["$(x, y) = (3, 2)$", ["(3,2)"]],
+    ["$x\\in(-\\infty,-1)\\cup(0,1)$", ["(-\\infty,-1)\\cup(0,1)"]],
+    [
+      "$x\\in\\left\\{-\\tfrac12,\\tfrac12\\right\\}$",
+      ["-\\frac{1}{2}, \\frac{1}{2}"],
+    ],
+    ["**a)** $m = 4$ **b)** $x = 1$", ["4", "1"]],
+  ])("finds nothing beyond the checks in %s", (answer, expected) => {
+    expect(answerAddsText(answer, expected)).toBe(false);
+  });
+
+  it.each([
+    ["$x = \\frac{\\pi}{2} + k\\pi$, $k \\in \\mathbb{Z}$", ["4"]],
+    [
+      "$d_1 = 24$, $d_2 = 10$, $P = 120$, $r = \\frac{60}{13}$",
+      ["120", "\\frac{60}{13}"],
+    ],
+    ["Jednačina nema realnih rešenja.", ["0"]],
+    ["$D = \\mathbb{R} \\setminus \\{-1\\}$, $f'(x) = 2x$", ["2x"]],
+  ])("finds more than the checks in %s", (answer, expected) => {
+    expect(answerAddsText(answer, expected)).toBe(true);
   });
 });

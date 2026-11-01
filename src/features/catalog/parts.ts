@@ -28,6 +28,54 @@ export function splitLabel(
   return { letter, prefix: null, caption: rest };
 }
 
+const maths = (text: string) => text.match(/\$\$?[^$]+\$\$?/g) ?? [];
+
+const squash = (latex: string) =>
+  latex
+    .replaceAll("$", "")
+    .replace(/\\left|\\right|\\[,;! ]|\s/g, "")
+    .replace(/\\[dt]frac/g, "\\frac")
+    .replace(/\\frac(\w)(\w)/g, "\\frac{$1}{$2}")
+    .replace(/\\sqrt(\w)/g, "\\sqrt{$1}")
+    .replaceAll("\\lbrace", "\\{")
+    .replaceAll("\\rbrace", "\\}")
+    .replaceAll("\\lbrack", "[")
+    .replaceAll("\\rbrack", "]");
+
+function topLevel(latex: string) {
+  const items = [""];
+  let depth = 0;
+  for (const char of latex) {
+    if ("([{".includes(char)) depth++;
+    if (")]}".includes(char)) depth--;
+    if (char === "," && depth === 0) items.push("");
+    else items[items.length - 1] += char;
+  }
+  return items;
+}
+
+const valuesOf = (math: string) =>
+  topLevel(squash(math)).flatMap((part) =>
+    topLevel(
+      (part.split(/=|\\in(?![a-z])/).at(-1) ?? part).replace(
+        /^\\\{(.*)\\\}$/,
+        "$1",
+      ),
+    ),
+  );
+
+export function answerAddsText(answer: string, expected: string[]) {
+  const words = answer
+    .replace(/\$[^$]*\$/g, "")
+    .replace(/\b(ili|tj|odnosno)\b/gi, "");
+  if (/\p{L}{5,}/u.test(words)) return true;
+  if (/\\mathbb|[kn]\s*\\in/.test(answer)) return true;
+  const items = new Set(expected.flatMap((e) => topLevel(squash(e))));
+  return maths(answer).some((math) =>
+    valuesOf(math).some((value) => !items.has(value)),
+  );
+}
+
 export function uncheckedLetters(text: string, parts: PartLabel[]) {
   const checked = new Set(parts.map((p) => p.letter));
   return Array.from(
