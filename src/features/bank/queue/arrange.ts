@@ -3,6 +3,11 @@ import type { Queue } from "./queue";
 
 type Lists = Pick<Queue, "visit" | "upcoming">;
 
+export const sections = ["visit", "upcoming"] as const;
+
+export const listed = (queue: Lists, id: string) =>
+  sections.some((key) => queue[key].some((row) => row.id === id));
+
 export function arrange(queue: Lists, current: string): Lists {
   if (queue.visit.some((row) => row.id === current)) return queue;
   const row = queue.upcoming.find((r) => r.id === current);

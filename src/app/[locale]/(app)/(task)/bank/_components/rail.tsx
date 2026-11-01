@@ -6,6 +6,7 @@ import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { listed } from "@/features/bank/queue/arrange";
 import { useRouter } from "@/i18n/navigation";
 import { rememberIntent } from "@/lib/analytics-browser";
 import { QueueList } from "./queue-list";
@@ -73,7 +74,7 @@ export function Rail({ variant }: { variant?: RailVariant }) {
           ))}
         </RailSelect>
       </div>
-      {loaded?.topic === meta.topic ? (
+      {loaded?.topic === meta.topic && listed(loaded.queue, current) ? (
         <QueueList
           queue={loaded.queue}
           current={current}
