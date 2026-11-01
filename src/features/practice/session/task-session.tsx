@@ -12,6 +12,8 @@ import {
 import { keepTaskSession } from "@/features/practice/actions";
 import { whenFieldReady } from "@/features/practice/answer/input-stats";
 import type { Verdict } from "@/features/practice/answer/verdicts";
+import { helpOf } from "@/features/practice/reveal/help";
+import type { RevealPart } from "@/features/practice/reveal/reveals";
 import {
   type BrowserEvents,
   type Intent,
@@ -40,10 +42,13 @@ interface TaskSession {
   note: (
     change: Partial<Pick<Visit, "typed" | "verdict" | "revealed">>,
   ) => void;
+  opened: RevealPart[];
   hints: number;
+  shown?: "answer" | "solution";
   solution: boolean;
-  showHint: () => void;
-  showSolution: () => void;
+  correct: boolean;
+  open: (part: RevealPart) => void;
+  markCorrect: () => void;
 }
 
 const TaskSessionContext = createContext<TaskSession | null>(null);
@@ -84,8 +89,8 @@ export function TaskSessionProvider({
     });
     return latest.current;
   }, []);
-  const [hints, setHints] = useState(0);
-  const [solution, setSolution] = useState(false);
+  const [opened, setOpened] = useState<RevealPart[]>([]);
+  const [correct, setCorrect] = useState(false);
 
   useEffect(() => {
     const current = visit.current;
@@ -159,10 +164,11 @@ export function TaskSessionProvider({
       value={{
         track,
         note: (change) => Object.assign(visit.current, change),
-        hints,
-        solution,
-        showHint: () => setHints((n) => n + 1),
-        showSolution: () => setSolution(true),
+        opened,
+        ...helpOf(opened),
+        correct,
+        open: (part) => setOpened((all) => [...all, part]),
+        markCorrect: () => setCorrect(true),
       }}
     >
       {children}

@@ -4,18 +4,18 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { type ReactNode, Suspense, useRef, useState } from "react";
-import { isRight, type PartOutcome } from "@/db/columns";
+import { isRight } from "@/db/columns";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
+import { useReveal } from "@/features/practice/reveal/use-reveal";
 import { useTaskSession } from "@/features/practice/session/task-session";
-import type { TaskStatus } from "@/features/progress/status";
-import { StatusIcon } from "@/features/progress/status-icon";
 import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar, type NextTask } from "./action-bar";
-import { AnswerField } from "./answer-field";
+import { AnswerField, type FieldState } from "./answer-field";
+import { AnswerStatus } from "./answer-status";
 import { freshInput, latexStats, takeInput } from "./input-stats";
-import { type Verdict, verdictOf } from "./verdicts";
+import { verdictOf } from "./verdicts";
 
 interface AnswerFormProps {
   taskId: string;
@@ -24,44 +24,6 @@ interface AnswerFormProps {
   next: Promise<NextTask>;
   fallback: string;
   afterCorrect?: ReactNode;
-}
-
-interface Checked {
-  outcomes: PartOutcome[];
-  correct: boolean;
-}
-
-const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
-  correct: { look: "text-success-text", status: "solved" },
-  wrong: { look: "text-error-text", status: "wrong" },
-  unreadable: { look: "text-overtime-text" },
-  incomplete: { look: "text-overtime-text" },
-};
-
-function Result({ checked: { outcomes } }: { checked: Checked }) {
-  const t = useTranslations("Solve");
-  const verdict = verdictOf(outcomes);
-  const { look, status } = verdicts[verdict];
-  return (
-    <span
-      role="status"
-      className={cn(
-        "order-3 flex items-center gap-2 font-semibold text-base",
-        look,
-      )}
-    >
-      {status && <StatusIcon status={status} className="size-5" />}
-      {t(verdict)}
-      {verdict === "wrong" && outcomes.length > 1 && (
-        <small className="font-normal text-muted-foreground text-sm">
-          {t("partsRight", {
-            right: outcomes.filter(isRight).length,
-            total: outcomes.length,
-          })}
-        </small>
-      )}
-    </span>
-  );
 }
 
 export function AnswerForm({
@@ -77,6 +39,8 @@ export function AnswerForm({
     useAction(checkAnswer);
   const errorText = useErrorText();
   const help = useTaskSession();
+  const { data: reveal } = useReveal(taskId, help.shown);
+  const [solved, setSolved] = useState(() => parts.map(() => false));
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
   const stats = useRef(freshInput());
@@ -94,9 +58,15 @@ export function AnswerForm({
     id: `answer-${taskId}-${i}`,
   }));
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
-  const stateOf = (i: number): PartOutcome => checked?.outcomes[i] ?? "empty";
+  const filled = help.shown !== undefined;
+  const fillOf = (i: number) => (solved[i] ? undefined : reveal?.values[i]);
+  const stateOf = (i: number): FieldState => {
+    if (solved[i]) return "right";
+    if (fillOf(i) !== undefined) return "shown";
+    return checked?.outcomes[i] ?? "empty";
+  };
   const bar = {
-    go: Boolean(checked?.correct) || help.solution,
+    go: help.correct || filled,
     fallback,
     onSkip: () =>
       help.track(
@@ -126,7 +96,11 @@ export function AnswerForm({
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
           const data = (await executeAsync(form))?.data;
-          if (data) help.note({ verdict: verdictOf(data.outcomes) });
+          if (data) {
+            help.note({ verdict: verdictOf(data.outcomes) });
+            setSolved(data.outcomes.map(isRight));
+            if (data.correct) help.markCorrect();
+          }
           return data?.sessionId;
         });
       }}
@@ -155,6 +129,8 @@ export function AnswerForm({
                 : `\\text{${t("placeholder")}}`
             }
             state={stateOf(i)}
+            locked={solved[i] || filled}
+            fill={fillOf(i)}
             stats={stats}
             onChange={onChange}
           />
@@ -165,6 +141,12 @@ export function AnswerForm({
           {t("unchecked", { parts: unchecked.join(", ") })}
         </p>
       )}
+      <AnswerStatus
+        taskId={taskId}
+        outcomes={checked?.outcomes}
+        solved={solved.filter(Boolean).length}
+        total={parts.length}
+      />
       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
         <Suspense fallback={<ActionBar {...bar} />}>
           <ActionBar {...bar} next={next} />
@@ -174,7 +156,6 @@ export function AnswerForm({
             {errorText()}
           </span>
         )}
-        {checked && <Result checked={checked} />}
       </div>
       {checked?.correct && afterCorrect}
     </form>

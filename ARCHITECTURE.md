@@ -44,7 +44,7 @@ Nothing checks these automatically.
 
 ### Answers stay on the server
 
-A task page gets the statement and the part labels. A server action checks answers with Compute Engine. The page fetches hints, the key and the solution one at a time from `/api/tasks/[id]/reveal` when the student opens them, and an action saves each opening as a reveal.
+A task page gets the statement and the part labels. A server action checks answers with Compute Engine. The page fetches hints, the key and the solution one at a time from `/api/tasks/[id]/reveal` when the student opens them, and an action saves each opening as a reveal. For the key and the solution the endpoint also returns the expected LaTeX of every checked part, which the page puts into the answer fields. The fields then lock, as they do for a correct part; a hint leaves them open.
 
 ### Everything belongs to a profile
 

@@ -55,8 +55,8 @@ test("opening hints and the solution is recorded around the check", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  const open = (label: string) =>
-    page.getByRole("button", { name: label, exact: true }).click();
+  const open = (label: RegExp) =>
+    page.getByRole("button", { name: label }).click();
   const events = async () => {
     const { rows } = await auth.db.query<{ event: string }>(
       `select part::text as event, created_at from reveals where profile_id = $1 and task_id = 'kv-002'
@@ -69,15 +69,36 @@ test("opening hints and the solution is recorded around the check", async ({
   };
 
   await page.goto("/bank/kv-002");
-  await open("Nagoveštaj");
+  await open(/^Nagoveštaj/);
   await expect(page.getByText("Svi traženi izrazi")).toBeVisible();
   await expect.poll(events).toEqual(["hint1"]);
   await answer(page, "5");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect.poll(events).toEqual(["hint1", "check"]);
-  await open("Rešenje");
+  await open(/^Rešenje$/);
   await expect(page.getByText("Realnost korena").first()).toBeVisible();
   await expect.poll(events).toEqual(["hint1", "check", "solution"]);
+});
+
+test("opening Rezultat is recorded as a reveal of the answer", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await page.goto("/bank/eks-001");
+  await page.getByRole("button", { name: "Rezultat" }).click();
+  await expect(
+    page.getByRole("link", { name: "Sledeći zadatak" }),
+  ).toBeVisible();
+  await expect
+    .poll(async () => {
+      const { rows } = await auth.db.query<{ part: string }>(
+        "select part::text from reveals where profile_id = $1 and task_id = 'eks-001'",
+        [profileId],
+      );
+      return rows.map((row) => row.part);
+    })
+    .toEqual(["answer"]);
 });
 
 test("an unreadable answer asks to check the entry and is not a mistake", async ({
@@ -133,7 +154,7 @@ test("a task visit is one session and a long pause starts another", async ({
     "update task_sessions set last_seen_at = now() - interval '1 minute' where profile_id = $1",
     [profileId],
   );
-  await page.getByRole("button", { name: "Nagoveštaj" }).click();
+  await page.getByRole("button", { name: "Rešenje" }).click();
   await expect.poll(async () => (await sessions()).length).toBe(2);
 });
 

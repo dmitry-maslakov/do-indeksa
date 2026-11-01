@@ -5,7 +5,10 @@ declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
       "math-field": DetailedHTMLProps<
-        HTMLAttributes<MathfieldElement> & { placeholder?: string },
+        HTMLAttributes<MathfieldElement> & {
+          placeholder?: string;
+          readOnly?: boolean;
+        },
         MathfieldElement
       >;
     }

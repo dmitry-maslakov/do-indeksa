@@ -1,98 +1,147 @@
 "use client";
 
 import { cn } from "cn";
-import { range } from "es-toolkit";
+import { BookOpenIcon, EyeIcon, LightbulbIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { saveReveal } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
+import { isHint, offered } from "./help";
 import { RevealContent } from "./reveal";
 import type { RevealPart } from "./reveals";
 
 interface HelpPanelProps {
   taskId: string;
   hintCount: number;
+  answerText: boolean;
 }
 
-function Block({ label, children }: { label: string; children: ReactNode }) {
+const icons = {
+  hint: LightbulbIcon,
+  answer: EyeIcon,
+  solution: BookOpenIcon,
+};
+
+const kindOf = (part: RevealPart) => (isHint(part) ? "hint" : part);
+
+function Block({
+  part,
+  label,
+  children,
+}: {
+  part: RevealPart;
+  label: string;
+  children: ReactNode;
+}) {
+  const Icon = icons[kindOf(part)];
+  const solution = part === "solution";
   return (
-    <section className="flex flex-col gap-2">
-      <h2 className="font-semibold text-muted-foreground text-xs">{label}</h2>
+    <section
+      className={cn(
+        "flex flex-col gap-2",
+        solution && "border-data-soft border-l-2 pl-4",
+      )}
+    >
+      <h2
+        className={cn(
+          "flex items-center gap-1.5 font-semibold text-xs",
+          solution ? "text-data" : "text-muted-foreground",
+        )}
+      >
+        <Icon aria-hidden className="size-4" />
+        {label}
+      </h2>
       {children}
     </section>
   );
 }
 
-function Chip({ label, onClick }: { label: string; onClick: () => void }) {
+function Chip({
+  part,
+  label,
+  count,
+  onClick,
+}: {
+  part: RevealPart;
+  label: string;
+  count?: string;
+  onClick: () => void;
+}) {
+  const Icon = icons[kindOf(part)];
   return (
     <button
       type="button"
       onClick={onClick}
-      className="h-10 rounded-full bg-muted px-4 font-medium text-sm outline-none transition-colors hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-10 items-center gap-2 rounded-full bg-muted px-4 font-medium text-sm outline-none transition-colors hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring"
     >
+      <Icon aria-hidden className="size-4 text-muted-foreground" />
       {label}
+      {count && <span className="font-normal text-subtle">{count}</span>}
     </button>
   );
 }
 
-export function HelpPanel({ taskId, hintCount }: HelpPanelProps) {
+export function HelpPanel({ taskId, hintCount, answerText }: HelpPanelProps) {
   const t = useTranslations("Solve");
-  const { track, note, hints, solution, showHint, showSolution } =
-    useTaskSession();
-  const [answer, setAnswer] = useState(false);
-  const open = (part: RevealPart, show: () => void) => () => {
-    if (typeof part !== "number") note({ revealed: true });
+  const { track, note, opened, solution, correct, open } = useTaskSession();
+  const choose = (part: RevealPart) => () => {
+    if (!isHint(part)) note({ revealed: true });
     track(
       async (sessionId) =>
         (await saveReveal({ taskId, part, owner: { sessionId } }))?.data ??
         undefined,
     );
-    show();
+    open(part);
   };
-  const content = (part: RevealPart) => (
-    <RevealContent
-      taskId={taskId}
-      part={part}
-      className={cn(
-        "text-base leading-relaxed [&_p+p]:mt-2",
-        part === "solution" &&
-          "[&>*+*]:mt-2 [&>*+*]:border-t [&>*+*]:border-dashed [&>*+*]:pt-2",
-      )}
-    />
+  const cards = opened.filter(
+    (part) => part !== "answer" || (answerText && !solution),
   );
+  const chips = offered({ opened, hintCount, correct });
 
   return (
     <div className="mt-7 flex flex-col gap-4 border-t pt-4 md:mt-9">
-      {(hints > 0 || solution || answer) && (
+      {cards.length > 0 && (
         <div className="flex flex-col gap-4">
-          {range(hints).map((i) => (
-            <Block key={i} label={t("hint")}>
-              {content(i)}
+          {cards.map((part) => (
+            <Block
+              key={part}
+              part={part}
+              label={
+                isHint(part)
+                  ? t("hintTitle", { number: part + 1, total: hintCount })
+                  : t(part)
+              }
+            >
+              <RevealContent
+                taskId={taskId}
+                part={part}
+                className={cn(
+                  "text-base leading-relaxed [&_p+p]:mt-2",
+                  part === "solution" &&
+                    "[&>*+*]:mt-2 [&>*+*]:border-t [&>*+*]:border-dashed [&>*+*]:pt-2",
+                )}
+              />
             </Block>
           ))}
-          {solution && (
-            <Block label={t("solution")}>{content("solution")}</Block>
-          )}
-          {answer && <Block label={t("answer")}>{content("answer")}</Block>}
         </div>
       )}
-      <div className="flex flex-wrap gap-2">
-        {hints < hintCount && (
-          <Chip label={t("hint")} onClick={open(hints, showHint)} />
-        )}
-        {!solution && (
-          <Chip
-            label={t("solution")}
-            onClick={open("solution", showSolution)}
-          />
-        )}
-        {!answer && (
-          <Chip
-            label={t("answer")}
-            onClick={open("answer", () => setAnswer(true))}
-          />
-        )}
-      </div>
+      {chips.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {chips.map((part) => (
+            <Chip
+              key={part}
+              part={part}
+              label={t(kindOf(part))}
+              count={
+                isHint(part)
+                  ? t("hintStep", { next: part + 1, total: hintCount })
+                  : undefined
+              }
+              onClick={choose(part)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -119,7 +119,11 @@ export default async function SolvePage({
                 </Suspense>
               }
             />
-            <HelpPanel taskId={id} hintCount={html.hints.length} />
+            <HelpPanel
+              taskId={id}
+              hintCount={html.hints.length}
+              answerText={html.unchecked.length > 0}
+            />
             <div className="mt-6">
               <ReportTask taskId={id} />
             </div>

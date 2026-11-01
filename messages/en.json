@@ -127,7 +127,13 @@
     "placeholder": "Answer",
     "unchecked": "{parts} is not entered here — compare your work with the solution.",
     "partsRight": "{right, number} of {total, number} correct",
-    "further": "Move on"
+    "further": "Move on",
+    "hintTitle": "Hint {number, number} of {total, number}",
+    "hintStep": "{next, number}/{total, number}",
+    "answerShown": "Answer shown",
+    "solutionOpened": "Solution opened",
+    "ownParts": "{own, number} of {total, number} yours",
+    "withHint": "with a hint"
   },
   "Variants": {
     "title": "Practice tests",
