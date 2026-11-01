@@ -31,7 +31,8 @@ const isModified = (event: MouseEvent) =>
 
 interface LinkTabsProps {
   items: {
-    href: string;
+    href?: string;
+    onSelect?: () => void;
     label: string;
     active: boolean;
     intent?: string;
@@ -56,27 +57,41 @@ export function LinkTabs({
 }: LinkTabsProps) {
   return (
     <nav ref={ref} aria-label={label} className={list({ variant })}>
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          data-intent={item.intent}
-          scroll={scroll}
-          data-active={item.active}
-          aria-current={item.active ? "page" : undefined}
-          className={tab({ variant })}
-          onClick={(event) => {
-            if (control)
-              queueEvent("control_used", { control, value: item.value });
-            if (!shallow || isModified(event)) return;
-            event.preventDefault();
-            if (!item.active)
-              history.pushState(null, "", event.currentTarget.href);
-          }}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {items.map((item) =>
+        item.href ? (
+          <Link
+            key={item.label}
+            href={item.href}
+            data-intent={item.intent}
+            scroll={scroll}
+            data-active={item.active}
+            aria-current={item.active ? "page" : undefined}
+            className={tab({ variant })}
+            onClick={(event) => {
+              if (control)
+                queueEvent("control_used", { control, value: item.value });
+              if (!shallow || isModified(event)) return;
+              event.preventDefault();
+              if (!item.active)
+                history.pushState(null, "", event.currentTarget.href);
+            }}
+          >
+            {item.label}
+          </Link>
+        ) : (
+          <button
+            key={item.label}
+            type="button"
+            data-intent={item.intent}
+            data-active={item.active}
+            aria-busy={item.active}
+            className={tab({ variant })}
+            onClick={item.onSelect}
+          >
+            {item.label}
+          </button>
+        ),
+      )}
     </nav>
   );
 }

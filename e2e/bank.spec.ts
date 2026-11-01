@@ -45,16 +45,19 @@ function bank(page: Page) {
 const firstBankFrame = (page: Page) =>
   page.evaluate(
     () =>
-      new Promise<string[]>((resolve) => {
+      new Promise<{ cards: string[]; placeholders: number }>((resolve) => {
         const shown = (selector: string) =>
           Array.from(document.querySelectorAll(selector)).filter((node) =>
             node.checkVisibility(),
           );
         const frame = () => {
           if (shown("main input[type=search]").length)
-            resolve(
-              shown("main article").map((card) => card.textContent ?? ""),
-            );
+            resolve({
+              cards: shown("main article").map(
+                (card) => card.textContent ?? "",
+              ),
+              placeholders: shown("main [data-slot=skeleton]").length,
+            });
           else requestAnimationFrame(frame);
         };
         requestAnimationFrame(frame);
@@ -154,11 +157,25 @@ test("going back from a task shows the topic's cards at once", async ({
 
   const first = firstBankFrame(page);
   await page.goBack();
-  const shown = await first;
+  const { cards: shown } = await first;
   expect(shown.length).toBeGreaterThan(0);
   for (const card of shown) expect(card).toContain("Logaritmi");
   await expect(page).toHaveURL(/\/bank\/topic\/logarithms$/);
   await expect(cards.first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("Svi zadaci opens the topic's list with its tabs and count in place", async ({
+  page,
+  errors,
+}) => {
+  await open(page, "/bank/log-001");
+  const first = firstBankFrame(page);
+  await page.getByRole("link", { name: "Svi zadaci" }).first().click();
+  const { cards, placeholders } = await first;
+  expect(cards.length).toBeGreaterThan(0);
+  expect(placeholders).toBe(0);
+  await expect(page).toHaveURL(/\/bank\/topic\/logarithms$/);
   expect(errors).toEqual([]);
 });
 

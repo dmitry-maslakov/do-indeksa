@@ -45,9 +45,10 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
   const locale = useLocale();
   const search = serializeBankFilters(filters);
   const pending = !personal;
+  const start = `/bank/start/${filters.topic ?? positions[0]?.topic}`;
   const tabs = (
-    <Suspense fallback={<BankTabs />}>
-      <BankTabs pick={personal?.then((p) => p.pick)} />
+    <Suspense fallback={<BankTabs start={start} />}>
+      <BankTabs start={start} pick={personal?.then((p) => p.pick)} />
     </Suspense>
   );
 
@@ -88,7 +89,6 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
           count={tasks.length}
           label={filterLabel(filters, t, locale)}
           shown={pending ? undefined : resultsShown(filters, tasks.length)}
-          pending={pending}
         />
         {tasks.length === 0 ? (
           <EmptyResults />

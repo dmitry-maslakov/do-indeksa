@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { use } from "react";
+import { use, useTransition } from "react";
 import { LinkTabs } from "@/components/link-tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
 import { useBankState } from "./filters/bank-state";
@@ -14,10 +14,16 @@ export interface BankPick {
   recommendation?: BrowserEvents["recommendation_made"];
 }
 
-function Tabs({ href, recommendation }: BankPick) {
+interface TabsProps extends Partial<BankPick> {
+  start: string;
+}
+
+function Tabs({ start, href, recommendation }: TabsProps) {
   const t = useTranslations("Bank");
   const seen = useExposure("recommendation_made", recommendation);
   const [topic] = useBankState().topic;
+  const router = useRouter();
+  const [starting, startTransition] = useTransition();
   return (
     <LinkTabs
       ref={seen}
@@ -26,18 +32,23 @@ function Tabs({ href, recommendation }: BankPick) {
       items={[
         {
           href,
+          onSelect: () => startTransition(() => router.push(start)),
           label: t("recommended"),
-          active: false,
+          active: starting,
           intent: intentOf({ via: "picker", placement: "bank_tab" }),
         },
-        { href: bankHref({ topic }), label: t("all"), active: true },
+        { href: bankHref({ topic }), label: t("all"), active: !starting },
       ]}
     />
   );
 }
 
-export function BankTabs({ pick }: { pick?: Promise<BankPick> }) {
+interface BankTabsProps {
+  start: string;
+  pick?: Promise<BankPick>;
+}
+
+export function BankTabs({ start, pick }: BankTabsProps) {
   const resolved = pick && use(pick);
-  if (!resolved) return <Skeleton className="h-10 rounded-xl" />;
-  return <Tabs key={resolved.href} {...resolved} />;
+  return <Tabs key={resolved?.href} start={start} {...resolved} />;
 }
