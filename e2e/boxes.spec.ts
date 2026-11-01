@@ -160,7 +160,7 @@ test.describe("a list of values", () => {
     page,
   }) => {
     await enter(page, fields(page).first(), "4;");
-    await page.getByRole("button", { name: "√" }).click();
+    await page.getByRole("button", { name: "√", exact: true }).click();
     await page.keyboard.type("2");
     await expect(sent(page)).toHaveValue("4;\\sqrt2");
     await check(page);
@@ -170,7 +170,7 @@ test.describe("a list of values", () => {
 
   test("checks at Enter from any box", async ({ page }) => {
     await enter(page, fields(page).first(), "4;");
-    await page.getByRole("button", { name: "√" }).click();
+    await page.getByRole("button", { name: "√", exact: true }).click();
     await page.keyboard.type("2");
     await fields(page).first().click();
     await expect(fields(page).first()).toBeFocused();
@@ -199,7 +199,7 @@ test.describe("a list of values", () => {
     const tray = page.locator("button", { hasText: "∅ nema rešenja" });
     await expect(tray).toHaveCount(1);
     await enter(page, fields(page).first(), "4;");
-    await page.getByRole("button", { name: "√" }).click();
+    await page.getByRole("button", { name: "√", exact: true }).click();
     await page.keyboard.type("2");
     await check(page);
     await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -350,27 +350,59 @@ test("a task with several parts keeps a field for each", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
-test("a topic with functions in its answers offers their keys", async ({
-  page,
-}) => {
+test("a field offers the keys its topic lists", async ({ page }) => {
   const functions = page.getByRole("button", {
     name: /^(sin|cos|c?tg|arc|ln)/,
   });
-  await open(page, "/bank/log-001");
+  const button = (name: string) =>
+    page.getByRole("button", { name, exact: true });
+  await open(page, "/bank/kv-002");
   await enter(page, fields(page).first(), "4");
-  await expect(page.getByRole("button", { name: "√" })).toBeVisible();
+  await expect(button("√")).toBeVisible();
+  await expect(button("π")).toHaveCount(0);
   await expect(functions).toHaveCount(0);
 
+  await open(page, "/bank/kb-003");
+  await enter(page, fields(page).first(), "6");
+  await expect(button("i")).toBeVisible();
+
   await open(page, "/bank/trig-001");
-  await enter(page, fields(page).first(), "pi/4;");
-  await expect(functions).toHaveText(["arcsin", "arccos", "arctg"]);
-  await page.getByRole("button", { name: "arctg" }).click();
+  await enter(page, fields(page).first(), "45");
+  await button("°").click();
+  await page.keyboard.type(";");
+  await expect(functions).toHaveText([
+    "sin",
+    "cos",
+    "tg",
+    "ctg",
+    "arcsin",
+    "arccos",
+    "arctg",
+  ]);
+  await button("arctg").click();
   await page.keyboard.type("2");
   await enter(page, fields(page).last(), "");
-  await page.getByRole("button", { name: "arctg" }).click();
+  await button("arctg").click();
   await page.keyboard.type("2");
-  await expect(sent(page)).toHaveValue("\\frac{\\pi}{4};\\arctg2");
+  await expect(sent(page)).toHaveValue("45^{\\circ};\\arctg2");
   await expect(sent(page, 1)).toHaveValue("\\arctg2");
+  await check(page);
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+});
+
+test("an answer typed with n! and C(n,k) is right", async ({ page }) => {
+  await open(page, "/bank/komb-002");
+  await enter(page, fields(page).first(), "");
+  await page.getByRole("button", { name: "C(n,k)" }).click();
+  await page.keyboard.type("25");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.type("2");
+  await expect(sent(page)).toHaveValue("\\binom{25}{2}");
+  await enter(page, fields(page).nth(1), "5");
+  await page.getByRole("button", { name: "n!" }).click();
+  await page.keyboard.type("-12");
+  await expect(sent(page, 1)).toHaveValue("5!-12");
+  await enter(page, fields(page).nth(2), "156");
   await check(page);
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
@@ -486,14 +518,18 @@ test.describe("on a phone", () => {
     await expect(sent(page)).toHaveValue("2");
   });
 
-  test("a topic with functions in its answers has their row above the digits", {
+  test("the keys of the topic sit above the digits", {
     tag: "@mobile",
   }, async ({ page }) => {
-    await touch(page, "/bank/log-001");
+    await touch(page, "/bank/kv-002");
     await expect(key(page, "4")).toBeVisible();
+    await expect(cap(page, "√")).toBeVisible();
+    await expect(cap(page, "π")).toBeHidden();
     await expect(cap(page, "arctg")).toBeHidden();
     await touch(page, "/bank/trig-001");
+    await expect(cap(page, "π")).toBeVisible();
     await expect(cap(page, "arcsin")).toBeVisible();
+    await expect(cap(page, "°")).toBeVisible();
     await cap(page, "arctg").tap();
     await key(page, "2").tap();
     await expect(sent(page)).toHaveValue("\\arctg2");

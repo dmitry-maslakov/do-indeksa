@@ -99,12 +99,24 @@ describe("part symbols", () => {
   const symbolsOf = async (id: string) =>
     (await renderParts(getTask(id) as Task)).map((part) => part.symbols);
 
-  it("are the symbols of every answer in the topic, the same for each part", async () => {
-    expect(await symbolsOf("trig-001")).toEqual([
-      ["pi", "fraction", "arc"],
-      ["pi", "fraction", "arc"],
-    ]);
-    expect(await symbolsOf("log-001")).toEqual([["root"]]);
+  it("are the keys the topic names, the same for each part", async () => {
+    const trigonometry = [
+      "pi",
+      "fraction",
+      "sqrt",
+      "sin",
+      "cos",
+      "tg",
+      "ctg",
+      "arcsin",
+      "arccos",
+      "arctg",
+      "degree",
+    ];
+    expect(await symbolsOf("trig-001")).toEqual([trigonometry, trigonometry]);
+    expect(await symbolsOf("kv-002")).toEqual(
+      Array(3).fill(["sqrt", "fraction", "power"]),
+    );
   });
 });
 

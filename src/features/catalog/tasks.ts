@@ -13,11 +13,10 @@ import {
   labelOf,
   type PartLabel,
   resultOf,
-  symbolsIn,
   uncheckedLetters,
 } from "./parts";
 import { examSource } from "./source";
-import { topicName } from "./topics";
+import { topicName, topics } from "./topics";
 
 export interface TaskSummary {
   id: string;
@@ -122,12 +121,7 @@ export async function renderStatement(task: Task) {
   return html;
 }
 
-const symbolsByTopic = new Map(
-  Array.from(byTopic, ([topic, group]) => [
-    topic,
-    symbolsIn(group.flatMap((t) => t.check.map((c) => c.expected))),
-  ]),
-);
+const symbolsByTopic = new Map(topics.map((t) => [t.id, t.keys]));
 
 const labelsOf = (task: Task) =>
   task.check.map((c, i, all) =>

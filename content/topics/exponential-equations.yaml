@@ -5,6 +5,7 @@ name:
 icon:
   text: "aˣ"
 tone: blue
+keys: [power, sqrt, nth-root, fraction, log, ln, e, pi]
 types:
 - same-base
 - substitution

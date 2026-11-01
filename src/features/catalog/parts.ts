@@ -3,6 +3,7 @@ import { z } from "zod";
 import { squash, topLevel } from "@/lib/tex";
 import { arityOf } from "./boxes";
 import { inferKind, type Kind, kindProblem, kinds } from "./kinds";
+import type { AnswerSymbol } from "./symbols";
 
 export const maxParts = 6;
 
@@ -14,24 +15,6 @@ export interface PartMarkup {
   kind: Kind | null;
   unit: string | null;
 }
-
-const answerSymbols = {
-  root: /\\sqrt/,
-  pi: /\\pi/,
-  fraction: /\\[dt]?frac/,
-  power: /\^/,
-  log: /\\log/,
-  ln: /\\ln/,
-  trig: /\\(?:sin|cos|tan|cot)/,
-  arc: /\\arc(?:sin|cos|tan|cot)/,
-};
-
-export type AnswerSymbol = keyof typeof answerSymbols;
-
-export const symbolsIn = (answers: string[]) =>
-  (Object.keys(answerSymbols) as AnswerSymbol[]).filter((name) =>
-    answers.some((answer) => answerSymbols[name].test(answer)),
-  );
 
 export interface PartLabel {
   kind: Kind | null;

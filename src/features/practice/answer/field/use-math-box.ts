@@ -2,7 +2,7 @@ import type { MathfieldElement } from "mathlive";
 import { type RefObject, useEffect, useEffectEvent } from "react";
 import { trimComma } from "@/features/catalog/boxes";
 import type { Kind } from "@/features/catalog/kinds";
-import type { AnswerSymbol } from "@/features/catalog/parts";
+import type { AnswerSymbol } from "@/features/catalog/symbols";
 import { countInput, focused, type InputStats, shown } from "../input-stats";
 import { attachKeys, type BoxKeys } from "./box-keys";
 import { keyboardFor } from "./keyboards";

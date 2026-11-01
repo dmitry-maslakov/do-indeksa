@@ -5,5 +5,6 @@ name:
 icon:
   text: "sin"
 tone: pink
+keys: [pi, fraction, sqrt, sin, cos, tg, ctg, arcsin, arccos, arctg, degree]
 types:
 - roots-in-interval

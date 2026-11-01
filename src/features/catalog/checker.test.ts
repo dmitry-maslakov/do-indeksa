@@ -177,6 +177,45 @@ describe("a function typed with its key", () => {
   });
 });
 
+describe("a symbol typed with its key", () => {
+  it.each([
+    ["\\binom{25}{2}", "300"],
+    ["\\binom{n+1}{k+1}x^{k}", "\\binom{n+1}{k+1}x^{k}"],
+    ["5!", "120"],
+    ["6!\\cdot18!", "6!\\cdot 18!"],
+    ["(n-2)(n-1)!", "(n-2)\\cdot(n-1)!"],
+    ["\\frac{52!}{\\left(13!\\right)^4}", "\\frac{52!}{(13!)^4}"],
+    ["2i+2", "2+2i"],
+    ["\\frac{1+i}{1-i}", "i"],
+    ["4e^{-2}", "\\frac{4}{e^{2}}"],
+    ["e^3-e^2x+\\frac1e", "-e^{2}x+e^{3}+\\frac{1}{e}"],
+    ["\\frac{3\\sqrt[3]{2}}{2}", "\\frac{3}{\\sqrt[3]{4}}"],
+    ["2^{\\frac16}", "\\sqrt[6]{2}"],
+    ["90^{\\circ}", "90^\\circ"],
+    ["45^{\\circ}", "\\frac{\\pi}{4}"],
+  ])("accepts %s for %s", (input, expected) => {
+    expect(grade(expected, input)).toBe("right");
+  });
+
+  it.each([
+    ["\\binom{25}{3}", "300"],
+    ["4!", "120"],
+    ["-2i+2", "2+2i"],
+    ["\\sqrt[3]{2}", "\\sqrt{2}"],
+    ["30^{\\circ}", "\\frac{\\pi}{4}"],
+  ])("rejects %s for %s", (input, expected) => {
+    expect(grade(expected, input)).toBe("wrong");
+  });
+
+  it("is read in the boxes of a list", () => {
+    expect(grade("0, -i, i", "i;-i;0", "values")).toBe("right");
+    expect(grade("\\sqrt[5]{5}, 5", "5;\\sqrt[5]{5}", "values")).toBe("right");
+    expect(
+      grade("\\frac{\\pi}{4}, \\arctan 2", "45^{\\circ};\\arctg2", "values"),
+    ).toBe("right");
+  });
+});
+
 describe("point and points", () => {
   it.each([
     ["(3;2)", "(3,2)"],
