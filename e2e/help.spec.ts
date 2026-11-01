@@ -116,6 +116,17 @@ test("Rešenje puts the answer into the field and opens the solution", async ({
   await expect(chip(page, "Rešenje")).toBeHidden();
 });
 
+test("Rezultat keeps the answer text when it says more than the fields", async ({
+  page,
+}) => {
+  await page.goto("/bank/plan-001");
+  await hydrated(page);
+  await chip(page, "Rezultat").click();
+  await expect(fields(page).first()).toHaveJSProperty("readOnly", true);
+  await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
+  await expect(page.getByText(/d_1|24/).first()).toBeVisible();
+});
+
 test("Rešenje after Rezultat opens the solution without a second answer block", async ({
   page,
 }) => {

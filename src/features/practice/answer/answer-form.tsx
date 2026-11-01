@@ -21,6 +21,7 @@ interface AnswerFormProps {
   taskId: string;
   parts: PartLabel[];
   unchecked: string[];
+  answerText: boolean;
   next: Promise<NextTask>;
   fallback: string;
   afterCorrect?: ReactNode;
@@ -30,6 +31,7 @@ export function AnswerForm({
   taskId,
   parts,
   unchecked,
+  answerText,
   next,
   fallback,
   afterCorrect,
@@ -143,7 +145,7 @@ export function AnswerForm({
       )}
       <AnswerStatus
         taskId={taskId}
-        answerText={unchecked.length > 0}
+        answerText={answerText}
         outcomes={checked?.outcomes}
         solved={solved.filter(Boolean).length}
         total={parts.length}
