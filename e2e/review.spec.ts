@@ -74,6 +74,31 @@ test("a guest is offered to save a test result", {
   expect(errors).toEqual([]);
 });
 
+test("a solution viewed in the review leaves the task open in the bank", async ({
+  page,
+  errors,
+}) => {
+  await finishSet(page);
+  const row = page
+    .locator("details")
+    .filter({ hasText: "Eksponencijalne" })
+    .first();
+  await row.locator("summary").first().click();
+  const saved = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      (response.request().postData() ?? "").includes('"taskId":"eks-001"'),
+  );
+  await row.getByRole("button", { name: "Rešenje" }).click();
+  await saved;
+
+  await page.goto("/bank/eks-001");
+  await answer(page, "2");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("practicing similar tasks leaves the review for a new test", async ({
   page,
   errors,

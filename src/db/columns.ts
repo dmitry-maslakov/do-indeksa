@@ -20,6 +20,8 @@ export const sessionKinds = ["first", "retry", "mock"] as const;
 
 export type SessionKind = (typeof sessionKinds)[number];
 
+export const isPractice = ({ kind }: { kind: SessionKind }) => kind !== "mock";
+
 export const suggestionReasons = [
   "first",
   "stuck",
