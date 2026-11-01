@@ -220,3 +220,15 @@ test("the help ladder fits a phone", { tag: "@mobile" }, async ({ page }) => {
   );
   expect(width).toBeLessThanOrEqual(0);
 });
+
+test("only the result and the solution carry the expected values", async ({
+  request,
+}) => {
+  const valuesOf = async (part: string) =>
+    (await (await request.get(`/api/tasks/eks-001/reveal?part=${part}`)).json())
+      .values;
+  expect(await valuesOf("0")).toEqual([]);
+  expect(await valuesOf("1")).toEqual([]);
+  expect(await valuesOf("answer")).toEqual(["2"]);
+  expect(await valuesOf("solution")).toEqual(["2"]);
+});
