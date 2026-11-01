@@ -61,11 +61,12 @@ const isBlank = (input: string) =>
 
 function gradePart(input: string, expected: string): PartOutcome {
   if (isBlank(input)) return "empty";
-  if (!parseMath(input).isValid) return "unreadable";
+  if (!readings(input).some((reading) => parseMath(reading).isValid))
+    return "unreadable";
   return isEquivalent(input, expected) ? "right" : "wrong";
 }
 
-export const checkerVersion = 2;
+export const checkerVersion = 3;
 
 export const gradeParts = (expected: string[], answers: string[]) =>
   expected.map((e, i) => gradePart(answers[i] ?? "", e));
