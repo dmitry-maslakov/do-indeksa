@@ -47,6 +47,33 @@ describe("a part without a kind", () => {
   });
 });
 
+describe("an answer with a variable", () => {
+  it.each([
+    ["y=24(x+5)", "24x+120"],
+    ["(x+1)^2", "x^2+2x+1"],
+    ["x+x", "2x"],
+    ["\\frac{n(n-1)}{2}", "\\frac{n^2-n}{2}"],
+    ["2r\\sin(15^\\circ)", "r\\sqrt{2-\\sqrt{3}}"],
+    ["\\frac{\\sqrt{6}-\\sqrt{2}}{2}r", "r\\sqrt{2-\\sqrt{3}}"],
+    ["(x-2)^2+(y-5)^2=4", "x^2+y^2-4x-10y+25=0"],
+    ["2x^2+2y^2-8x-20y+50=0", "(x-2)^2+(y-5)^2=4"],
+  ])("accepts %s for %s in another form", (input, expected) => {
+    expect(isEquivalent(input, expected)).toBe(true);
+  });
+
+  it.each([
+    ["x+1", "x+2"],
+    ["y=24(x-5)", "24x+120"],
+    ["(x+1)^2", "x^2+x+1"],
+    ["\\frac{n(n+1)}{2}", "\\frac{n^2-n}{2}"],
+    ["(x-2)^2+(y-5)^2=9", "(x-2)^2+(y-5)^2=4"],
+    ["(x+2)^2+(y-5)^2=4", "x^2+y^2-4x-10y+25=0"],
+    ["x+C", "x+5+C"],
+  ])("rejects %s for %s", (input, expected) => {
+    expect(isEquivalent(input, expected)).toBe(false);
+  });
+});
+
 const outcomes = (parts: GradedPart[], answers: string[]) =>
   gradeParts(parts, answers).map((graded) => graded.outcome);
 
