@@ -143,6 +143,8 @@ export async function renderParts(task: Task) {
     source && renderMarkdown(source, task.id);
   const parts = await Promise.all(
     labelsOf(task).map(async (p) => ({
+      kind: p.kind,
+      arity: p.arity,
       letter: p.letter,
       prefix: await optional(p.prefix),
       suffix: await optional(p.suffix),

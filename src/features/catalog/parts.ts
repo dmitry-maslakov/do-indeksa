@@ -1,6 +1,7 @@
 import { compact, uniq } from "es-toolkit";
 import { z } from "zod";
 import { squash, topLevel } from "@/lib/tex";
+import { arityOf } from "./boxes";
 import { inferKind, type Kind, kindProblem, kinds } from "./kinds";
 
 export const maxParts = 6;
@@ -15,6 +16,8 @@ export interface PartMarkup {
 }
 
 export interface PartLabel {
+  kind: Kind | null;
+  arity: number;
   letter: string;
   prefix: string | null;
   suffix: string | null;
@@ -98,6 +101,8 @@ export function labelOf(
     ? { caption: rest || null, symbol: `$${variable}$` }
     : nameOf(rest);
   return {
+    kind,
+    arity: kind === "point" || kind === "points" ? arityOf(markup) : 0,
     letter: part ? `${part})` : (match?.[1] ?? fallback),
     caption,
     ...frame(kind, symbol, unit),

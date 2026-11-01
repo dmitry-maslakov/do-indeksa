@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { gradeParts, isEquivalent } from "./checker";
+import { answerProblem, type GradedPart, gradeParts } from "./checker";
+import type { Kind } from "./kinds";
 
-describe("isEquivalent", () => {
+const isEquivalent = (input: string, expected: string) =>
+  gradeParts([{ expected }], [input])[0]?.outcome === "right";
+
+describe("a part without a kind", () => {
   it.each([
     ["\\frac{4\\pi}{6}", "\\frac{2\\pi}{3}"],
     ["\\sqrt{12}", "2\\sqrt{3}"],
@@ -43,16 +47,17 @@ describe("isEquivalent", () => {
   });
 });
 
+const outcomes = (parts: GradedPart[], answers: string[]) =>
+  gradeParts(parts, answers).map((graded) => graded.outcome);
+
+const grade = (expected: string, input: string, kind?: Kind) =>
+  outcomes([{ expected, kind }], [input])[0];
+
 describe("gradeParts", () => {
   it("grades each part and treats a missing answer as empty", () => {
-    expect(gradeParts(["2", "\\frac{1}{2}"], ["2"])).toEqual([
-      "right",
-      "empty",
-    ]);
-    expect(gradeParts(["2", "\\frac{1}{2}"], ["1", "0{,}5"])).toEqual([
-      "wrong",
-      "right",
-    ]);
+    const parts = [{ expected: "2" }, { expected: "\\frac{1}{2}" }];
+    expect(outcomes(parts, ["2"])).toEqual(["right", "empty"]);
+    expect(outcomes(parts, ["1", "0{,}5"])).toEqual(["wrong", "right"]);
   });
 
   it.each([
@@ -63,17 +68,235 @@ describe("gradeParts", () => {
     ],
     ["1{,}2{,}3", "1, 2, 3"],
   ])("grades %s as right for %s", (input, expected) => {
-    expect(gradeParts([expected], [input])).toEqual(["right"]);
+    expect(grade(expected, input)).toBe("right");
   });
 
   it.each(["", "  ", "\\placeholder{}"])("treats %j as empty", (input) => {
-    expect(gradeParts(["1"], [input])).toEqual(["empty"]);
+    expect(grade("1", input)).toBe("empty");
   });
 
   it.each(["\\frac{1", "(2,", "2+", "x=", "\\sqrt{}", "\\frac{}{}"])(
     "treats %j as unreadable",
     (input) => {
-      expect(gradeParts(["1"], [input])).toEqual(["unreadable"]);
+      expect(grade("1", input)).toBe("unreadable");
     },
   );
+});
+
+describe("values", () => {
+  it.each([
+    ["1;4", "1, 4"],
+    ["4;1", "1, 4"],
+    ["1;1;4", "1, 4"],
+    ["x=1;4", "1, 4"],
+    ["x_1=1;4", "1, 4"],
+    ["x\\in\\{1;4\\}", "1, 4"],
+    ["1,4", "1, 4"],
+    ["1{,}4", "1, 4"],
+    ["\\frac12;3", "\\frac{1}{2}, 3"],
+    ["0{,}5;3", "\\frac{1}{2}, 3"],
+    ["\\pm2", "2, -2"],
+    ["\\sqrt{2};4;", "4, \\sqrt{2}"],
+    ["\\emptyset", "\\emptyset"],
+  ])("accepts %s for %s", (input, expected) => {
+    expect(grade(expected, input, "values")).toBe("right");
+  });
+
+  it.each([
+    ["1;5", "1, 4"],
+    ["1", "1, 4"],
+    ["1;4;5", "1, 4"],
+    ["1{,}4;2", "1, 4"],
+    ["\\emptyset", "1, 4"],
+    ["1;4", "\\emptyset"],
+  ])("rejects %s for %s", (input, expected) => {
+    expect(grade(expected, input, "values")).toBe("wrong");
+  });
+
+  it("is empty when no box has anything", () => {
+    expect(grade("1, 4", ";", "values")).toBe("empty");
+  });
+});
+
+describe("point and points", () => {
+  it.each([
+    ["(3;2)", "(3,2)"],
+    ["3;2", "(3,2)"],
+    ["(x;y)=(3;2)", "(3,2)"],
+    ["\\left(3{,}0;2\\right)", "(3,2)"],
+    ["(3,2)", "(3,2)"],
+    ["(3{,}5;2)", "(\\frac{7}{2},2)"],
+    ["(\\frac12;\\sqrt{4};0)", "(0.5,2,0)"],
+  ])("accepts %s for %s", (input, expected) => {
+    expect(grade(expected, input, "point")).toBe("right");
+  });
+
+  it.each([
+    ["(2;3)", "(3,2)"],
+    ["(3;2;1)", "(3,2)"],
+    ["(3)", "(3,2)"],
+  ])("rejects %s for %s", (input, expected) => {
+    expect(grade(expected, input, "point")).toBe("wrong");
+  });
+
+  it.each([
+    ["(1;2);(3;4)", "(1,2),(3,4)"],
+    ["(3;4);(1;2)", "(1,2),(3,4)"],
+    ["(1,2),(3,4)", "(1,2),(3,4)"],
+    ["(1;2);(3;4);", "(1,2),(3,4)"],
+  ])("accepts %s for %s", (input, expected) => {
+    expect(grade(expected, input, "points")).toBe("right");
+  });
+
+  it.each([
+    ["(1;2)", "(1,2),(3,4)"],
+    ["(1;2);(4;3)", "(1,2),(3,4)"],
+  ])("rejects %s for %s", (input, expected) => {
+    expect(grade(expected, input, "points")).toBe("wrong");
+  });
+});
+
+describe("interval", () => {
+  const expected = "(-\\infty,-1)\\cup(0,1]";
+
+  it.each([
+    "(-\\infty;-1)\\cup(0;1]",
+    "(-\\infty;-1)\\cup(0;1.0]",
+    "(0;1]\\cup(-\\infty;-1)",
+    "(-\\infty;-1)\\cup(0;\\frac{2}{2}]",
+    "(-\\infty;-1)\\cup(0;0.5]\\cup(0.5;1]",
+    "(-\\infty;-1)\\cup(0;1)\\cup\\{1\\}",
+    "x\\in(-\\infty;-1)\\cup(0;1]",
+    "(-\\infty,-1)\\cup(0,1]",
+    "\\left(-\\infty;-1\\right)\\cup\\left(0;1\\right\\rbrack",
+    "[-\\infty;-1)\\cup(0;1]",
+  ])("accepts %s", (input) => {
+    expect(grade(expected, input, "interval")).toBe("right");
+  });
+
+  it.each([
+    "(-\\infty;-1]\\cup(0;1]",
+    "(-\\infty;-1)\\cup(0;1)",
+    "(-\\infty;-1)\\cup[0;1]",
+    "(-\\infty;-1)",
+    "(-\\infty;-1)\\cup(0;2]",
+    "(-1;-\\infty)\\cup(0;1]",
+  ])("rejects %s", (input) => {
+    expect(grade(expected, input, "interval")).toBe("wrong");
+  });
+
+  it("joins touching pieces and writes +\\infty as \\infty", () => {
+    expect(grade("[0,+\\infty)", "[0;1)\\cup[1;\\infty)", "interval")).toBe(
+      "right",
+    );
+    expect(
+      grade("(-\\infty,+\\infty)", "(-\\infty;0]\\cup(0;\\infty)", "interval"),
+    ).toBe("right");
+    expect(grade("(0,1)\\cup(1,2)", "(0;2)", "interval")).toBe("wrong");
+  });
+
+  it("compares symbolic ends by value", () => {
+    expect(
+      grade("(\\frac{\\pi}{3},\\log_{2}8]", "(\\frac{2\\pi}{6};3]", "interval"),
+    ).toBe("right");
+  });
+
+  it("reads a set of points as one piece for each", () => {
+    expect(grade("\\{-4,5\\}", "\\{-4\\}\\cup\\{5\\}", "interval")).toBe(
+      "right",
+    );
+    expect(
+      grade("(-\\infty,0)\\cup\\{1\\}", "(-\\infty;0)\\cup\\{1\\}", "interval"),
+    ).toBe("right");
+    expect(grade("(-\\infty,0)\\cup\\{1\\}", "(-\\infty;0)", "interval")).toBe(
+      "wrong",
+    );
+  });
+
+  it("accepts no solution", () => {
+    expect(grade("\\emptyset", "\\emptyset", "interval")).toBe("right");
+    expect(grade("(0,1)", "\\emptyset", "interval")).toBe("wrong");
+  });
+});
+
+describe("the box that cannot be read", () => {
+  const problem = (expected: string, input: string, kind: Kind) =>
+    gradeParts([{ expected, kind }], [input])[0];
+
+  it("names the unfinished fraction in the second box of a list", () => {
+    expect(problem("1, 2", "1;\\frac{1}{\\placeholder{}}", "values")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 1, reason: "fraction" },
+    });
+  });
+
+  it("names an unclosed bracket", () => {
+    expect(problem("1, 2", "\\left(1{,}5\\right?;2", "values")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 0, reason: "bracket" },
+    });
+  });
+
+  it("names the empty end of an interval", () => {
+    expect(problem("(0,1)\\cup(2,3)", "(0;1)\\cup(2;)", "interval")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 3, reason: "end" },
+    });
+  });
+
+  it("names the empty coordinate of a point", () => {
+    expect(problem("(3,2)", "(3;)", "point")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 1, reason: "coordinate" },
+    });
+  });
+
+  it("ignores a piece or a row with nothing in it", () => {
+    expect(grade("(0,1)", "(0;1)\\cup(;)", "interval")).toBe("right");
+    expect(grade("(1,2),(3,4)", "(1;2);(3;4);(;)", "points")).toBe("right");
+  });
+
+  it("points at the single field of a value", () => {
+    expect(problem("1", "2+", "value")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 0, reason: "expression" },
+    });
+  });
+});
+
+describe("the unit", () => {
+  it("is not needed and is dropped when typed", () => {
+    const part = {
+      expected: "(3,2)",
+      kind: "point" as const,
+      unit: "\\text{cm}",
+    };
+    expect(gradeParts([part], ["(3;2)\\text{cm}"])[0]?.outcome).toBe("right");
+  });
+});
+
+describe("answerProblem", () => {
+  it.each([
+    [{ expected: "4, \\sqrt{2}", kind: "values" as const }],
+    [{ expected: "(0,1,2)", kind: "point" as const, var: "T" }],
+    [{ expected: "(2,\\frac{1}{2}), (1,1)", kind: "points" as const }],
+    [{ expected: "(-\\infty,0)\\cup\\{1\\}", kind: "interval" as const }],
+    [{ expected: "0.3010275" }],
+    [{ expected: "(3,2)" }],
+    [{ expected: "\\emptyset", kind: "interval" as const }],
+  ])("is satisfied by %j sent the way its boxes send it", (part) => {
+    expect(answerProblem(part)).toBeUndefined();
+  });
+
+  it("names a part whose boxes cannot be laid out", () => {
+    expect(answerProblem({ expected: "(1,2,3)", kind: "interval" })).toContain(
+      "cannot be laid out",
+    );
+  });
+
+  it("names a part that is not graded right when sent", () => {
+    expect(
+      answerProblem({ expected: "1, \\frac{1", kind: "values" }),
+    ).toContain("is graded");
+  });
 });

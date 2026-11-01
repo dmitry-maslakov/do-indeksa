@@ -193,7 +193,7 @@ export async function finishTest(
     const graded = gradeTest(
       stored.taskIds.map((taskId) => ({
         taskId,
-        expected: getTask(taskId)?.check.map((c) => c.expected) ?? [],
+        parts: getTask(taskId)?.check ?? [],
       })),
       test.draft.answers,
     );

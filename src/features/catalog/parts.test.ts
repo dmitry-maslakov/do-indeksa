@@ -85,7 +85,7 @@ describe("labelOf", () => {
       shown("", null, null, "(x, y)"),
     ],
   ] as const)("splits the legacy label of %j", (part, index, count, view) => {
-    expect(labelOf(markup(part), index, count)).toEqual(view);
+    expect(labelOf(markup(part), index, count)).toMatchObject(view);
   });
 
   it.each([
@@ -94,13 +94,15 @@ describe("labelOf", () => {
     ["đ) m", "đ)"],
     ["e) m", "e)"],
   ])("reads the Serbian letter of %j", (label, letter) => {
-    expect(labelOf(markup({ label }), 0, 2)).toEqual(shown(letter, "m $=$"));
+    expect(labelOf(markup({ label }), 0, 2)).toMatchObject(
+      shown(letter, "m $=$"),
+    );
   });
 
   it("takes the letter from the part and leaves the label as a caption", () => {
     expect(
       labelOf(markup({ part: "đ", label: "dvostruki koren", var: "x" }), 0, 2),
-    ).toEqual(shown("đ)", "$x$ $=$", null, "dvostruki koren"));
+    ).toMatchObject(shown("đ)", "$x$ $=$", null, "dvostruki koren"));
     expect(labelOf(markup({ part: "v", label: "a) drugi" }), 0, 2).letter).toBe(
       "v)",
     );
@@ -120,23 +122,23 @@ describe("labelOf", () => {
   ] as const)(
     "frames a %s part with var %j",
     (kind, expected, v, pre, post) => {
-      expect(labelOf(markup({ kind, expected, var: v }), 0, 1)).toEqual(
+      expect(labelOf(markup({ kind, expected, var: v }), 0, 1)).toMatchObject(
         shown("", pre, post),
       );
     },
   );
 
   it("puts the unit after the field and after the closing brace", () => {
-    expect(labelOf(markup({ var: "\\alpha", unit: "^\\circ" }), 0, 1)).toEqual(
-      shown("", "$\\alpha$ $=$", "$^\\circ$"),
-    );
+    expect(
+      labelOf(markup({ var: "\\alpha", unit: "^\\circ" }), 0, 1),
+    ).toMatchObject(shown("", "$\\alpha$ $=$", "$^\\circ$"));
     expect(
       labelOf(
         markup({ kind: "values", expected: "1, 2", unit: "\\text{cm}" }),
         0,
         1,
       ),
-    ).toEqual(shown("", "$\\{$", "$\\}\\,\\text{cm}$"));
+    ).toMatchObject(shown("", "$\\{$", "$\\}\\,\\text{cm}$"));
   });
 
   it.each([
@@ -154,9 +156,26 @@ describe("labelOf", () => {
   ])(
     "reads the kind of a legacy part %j from %j",
     (label, expected, pre, post) => {
-      expect(labelOf(markup({ label, expected }), 0, 1)).toEqual(
+      expect(labelOf(markup({ label, expected }), 0, 1)).toMatchObject(
         shown("", pre, post),
       );
+    },
+  );
+
+  it.each([
+    ["values", "1, 4", null, "values", 0],
+    ["point", "(3,2)", "(x, y)", "point", 2],
+    ["point", "(1,2)", "(x, y, z)", "point", 3],
+    ["points", "(1,2,3), (4,5,6)", null, "points", 3],
+    [null, "(1,2,3)", null, "point", 3],
+    [null, "(3,2)", null, null, 0],
+    [null, "\\frac{1}{2}", null, "value", 0],
+  ] as const)(
+    "tells the field of a %s part with %j: %s, %s boxes",
+    (given, expected, v, kind, arity) => {
+      expect(
+        labelOf(markup({ kind: given, expected, var: v }), 0, 1),
+      ).toMatchObject({ kind, arity });
     },
   );
 });
