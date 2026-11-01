@@ -109,6 +109,34 @@ describe("gradeParts", () => {
   );
 });
 
+describe("choice", () => {
+  const part = {
+    expected: "both",
+    kind: "choice" as const,
+    options: ["right", "isosceles", "both", "neither"],
+  };
+  const graded = (answer: string) => gradeParts([part], [answer])[0];
+
+  it("is right only for the expected option, with no partial credit", () => {
+    expect(graded("both")).toEqual({ outcome: "right" });
+    expect(graded("right")).toEqual({ outcome: "wrong" });
+    expect(graded("neither")).toEqual({ outcome: "wrong" });
+  });
+
+  it("is empty when nothing is picked and unreadable for an unknown option", () => {
+    expect(graded("")).toEqual({ outcome: "empty" });
+    expect(graded("maybe")).toEqual({ outcome: "unreadable" });
+    expect(graded("Both")).toEqual({ outcome: "unreadable" });
+  });
+
+  it("is satisfied by its expected option sent as it is", () => {
+    expect(answerProblem(part)).toBeUndefined();
+    expect(
+      answerProblem({ expected: "no", kind: "choice", options: ["yes", "no"] }),
+    ).toBeUndefined();
+  });
+});
+
 describe("values", () => {
   it.each([
     ["1;4", "1, 4"],

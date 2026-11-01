@@ -6,9 +6,23 @@ export const kinds = [
   "interval",
   "point",
   "points",
+  "choice",
 ] as const;
 
 export type Kind = (typeof kinds)[number];
+
+type MathKind = Exclude<Kind, "choice">;
+
+export const choiceOptions = [
+  "yes",
+  "no",
+  "right",
+  "isosceles",
+  "both",
+  "neither",
+] as const;
+
+export type ChoiceOption = (typeof choiceOptions)[number];
 
 type Group = NonNullable<ReturnType<typeof groupOf>>;
 
@@ -24,7 +38,7 @@ const isSpan = (group: Group | null) =>
   group?.items.length === 2 &&
   (group.open === "[" || group.close === "]" || group.items.some(isInfinite));
 
-export function inferKind(expected: string): Kind | null {
+export function inferKind(expected: string): MathKind | null {
   const latex = squash(expected);
   if (isBraceSet(latex)) return "values";
   const groups = topLevel(latex).map((item) => groupOf(item));
@@ -42,7 +56,7 @@ export function inferKind(expected: string): Kind | null {
 export const kindOf = (part: { expected: string; kind?: Kind | null }) =>
   part.kind ?? inferKind(part.expected);
 
-const fitting: Record<Kind, readonly Kind[]> = {
+const fitting: Record<MathKind, readonly Kind[]> = {
   value: ["value", "values"],
   values: ["values"],
   interval: ["interval"],

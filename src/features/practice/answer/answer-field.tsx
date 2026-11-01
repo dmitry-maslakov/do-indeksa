@@ -1,11 +1,13 @@
 "use client";
 
 import type { MathfieldElement } from "mathlive";
-import { type RefObject, useRef, useState } from "react";
+import { type ComponentType, type RefObject, useRef, useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import type { Problem } from "@/features/catalog/boxes";
+import type { Kind } from "@/features/catalog/kinds";
 import type { PartLabel } from "@/features/catalog/parts";
-import type { FieldState } from "./field/field-frame";
+import { ChoiceField } from "./field/choice-field";
+import type { FieldProps, FieldState } from "./field/field-frame";
 import { IntervalField } from "./field/interval-field";
 import { SlotsField } from "./field/slots-field";
 import { ValueField } from "./field/value-field";
@@ -28,6 +30,15 @@ interface AnswerFieldProps {
   onChange: (index: number, value: string) => void;
 }
 
+const fields: Record<Kind, ComponentType<FieldProps>> = {
+  value: ValueField,
+  values: (props) => <SlotsField {...props} kind="values" />,
+  point: (props) => <SlotsField {...props} kind="point" />,
+  points: (props) => <SlotsField {...props} kind="points" />,
+  interval: IntervalField,
+  choice: ChoiceField,
+};
+
 function Caption({
   id,
   part,
@@ -35,7 +46,11 @@ function Caption({
 }: Pick<AnswerFieldProps, "id" | "part" | "variant">) {
   if (!part.caption && !(variant === "exam" && part.letter)) return null;
   return (
-    <label htmlFor={id} className="text-muted-foreground text-sm">
+    <label
+      id={`${id}-label`}
+      htmlFor={id}
+      className="text-muted-foreground text-sm"
+    >
       <b className="font-semibold text-foreground">{part.letter}</b>{" "}
       {part.caption && (
         <MathHtml as="span" html={part.caption} className="[&_p]:inline" />
@@ -58,6 +73,7 @@ export function AnswerField({
   const [value, setValue] = useState(defaultValue);
   const { id, part, variant, fill } = props;
   const sent = fill ?? value;
+  const Field = fields[part.kind ?? "value"];
   const unreadable = state === "unreadable" ? problem : undefined;
   const field = {
     ...props,
@@ -76,15 +92,7 @@ export function AnswerField({
   return (
     <div className="group/field flex min-w-0 flex-col gap-2">
       <Caption id={id} part={part} variant={variant} />
-      {part.kind === "values" ||
-      part.kind === "point" ||
-      part.kind === "points" ? (
-        <SlotsField {...field} kind={part.kind} />
-      ) : part.kind === "interval" ? (
-        <IntervalField {...field} />
-      ) : (
-        <ValueField {...field} />
-      )}
+      <Field {...field} />
       <input type="hidden" name={name} value={sent} />
     </div>
   );

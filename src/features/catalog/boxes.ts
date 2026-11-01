@@ -1,7 +1,7 @@
 import { groupOf, squash, topLevel } from "@/lib/tex";
 import { isEmptySet, isInfinite, type Kind, kindOf } from "./kinds";
 
-export type BoxKind = Exclude<Kind, "value">;
+export type BoxKind = Exclude<Kind, "value" | "choice">;
 
 interface Range {
   open: "(" | "[";
@@ -50,7 +50,7 @@ const relation =
   /^\s*(?:\([^()=]*\)|(?:\\[A-Za-z]+|[A-Za-z])(?:_\{[^}]*\}|_\w)?)\s*(?:=|\\in(?![a-z]))\s*/;
 
 export const isBoxKind = (kind: Kind | null): kind is BoxKind =>
-  kind !== null && kind !== "value";
+  kind !== null && kind !== "value" && kind !== "choice";
 
 export const decimalComma = (latex: string) =>
   latex.replace(/(\d)\.(?=\d)/g, "$1{,}");
