@@ -40,9 +40,13 @@ function revealAboveKeyboard() {
   const keyboard = window.mathVirtualKeyboard;
   const active = document.activeElement;
   if (!keyboard?.visible || active?.localName !== "math-field") return;
-  const keyboardTop = window.innerHeight - keyboard.boundingRect.height;
+  const bar = document.querySelector<HTMLElement>("[data-phone-bar]");
+  const coverTop =
+    window.innerHeight -
+    keyboard.boundingRect.height -
+    (bar?.offsetHeight ?? 0);
   const overlap =
-    active.getBoundingClientRect().bottom + keyboardGap - keyboardTop;
+    active.getBoundingClientRect().bottom + keyboardGap - coverTop;
   if (overlap > 0) window.scrollBy({ top: overlap, behavior: "smooth" });
 }
 

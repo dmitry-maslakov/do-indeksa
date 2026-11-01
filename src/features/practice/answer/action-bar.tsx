@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { createContext, use } from "react";
+import { createContext, type ReactNode, use } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
@@ -25,8 +25,17 @@ interface ActionBarProps {
   disabled: boolean;
 }
 
-export const phoneBar =
-  "fixed inset-x-0 bottom-[max(var(--keyboard-height,0px),calc(var(--nav-bottom)+env(safe-area-inset-bottom)))] z-30 flex gap-2 border-t bg-card p-3 md:contents";
+export function PhoneBar({ children }: { children: ReactNode }) {
+  return (
+    <div
+      data-phone-bar
+      className="fixed inset-x-0 bottom-[max(var(--keyboard-height,0px),calc(var(--nav-bottom)+env(safe-area-inset-bottom)))] z-30 flex gap-2 border-t bg-card p-3 md:contents"
+    >
+      {children}
+    </div>
+  );
+}
+
 const primary = cn(
   buttonVariants({ variant: "lime", size: "pill" }),
   "order-2 flex-1 md:order-1 md:flex-none",
@@ -96,7 +105,7 @@ export function ActionBar({
   const step = live ?? (next && use(next));
   const seen = useExposure("recommendation_made", step?.recommendation);
   return (
-    <div className={phoneBar}>
+    <PhoneBar>
       {go ? (
         <Link
           key={step?.href}
@@ -123,6 +132,6 @@ export function ActionBar({
           onClick={onSkip}
         />
       )}
-    </div>
+    </PhoneBar>
   );
 }

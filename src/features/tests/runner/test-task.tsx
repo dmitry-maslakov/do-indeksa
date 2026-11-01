@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { RefObject } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
-import { phoneBar } from "@/features/practice/answer/action-bar";
+import { PhoneBar } from "@/features/practice/answer/action-bar";
 import { AnswerField } from "@/features/practice/answer/answer-field";
 import type { InputStats } from "@/features/practice/answer/input-stats";
 import type { VariantTask as Task } from "@/features/variants/variants";
@@ -82,7 +82,7 @@ export function TestTask({
       </div>
       <p className="mt-3 text-[13px] text-subtle">{t("answerHint")}</p>
       <div className="md:mt-8 md:flex md:items-center md:gap-6">
-        <div className={phoneBar}>
+        <PhoneBar>
           <Button
             variant="ghost"
             size="pill"
@@ -104,7 +104,7 @@ export function TestTask({
               <ArrowRightIcon />
             </Button>
           )}
-        </div>
+        </PhoneBar>
       </div>
     </article>
   );
