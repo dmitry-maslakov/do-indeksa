@@ -3,12 +3,14 @@ import { isEmptySet, isInfinite, type Kind, kindOf } from "./kinds";
 
 export type BoxKind = Exclude<Kind, "value">;
 
-export interface Range {
+interface Range {
   open: "(" | "[";
   from: string;
   to: string;
   close: ")" | "]";
 }
+
+export type Bracket = Range["open"] | Range["close"];
 
 export type Piece = Range | { point: string };
 
@@ -41,7 +43,8 @@ interface Shape {
   var?: string | null;
 }
 
-const noSolution = "\\emptyset";
+export const noSolution = "\\emptyset";
+const pairArity = 2;
 const separators = ";,";
 const relation =
   /^\s*(?:\([^()=]*\)|(?:\\[A-Za-z]+|[A-Za-z])(?:_\{[^}]*\}|_\w)?)\s*(?:=|\\in(?![a-z]))\s*/;
@@ -63,6 +66,8 @@ const commaParts = (latex: string) =>
 export const hasDecimalComma = (latex: string) => commaParts(latex).length > 1;
 
 export const isRange = (piece: Piece): piece is Range => "from" in piece;
+
+export const isInfiniteEnd = (end: string) => isInfinite(squash(end));
 
 export const boxesOfPiece = (piece: Piece) =>
   isRange(piece) ? [piece.from, piece.to] : [piece.point];
@@ -97,8 +102,8 @@ export function locate(layout: Layout, flat: number) {
 
 const rounded = (piece: Range): Range => ({
   ...piece,
-  open: isInfinite(squash(piece.from)) ? "(" : piece.open,
-  close: isInfinite(squash(piece.to)) ? ")" : piece.close,
+  open: isInfiniteEnd(piece.from) ? "(" : piece.open,
+  close: isInfiniteEnd(piece.to) ? ")" : piece.close,
 });
 
 export function withBox(layout: Layout, index: number, text: string): Layout {
@@ -137,20 +142,20 @@ export function splitAtComma(layout: Layout, flat: number): Layout {
 export function withBracket(
   layout: Layout,
   group: number,
-  bracket: "(" | "[" | ")" | "]",
+  bracket: Bracket,
 ): Layout {
   if (layout.kind !== "interval") return layout;
-  const side = bracket === "(" || bracket === "[" ? "open" : "close";
-  const end = side === "open" ? "from" : "to";
+  const opening = bracket === "(" || bracket === "[";
+  const square = bracket === "[" || bracket === "]";
   return {
     ...layout,
     pieces: layout.pieces.map((piece, i) => {
       if (i !== group || !isRange(piece)) return piece;
-      const square = bracket === "[" || bracket === "]";
-      if (square && isInfinite(squash(piece[end]))) return piece;
-      return side === "open"
-        ? { ...piece, open: bracket === "[" ? "[" : "(" }
-        : { ...piece, close: bracket === "]" ? "]" : ")" };
+      if (square && isInfiniteEnd(opening ? piece.from : piece.to))
+        return piece;
+      return opening
+        ? { ...piece, open: bracket }
+        : { ...piece, close: bracket };
     }),
   };
 }
@@ -164,7 +169,7 @@ export function grown(layout: Layout, arity: number, point = false): Layout {
     case "interval":
       return {
         ...layout,
-        pieces: [...layout.pieces, point ? { point: "" } : blankRange()],
+        pieces: [...layout.pieces, point ? { point: "" } : blankRange],
       };
     default:
       return layout;
@@ -210,12 +215,7 @@ export function sentOf(layout: Layout) {
 
 const emptyBoxes = (size: number) => Array.from({ length: size }, () => "");
 
-const blankRange = (): Range => ({
-  open: "(",
-  from: "",
-  to: "",
-  close: ")",
-});
+const blankRange: Range = { open: "(", from: "", to: "", close: ")" };
 
 export function blankLayout(kind: BoxKind, arity: number): Layout {
   switch (kind) {
@@ -226,7 +226,7 @@ export function blankLayout(kind: BoxKind, arity: number): Layout {
     case "points":
       return { kind, rows: [emptyBoxes(arity)] };
     case "interval":
-      return { kind, pieces: [blankRange()] };
+      return { kind, pieces: [blankRange] };
   }
 }
 
@@ -331,8 +331,8 @@ export function arityOf(part: Shape) {
   if (declared) return declared;
   const kind = kindOf(part);
   const layout = isBoxKind(kind) ? layoutOf(kind, part.expected) : null;
-  if (layout?.kind === "point") return layout.boxes.length;
-  return layout?.kind === "points" ? (layout.rows[0]?.length ?? 2) : 2;
+  if (layout?.kind !== "point" && layout?.kind !== "points") return pairArity;
+  return groupsOf(layout)[0]?.length ?? pairArity;
 }
 
 export function sentForm(part: Shape) {
