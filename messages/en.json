@@ -119,7 +119,6 @@
     "visitSummary": "{done, plural, one {# task} other {# tasks}}{right, plural, =0 {} other { · <ok># correct</ok>}}",
     "visitPosition": "Task {position, number}{right, plural, =0 {} other { · <ok># correct</ok>}}",
     "current": "Solving now",
-    "upcoming": "Up next",
     "back": "Back",
     "sheet": "Topic tasks",
     "before": "{status, select, solved {solved before} other {wrong before}}",

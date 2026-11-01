@@ -1,13 +1,5 @@
-import {
-  type MouseEvent,
-  type RefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from "react";
-import { secondMs } from "@/lib/dates";
+import { type RefObject, useEffect, useLayoutEffect, useRef } from "react";
 
-const holdMs = 10 * secondMs;
 const glideMs = 320;
 const anchor = 0.3;
 
@@ -59,12 +51,10 @@ function homeOf(list: HTMLElement, top: number, motion: Motion) {
   return Math.max(motion.home, top - room);
 }
 
-export function useQueueScroll(current: string, next?: string) {
+export function useQueueScroll(current: string) {
   const list = useRef<HTMLDivElement>(null);
   const motion = useRef<Motion>({ frame: 0, home: 0 });
-  const touchedAt = useRef(0);
-  const clicked = useRef<string>(undefined);
-  const shown = useRef<{ current: string; next?: string }>(undefined);
+  const shown = useRef<string>(undefined);
 
   useEffect(() => () => cancelAnimationFrame(motion.current.frame), []);
 
@@ -72,47 +62,31 @@ export function useQueueScroll(current: string, next?: string) {
     const el = list.current;
     const row = el && rowOf(el, current);
     const before = shown.current;
-    shown.current = { current, next };
-    if (!el || !row || before?.current === current) return;
+    shown.current = current;
+    if (!el || !row || before === current) return;
+    const home = anchor * el.clientHeight;
     if (!before) {
-      el.scrollTop = scrollFor(el, row, anchor * el.clientHeight);
+      el.scrollTop = scrollFor(el, row, home);
       return;
     }
-    const left = rowOf(el, before.current);
-    const stepped =
-      before.next === current &&
-      clicked.current !== current &&
-      Date.now() - touchedAt.current >= holdMs;
-    clicked.current = undefined;
-    if (!stepped || !left) return;
-    const top = topOf(el, left);
-    if (top + left.offsetHeight <= 0 || top >= el.clientHeight) return;
-    glide(el, row, homeOf(el, top, motion.current), motion);
-  }, [current, next]);
+    const left = rowOf(el, before);
+    const top = left ? topOf(el, left) : -Infinity;
+    const seen = left && top >= 0 && top + left.offsetHeight <= el.clientHeight;
+    glide(el, row, seen ? homeOf(el, top, motion.current) : home, motion);
+  }, [current]);
 
   const touched = () => {
-    touchedAt.current = Date.now();
     cancelAnimationFrame(motion.current.frame);
     motion.current.frame = 0;
   };
 
   return {
     list,
-    events: {
-      onWheel: touched,
-      onTouchMove: touched,
-      onKeyDown: touched,
-      onClickCapture: (event: MouseEvent) => {
-        if (event.target instanceof Element)
-          clicked.current =
-            event.target.closest<HTMLElement>("a[data-id]")?.dataset.id;
-      },
-    },
+    events: { onWheel: touched, onTouchMove: touched, onKeyDown: touched },
     back: () => {
       const el = list.current;
       const row = el && rowOf(el, current);
       if (!el || !row) return;
-      touchedAt.current = 0;
       glide(el, row, anchor * el.clientHeight, motion);
       row.focus({ preventScroll: true });
     },
