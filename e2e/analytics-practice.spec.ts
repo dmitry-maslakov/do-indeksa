@@ -173,6 +173,8 @@ test("checking an answer records the input and the attempt", async ({
 test("opening Rezultat records the answer as revealed", async ({ page }) => {
   await page.goto("/bank/eks-001");
   await page.getByRole("button", { name: "Rezultat" }).click();
+  await page.getByRole("link", { name: "Sledeći zadatak" }).click();
+  await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
   await flush(page);
   await expect
     .poll(() => propsOf(page, "help_revealed"))
@@ -180,10 +182,14 @@ test("opening Rezultat records the answer as revealed", async ({ page }) => {
       expect.objectContaining({ part: "answer", context: "practice" }),
     ]);
   await expect
-    .poll(async () =>
-      (await recorded(page, "task_left")).map(({ props }) => props.state),
-    )
-    .toContain("revealed");
+    .poll(() => propsOf(page, "task_left"))
+    .toContainEqual(
+      expect.objectContaining({
+        task_id: "eks-001",
+        exit: "navigate",
+        state: "revealed",
+      }),
+    );
 });
 
 test("the answer field records the keyboard, text mode and structures", async ({
