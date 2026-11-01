@@ -12,6 +12,9 @@ const keyboardGap = 16;
 
 let setup: Promise<unknown> | undefined;
 
+export const decimalComma = (latex: string) =>
+  latex.replace(/(\d)\.(?=\d)/g, "$1{,}");
+
 function publishKeyboardHeight() {
   const keyboard = window.mathVirtualKeyboard;
   const height = keyboard.visible ? keyboard.boundingRect.height : 0;
@@ -107,7 +110,7 @@ export function useMathField(
     const el = field.current;
     if (!el || fill === undefined) return;
     customElements.whenDefined("math-field").then(() => {
-      el.value = fill;
+      el.value = decimalComma(fill);
     });
   }, [fill]);
 
