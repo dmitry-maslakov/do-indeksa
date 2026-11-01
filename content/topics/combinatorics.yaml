@@ -5,6 +5,6 @@ name:
 icon:
   text: "n!"
 tone: yellow
-keys: [factorial, binomial, fraction, power]
+keys: [variations, combinations, permutations, factorial, fraction, power]
 types:
 - independent-choices

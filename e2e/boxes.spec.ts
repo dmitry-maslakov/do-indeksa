@@ -390,19 +390,28 @@ test("a field offers the keys its topic lists", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
-test("an answer typed with n! and C(n,k) is right", async ({ page }) => {
+test("an answer typed in textbook notation is right", async ({ page }) => {
+  const button = (name: string) =>
+    page.getByRole("button", { name, exact: true });
   await open(page, "/bank/komb-002");
   await enter(page, fields(page).first(), "");
-  await page.getByRole("button", { name: "C(n,k)" }).click();
+  await button("Cₙᵏ").click();
   await page.keyboard.type("25");
-  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Tab");
   await page.keyboard.type("2");
-  await expect(sent(page)).toHaveValue("\\binom{25}{2}");
-  await enter(page, fields(page).nth(1), "5");
-  await page.getByRole("button", { name: "n!" }).click();
+  await expect(sent(page)).toHaveValue("C_{25}^2");
+  await enter(page, fields(page).nth(1), "");
+  await button("Pₙ").click();
+  await page.keyboard.type("5");
+  await page.keyboard.press("ArrowRight");
   await page.keyboard.type("-12");
-  await expect(sent(page, 1)).toHaveValue("5!-12");
-  await enter(page, fields(page).nth(2), "156");
+  await expect(sent(page, 1)).toHaveValue("P_5-12");
+  await enter(page, fields(page).nth(2), "");
+  await button("Vₙᵏ").click();
+  await page.keyboard.type("13");
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("2");
+  await expect(sent(page, 2)).toHaveValue("V_{13}^2");
   await check(page);
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });

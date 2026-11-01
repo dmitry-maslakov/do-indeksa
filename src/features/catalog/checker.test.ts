@@ -179,8 +179,14 @@ describe("a function typed with its key", () => {
 
 describe("a symbol typed with its key", () => {
   it.each([
-    ["\\binom{25}{2}", "300"],
-    ["\\binom{n+1}{k+1}x^{k}", "\\binom{n+1}{k+1}x^{k}"],
+    ["C_{25}^{2}", "300"],
+    ["C_{n+1}^{k+1}x^{k}", "\\binom{n+1}{k+1}x^{k}"],
+    ["V_{5}^{2}", "20"],
+    ["V_5^2", "20"],
+    ["P_{4}", "24"],
+    ["P_4", "24"],
+    ["P_{4}-V_{4}^{2}+2C_{5}^{2}", "32"],
+    ["\\frac{P_{52}}{\\left(P_{13}\\right)^4}", "\\frac{52!}{(13!)^4}"],
     ["5!", "120"],
     ["6!\\cdot18!", "6!\\cdot 18!"],
     ["(n-2)(n-1)!", "(n-2)\\cdot(n-1)!"],
@@ -198,7 +204,9 @@ describe("a symbol typed with its key", () => {
   });
 
   it.each([
-    ["\\binom{25}{3}", "300"],
+    ["C_{25}^{3}", "300"],
+    ["V_{5}^{2}", "10"],
+    ["P_{4}", "4"],
     ["4!", "120"],
     ["-2i+2", "2+2i"],
     ["\\sqrt[3]{2}", "\\sqrt{2}"],
@@ -209,6 +217,7 @@ describe("a symbol typed with its key", () => {
 
   it("is read in the boxes of a list", () => {
     expect(grade("0, -i, i", "i;-i;0", "values")).toBe("right");
+    expect(grade("10, 6", "P_{3};C_{5}^{2}", "values")).toBe("right");
     expect(grade("\\sqrt[5]{5}, 5", "5;\\sqrt[5]{5}", "values")).toBe("right");
     expect(
       grade("\\frac{\\pi}{4}, \\arctan 2", "45^{\\circ};\\arctg2", "values"),
