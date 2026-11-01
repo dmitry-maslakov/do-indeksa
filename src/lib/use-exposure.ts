@@ -23,18 +23,21 @@ export function useExposure<Name extends keyof BrowserEvents>(
 
   return (node: Element | null) => {
     if (!node || !props) return;
-    return observe(
+    const stop = observe(
       node,
       (inView) => {
+        if (!inView) return;
+        stop();
         const key = viewKey(
           bfcacheId,
           `${name} ${page} ${JSON.stringify(props)}`,
         );
-        if (!inView || exposed.has(key)) return;
+        if (exposed.has(key)) return;
         exposed.add(key);
         queueEvent(name, props);
       },
       { threshold: 0.5 },
     );
+    return stop;
   };
 }

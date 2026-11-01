@@ -164,6 +164,33 @@ test("the task page records the picks next to a task", async ({ page }) => {
     .toContainEqual({ surface: "next", ...pick });
 });
 
+test("the task rail records its first pick again on a new visit to the task", async ({
+  page,
+}) => {
+  const firstPicks = async () => {
+    await flush(page);
+    return (await propsOf(page, "recommendation_made")).filter(
+      ({ surface, slot }) => surface === "rail_upcoming" && slot === 1,
+    );
+  };
+
+  await page.goto("/bank/eks-001");
+  await hydrated(page);
+  await expect.poll(firstPicks).toHaveLength(1);
+  await page
+    .getByRole("complementary")
+    .getByRole("link", { name: "Svi zadaci" })
+    .click();
+  await expect(page).toHaveURL(/\/bank\/topic\/exponential-equations$/);
+  await page
+    .getByRole("main")
+    .locator("a[href='/bank/eks-001']")
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/bank\/eks-001$/);
+  await expect.poll(firstPicks).toHaveLength(2);
+});
+
 test("the bank records its pick, results and filter changes", async ({
   page,
 }) => {
