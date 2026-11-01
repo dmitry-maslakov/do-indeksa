@@ -55,6 +55,13 @@ export function useBoxLayout({
     if (carry) typeInto(target, carry);
     return true;
   };
+  const settle = (index: number) => {
+    const target =
+      root.current?.querySelectorAll<MathfieldElement>("math-field")[index];
+    const text = boxesOf(live.current)[index];
+    if (target && text !== undefined && trimComma(target.value) !== text)
+      target.value = text;
+  };
   const clear = () => {
     flushSync(() => commit(blankLayout(kind, arity)));
     go(0);
@@ -88,6 +95,7 @@ export function useBoxLayout({
     readOnly: locked || fill !== undefined,
     commit,
     go,
+    settle,
     clear,
     add,
     paste,

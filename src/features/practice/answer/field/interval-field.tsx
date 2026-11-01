@@ -80,6 +80,7 @@ export function IntervalField({
     readOnly,
     commit,
     go,
+    settle,
     clear,
     add,
     paste,
@@ -115,7 +116,9 @@ export function IntervalField({
       const closing = bracket === ")" || bracket === "]";
       const settled = closing ? splitAtComma(layout, index) : layout;
       commit(withBracket(settled, locate(layout, index).group, bracket));
-      if (settled !== layout) go(index + 1);
+      if (settled === layout) return;
+      settle(index);
+      go(index + 1);
     },
     union: () => add(),
     none: () => commit({ kind: "none" }),
