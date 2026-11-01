@@ -5,33 +5,32 @@ import {
   type BoxKind,
   blankLayout,
   boxesOf,
+  groupsOf,
   grown,
+  isFilled,
   type Layout,
   layoutOf,
+  locate,
+  noSolution,
   pastedLayout,
   sentOf,
+  shrunk,
   trimComma,
   withBox,
 } from "@/features/catalog/boxes";
 import { focusBox, typeInto } from "./box-keys";
+import type { FieldProps } from "./field-frame";
 
-interface BoxLayoutOptions {
-  kind: BoxKind;
-  arity: number;
-  defaultValue: string;
-  fill?: string;
-  locked: boolean;
-  onEdit: (sent: string) => void;
-}
-
-export function useBoxLayout({
-  kind,
-  arity,
-  defaultValue,
-  fill,
-  locked,
-  onEdit,
-}: BoxLayoutOptions) {
+export function useBoxLayout(
+  kind: BoxKind,
+  {
+    part: { arity },
+    defaultValue,
+    fill,
+    locked,
+    onEdit,
+  }: Pick<FieldProps, "part" | "defaultValue" | "fill" | "locked" | "onEdit">,
+) {
   const root = useRef<HTMLFieldSetElement>(null);
   const [layout, setLayout] = useState<Layout>(
     () =>
@@ -47,17 +46,25 @@ export function useBoxLayout({
     setLayout(next);
     onEdit(sentOf(next));
   };
+  const boxAt = (index: number) =>
+    root.current?.querySelectorAll<MathfieldElement>("math-field")[index];
   const go = (index: number, carry?: string) => {
-    const target =
-      root.current?.querySelectorAll<MathfieldElement>("math-field")[index];
+    const target = boxAt(index);
     if (!target) return false;
     focusBox(target);
     if (carry) typeInto(target, carry);
     return true;
   };
+  const back = (index: number) => {
+    const layout = live.current;
+    const { group, index: column } = locate(layout, index);
+    go(index - 1);
+    const removable = kind === "interval" ? group > 0 : kind !== "point";
+    if (removable && column === 0 && !groupsOf(layout)[group]?.some(isFilled))
+      flushSync(() => commit(shrunk(layout, group)));
+  };
   const settle = (index: number) => {
-    const target =
-      root.current?.querySelectorAll<MathfieldElement>("math-field")[index];
+    const target = boxAt(index);
     const text = boxesOf(live.current)[index];
     if (target && text !== undefined && trimComma(target.value) !== text)
       target.value = text;
@@ -83,8 +90,7 @@ export function useBoxLayout({
   const edit = (index: number, text: string) => {
     const latex = trimComma(text);
     const none =
-      (kind === "values" || kind === "interval") &&
-      latex.trim() === "\\emptyset";
+      (kind === "values" || kind === "interval") && latex.trim() === noSolution;
     commit(none ? { kind: "none" } : withBox(live.current, index, latex));
   };
 
@@ -95,6 +101,7 @@ export function useBoxLayout({
     readOnly: locked || fill !== undefined,
     commit,
     go,
+    back,
     settle,
     clear,
     add,

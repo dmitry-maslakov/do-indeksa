@@ -89,6 +89,9 @@ export function groupsOf(layout: Layout): string[][] {
 
 export const boxesOf = (layout: Layout) => groupsOf(layout).flat();
 
+export const startOf = (layout: Layout, group: number) =>
+  groupsOf(layout).slice(0, group).flat().length;
+
 export function locate(layout: Layout, flat: number) {
   let start = 0;
   const groups = groupsOf(layout);

@@ -1,6 +1,5 @@
 import type { MathfieldElement } from "mathlive";
-
-export type Bracket = "(" | "[" | ")" | "]";
+import { type Bracket, noSolution } from "@/features/catalog/boxes";
 
 export interface BoxKeys {
   next: (carry?: string) => void;
@@ -97,7 +96,7 @@ export function attachKeys(
           keys.bracket &&
           (() => keys.bracket?.(data, box.value))) ||
         (data === "\\cup" && keys.union) ||
-        (data === "\\emptyset" && keys.none);
+        (data === noSolution && keys.none);
       if (act) {
         event.preventDefault();
         act();

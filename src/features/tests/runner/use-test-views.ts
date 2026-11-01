@@ -59,10 +59,7 @@ export function useTestViews(
       test_session_id: test.testId,
       position: test.current + 1,
       fields: task.parts.length,
-      ...boxStats(
-        task.parts.map((p) => p.kind),
-        test.answers[test.current] ?? [],
-      ),
+      ...boxStats(task.parts, test.answers[test.current] ?? []),
       ...taken,
       ...latexStats(test.answers[test.current] ?? []),
     });

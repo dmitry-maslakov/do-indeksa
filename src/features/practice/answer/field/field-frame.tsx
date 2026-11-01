@@ -27,6 +27,7 @@ export interface FieldProps {
   locked: boolean;
   fill?: string;
   defaultValue: string;
+  value: string;
   placeholder?: string;
   invalid?: number;
   reason?: Reason;

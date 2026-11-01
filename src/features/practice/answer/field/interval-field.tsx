@@ -1,29 +1,22 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { flushSync } from "react-dom";
 import {
-  boxesOfPiece,
-  isFilled,
+  isInfiniteEnd,
   isRange,
   locate,
   type Piece,
-  shrunk,
   splitAtComma,
+  startOf,
   trimComma,
   withBox,
   withBracket,
 } from "@/features/catalog/boxes";
-import { isInfinite } from "@/features/catalog/kinds";
-import { squash } from "@/lib/tex";
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
-import { MathBox, NoSolution, slot } from "./math-box";
+import { comma, glyph, MathBox, NoSolution, slot } from "./math-box";
 import { SymbolTray, symbols, TrayButton } from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
-
-const glyph = "font-math text-2xl text-muted-foreground";
-const comma = "font-math text-muted-foreground text-xl";
 
 function Bracket({
   side,
@@ -55,8 +48,6 @@ function Bracket({
   );
 }
 
-const isFixed = (end: string) => isInfinite(squash(end));
-
 export function IntervalField({
   id,
   label,
@@ -80,36 +71,18 @@ export function IntervalField({
     readOnly,
     commit,
     go,
+    back,
     settle,
     clear,
     add,
     paste,
     edit,
-  } = useBoxLayout({
-    kind: "interval",
-    arity: 0,
-    defaultValue,
-    fill,
-    locked,
-    onEdit,
-  });
+  } = useBoxLayout("interval", { part, defaultValue, fill, locked, onEdit });
   const pieces = shown.kind === "interval" ? shown.pieces : [];
-  const firstOf = (group: number) =>
-    pieces
-      .slice(0, group)
-      .reduce((size, piece) => size + (isRange(piece) ? 2 : 1), 0);
 
   const keysOf = (index: number): BoxKeys => ({
     next: (carry) => go(index + 1, carry),
-    back: () => {
-      const layout = current();
-      const { group, index: column } = locate(layout, index);
-      const last = layout.kind === "interval" && layout.pieces[group];
-      const empty = last && !boxesOfPiece(last).some(isFilled);
-      go(index - 1);
-      if (column === 0 && group > 0 && empty)
-        flushSync(() => commit(shrunk(layout, group)));
-    },
+    back: () => back(index),
     step: (direction) => go(index + direction),
     bracket: (bracket, text) => {
       const layout = withBox(current(), index, trimComma(text));
@@ -126,7 +99,7 @@ export function IntervalField({
   });
 
   const piece = (item: Piece, group: number) => {
-    const first = firstOf(group);
+    const first = startOf(shown, group);
     const box = (
       index: number,
       text: string,
@@ -160,7 +133,7 @@ export function IntervalField({
           side="open"
           label={t("open")}
           square={item.open === "["}
-          fixed={readOnly || isFixed(item.from)}
+          fixed={readOnly || isInfiniteEnd(item.from)}
           onToggle={() =>
             commit(withBracket(current(), group, item.open === "(" ? "[" : "("))
           }
@@ -172,7 +145,7 @@ export function IntervalField({
           side="close"
           label={t("close")}
           square={item.close === "]"}
-          fixed={readOnly || isFixed(item.to)}
+          fixed={readOnly || isInfiniteEnd(item.to)}
           onToggle={() =>
             commit(
               withBracket(current(), group, item.close === ")" ? "]" : ")"),
@@ -188,14 +161,13 @@ export function IntervalField({
       <Frame part={part} variant={variant} state={state} reason={reason} wrap>
         <fieldset ref={root} aria-label={label} className="contents">
           {shown.kind === "none" && (
-            <NoSolution
-              label={t("clearNoSolution")}
-              locked={readOnly}
-              onClear={clear}
-            />
+            <NoSolution locked={readOnly} onClear={clear} />
           )}
           {pieces.map((item, group) => (
-            <span key={firstOf(group)} className="flex items-center gap-1">
+            <span
+              key={startOf(shown, group)}
+              className="flex items-center gap-1"
+            >
               {group > 0 && <span className={glyph}>∪</span>}
               {piece(item, group)}
             </span>

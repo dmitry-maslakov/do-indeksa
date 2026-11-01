@@ -3,32 +3,21 @@
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
-import { flushSync } from "react-dom";
-import {
-  boxesOf,
-  groupsOf,
-  isFilled,
-  locate,
-  shrunk,
-} from "@/features/catalog/boxes";
+import { boxesOf, groupsOf, startOf } from "@/features/catalog/boxes";
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
-import { MathBox, NoSolution, slot } from "./math-box";
+import { comma, glyph, MathBox, NoSolution, slot } from "./math-box";
 import { SymbolTray, symbols, TrayButton } from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
 
 interface SlotsFieldProps extends FieldProps {
   kind: "values" | "point" | "points";
-  arity: number;
 }
 
 const unit = "flex max-w-full flex-wrap items-center gap-1";
-const comma = "font-math text-muted-foreground text-xl";
-const paren = "font-math text-2xl text-muted-foreground";
 
 export function SlotsField({
   kind,
-  arity,
   id,
   label,
   part,
@@ -51,28 +40,21 @@ export function SlotsField({
     readOnly,
     commit,
     go,
+    back,
     clear,
     add,
     paste,
     edit,
-  } = useBoxLayout({ kind, arity, defaultValue, fill, locked, onEdit });
+  } = useBoxLayout(kind, { part, defaultValue, fill, locked, onEdit });
   const rows = groupsOf(shown);
   const grows = kind !== "point";
-  const firstOf = (group: number) =>
-    rows.slice(0, group).reduce((size, row) => size + row.length, 0);
 
   const keysOf = (index: number): BoxKeys => ({
     next: (carry) => {
       if (index + 1 < boxesOf(current()).length) go(index + 1, carry);
       else if (grows) add(false, carry);
     },
-    back: () => {
-      const layout = current();
-      const { group, index: column } = locate(layout, index);
-      go(index - 1);
-      if (grows && column === 0 && !groupsOf(layout)[group]?.some(isFilled))
-        flushSync(() => commit(shrunk(layout, group)));
-    },
+    back: () => back(index),
     step: (direction) => go(index + direction),
     none: kind === "values" ? () => commit({ kind: "none" }) : undefined,
     paste,
@@ -85,18 +67,14 @@ export function SlotsField({
       <Frame part={part} variant={variant} state={state} reason={reason} wrap>
         <fieldset ref={root} aria-label={label} className="contents">
           {shown.kind === "none" && (
-            <NoSolution
-              label={t("clearNoSolution")}
-              locked={readOnly}
-              onClear={clear}
-            />
+            <NoSolution locked={readOnly} onClear={clear} />
           )}
           {rows.map((cells, group) => (
-            <span key={firstOf(group)} className={unit}>
+            <span key={startOf(shown, group)} className={unit}>
               {group > 0 && <span className={comma}>,</span>}
-              {kind !== "values" && <span className={paren}>(</span>}
+              {kind !== "values" && <span className={glyph}>(</span>}
               {cells.map((text, column) => {
-                const index = firstOf(group) + column;
+                const index = startOf(shown, group) + column;
                 return (
                   <Fragment key={index}>
                     {column > 0 && <span className={comma}>,</span>}
@@ -118,7 +96,7 @@ export function SlotsField({
                   </Fragment>
                 );
               })}
-              {kind !== "values" && <span className={paren}>)</span>}
+              {kind !== "values" && <span className={glyph}>)</span>}
             </span>
           ))}
           {grows && !readOnly && shown.kind !== "none" && (

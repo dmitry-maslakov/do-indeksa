@@ -1,7 +1,7 @@
 import { sumBy } from "es-toolkit";
 import type { RefObject } from "react";
 import { filledCount } from "@/features/catalog/boxes";
-import type { Kind } from "@/features/catalog/kinds";
+import type { PartLabel } from "@/features/catalog/parts";
 import { secondMs } from "@/lib/dates";
 
 export interface InputStats {
@@ -131,7 +131,10 @@ export function latexStats(values: string[]) {
   };
 }
 
-export const boxStats = (kinds: (Kind | null)[], values: string[]) => ({
-  kinds: kinds.map((kind) => kind ?? "value"),
-  boxes: sumBy(values, (text, i) => filledCount(kinds[i] ?? null, text)),
+export const boxStats = (
+  parts: Pick<PartLabel, "kind">[],
+  values: string[],
+) => ({
+  kinds: parts.map(({ kind }) => kind ?? "value"),
+  boxes: sumBy(values, (text, i) => filledCount(parts[i]?.kind ?? null, text)),
 });

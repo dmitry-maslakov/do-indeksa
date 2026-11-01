@@ -45,38 +45,29 @@ function Caption({
 }
 
 export function AnswerField({
-  id,
   index,
   name,
-  label,
-  part,
-  variant,
   state = "empty",
   problem,
   locked = false,
-  fill,
   defaultValue = "",
-  placeholder,
-  stats,
   onChange,
+  ...props
 }: AnswerFieldProps) {
   const active = useRef<MathfieldElement>(null);
   const [value, setValue] = useState(defaultValue);
-  const unreadable = state === "unreadable" && problem;
+  const { id, part, variant, fill } = props;
+  const sent = fill ?? value;
+  const unreadable = state === "unreadable" ? problem : undefined;
   const field = {
-    id,
-    label,
-    part,
-    variant,
+    ...props,
     state,
     locked,
-    fill,
     defaultValue,
-    placeholder,
-    invalid: unreadable ? unreadable.box : undefined,
-    reason: unreadable ? unreadable.reason : undefined,
+    value: sent,
+    invalid: unreadable?.box,
+    reason: unreadable?.reason,
     active,
-    stats,
     onEdit: (latex: string) => {
       setValue(latex);
       onChange(index, latex);
@@ -88,13 +79,13 @@ export function AnswerField({
       {part.kind === "values" ||
       part.kind === "point" ||
       part.kind === "points" ? (
-        <SlotsField {...field} kind={part.kind} arity={part.arity} />
+        <SlotsField {...field} kind={part.kind} />
       ) : part.kind === "interval" ? (
         <IntervalField {...field} />
       ) : (
         <ValueField {...field} />
       )}
-      <input type="hidden" name={name} value={fill ?? value} />
+      <input type="hidden" name={name} value={sent} />
     </div>
   );
 }

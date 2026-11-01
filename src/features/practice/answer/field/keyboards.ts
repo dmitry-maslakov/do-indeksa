@@ -1,7 +1,6 @@
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from "mathlive";
+import { noSolution } from "@/features/catalog/boxes";
 import type { Kind } from "@/features/catalog/kinds";
-
-export type KeyboardKind = Kind | "none";
 
 type Key = string | Partial<VirtualKeyboardKeycap>;
 
@@ -9,23 +8,20 @@ type Row = Key[];
 
 const action = "MLK__keycap action";
 
+const root: Key = { label: "√", insert: "\\sqrt{#0}" };
+const fraction: Key = { label: "a/b", insert: "\\frac{#@}{#?}" };
+const power: Key = { label: "xⁿ", insert: "#@^{#?}" };
+
 const digits: Row[] = [
   [
     "[7]",
     "[8]",
     "[9]",
     { label: "÷", latex: "\\div" },
-    { label: "√", insert: "\\sqrt{#0}" },
+    root,
     { label: "π", latex: "\\pi" },
   ],
-  [
-    "[4]",
-    "[5]",
-    "[6]",
-    { label: "×", latex: "\\times" },
-    { label: "a/b", insert: "\\frac{#@}{#?}" },
-    { label: "xⁿ", insert: "#@^{#?}" },
-  ],
+  ["[4]", "[5]", "[6]", { label: "×", latex: "\\times" }, fraction, power],
   ["[1]", "[2]", "[3]", "[-]", "[left]", "[right]"],
   [
     {
@@ -43,9 +39,9 @@ const digits: Row[] = [
 const operators: Row = [
   "[+]",
   "[-]",
-  { label: "√", insert: "\\sqrt{#0}" },
-  { label: "a/b", insert: "\\frac{#@}{#?}" },
-  { label: "xⁿ", insert: "#@^{#?}" },
+  root,
+  fraction,
+  power,
   "[(]",
   "[)]",
   "[,]",
@@ -91,12 +87,12 @@ const next = (label: string): Key => ({
   class: `${action} w20 small`,
 });
 
-const top = (kind: KeyboardKind, label: string): Row | undefined => {
+const top = (kind: Kind, label: string): Row | undefined => {
   switch (kind) {
     case "values":
       return [
         next(label),
-        { label: "∅", latex: "\\emptyset", class: `${action} w20` },
+        { label: "∅", latex: noSolution, class: `${action} w20` },
         { label: "i", latex: "i", class: `${action} w20` },
       ];
     case "point":
@@ -109,10 +105,7 @@ const top = (kind: KeyboardKind, label: string): Row | undefined => {
   }
 };
 
-export function keyboardFor(
-  kind: KeyboardKind,
-  label: string,
-): VirtualKeyboardLayout {
+export function keyboardFor(kind: Kind, label: string): VirtualKeyboardLayout {
   const first = top(kind, label);
   const withTop = (rows: Row[]) => (first ? [first, ...rows] : rows);
   return {

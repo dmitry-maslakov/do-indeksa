@@ -91,10 +91,7 @@ export function AnswerForm({
             task_id: taskId,
             answer_client_id: answerId.current,
             fields: parts.length,
-            ...boxStats(
-              parts.map((p) => p.kind),
-              values,
-            ),
+            ...boxStats(parts, values),
             ...takeInput(stats),
             ...latexStats(values),
           });
