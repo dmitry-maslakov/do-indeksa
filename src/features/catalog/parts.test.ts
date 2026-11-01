@@ -3,6 +3,7 @@ import {
   answerAddsText,
   hasBareTex,
   labelOf,
+  onlyChoices,
   type PartMarkup,
   partProblem,
   partSchema,
@@ -17,9 +18,13 @@ const markup = (part: Partial<PartMarkup>): PartMarkup => ({
   part: null,
   var: null,
   kind: null,
+  options: null,
   unit: null,
   ...part,
 });
+
+const choice = (part: Partial<PartMarkup> = {}) =>
+  markup({ kind: "choice", options: ["yes", "no"], expected: "yes", ...part });
 
 const shown = (
   letter: string,
@@ -198,8 +203,78 @@ describe("resultOf", () => {
   });
 });
 
+describe("a choice part", () => {
+  it("shows its label as the caption and its options", () => {
+    const label = labelOf(
+      choice({ label: "g) Da li je $ABC$ pravougli?" }),
+      0,
+      2,
+    );
+    expect(label).toMatchObject({
+      kind: "choice",
+      options: ["yes", "no"],
+      letter: "g)",
+      caption: "Da li je $ABC$ pravougli?",
+      prefix: null,
+      suffix: null,
+    });
+  });
+
+  it("writes the Serbian word of its option into the result", () => {
+    expect(
+      resultOf([
+        markup({ part: "a", var: "m", expected: "4" }),
+        choice({ part: "b", label: "Da li je $m$ paran?" }),
+      ]),
+    ).toBe("**a)** $m$ $=$ $4$\n\n**b)** Da li je $m$ paran? Da");
+  });
+
+  it("is never the only kind of part", () => {
+    expect(onlyChoices([choice()])).toBe(true);
+    expect(onlyChoices([choice(), choice({ expected: "no" })])).toBe(true);
+    expect(onlyChoices([markup({}), choice()])).toBe(false);
+  });
+});
+
 describe("partProblem", () => {
   const letters = ["a)", "b)", "v)"];
+
+  it("accepts a choice whose expected is one of its options", () => {
+    expect(partProblem(choice(), letters)).toBeUndefined();
+    expect(
+      partProblem(
+        choice({
+          options: ["right", "isosceles", "both", "neither"],
+          expected: "both",
+        }),
+        letters,
+      ),
+    ).toBeUndefined();
+  });
+
+  it.each([
+    [
+      { expected: "maybe" },
+      'expected "maybe" is not one of the options yes, no',
+    ],
+    [{ options: null }, 'kind "choice" needs options'],
+    [{ options: ["yes", "yes"] as const }, "options repeat: yes, yes"],
+    [{ var: "x" }, "a choice part takes no var or unit"],
+    [{ unit: "\\text{cm}" }, "a choice part takes no var or unit"],
+  ])("rejects a choice with %j", (part, problem) => {
+    expect(partProblem(choice(part as Partial<PartMarkup>), letters)).toBe(
+      problem,
+    );
+  });
+
+  it("rejects options on a part that is not a choice", () => {
+    expect(partProblem(markup({ options: ["yes", "no"] }), letters)).toBe(
+      'options fit only kind "choice"',
+    );
+    expect(
+      partProblem(markup({ kind: "value", options: ["yes", "no"] }), letters),
+    ).toBe('options fit only kind "choice"');
+  });
 
   it("accepts a part the statement has and a kind that fits", () => {
     expect(partProblem(markup({ part: "v" }), letters)).toBeUndefined();
@@ -263,6 +338,9 @@ describe("partSchema", () => {
         label: "na $[0,2\\pi)$",
       }).success,
     ).toBe(true);
+    expect(
+      parse({ kind: "choice", options: ["yes", "no"], expected: "no" }).success,
+    ).toBe(true);
   });
 
   it.each([
@@ -270,6 +348,8 @@ describe("partSchema", () => {
     [{ part: "A" }, "a single lowercase letter"],
     [{ part: "" }, "a single lowercase letter"],
     [{ kind: "set" }, "Invalid option"],
+    [{ kind: "choice", options: ["yes", "maybe"] }, "Invalid option"],
+    [{ kind: "choice", options: ["yes"] }, "Too small"],
     [{ var: "$x$" }, "TeX without $…$"],
     [{ unit: "^\\circ$" }, "TeX without $…$"],
     [{ var: "" }, "Too small"],

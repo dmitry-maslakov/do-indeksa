@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   boxStats,
   countInput,
+  countPick,
   focused,
   freshInput,
   latexStats,
@@ -61,6 +62,25 @@ describe("boxStats", () => {
         ["1;;3", "(0;1]\\cup\\{5\\}", "\\frac12", ""],
       ),
     ).toEqual({ kinds: ["values", "interval", "value", "point"], boxes: 6 });
+  });
+});
+
+describe("countPick", () => {
+  it("counts a picked option as an input and the first focus", () => {
+    at(40);
+    const input = freshInput();
+    countPick(input);
+    at(90);
+    countPick(input);
+    expect(input).toMatchObject({ inputs: 2, focusAt: 40 });
+  });
+});
+
+describe("boxStats with a choice", () => {
+  it("lists the choice and counts a picked option as one box", () => {
+    expect(
+      boxStats([{ kind: "value" }, { kind: "choice" }], ["60", "yes"]),
+    ).toEqual({ kinds: ["value", "choice"], boxes: 2 });
   });
 });
 

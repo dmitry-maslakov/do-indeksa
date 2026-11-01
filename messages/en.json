@@ -158,7 +158,15 @@
     "problemEnd": "The end of the interval is empty.",
     "problemCoordinate": "A coordinate is empty.",
     "problemDecimal": "A comma after a digit is a decimal comma, so this is one number. For the next box type ; or a comma and a space.",
-    "problemExpression": "This box is not a number or an expression — check how it is written."
+    "problemExpression": "This box is not a number or an expression — check how it is written.",
+    "options": {
+      "yes": "Yes",
+      "no": "No",
+      "right": "Right",
+      "isosceles": "Isosceles",
+      "both": "Both",
+      "neither": "Neither"
+    }
   },
   "Variants": {
     "title": "Practice tests",

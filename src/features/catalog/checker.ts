@@ -29,6 +29,7 @@ const ce = new ComputeEngine();
 export interface GradedPart {
   expected: string;
   kind?: Kind | null;
+  options?: readonly string[] | null;
   unit?: string | null;
 }
 
@@ -299,10 +300,16 @@ function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
   };
 }
 
+function gradeChoice(part: GradedPart, input: string): Graded {
+  if (!part.options?.includes(input)) return { outcome: "unreadable" };
+  return { outcome: input === part.expected ? "right" : "wrong" };
+}
+
 function gradePart(part: GradedPart, answer: string): Graded {
   const input = withoutUnit(answer, part.unit);
   if (!isFilled(input)) return { outcome: "empty" };
   const kind = kindOf(part);
+  if (kind === "choice") return gradeChoice(part, input);
   return isBoxKind(kind)
     ? gradeBoxes(part, kind, input)
     : gradeSingle(input, part.expected);

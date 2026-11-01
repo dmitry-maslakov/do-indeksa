@@ -148,6 +148,7 @@ export async function renderParts(task: Task) {
   const parts = await Promise.all(
     labelsOf(task).map(async (p) => ({
       kind: p.kind,
+      options: p.options,
       arity: p.arity,
       symbols: p.symbols,
       letter: p.letter,

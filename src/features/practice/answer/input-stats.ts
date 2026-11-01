@@ -88,6 +88,11 @@ export function focused(input: InputStats) {
   input.focusAt ??= performance.now();
 }
 
+export function countPick(input: InputStats) {
+  focused(input);
+  input.inputs += 1;
+}
+
 export function countInput(
   input: InputStats,
   { inputType, data, isComposing }: InputEvent,

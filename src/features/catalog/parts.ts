@@ -1,8 +1,16 @@
 import { compact, uniq } from "es-toolkit";
 import { z } from "zod";
 import { squash, topLevel } from "@/lib/tex";
+import messages from "../../../messages/sr-Latn.json";
 import { arityOf } from "./boxes";
-import { inferKind, type Kind, kindProblem, kinds } from "./kinds";
+import {
+  type ChoiceOption,
+  choiceOptions,
+  inferKind,
+  type Kind,
+  kindProblem,
+  kinds,
+} from "./kinds";
 import type { AnswerSymbol } from "./symbols";
 
 export const maxParts = 6;
@@ -13,11 +21,13 @@ export interface PartMarkup {
   part: string | null;
   var: string | null;
   kind: Kind | null;
+  options: ChoiceOption[] | null;
   unit: string | null;
 }
 
 export interface PartLabel {
   kind: Kind | null;
+  options: ChoiceOption[];
   arity: number;
   symbols: AnswerSymbol[];
   letter: string;
@@ -41,6 +51,7 @@ export const partSchema = z.object({
     .optional(),
   var: tex.optional(),
   kind: z.enum(kinds).optional(),
+  options: z.array(z.enum(choiceOptions)).min(2).optional(),
   unit: tex.optional(),
   label: z
     .string()
@@ -100,11 +111,13 @@ export function labelOf(
   const match = lettered.exec(label ?? "");
   const rest = (match ? (match[2] ?? "") : (label ?? "")).trim();
   const fallback = count > 1 ? `${index + 1}.` : "";
-  const { caption, symbol } = variable
-    ? { caption: rest || null, symbol: `$${variable}$` }
-    : nameOf(rest);
+  const { caption, symbol } =
+    variable || kind === "choice"
+      ? { caption: rest || null, symbol: variable ? `$${variable}$` : null }
+      : nameOf(rest);
   return {
     kind,
+    options: markup.options ?? [],
     arity: kind === "point" || kind === "points" ? arityOf(markup) : 0,
     symbols,
     letter: part ? `${part})` : (match?.[1] ?? fallback),
@@ -112,6 +125,11 @@ export function labelOf(
     ...frame(kind, symbol, unit),
   };
 }
+
+const shownValue = ({ kind, expected }: PartMarkup) =>
+  kind === "choice"
+    ? messages.Field.options[expected as ChoiceOption]
+    : `$${expected}$`;
 
 export function resultOf(parts: PartMarkup[]) {
   return parts
@@ -125,20 +143,34 @@ export function resultOf(parts: PartMarkup[]) {
         letter && `**${letter}**`,
         caption,
         prefix,
-        `$${markup.expected}$`,
+        shownValue(markup),
         suffix,
       ]).join(" ");
     })
     .join("\n\n");
 }
 
+function choiceProblem({ options, expected, var: variable, unit }: PartMarkup) {
+  if (!options) return `kind "choice" needs options`;
+  if (new Set(options).size !== options.length)
+    return `options repeat: ${options.join(", ")}`;
+  if (!options.includes(expected as ChoiceOption))
+    return `expected "${expected}" is not one of the options ${options.join(", ")}`;
+  if (variable || unit) return `a choice part takes no var or unit`;
+}
+
 export function partProblem(markup: PartMarkup, letters: string[]) {
-  const { part, kind, expected, var: variable } = markup;
+  const { part, kind, expected, options, var: variable } = markup;
   if (part && !letters.includes(`${part})`)) {
     return `the statement has no part "${part})", it has ${letters.join(" ") || "no lettered parts"}`;
   }
+  if (kind === "choice") return choiceProblem(markup);
+  if (options) return `options fit only kind "choice"`;
   return kindProblem(kind, expected, variable);
 }
+
+export const onlyChoices = (parts: PartMarkup[]) =>
+  parts.every((part) => part.kind === "choice");
 
 const maths = (text: string) => text.match(/\$\$?[^$]+\$\$?/g) ?? [];
 
