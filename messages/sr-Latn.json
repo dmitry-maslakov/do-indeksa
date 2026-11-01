@@ -156,7 +156,6 @@
     "hintValue": "Enter proverava",
     "hintValues": "; ili zarez i razmak otvara sledeće rešenje",
     "hintPoint": "; ili zarez i razmak prelazi na sledeću koordinatu",
-    "hintInterval": "Klik na zagradu menja ( ↔ [",
     "problemFraction": "Razlomak, koren ili stepen nije dovršen — popuni prazna mesta.",
     "problemBracket": "Zagrada u ovom polju nije zatvorena.",
     "problemEnd": "Kraj intervala je prazan.",
