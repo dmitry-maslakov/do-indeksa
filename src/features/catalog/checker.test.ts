@@ -55,6 +55,17 @@ describe("gradeParts", () => {
     ]);
   });
 
+  it.each([
+    ["\\left\\lbrack3{,}+\\infty\\right)", "[3,+\\infty)"],
+    [
+      "\\left(-\\infty,-1\\right)\\cup\\left(0{,}1\\right)\\cup\\left(1{,}+\\infty\\right)",
+      "(-\\infty,-1)\\cup(0,1)\\cup(1,+\\infty)",
+    ],
+    ["1{,}2{,}3", "1, 2, 3"],
+  ])("grades %s as right for %s", (input, expected) => {
+    expect(gradeParts([expected], [input])).toEqual(["right"]);
+  });
+
   it.each(["", "  ", "\\placeholder{}"])("treats %j as empty", (input) => {
     expect(gradeParts(["1"], [input])).toEqual(["empty"]);
   });
