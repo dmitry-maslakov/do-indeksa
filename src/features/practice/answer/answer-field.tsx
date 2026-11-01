@@ -28,12 +28,12 @@ interface AnswerFieldProps {
 const box = cva("flex items-center transition-colors", {
   variants: {
     variant: {
-      exam: "min-h-13 rounded-xl border-[1.5px] border-input bg-card px-3.5 focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
+      exam: "min-h-13 rounded-xl border-[1.5px] bg-card px-3.5 focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
       solve:
-        "h-14 rounded-xl border-2 border-input bg-card focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
+        "h-14 rounded-xl border-2 bg-card focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10",
     },
     state: {
-      empty: "",
+      empty: "border-input",
       right: "border-success bg-success-tint",
       wrong: "border-error bg-error-tint",
       unreadable: "border-overtime bg-overtime-tint",
