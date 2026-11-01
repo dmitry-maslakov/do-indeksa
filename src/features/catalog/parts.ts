@@ -35,7 +35,7 @@ function symbolOf(rest: string) {
   return rest && (short || equation) ? bare : null;
 }
 
-const capital = /^\$?[A-Z]\$?$/;
+const capital = /^\$?[A-Z](?:\([^)]*\)|_\{?\w+\}?)?\$?$/;
 
 const math = (tex: string) => (tex ? `$${tex}$` : null);
 
