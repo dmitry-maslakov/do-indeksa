@@ -12,10 +12,10 @@ export type Kind = (typeof kinds)[number];
 
 type Group = NonNullable<ReturnType<typeof groupOf>>;
 
-const isEmptySet = (latex: string) =>
+export const isEmptySet = (latex: string) =>
   latex === "\\emptyset" || latex === "\\varnothing";
 
-const isInfinite = (item: string) => /^[+-]?\\infty$/.test(item);
+export const isInfinite = (item: string) => /^[+-]?\\infty$/.test(item);
 
 const isSpan = (group: Group | null) =>
   group?.items.length === 2 &&
@@ -23,7 +23,7 @@ const isSpan = (group: Group | null) =>
 
 export function inferKind(expected: string): Kind | null {
   const latex = squash(expected);
-  const groups = topLevel(latex).map(groupOf);
+  const groups = topLevel(latex).map((item) => groupOf(item));
   if (/\\cup|\\\{/.test(latex) || groups.some(isSpan)) return "interval";
   if (groups.length > 1) {
     return groups.every((group) => group && group.items.length > 1)
@@ -34,6 +34,9 @@ export function inferKind(expected: string): Kind | null {
   if (size > 2) return "point";
   return size === 2 || isEmptySet(latex) ? null : "value";
 }
+
+export const kindOf = (part: { expected: string; kind?: Kind | null }) =>
+  part.kind ?? inferKind(part.expected);
 
 const fitting: Record<Kind, readonly Kind[]> = {
   value: ["value", "values"],
