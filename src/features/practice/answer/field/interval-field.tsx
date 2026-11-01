@@ -15,7 +15,7 @@ import {
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
 import { comma, glyph, MathBox, NoSolution, slot } from "./math-box";
-import { SymbolTray, symbols, TrayButton } from "./symbol-tray";
+import { SymbolTray, TrayButton, trayKeys } from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
 
 function Bracket({
@@ -180,7 +180,7 @@ export function IntervalField({
         </fieldset>
       </Frame>
       <SymbolTray
-        keys={[symbols.infinity, symbols.root, symbols.pi, symbols.fraction]}
+        keys={trayKeys(part, "infinity", "root", "pi", "fraction")}
         active={active}
         locked={readOnly}
         hint={t("hintInterval")}

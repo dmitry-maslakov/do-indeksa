@@ -146,13 +146,13 @@ test.describe("a list of values", () => {
     page,
   }) => {
     const tray = page.locator("button", { hasText: "∅ nema rešenja" });
-    await expect(tray.locator("xpath=ancestor::*[@inert]")).toHaveCount(0);
+    await expect(tray).toHaveCount(1);
     await enter(page, fields(page).first(), "4;");
     await page.getByRole("button", { name: "√" }).click();
     await page.keyboard.type("2");
     await check(page);
     await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
-    await expect(tray.locator("xpath=ancestor::*[@inert]")).toHaveCount(1);
+    await expect(tray).toHaveCount(0);
     await expect(sent(page)).toHaveValue("4;\\sqrt2");
   });
 
@@ -166,9 +166,7 @@ test.describe("a list of values", () => {
   });
 
   test("marks the box that cannot be read and says why", async ({ page }) => {
-    await enter(page, fields(page).first(), "4;");
-    await page.getByRole("button", { name: "a/b" }).click();
-    await page.keyboard.type("1");
+    await enter(page, fields(page).first(), "4;1/");
     await check(page);
     const problem = page.getByRole("alert").filter({ hasText: "Razlomak" });
     await expect(problem).toContainText("nije dovršen");

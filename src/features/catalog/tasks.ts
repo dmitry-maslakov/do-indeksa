@@ -13,6 +13,7 @@ import {
   labelOf,
   type PartLabel,
   resultOf,
+  symbolsIn,
   uncheckedLetters,
 } from "./parts";
 import { examSource } from "./source";
@@ -121,8 +122,17 @@ export async function renderStatement(task: Task) {
   return html;
 }
 
+const symbolsByTopic = new Map(
+  Array.from(byTopic, ([topic, group]) => [
+    topic,
+    symbolsIn(group.flatMap((t) => t.check.map((c) => c.expected))),
+  ]),
+);
+
 const labelsOf = (task: Task) =>
-  task.check.map((c, i, all) => labelOf(c, i, all.length));
+  task.check.map((c, i, all) =>
+    labelOf(c, i, all.length, symbolsByTopic.get(task.topic)),
+  );
 
 const partLabels = new LRUCache<string, PartLabel[]>({
   maxSize: 2 * 1024 * 1024,
@@ -145,6 +155,7 @@ export async function renderParts(task: Task) {
     labelsOf(task).map(async (p) => ({
       kind: p.kind,
       arity: p.arity,
+      symbols: p.symbols,
       letter: p.letter,
       prefix: await optional(p.prefix),
       suffix: await optional(p.suffix),

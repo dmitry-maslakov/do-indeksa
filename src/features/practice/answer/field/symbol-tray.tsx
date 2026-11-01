@@ -3,6 +3,7 @@
 import { cn } from "cn";
 import type { MathfieldElement } from "mathlive";
 import type { ReactNode, RefObject } from "react";
+import type { AnswerSymbol, PartLabel } from "@/features/catalog/parts";
 
 export const symbols = {
   root: { label: "√", latex: "\\sqrt{#0}", name: "sqrt" },
@@ -14,6 +15,9 @@ export const symbols = {
 } as const;
 
 type Key = (typeof symbols)[keyof typeof symbols];
+
+export const trayKeys = (part: PartLabel, ...names: AnswerSymbol[]) =>
+  names.filter((name) => part.symbols.includes(name)).map((n) => symbols[n]);
 
 const keyStyle =
   "inline-flex h-8 min-w-9 items-center justify-center gap-1 rounded-lg bg-muted px-2.5 text-foreground text-sm outline-none hover:bg-border focus-visible:ring-2 focus-visible:ring-ring";
@@ -68,14 +72,9 @@ export function SymbolTray({
   locked,
   children,
 }: SymbolTrayProps) {
+  if (locked) return null;
   return (
-    <div
-      inert={locked}
-      className={cn(
-        "invisible hidden min-h-8 flex-wrap items-center gap-1.5 pointer-fine:flex",
-        !locked && "group-focus-within/field:visible",
-      )}
-    >
+    <div className="invisible hidden min-h-8 flex-wrap items-center gap-1.5 group-focus-within/field:visible pointer-fine:flex">
       {children}
       {keys.map(({ label, latex, name }) => (
         <TrayButton

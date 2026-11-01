@@ -7,7 +7,7 @@ import { boxesOf, groupsOf, startOf } from "@/features/catalog/boxes";
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
 import { comma, glyph, MathBox, NoSolution, slot } from "./math-box";
-import { SymbolTray, symbols, TrayButton } from "./symbol-tray";
+import { SymbolTray, TrayButton, trayKeys } from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
 
 interface SlotsFieldProps extends FieldProps {
@@ -107,7 +107,7 @@ export function SlotsField({
         </fieldset>
       </Frame>
       <SymbolTray
-        keys={[symbols.root, symbols.pi, symbols.fraction]}
+        keys={trayKeys(part, "root", "pi", "fraction")}
         active={active}
         locked={readOnly}
         hint={t(kind === "point" ? "hintPoint" : "hintValues")}
