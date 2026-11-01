@@ -111,6 +111,7 @@ export function useMathField(
     if (!el || fill === undefined) return;
     customElements.whenDefined("math-field").then(() => {
       el.value = decimalComma(fill);
+      setValue(el.value);
     });
   }, [fill]);
 
