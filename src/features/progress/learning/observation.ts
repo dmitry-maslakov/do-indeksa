@@ -9,8 +9,8 @@ import {
   type TaskLog,
 } from "./types";
 
-interface Sitting {
-  submits: LoggedSubmit[];
+interface Sitting<S extends LoggedSubmit = LoggedSubmit> {
+  submits: S[];
   reveals: LoggedReveal[];
   closed: boolean;
 }
@@ -21,10 +21,13 @@ const decides = ({ outcomes }: LoggedSubmit) =>
 const shareRight = ({ outcomes }: LoggedSubmit) =>
   outcomes.filter(isRight).length / outcomes.length;
 
-const isHint = ({ part }: LoggedReveal) => part.startsWith("hint");
+export const isHint = ({ part }: LoggedReveal) => part.startsWith("hint");
 
-function sittingFrom(
-  { submits, reveals, skips }: TaskLog,
+export const firstShown = (reveals: LoggedReveal[]) =>
+  Math.min(...reveals.filter((r) => !isHint(r)).map((r) => r.at));
+
+function sittingFrom<S extends LoggedSubmit>(
+  { submits, reveals, skips }: TaskLog<S>,
   from: number,
   now: number,
   gapMs: number,
@@ -56,12 +59,12 @@ function sittingFrom(
   };
 }
 
-export function sittings(
-  log: TaskLog,
+export function sittings<S extends LoggedSubmit>(
+  log: TaskLog<S>,
   now: number,
   gapMs: number,
   from = -Infinity,
-): Sitting[] {
+): Sitting<S>[] {
   const next = sittingFrom(log, from, now, gapMs);
   if (!next) return [];
   return [next.sitting, ...sittings(log, now, gapMs, next.end)];
@@ -79,9 +82,7 @@ export function resultOf({
   closed,
 }: Sitting): SittingResult | undefined {
   const first = submits[0];
-  const shownAt = Math.min(
-    ...reveals.filter((r) => !isHint(r)).map((r) => r.at),
-  );
+  const shownAt = firstShown(reveals);
   if (!first || shownAt < first.at) return { at: shownAt, result: "studied" };
 
   const right = submits.find((s) => s.correct && s.at < shownAt);

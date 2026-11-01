@@ -1,18 +1,19 @@
 import "server-only";
-import { and, desc, eq, inArray, type SQL } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { cache } from "react";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { examTopics } from "@/features/catalog/exams";
 import { db } from "@/server/db";
 import { noId } from "@/server/profile";
+import { getTasksWith, shownReveals } from "./attempt-log";
 import { type TaskStat, weakest } from "./stats";
 import type { Answered, TaskStatuses, Touched, TouchStatus } from "./status";
 import { getLearning } from "./student-learning";
-import { decidesStatus } from "./task-stats";
+import { decisiveAttempts } from "./task-stats";
 import { suggest } from "./topic-progress";
 
-const latestAttemptsOf = (profileId: string, taskIds?: string[]) =>
+const latestAttemptsOf = async (profileId: string, taskIds?: string[]) =>
   db
     .selectDistinctOn([attempts.taskId], {
       taskId: attempts.taskId,
@@ -20,13 +21,7 @@ const latestAttemptsOf = (profileId: string, taskIds?: string[]) =>
       createdAt: attempts.createdAt,
     })
     .from(attempts)
-    .where(
-      and(
-        eq(attempts.profileId, profileId),
-        taskIds && inArray(attempts.taskId, taskIds),
-        decidesStatus,
-      ),
-    )
+    .where(await decisiveAttempts(profileId, taskIds))
     .orderBy(attempts.taskId, desc(attempts.createdAt));
 
 const allLatestAttempts = cache(async (profileId: string) =>
@@ -67,25 +62,6 @@ const touchesOf = (profileId: string, taskIds?: string[]) =>
     )
     .orderBy(taskSessions.startedAt);
 
-async function tasksWith(
-  table: typeof reveals | typeof skips,
-  profileId: string,
-  taskIds?: string[],
-  ...conditions: (SQL | undefined)[]
-) {
-  const rows = await db
-    .selectDistinct({ taskId: table.taskId })
-    .from(table)
-    .where(
-      and(
-        eq(table.profileId, profileId),
-        taskIds && inArray(table.taskId, taskIds),
-        ...conditions,
-      ),
-    );
-  return new Set(rows.map((row) => row.taskId));
-}
-
 export async function getTouched(
   profileId: string,
   taskIds?: string[],
@@ -107,13 +83,8 @@ export async function getTouchStatuses(
   const ids = taskIds.filter((id) => touched.has(id));
   if (!ids.length) return new Map<string, TouchStatus>();
   const [shown, skipped] = await Promise.all([
-    tasksWith(
-      reveals,
-      profileId,
-      ids,
-      inArray(reveals.part, ["answer", "solution"]),
-    ),
-    tasksWith(skips, profileId, ids),
+    getTasksWith(reveals, profileId, ids, shownReveals),
+    getTasksWith(skips, profileId, ids),
   ]);
   const statusOf = (taskId: string): TouchStatus => {
     const decided = statuses.get(taskId);
