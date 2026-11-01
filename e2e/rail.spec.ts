@@ -189,3 +189,23 @@ test("a click on a row does not scroll the list", async ({ page }) => {
   await page.waitForTimeout(600);
   expect(await list.evaluate((el) => el.scrollTop)).toBe(before);
 });
+
+test("the phone bar says where the student is in the visit", {
+  tag: "@mobile",
+}, async ({ page }) => {
+  await page.goto("/bank/eks-001");
+  const bar = page.getByRole("button", { name: /Eksponencijalne/ });
+  await expect(bar).toContainText("1. zadatak");
+
+  await skip(page);
+  await expect(bar).toContainText("2. zadatak");
+  const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
+  await expect(async () => {
+    if (!(await sheet.isVisible())) await bar.click();
+    await expect(sheet).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await expect(sheet.locator("a[data-id][aria-current=page]")).toContainText(
+    "Sada rešavaš",
+  );
+  await expect(sheet.getByText(/^1 zadatak/)).toBeVisible();
+});

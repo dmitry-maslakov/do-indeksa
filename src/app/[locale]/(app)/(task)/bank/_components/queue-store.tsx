@@ -1,6 +1,7 @@
 "use client";
 
 import { noop } from "es-toolkit";
+import { useParams } from "next/navigation";
 import {
   createContext,
   type ReactNode,
@@ -11,6 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { arrange, progressOf } from "@/features/bank/queue/arrange";
 import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
 
@@ -63,6 +65,13 @@ export function useQueue() {
   const store = use(QueueContext);
   if (!store) throw new Error("useQueue needs a QueueProvider");
   return store;
+}
+
+export function useVisitProgress() {
+  const { id } = useParams<{ id?: string }>();
+  const { meta, loaded } = useQueue();
+  if (!id || !meta || loaded?.topic !== meta.topic) return undefined;
+  return progressOf(arrange(loaded.queue, id), id);
 }
 
 export function QueueFeed({

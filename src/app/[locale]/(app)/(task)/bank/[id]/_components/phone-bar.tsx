@@ -8,6 +8,7 @@ import { TopicIcon } from "@/features/catalog/topic-icon";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { Link } from "@/i18n/navigation";
 import { queueEvent } from "@/lib/analytics-browser";
+import { VisitPosition } from "../../_components/queue-progress";
 import { Rail } from "../../_components/rail";
 
 interface PhoneBarProps {
@@ -40,11 +41,19 @@ export function PhoneBar({ title, listHref, look }: PhoneBarProps) {
         </Link>
         <DrawerTrigger className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-2 py-1 text-left font-semibold text-base">
           <TopicIcon icon={look.icon} tone={look.tone} size="sm" />
-          <span className="truncate">{title}</span>
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate leading-5">{title}</span>
+            <span className="h-4 truncate font-normal text-subtle text-xs leading-4">
+              <VisitPosition />
+            </span>
+          </span>
           <ChevronDownIcon className="size-4 shrink-0" />
         </DrawerTrigger>
       </div>
-      <DrawerContent title={t("sheet")} className="h-full">
+      <DrawerContent
+        title={t("sheet")}
+        className="h-full max-h-[calc(100dvh-4rem)]"
+      >
         <Rail variant="sheet" />
       </DrawerContent>
     </Drawer>
