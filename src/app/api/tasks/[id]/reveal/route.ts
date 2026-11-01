@@ -13,7 +13,7 @@ export async function GET(
 ) {
   const part = partSchema.safeParse(request.nextUrl.searchParams.get("part"));
   if (!part.success) return new Response(null, { status: 400 });
-  const html = await renderReveal((await params).id, part.data);
-  if (html === null) return new Response(null, { status: 404 });
-  return Response.json({ html });
+  const reveal = await renderReveal((await params).id, part.data);
+  if (reveal === null) return new Response(null, { status: 404 });
+  return Response.json(reveal);
 }

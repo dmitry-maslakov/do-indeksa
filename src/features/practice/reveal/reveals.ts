@@ -62,10 +62,21 @@ export async function recordReveal(
   });
 }
 
-export async function renderReveal(taskId: string, part: RevealPart) {
+export interface Reveal {
+  html: string;
+  values: string[];
+}
+
+export async function renderReveal(
+  taskId: string,
+  part: RevealPart,
+): Promise<Reveal | null> {
+  const task = getTask(taskId);
   const html = await renderTask(taskId);
-  if (!html) return null;
-  if (part === "answer") return html.answer;
-  if (part === "solution") return html.solution;
-  return html.hints[part] ?? null;
+  if (!task || !html) return null;
+  if (typeof part === "number") {
+    const hint = html.hints[part];
+    return hint === undefined ? null : { html: hint, values: [] };
+  }
+  return { html: html[part], values: task.check.map((c) => c.expected) };
 }
