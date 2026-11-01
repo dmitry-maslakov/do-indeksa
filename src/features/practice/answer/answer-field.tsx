@@ -68,28 +68,40 @@ function Caption({
   part,
   variant,
 }: Pick<AnswerFieldProps, "id" | "part" | "variant">) {
-  const text =
-    variant === "exam" ? (part.caption ?? part.prefix) : part.caption;
-  if (!text && !(variant === "exam" && part.letter)) return null;
+  if (!part.caption && !(variant === "exam" && part.letter)) return null;
   return (
     <label htmlFor={id} className="text-muted-foreground text-sm">
       <b className="font-semibold text-foreground">{part.letter}</b>{" "}
-      {text && <MathHtml as="span" html={text} className={inline} />}
+      {part.caption && (
+        <MathHtml as="span" html={part.caption} className={inline} />
+      )}
     </label>
   );
 }
 
+const affix = cva(
+  "flex items-center gap-2 overflow-hidden whitespace-nowrap font-math italic",
+  {
+    variants: {
+      variant: { exam: "text-lg", solve: "text-xl" },
+      shown: { true: "text-data", false: "text-muted-foreground" },
+    },
+  },
+);
+
 function Prefix({
   part,
+  variant,
   shown,
-}: Pick<AnswerFieldProps, "part"> & { shown: boolean }) {
-  const letter = !part.caption && part.letter;
+}: Pick<AnswerFieldProps, "part" | "variant"> & { shown: boolean }) {
+  const letter = variant === "solve" && !part.caption && part.letter;
   if (!letter && !part.prefix) return null;
   return (
     <span
       className={cn(
-        "flex max-w-1/2 items-center gap-2 overflow-hidden whitespace-nowrap pl-4 font-math text-xl italic",
-        shown ? "text-data" : "text-muted-foreground",
+        affix({ variant, shown }),
+        "max-w-1/2",
+        variant === "solve" ? "pl-4" : "pr-2",
       )}
     >
       {letter && (
@@ -100,6 +112,25 @@ function Prefix({
       {part.prefix && (
         <MathHtml as="span" html={part.prefix} className={inline} />
       )}
+    </span>
+  );
+}
+
+function Suffix({
+  part,
+  variant,
+  shown,
+}: Pick<AnswerFieldProps, "part" | "variant"> & { shown: boolean }) {
+  if (!part.suffix) return null;
+  return (
+    <span
+      className={cn(
+        affix({ variant, shown }),
+        "max-w-1/3",
+        variant === "solve" ? "pr-4 pl-1" : "pl-2",
+      )}
+    >
+      <MathHtml as="span" html={part.suffix} className={inline} />
     </span>
   );
 }
@@ -152,7 +183,7 @@ export function AnswerField({
           state: variant === "solve" ? state : "empty",
         })}
       >
-        {variant === "solve" && <Prefix part={part} shown={shown} />}
+        <Prefix part={part} variant={variant} shown={shown} />
         <math-field
           id={id}
           ref={field}
@@ -163,6 +194,7 @@ export function AnswerField({
         >
           {defaultValue}
         </math-field>
+        <Suffix part={part} variant={variant} shown={shown} />
         <Mark state={state} />
       </div>
       <input type="hidden" name={name} value={value} />
