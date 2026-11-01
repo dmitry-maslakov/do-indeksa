@@ -5,11 +5,11 @@ difficulty: 3
 source: Do indeksa
 answer: a) $300$; b) $108$; v) $156$
 check:
-- label: a)
+- part: a
   expected: '300'
-- label: b)
+- part: b
   expected: '108'
-- label: v)
+- part: v
   expected: '156'
 hints:
 - |

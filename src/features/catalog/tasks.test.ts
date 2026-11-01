@@ -86,7 +86,7 @@ describe("task excerpts", () => {
       "kv-002": "Data je jednačina…",
       "log-001": "Rešiti jednačinu…",
       "plan-001":
-        "Razlika dijagonala romba je 14, a stranica je 13. Naći dijagonale, površinu i poluprečnik upisane kružnice.",
+        "Razlika dijagonala romba je 14 cm, a stranica je 13 cm. Naći dijagonale, površinu i poluprečnik upisane kružnice.",
       "trig-001": "Naći sva rešenja jednačine…",
       "vek-002":
         "U prostoru su date tačke A(1,1,1), B(-1,2,2) i C(0,0,3). a) Naći ugao…",
@@ -102,7 +102,7 @@ describe("task titles", () => {
       "kb-003": "Dat je kompleksan broj",
       "komb-002": "Od cifara skupa…",
       "kv-002": "Data je jednačina…",
-      "plan-001": "Razlika dijagonala romba je 14, a stranica je 13",
+      "plan-001": "Razlika dijagonala romba je 14 cm, a stranica je 13 cm",
       "ster-001":
         "Data je kocka kod koje je površina (brojno) jednaka zapremini",
       "trig-001": "Naći sva rešenja jednačine",

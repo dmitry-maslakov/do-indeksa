@@ -5,9 +5,11 @@ difficulty: 3
 source: Do indeksa
 answer: $d_1=24$, $d_2=10$, $P=120$, $r=\frac{60}{13}$
 check:
-- label: P
+- var: P
+  unit: \text{cm}^2
   expected: '120'
-- label: r
+- var: r
+  unit: \text{cm}
   expected: \frac{60}{13}
 hints:
 - |
@@ -26,4 +28,4 @@ solution: |
   Površina $P=\dfrac{d_1d_2}{2}=120$. Visina romba $h=\dfrac{P}{a}=\dfrac{120}{13}$; kružnica upisana u romb ima prečnik jednak visini, pa je $r=\dfrac{h}{2}=\dfrac{60}{13}$.
 ---
 
-Razlika dijagonala romba je $14$, a stranica je $13$. Naći dijagonale, površinu i poluprečnik upisane kružnice.
+Razlika dijagonala romba je $14$ cm, a stranica je $13$ cm. Naći dijagonale, površinu i poluprečnik upisane kružnice.
