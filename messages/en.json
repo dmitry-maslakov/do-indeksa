@@ -116,7 +116,6 @@
     "status": "{status, select, solved {correct} wrong {wrong} revealed {answer viewed} skipped {skipped} opened {opened} other {not solved}}",
     "repeat": "review",
     "exam": "Exam {year}",
-    "visitSummary": "{done, plural, one {# task} other {# tasks}}{right, plural, =0 {} other { · <ok># correct</ok>}}",
     "visitPosition": "Task {position, number}{right, plural, =0 {} other { · <ok># correct</ok>}}",
     "current": "Solving now",
     "back": "Back",
