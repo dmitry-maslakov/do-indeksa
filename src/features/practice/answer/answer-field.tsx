@@ -94,7 +94,7 @@ export function AnswerField({
       ) : (
         <ValueField {...field} />
       )}
-      <input type="hidden" name={name} value={value} />
+      <input type="hidden" name={name} value={fill ?? value} />
     </div>
   );
 }
