@@ -37,8 +37,25 @@ interface Graded {
   problem?: Problem;
 }
 
+const script = String.raw`(\{[^{}]*\}|[^{}\\\s])`;
+
+const textbook: [RegExp, string][] = [
+  [
+    new RegExp(`V_${script}\\^${script}`, "g"),
+    String.raw`\frac{($1)!}{($1-($2))!}`,
+  ],
+  [new RegExp(`C_${script}\\^${script}`, "g"), String.raw`\binom{$1}{$2}`],
+  [new RegExp(`P_${script}`, "g"), "($1)!"],
+];
+
+const fromTextbook = (latex: string) =>
+  textbook.reduce(
+    (tex, [pattern, plain]) => tex.replace(pattern, plain),
+    latex,
+  );
+
 export function parseMath(latex: string): BoxedExpression {
-  const expr = ce.parse(latex.replaceAll("{,}", "."));
+  const expr = ce.parse(fromTextbook(latex).replaceAll("{,}", "."));
   return isFunction(expr) &&
     ["Equal", "Element"].includes(expr.operator) &&
     isSymbol(expr.op1)
@@ -260,7 +277,7 @@ function gradePart(part: GradedPart, answer: string): Graded {
     : gradeSingle(input, part.expected);
 }
 
-export const checkerVersion = 5;
+export const checkerVersion = 6;
 
 export const gradeParts = (parts: GradedPart[], answers: string[]) =>
   parts.map((part, i) => gradePart(part, answers[i] ?? ""));
