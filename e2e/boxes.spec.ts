@@ -1,6 +1,11 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
+test.skip(
+  process.env.CONTENT_DIR === "bank",
+  "the boxes are checked on the public sample tasks",
+);
+
 const fields = (page: Page) => page.locator("math-field");
 
 const textOf = (box: Locator) =>
