@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import { RailHeading } from "@/components/rail";
-import { arrange } from "@/features/bank/queue/arrange";
+import { arrange, sections } from "@/features/bank/queue/arrange";
 import type { Queue } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { intentOf } from "@/lib/analytics-browser";
@@ -16,25 +16,20 @@ interface QueueListProps {
   href: (id: string) => string;
 }
 
-function centerCurrent(list: HTMLElement, current: string) {
-  const row = list.querySelector<HTMLElement>(`[href$="/bank/${current}"]`);
+function centerCurrent(list: HTMLElement, href: string) {
+  const row = list.querySelector<HTMLElement>(`[href$="${href}"]`);
   if (row)
     list.scrollTop = row.offsetTop - (list.clientHeight - row.offsetHeight) / 2;
 }
-
-const sections = ["visit", "upcoming"] as const;
 
 export function QueueList({ queue, current, topic, href }: QueueListProps) {
   const t = useTranslations("Solve");
   const lists = arrange(queue, current);
   const list = useRef<HTMLDivElement>(null);
-  const known = sections.some((key) =>
-    lists[key].some((task) => task.id === current),
-  );
 
   useLayoutEffect(() => {
-    if (known && list.current) centerCurrent(list.current, current);
-  }, [known, current]);
+    if (list.current) centerCurrent(list.current, href(current));
+  }, [current, href]);
 
   return (
     <div

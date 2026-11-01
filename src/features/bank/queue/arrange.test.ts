@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { arrange } from "./arrange";
+import { arrange, listed } from "./arrange";
 import type { QueueRow } from "./queue";
 
 const row = (id: string, rest: Partial<QueueRow> = {}): QueueRow => ({
@@ -47,5 +47,20 @@ describe("arrange", () => {
   it("drops the repeat mark and the pick reason of the moved task", () => {
     const [moved] = arrange(queue, "u1").visit.slice(-1);
     expect(moved).toEqual(row("u1"));
+  });
+});
+
+describe("listed", () => {
+  const queue = {
+    visit: rows("v1"),
+    upcoming: rows("u1"),
+  };
+
+  it("finds a task in any section", () => {
+    expect(["v1", "u1"].map((id) => listed(queue, id))).toEqual([true, true]);
+  });
+
+  it("does not find a task the queue does not have", () => {
+    expect(listed(queue, "x")).toBe(false);
   });
 });
