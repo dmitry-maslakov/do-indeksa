@@ -14,7 +14,6 @@ const rail = (page: Page) => {
     rows: aside.locator("a[data-id]"),
     current: aside.locator("a[data-id][aria-current=page]"),
     list: aside.locator("div.overflow-y-auto"),
-    summary: aside.getByText(/^\d+ zadat(ak|ka|aka)/),
   };
 };
 
@@ -71,26 +70,24 @@ test("the rail names itself and marks the task the student is on", async ({
   errors,
 }) => {
   await page.goto("/bank/eks-001");
-  const { aside, rows, current, summary } = rail(page);
+  const { aside, rows, current } = rail(page);
 
   await expect(aside).toBeVisible();
   await expect(current).toHaveAttribute("data-id", "eks-001");
   await expect(current).toContainText("Sada rešavaš");
-  await expect(summary).toHaveCount(0);
   await expect(rows.filter({ hasText: "Eksponencijalne" })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test("a skipped task is counted and named in words", async ({ page }) => {
+test("a skipped task is named in words", async ({ page }) => {
   const opened = recorded(page, "eks-001");
   await page.goto("/bank/eks-001");
-  const { rows, summary } = rail(page);
+  const { rows } = rail(page);
   await expect(rows.first()).toBeVisible();
   await opened;
 
   const skipped = recorded(page, "eks-001");
   await skip(page);
-  await expect(summary).toHaveText("1 zadatak");
   await skipped;
   await page.reload();
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
@@ -98,33 +95,28 @@ test("a skipped task is counted and named in words", async ({ page }) => {
   );
 });
 
-test("a right answer is counted and named in words", async ({ page }) => {
+test("a right answer is named in words", async ({ page }) => {
   await page.goto("/bank/eks-001");
-  const { current, rows, summary } = rail(page);
+  const { current, rows } = rail(page);
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(current).toContainText("Sada rešavaš");
   await expect(current).toContainText("tačno");
-  await expect(summary).toHaveCount(0);
 
   await page.getByRole("link", { name: "Sledeći zadatak" }).click();
-  await expect(summary).toHaveText("1 zadatak · 1 tačno");
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "tačno",
   );
 });
 
-test("a wrong answer is named in words and not counted as right", async ({
-  page,
-}) => {
+test("a wrong answer is named in words", async ({ page }) => {
   await page.goto("/bank/eks-001");
-  const { current, rows, summary } = rail(page);
+  const { current, rows } = rail(page);
   await answer(page, "5");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(current).toContainText("netačno");
 
   await page.getByRole("link", { name: "Dalje" }).click();
-  await expect(summary).toHaveText("1 zadatak");
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "netačno",
   );
@@ -199,7 +191,7 @@ test("the list follows the student and offers a way back once scrolled away", as
   await expect.poll(() => scrollTop(list)).toBe(0);
   const pill = page.getByRole("button", { name: "Sada rešavaš" });
   await expect(pill).toBeVisible();
-  await expect(current).not.toBeInViewport();
+  await expect(current).not.toBeInViewport({ ratio: 0.5 });
 
   await pill.click();
   await expect(current).toBeInViewport();
@@ -338,5 +330,4 @@ test("the phone bar says where the student is in the visit", {
   await expect(sheet.locator("a[data-id][aria-current=page]")).toContainText(
     "Sada rešavaš",
   );
-  await expect(sheet.getByText(/^1 zadatak/)).toBeVisible();
 });

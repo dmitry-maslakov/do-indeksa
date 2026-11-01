@@ -74,10 +74,9 @@ describe("progressOf", () => {
     row("e"),
   ];
 
-  it("counts the tasks before the current one and the right ones among them", () => {
+  it("gives the place of the current task and the right ones before it", () => {
     expect(progressOf({ visit, upcoming: [] }, "e")).toEqual({
       position: 5,
-      done: 4,
       right: 2,
     });
   });
@@ -85,7 +84,6 @@ describe("progressOf", () => {
   it("counts only what precedes a task in the middle of the visit", () => {
     expect(progressOf({ visit, upcoming: [] }, "b")).toEqual({
       position: 2,
-      done: 1,
       right: 1,
     });
   });
@@ -93,7 +91,6 @@ describe("progressOf", () => {
   it("has nothing before the first task", () => {
     expect(progressOf({ visit, upcoming: [] }, "a")).toEqual({
       position: 1,
-      done: 0,
       right: 0,
     });
   });

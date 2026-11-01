@@ -25,7 +25,6 @@ export function progressOf({ visit }: Lists, current: string) {
   if (index < 0) return undefined;
   return {
     position: index + 1,
-    done: index,
     right: visit.slice(0, index).filter((row) => row.status === "solved")
       .length,
   };

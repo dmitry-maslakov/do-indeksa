@@ -116,7 +116,6 @@
     "status": "{status, select, solved {tačno} wrong {netačno} revealed {pogledan odgovor} skipped {preskočen} opened {otvoren} other {nije rešen}}",
     "repeat": "ponavljanje",
     "exam": "Prijemni {year}",
-    "visitSummary": "{done, plural, one {# zadatak} few {# zadatka} other {# zadataka}}{right, plural, =0 {} other { · <ok># tačno</ok>}}",
     "visitPosition": "{position, number}. zadatak{right, plural, =0 {} other { · <ok># tačno</ok>}}",
     "current": "Sada rešavaš",
     "back": "Nazad",
