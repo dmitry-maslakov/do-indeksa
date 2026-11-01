@@ -23,6 +23,3 @@ const byTopic = new Map(positions.map((p) => [p.topic, p]));
 export const positionOf = (topic: string) => byTopic.get(topic);
 
 export const numberOf = (topic: string) => positionOf(topic)?.number ?? null;
-
-export const minutesAt = (number: number) =>
-  positions.find((p) => p.number === number)?.minutes ?? 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartNoAxesColumnIcon, LogOutIcon, ShieldIcon } from "lucide-react";
+import { LogOutIcon, ShieldIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -67,10 +67,6 @@ export function UserMenu() {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/stats" />}>
-          <ChartNoAxesColumnIcon />
-          {t("stats")}
-        </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/privacy" />}>
           <ShieldIcon />
           {t("privacy")}

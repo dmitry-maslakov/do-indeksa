@@ -236,7 +236,4 @@ test("an answer that follows a reveal in the same sitting does not make a task s
     page.getByRole("complementary").locator("a[data-id][aria-current=page]"),
   ).toBeVisible();
   await expect(page.getByText("rešen ranije")).toHaveCount(0);
-
-  await page.goto("/stats");
-  await expect(page.getByText(/^1 od [\d.]+$/)).toBeVisible();
 });

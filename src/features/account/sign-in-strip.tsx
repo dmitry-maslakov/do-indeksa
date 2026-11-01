@@ -44,7 +44,7 @@ function DevicesIcon() {
 }
 
 interface SignInStripProps {
-  from: "result" | "stats" | "task";
+  from: "result" | "task";
   solved?: number;
   children: ReactNode;
 }

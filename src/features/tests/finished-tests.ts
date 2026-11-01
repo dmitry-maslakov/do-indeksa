@@ -103,6 +103,3 @@ export const getLatestTests = (profileId: string, variantIds: string[]) =>
       ),
     )
     .orderBy(testSessions.variantId, desc(testSessions.finishedAt));
-
-export const countTests = (profileId: string) =>
-  db.$count(testSessions, and(eq(testSessions.profileId, profileId), finished));

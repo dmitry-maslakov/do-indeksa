@@ -55,7 +55,6 @@
     "signIn": "Войти",
     "signOut": "Выйти",
     "account": "Аккаунт",
-    "stats": "Статистика",
     "privacy": "Конфиденциальность",
     "merged": "Прогресс с этого устройства объединён с аккаунтом."
   },
@@ -64,7 +63,6 @@
     "save": "Сохранить",
     "close": "Закрыть",
     "result": "Результат теста есть только на этом устройстве",
-    "stats": "Статистика есть только на этом устройстве",
     "task": "{count, plural, one {# решённая задача есть} few {# решённые задачи есть} many {# решённых задач есть} other {# решённой задачи есть}} только на этом устройстве"
   },
   "Bank": {
@@ -196,7 +194,6 @@
     "showTime": "Показать",
     "overtime": "Сверх времени",
     "tasks": "Задачи",
-    "task": "Задача {number, number}",
     "taskState": "Задача {number, number}, {state, select, done {отвечена} other {без ответа}}",
     "answerState": "{state, select, done {отвечена} other {без ответа}}",
     "answered": "Отвечено {count, number} из {total, number}",
@@ -240,34 +237,6 @@
     "unreadableOne": "ответ не прочитан",
     "toTask": "Открыть задачу"
   },
-  "Stats": {
-    "title": "Статистика",
-    "weaker": "Слабые темы",
-    "topics": "По теме",
-    "numbers": "По номеру задачи",
-    "attempts": "{count, plural, one {# попытка} few {# попытки} other {# попыток}}",
-    "sample": "Процент появляется после {count, number} попыток.",
-    "time": "Где уходит время",
-    "timeNote": "твоё среднее по задачам · черта: около {norm, number} мин на экзамене",
-    "minutes": "{minutes, number} мин",
-    "overNorm": "{count, plural, one {В среднем дольше {minutes, number} мин: задача {numbers}.} other {В среднем дольше {minutes, number} мин: задачи {numbers}.}}",
-    "inNorm": "В среднем ни одна задача не занимает больше {minutes, number} мин.",
-    "solved": "задач решено",
-    "firstTry": "верно с первой попытки",
-    "tests": "вариантов пройдено",
-    "spent": "за всё время",
-    "hours": "{hours, number} ч",
-    "bank": "Банк задач",
-    "bankOf": "{solved, number} из {size, number}",
-    "bankSolved": "решено",
-    "bankWrong": "с ошибкой",
-    "bankNew": "без попыток",
-    "recent": "Последние варианты",
-    "all": "все →",
-    "noTests": "Пока нет завершённых вариантов.",
-    "score": "{score, number} баллов",
-    "repeated": "{count, plural, one {Ошибки повторяются в задаче {numbers}.} other {Ошибки повторяются в задачах {numbers}.}}"
-  },
   "Home": {
     "timeEmpty": "Реши первый вариант, и здесь появится, на каких задачах уходит больше всего времени.",
     "startTest": "Выбрать вариант",
@@ -288,7 +257,6 @@
     "weeklyMeta": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {hours, plural, one {# час} few {# часа} other {# часов}} · {points, plural, one {# балл} few {# балла} other {# баллов}} · ещё {days, plural, one {# день} few {# дня} other {# дней}}",
     "startWeekly": "Начать вариант →",
     "topicMap": "Карта тем",
-    "stats": "Статистика →",
     "allTopics": "Все · {count, number}",
     "state": {
       "mastered": "Освоено",

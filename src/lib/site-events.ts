@@ -69,7 +69,6 @@ const controlUsed = defineEvent("control_used", {
     "timer",
     "review_row",
     "practice_similar",
-    "stats_by",
     "theory_tab",
     "theory_section_link",
   ]),

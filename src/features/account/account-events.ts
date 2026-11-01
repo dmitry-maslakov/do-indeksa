@@ -2,7 +2,7 @@ import { z } from "zod";
 import { defineEvent, type EventMap } from "@/lib/analytics-schema";
 import { signInSources } from "@/server/sign-up-source";
 
-const promptSources = ["task", "result", "stats", "one_tap"] as const;
+const promptSources = ["task", "result", "one_tap"] as const;
 
 export const profileMerged = defineEvent("profile_merged", {
   outcome: z.enum(["claimed", "merged"]),
