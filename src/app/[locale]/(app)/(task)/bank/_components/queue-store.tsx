@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import type { Queue } from "@/features/bank/queue/queue";
+import { useRouter } from "@/i18n/navigation";
 
 interface Meta {
   topic: string;
@@ -28,7 +29,7 @@ interface Loaded {
 interface QueueStore {
   meta?: Meta;
   loaded?: Loaded;
-  publish: (meta: Meta, queue: Promise<Queue>) => void;
+  publish: (meta: Meta, queue: Promise<Queue>) => boolean;
 }
 
 const QueueContext = createContext<QueueStore | null>(null);
@@ -41,8 +42,8 @@ export function QueueProvider({ children }: { children: ReactNode }) {
   const latest = useRef<{ topic: string; queue: Promise<Queue> }>(undefined);
 
   const publish = useCallback((next: Meta, queue: Promise<Queue>) => {
-    const stale = published.has(queue) && latest.current?.topic === next.topic;
-    if (stale) return;
+    const shown = published.has(queue);
+    if (shown && latest.current?.topic === next.topic) return false;
     published.add(queue);
     latest.current = { topic: next.topic, queue };
     startTransition(() => setMeta(next));
@@ -50,6 +51,7 @@ export function QueueProvider({ children }: { children: ReactNode }) {
       if (latest.current?.queue === queue)
         startTransition(() => setLoaded({ topic: next.topic, queue: data }));
     }, noop);
+    return !shown;
   }, []);
 
   return (
@@ -70,11 +72,12 @@ export function QueueFeed({
   starts,
   queue,
 }: Meta & { queue: Promise<Queue> }) {
+  const router = useRouter();
   const { publish } = useQueue();
 
   useEffect(() => {
-    publish({ topic, topics, listHref, starts }, queue);
-  }, [publish, topic, topics, listHref, starts, queue]);
+    if (!publish({ topic, topics, listHref, starts }, queue)) router.refresh();
+  }, [publish, router, topic, topics, listHref, starts, queue]);
 
   return null;
 }

@@ -148,6 +148,39 @@ test("a skipped task stays in the visit before the current one", async ({
   expect(links.indexOf(skipped)).toBeLessThan(links.indexOf(current));
 });
 
+test("a task page shown again from history takes its next task from a fresh queue", async ({
+  page,
+  context,
+  auth,
+}) => {
+  await page.goto("/bank/log-001");
+  await page
+    .getByRole("complementary")
+    .getByLabel("Tema")
+    .selectOption({ label: "Eksponencijalne jednačine i nejednačine" });
+  await expect(page).toHaveURL(/\/bank\/(?!log-001$)[\w-]+$/);
+  const first = new URL(page.url()).pathname;
+  const skip = page.getByRole("link", { name: "Preskoči" });
+  const next = (await skip.getAttribute("href")) ?? "";
+  await skip.click();
+  await expect(page).toHaveURL(next);
+  const opened = `select 1 from task_sessions where profile_id = $1 and task_id = $2`;
+  await expect
+    .poll(
+      async () =>
+        (
+          await auth.db.query(opened, [
+            await guestProfileId(context, auth.db),
+            next.split("/").at(-1),
+          ])
+        ).rowCount,
+    )
+    .toBe(1);
+  await page.goBack();
+  await expect(page).toHaveURL(first);
+  await expect(skip.and(page.locator(`[href="${next}"]`))).toHaveCount(0);
+});
+
 test("browsing without a task creates no profile", async ({
   page,
   context,
