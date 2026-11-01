@@ -2,35 +2,185 @@ import { describe, expect, it } from "vitest";
 import {
   answerAddsText,
   hasBareTex,
-  splitLabel,
+  labelOf,
+  type PartMarkup,
+  partProblem,
+  resultOf,
+  statementLetters,
   uncheckedLetters,
 } from "./parts";
 
-describe("splitLabel", () => {
+const markup = (part: Partial<PartMarkup>): PartMarkup => ({
+  expected: "1",
+  label: null,
+  part: null,
+  var: null,
+  kind: null,
+  unit: null,
+  ...part,
+});
+
+const shown = (
+  letter: string,
+  prefix: string | null,
+  suffix: string | null = null,
+  caption: string | null = null,
+) => ({ letter, prefix, suffix, caption });
+
+describe("labelOf", () => {
   it.each([
-    [null, 0, 1, { letter: "", prefix: null, caption: null }],
-    ["x", 0, 1, { letter: "", prefix: "x =", caption: null }],
+    [{}, 0, 1, shown("", null)],
+    [{ label: "x" }, 0, 1, shown("", "x $=$")],
+    [{ label: "b) $F_{max}$" }, 0, 2, shown("b)", null, null, "$F_{max}$")],
+    [{ label: "a)" }, 1, 2, shown("a)", null)],
+    [{ label: "broj načina" }, 1, 2, shown("2.", null, null, "broj načina")],
     [
-      "b) $F_{max}$",
-      0,
-      2,
-      { letter: "b)", prefix: null, caption: "$F_{max}$" },
-    ],
-    ["a)", 1, 2, { letter: "a)", prefix: null, caption: null }],
-    [
-      "broj načina",
-      1,
-      2,
-      { letter: "2.", prefix: null, caption: "broj načina" },
-    ],
-    [
-      "na $[0,2\\pi)$",
+      { label: "na $[0,2\\pi)$" },
       0,
       1,
-      { letter: "", prefix: null, caption: "na $[0,2\\pi)$" },
+      shown("", null, null, "na $[0,2\\pi)$"),
     ],
-  ] as const)("splits %j", (label, index, count, part) => {
-    expect(splitLabel(label, index, count)).toEqual(part);
+    [{ label: "tangenta y =" }, 0, 1, shown("", "tangenta y $=$")],
+    [{ label: "(x,y)", expected: "(3,2)" }, 0, 1, shown("", "(x,y) $=$")],
+    [
+      { label: "(x, y)", expected: "(3,2)" },
+      0,
+      1,
+      shown("", null, null, "(x, y)"),
+    ],
+  ] as const)("splits the legacy label of %j", (part, index, count, view) => {
+    expect(labelOf(markup(part), index, count)).toEqual(view);
+  });
+
+  it.each([
+    ["v) m", "v)"],
+    ["g) m", "g)"],
+    ["đ) m", "đ)"],
+    ["e) m", "e)"],
+  ])("reads the Serbian letter of %j", (label, letter) => {
+    expect(labelOf(markup({ label }), 0, 2)).toEqual(shown(letter, "m $=$"));
+  });
+
+  it("takes the letter from the part and leaves the label as a caption", () => {
+    expect(
+      labelOf(markup({ part: "đ", label: "dvostruki koren", var: "x" }), 0, 2),
+    ).toEqual(shown("đ)", "$x$ $=$", null, "dvostruki koren"));
+    expect(labelOf(markup({ part: "v", label: "a) drugi" }), 0, 2).letter).toBe(
+      "v)",
+    );
+  });
+
+  it.each([
+    ["value", "1", "x", "$x$ $=$", null],
+    ["values", "1, 4", "x", "$x$ $\\in\\{$", "$\\}$"],
+    ["interval", "(-2,2)", "m", "$m$ $\\in$", null],
+    ["interval", "(-\\infty,1]", "D", "$D$ $=$", null],
+    ["point", "(3,2)", "(x, y)", "$(x, y)$ $=$", null],
+    ["points", "(3,2), (1,1)", "(x, y)", "$(x, y)$ $\\in\\{$", "$\\}$"],
+    ["values", "1, 4", null, "$\\{$", "$\\}$"],
+    ["points", "(3,2), (1,1)", null, "$\\{$", "$\\}$"],
+    ["interval", "(-2,2)", null, null, null],
+    ["point", "(3,2)", null, null, null],
+  ] as const)(
+    "frames a %s part with var %j",
+    (kind, expected, v, pre, post) => {
+      expect(labelOf(markup({ kind, expected, var: v }), 0, 1)).toEqual(
+        shown("", pre, post),
+      );
+    },
+  );
+
+  it("puts the unit after the field and after the closing brace", () => {
+    expect(labelOf(markup({ var: "\\alpha", unit: "^\\circ" }), 0, 1)).toEqual(
+      shown("", "$\\alpha$ $=$", "$^\\circ$"),
+    );
+    expect(
+      labelOf(
+        markup({ kind: "values", expected: "1, 2", unit: "\\text{cm}" }),
+        0,
+        1,
+      ),
+    ).toEqual(shown("", "$\\{$", "$\\}\\,\\text{cm}$"));
+  });
+
+  it.each([
+    ["x", "1, 4", "x $\\in\\{$", "$\\}$"],
+    ["x", "(-\\infty,-1)\\cup(0,1)", "x $\\in$", null],
+    ["D", "(-\\infty,-1)\\cup(0,1)", "D $=$", null],
+    ["x", "[1,4)", "x $\\in$", null],
+    ["x", "\\frac{45}{2}", "x $=$", null],
+    ["x", "(3,2)", "x $=$", null],
+    ["P", "(0,1,2)", "P $=$", null],
+    ["x", "(1,1), (2,3)", "x $\\in\\{$", "$\\}$"],
+  ])(
+    "reads the kind of a legacy part %j from %j",
+    (label, expected, pre, post) => {
+      expect(labelOf(markup({ label, expected }), 0, 1)).toEqual(
+        shown("", pre, post),
+      );
+    },
+  );
+});
+
+describe("resultOf", () => {
+  it("writes each part as its unknown, relation and expected value", () => {
+    expect(
+      resultOf([
+        markup({ part: "a", var: "m", expected: "4" }),
+        markup({ part: "b", var: "x", kind: "values", expected: "1, 4" }),
+        markup({
+          part: "v",
+          label: "odnos zapremina",
+          expected: "\\frac{1}{2}",
+        }),
+      ]),
+    ).toBe(
+      "**a)** $m$ $=$ $4$\n\n**b)** $x$ $\\in\\{$ $1, 4$ $\\}$\n\n**v)** odnos zapremina $\\frac{1}{2}$",
+    );
+  });
+});
+
+describe("partProblem", () => {
+  const letters = ["a)", "b)", "v)"];
+
+  it("accepts a part the statement has and a kind that fits", () => {
+    expect(partProblem(markup({ part: "v" }), letters)).toBeUndefined();
+    expect(
+      partProblem(
+        markup({ part: "a", kind: "interval", expected: "(-2,2)" }),
+        letters,
+      ),
+    ).toBeUndefined();
+    expect(partProblem(markup({ label: "g) m" }), letters)).toBeUndefined();
+  });
+
+  it("rejects a part letter the statement does not have", () => {
+    expect(partProblem(markup({ part: "g" }), letters)).toBe(
+      'the statement has no part "g)"',
+    );
+    expect(partProblem(markup({ part: "a" }), [])).toBe(
+      'the statement has no part "a)"',
+    );
+  });
+
+  it("rejects a kind that does not fit the expected value", () => {
+    expect(
+      partProblem(markup({ kind: "value", expected: "1, 4" }), letters),
+    ).toBe('kind "value" does not fit expected "1, 4"');
+    expect(
+      partProblem(
+        markup({ kind: "point", var: "(x, y, z)", expected: "(3,2)" }),
+        letters,
+      ),
+    ).toBe('"(3,2)" does not have the 3 components of var "(x, y, z)"');
+  });
+});
+
+describe("statementLetters", () => {
+  it("lists each lettered part once, Serbian letters included", () => {
+    expect(
+      statementLetters("**a)** x **b)** y **v)** z **g)** **đ)** **v)** w"),
+    ).toEqual(["a)", "b)", "v)", "g)", "đ)"]);
   });
 });
 
@@ -54,10 +204,13 @@ describe("hasBareTex", () => {
 
 describe("uncheckedLetters", () => {
   it("lists statement parts without an answer field", () => {
-    const parts = [splitLabel("b) x", 0, 2), splitLabel("c) y", 1, 2)];
-    expect(uncheckedLetters("**a)** foo **b)** bar **c)** baz", parts)).toEqual(
-      ["a)"],
-    );
+    const parts = [
+      labelOf(markup({ label: "b) x" }), 0, 2),
+      labelOf(markup({ part: "v" }), 1, 2),
+    ];
+    expect(
+      uncheckedLetters("**a)** foo **b)** bar **v)** baz **đ)** qux", parts),
+    ).toEqual(["a)", "đ)"]);
   });
 });
 
