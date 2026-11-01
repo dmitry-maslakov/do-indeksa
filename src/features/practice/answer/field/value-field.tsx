@@ -3,7 +3,7 @@
 import { cva } from "class-variance-authority";
 import { type FieldProps, Frame } from "./field-frame";
 import { MathBox } from "./math-box";
-import { functionSymbols, SymbolTray, symbolKeys } from "./symbol-tray";
+import { SymbolTray } from "./symbol-tray";
 
 const input = cva("min-w-0 flex-1 self-center bg-transparent outline-none", {
   variants: {
@@ -43,18 +43,7 @@ export function ValueField({
           onEdit={onEdit}
         />
       </Frame>
-      <SymbolTray
-        keys={symbolKeys(
-          part.symbols,
-          "root",
-          "pi",
-          "fraction",
-          "power",
-          ...functionSymbols,
-        )}
-        active={active}
-        locked={locked}
-      />
+      <SymbolTray symbols={part.symbols} active={active} locked={locked} />
     </>
   );
 }

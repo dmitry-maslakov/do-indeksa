@@ -13,6 +13,7 @@ import {
   resultOf,
   statementLetters,
 } from "./src/features/catalog/parts";
+import { symbolNames } from "./src/features/catalog/symbols";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
 import { routing } from "./src/i18n/routing";
@@ -37,6 +38,7 @@ const topics = defineCollection({
     name: localized,
     icon: topicIconSchema,
     tone: z.enum(tones),
+    keys: z.array(z.enum(symbolNames)).min(1),
     types: z.array(z.string().regex(/^[a-z]+(-[a-z]+)*$/)).min(1),
   }),
   transform: (topic) => ({ ...topic, id: topic._meta.path }),

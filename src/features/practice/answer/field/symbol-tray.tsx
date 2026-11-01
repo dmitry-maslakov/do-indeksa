@@ -3,29 +3,7 @@
 import { cn } from "cn";
 import type { MathfieldElement } from "mathlive";
 import type { ReactNode, RefObject } from "react";
-import type { AnswerSymbol } from "@/features/catalog/parts";
-
-const named = (name: string) => ({ label: name, latex: `\\${name}`, name });
-
-type Key = ReturnType<typeof named>;
-
-const symbols = {
-  root: { label: "√", latex: "\\sqrt{#0}", name: "sqrt" },
-  pi: { label: "π", latex: "\\pi", name: "pi" },
-  fraction: { label: "a/b", latex: "\\frac{#@}{#?}", name: "fraction" },
-  power: { label: "xⁿ", latex: "#@^{#?}", name: "power" },
-  log: { label: "log", latex: "\\log_{#?}{#?}", name: "log" },
-  ln: named("ln"),
-  trig: ["sin", "cos", "tg", "ctg"].map(named),
-  arc: ["arcsin", "arccos", "arctg"].map(named),
-};
-
-export const functionSymbols: AnswerSymbol[] = ["log", "ln", "trig", "arc"];
-
-export const symbolKeys = (present: AnswerSymbol[], ...names: AnswerSymbol[]) =>
-  names
-    .filter((name) => present.includes(name))
-    .flatMap((name) => symbols[name]);
+import { type AnswerSymbol, answerSymbols } from "@/features/catalog/symbols";
 
 const keyStyle =
   "inline-flex h-8 min-w-9 items-center justify-center gap-1 rounded-lg bg-muted px-2.5 text-foreground text-sm outline-none hover:bg-border focus-visible:ring-2 focus-visible:ring-ring";
@@ -66,7 +44,7 @@ export function TrayButton({
 }
 
 interface SymbolTrayProps {
-  keys: Key[];
+  symbols: AnswerSymbol[];
   active: RefObject<MathfieldElement | null>;
   hint?: string;
   locked: boolean;
@@ -74,23 +52,23 @@ interface SymbolTrayProps {
 }
 
 export function SymbolTray({
-  keys,
+  symbols,
   active,
   hint,
   locked,
   children,
 }: SymbolTrayProps) {
-  if (locked || (!keys.length && !children && !hint)) return null;
+  if (locked || (!symbols.length && !children && !hint)) return null;
   return (
     <div className="invisible hidden min-h-8 flex-wrap items-center gap-1.5 group-focus-within/field:visible pointer-fine:flex">
       {children}
-      {keys.map(({ label, latex, name }) => (
+      {symbols.map((name) => (
         <TrayButton
           key={name}
           math
-          onPress={() => active.current?.insert(latex)}
+          onPress={() => active.current?.insert(answerSymbols[name].latex)}
         >
-          {label}
+          {answerSymbols[name].label}
         </TrayButton>
       ))}
       {hint && <span className="ml-auto text-subtle text-xs">{hint}</span>}

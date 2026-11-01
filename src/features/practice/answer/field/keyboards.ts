@@ -1,30 +1,49 @@
+import { sumBy } from "es-toolkit";
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from "mathlive";
 import { noSolution } from "@/features/catalog/boxes";
 import type { Kind } from "@/features/catalog/kinds";
-import type { AnswerSymbol } from "@/features/catalog/parts";
-import { functionSymbols, symbolKeys } from "./symbol-tray";
+import { type AnswerSymbol, answerSymbols } from "@/features/catalog/symbols";
 
-type Key = string | Partial<VirtualKeyboardKeycap>;
+type Keycap = Partial<VirtualKeyboardKeycap>;
+
+type Key = string | Keycap;
 
 type Row = Key[];
 
 const action = "MLK__keycap action";
 
-const root: Key = { label: "√", insert: "\\sqrt{#0}" };
-const fraction: Key = { label: "a/b", insert: "\\frac{#@}{#?}" };
-const power: Key = { label: "xⁿ", insert: "#@^{#?}" };
+const rowWidth = 10;
+
+function symbolKey(
+  name: AnswerSymbol,
+): Keycap & Pick<VirtualKeyboardKeycap, "width"> {
+  const { label, latex } = answerSymbols[name];
+  return {
+    label,
+    insert: latex,
+    width: label.length > 3 ? 1.5 : 1,
+    ...(/^[a-z]{2,}$/.test(label) && { class: "small" }),
+  };
+}
+
+function symbolRows(symbols: AnswerSymbol[]): Row[] {
+  const keys = symbols.map(symbolKey);
+  const total = sumBy(keys, (key) => key.width);
+  const share = total / Math.ceil(total / rowWidth);
+  const rows: Row[] = [];
+  let start = 0;
+  for (const key of keys) {
+    const row = Math.floor((start + key.width / 2) / share);
+    rows[row] = [...(rows[row] ?? []), key];
+    start += key.width;
+  }
+  return rows;
+}
 
 const digits: Row[] = [
-  [
-    "[7]",
-    "[8]",
-    "[9]",
-    { label: "÷", latex: "\\div" },
-    root,
-    { label: "π", latex: "\\pi" },
-  ],
-  ["[4]", "[5]", "[6]", { label: "×", latex: "\\times" }, fraction, power],
-  ["[1]", "[2]", "[3]", "[-]", "[left]", "[right]"],
+  ["[7]", "[8]", "[9]", { label: "÷", latex: "\\div" }, "[left]"],
+  ["[4]", "[5]", "[6]", { label: "×", latex: "\\times" }, "[right]"],
+  ["[1]", "[2]", "[3]", "[-]", "[+]"],
   [
     {
       label: "abc",
@@ -33,7 +52,6 @@ const digits: Row[] = [
     },
     "[0]",
     "[,]",
-    "[+]",
     { label: "[backspace]", width: 2 },
   ],
 ];
@@ -41,9 +59,9 @@ const digits: Row[] = [
 const operators: Row = [
   "[+]",
   "[-]",
-  root,
-  fraction,
-  power,
+  symbolKey("sqrt"),
+  symbolKey("fraction"),
+  symbolKey("power"),
   "[(]",
   "[)]",
   "[,]",
@@ -96,7 +114,6 @@ const top = (kind: Kind, label: string): Row | undefined => {
       return [
         next(label),
         { label: "∅", latex: noSolution, class: `${action} w20` },
-        { label: "i", latex: "i", class: `${action} w20` },
       ];
     case "point":
     case "points":
@@ -107,18 +124,6 @@ const top = (kind: Kind, label: string): Row | undefined => {
       return undefined;
   }
 };
-
-function functionRows(symbols: AnswerSymbol[]): Row[] {
-  const row = symbolKeys(symbols, ...functionSymbols).map(
-    ({ label, latex }): Key => ({
-      label,
-      insert: latex,
-      class: "small",
-      width: label.length > 3 ? 1.5 : 1,
-    }),
-  );
-  return row.length ? [row] : [];
-}
 
 export function keyboardFor(
   kind: Kind,
@@ -131,7 +136,7 @@ export function keyboardFor(
     id: kind,
     displayEditToolbar: false,
     layers: [
-      { id: "digits", rows: withTop([...functionRows(symbols), ...digits]) },
+      { id: "digits", rows: withTop([...symbolRows(symbols), ...digits]) },
       { id: "letters", rows: withTop(letters) },
     ],
   };
