@@ -16,7 +16,7 @@ export const symbols = {
 type Key = (typeof symbols)[keyof typeof symbols];
 
 const keyStyle =
-  "inline-flex h-8 min-w-9 items-center justify-center gap-1 rounded-lg bg-muted px-2.5 font-math text-foreground text-sm outline-none hover:bg-border focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex h-8 min-w-9 items-center justify-center gap-1 rounded-lg bg-muted px-2.5 text-foreground text-sm outline-none hover:bg-border focus-visible:ring-2 focus-visible:ring-ring";
 
 const keepFocus = (event: { preventDefault: () => void }) =>
   event.preventDefault();
@@ -25,11 +25,13 @@ export function TrayButton({
   onPress,
   label,
   round = false,
+  math = false,
   children,
 }: {
   onPress: () => void;
   label?: string;
   round?: boolean;
+  math?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -41,6 +43,7 @@ export function TrayButton({
       onClick={onPress}
       className={cn(
         keyStyle,
+        math && "font-math text-base",
         round &&
           "size-8 min-w-8 rounded-full border-[1.5px] border-input border-dashed bg-transparent px-0 text-subtle",
       )}
@@ -75,7 +78,11 @@ export function SymbolTray({
     >
       {children}
       {keys.map(({ label, latex, name }) => (
-        <TrayButton key={name} onPress={() => active.current?.insert(latex)}>
+        <TrayButton
+          key={name}
+          math
+          onPress={() => active.current?.insert(latex)}
+        >
           {label}
         </TrayButton>
       ))}
