@@ -5,9 +5,9 @@ import { XIcon } from "lucide-react";
 import type { MathfieldElement } from "mathlive";
 import { useTranslations } from "next-intl";
 import { type RefObject, useRef, useState } from "react";
+import type { Kind } from "@/features/catalog/kinds";
 import type { InputStats } from "../input-stats";
 import type { BoxKeys } from "./box-keys";
-import type { KeyboardKind } from "./keyboards";
 import { useMathBox } from "./use-math-box";
 
 export const slot = cva(
@@ -22,19 +22,22 @@ export const slot = cva(
   },
 );
 
+export const glyph = "font-math text-2xl text-muted-foreground";
+
+export const comma = "font-math text-muted-foreground text-xl";
+
 export function NoSolution({
-  label,
   locked,
   onClear,
 }: {
-  label: string;
   locked: boolean;
   onClear: () => void;
 }) {
+  const t = useTranslations("Field");
   return (
     <button
       type="button"
-      aria-label={label}
+      aria-label={t("clearNoSolution")}
       disabled={locked}
       onPointerDown={(event) => event.preventDefault()}
       onClick={onClear}
@@ -50,7 +53,7 @@ interface MathBoxProps {
   active: RefObject<MathfieldElement | null>;
   value: string;
   label: string;
-  keyboard: KeyboardKind;
+  keyboard: Kind;
   keys?: BoxKeys;
   locked: boolean;
   invalid?: boolean;

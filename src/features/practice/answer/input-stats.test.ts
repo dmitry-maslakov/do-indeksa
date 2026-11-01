@@ -52,7 +52,12 @@ describe("boxStats", () => {
   it("lists the kinds and counts the boxes that have something", () => {
     expect(
       boxStats(
-        ["values", "interval", null, "point"],
+        [
+          { kind: "values" },
+          { kind: "interval" },
+          { kind: null },
+          { kind: "point" },
+        ],
         ["1;;3", "(0;1]\\cup\\{5\\}", "\\frac12", ""],
       ),
     ).toEqual({ kinds: ["values", "interval", "value", "point"], boxes: 6 });

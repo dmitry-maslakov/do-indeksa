@@ -2,7 +2,6 @@
 
 import { cva } from "class-variance-authority";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { type FieldProps, Frame } from "./field-frame";
 import { MathBox } from "./math-box";
 import { SymbolTray, symbols } from "./symbol-tray";
@@ -21,8 +20,7 @@ export function ValueField({
   variant,
   state,
   locked,
-  fill,
-  defaultValue,
+  value,
   placeholder,
   reason,
   active,
@@ -30,11 +28,6 @@ export function ValueField({
   onEdit,
 }: FieldProps) {
   const t = useTranslations("Field");
-  const [value, setValue] = useState(defaultValue);
-  const edit = (latex: string) => {
-    setValue(latex);
-    onEdit(latex);
-  };
 
   return (
     <>
@@ -42,14 +35,14 @@ export function ValueField({
         <MathBox
           id={id}
           active={active}
-          value={fill ?? value}
+          value={value}
           label={label}
           keyboard="value"
           locked={locked}
           placeholder={placeholder}
           className={input({ variant, shown: state === "shown" })}
           stats={stats}
-          onEdit={edit}
+          onEdit={onEdit}
         />
       </Frame>
       <SymbolTray

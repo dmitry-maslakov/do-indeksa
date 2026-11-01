@@ -1,9 +1,10 @@
 import type { MathfieldElement } from "mathlive";
 import { type RefObject, useEffect, useEffectEvent } from "react";
 import { trimComma } from "@/features/catalog/boxes";
+import type { Kind } from "@/features/catalog/kinds";
 import { countInput, focused, type InputStats, shown } from "../input-stats";
 import { attachKeys, type BoxKeys } from "./box-keys";
-import { type KeyboardKind, keyboardFor } from "./keyboards";
+import { keyboardFor } from "./keyboards";
 
 const keyboardGap = 16;
 
@@ -49,7 +50,7 @@ function loadMathlive() {
   return setup;
 }
 
-function selectKeyboard(kind: KeyboardKind, next: string) {
+function selectKeyboard(kind: Kind, next: string) {
   const keyboard = window.mathVirtualKeyboard;
   const id = `${kind}/${next}`;
   if (!keyboard || selected === id) return;
@@ -60,7 +61,7 @@ function selectKeyboard(kind: KeyboardKind, next: string) {
 interface MathBoxOptions {
   active: RefObject<MathfieldElement | null>;
   value: string;
-  keyboard: KeyboardKind;
+  keyboard: Kind;
   next: string;
   keys?: BoxKeys;
   stats: RefObject<InputStats>;
