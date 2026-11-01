@@ -87,6 +87,19 @@ describe("layoutOf and sentOf", () => {
       kind: "values",
       boxes: ["1", "\\sqrt{2}"],
     });
+    expect(
+      layoutOf(
+        "values",
+        "\\theta\\in\\left\\{\\frac{\\pi}{6},\\frac{5\\pi}{6}\\right\\}",
+      ),
+    ).toEqual({
+      kind: "values",
+      boxes: ["\\frac{\\pi}{6}", "\\frac{5\\pi}{6}"],
+    });
+    expect(layoutOf("values", "\\alpha_1=-2;2")).toEqual({
+      kind: "values",
+      boxes: ["-2", "2"],
+    });
     expect(layoutOf("point", "T=\\left(0,1,2\\right)")).toEqual({
       kind: "point",
       boxes: ["0", "1", "2"],

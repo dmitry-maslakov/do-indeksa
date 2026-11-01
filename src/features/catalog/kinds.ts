@@ -17,12 +17,16 @@ export const isEmptySet = (latex: string) =>
 
 export const isInfinite = (item: string) => /^[+-]?\\infty$/.test(item);
 
+const isBraceSet = (latex: string) =>
+  /^\\\{.*\\\}$/.test(latex) && !latex.includes("\\cup");
+
 const isSpan = (group: Group | null) =>
   group?.items.length === 2 &&
   (group.open === "[" || group.close === "]" || group.items.some(isInfinite));
 
 export function inferKind(expected: string): Kind | null {
   const latex = squash(expected);
+  if (isBraceSet(latex)) return "values";
   const groups = topLevel(latex).map((item) => groupOf(item));
   if (/\\cup|\\\{/.test(latex) || groups.some(isSpan)) return "interval";
   if (groups.length > 1) {

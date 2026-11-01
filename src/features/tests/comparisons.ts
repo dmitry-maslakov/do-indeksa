@@ -1,5 +1,7 @@
 import "server-only";
 import katex from "katex";
+import { isBoxKind } from "@/features/catalog/boxes";
+import { kindOf } from "@/features/catalog/kinds";
 import { getTask } from "@/features/catalog/tasks";
 import type { Comparisons } from "./review";
 
@@ -13,8 +15,11 @@ export function comparisonsOf(
   for (const { taskId, answers } of attempts) {
     const [key, ...rest] = getTask(taskId)?.check ?? [];
     if (key && rest.length === 0) {
+      const given = answers[0] ?? "";
       comparisons[taskId] = {
-        given: latexToHtml(answers[0] ?? ""),
+        given: latexToHtml(
+          isBoxKind(kindOf(key)) ? given.replaceAll(";", ", ") : given,
+        ),
         key: latexToHtml(key.expected),
       };
     }

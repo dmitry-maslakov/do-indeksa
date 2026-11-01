@@ -12,6 +12,14 @@ describe("comparisonsOf", () => {
     expect(comparison?.key).toContain("2");
   });
 
+  it("writes the boxes of a list with commas, as the key is written", () => {
+    const comparison = comparisonsOf([
+      { taskId: "log-001", answers: ["4;\\sqrt{2}"] },
+    ])["log-001"];
+    expect(comparison?.given).toContain('<span class="mpunct">,</span>');
+    expect(comparison?.given).not.toContain('<span class="mpunct">;</span>');
+  });
+
   it("leaves out multi-part and unknown tasks", () => {
     expect(
       comparisonsOf([
