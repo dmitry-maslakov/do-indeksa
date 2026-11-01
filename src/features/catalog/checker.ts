@@ -30,11 +30,10 @@ const ce = new ComputeEngine();
 export interface GradedPart {
   expected: string;
   kind?: Kind | null;
-  var?: string | null;
   unit?: string | null;
 }
 
-export interface Graded {
+interface Graded {
   outcome: PartOutcome;
   problem?: Problem;
 }
@@ -85,7 +84,7 @@ function matches(input: string, expected: string, target: BoxedExpression) {
   return candidates.some((c) => sameItems(items(target), items(c)));
 }
 
-export function reasonOf(box: string): Reason {
+function reasonOf(box: string): Reason {
   if (/\\placeholder|\{\}/.test(box)) return "fraction";
   const opened = box.match(/[([]/g)?.length ?? 0;
   const closed = box.match(/[)\]]/g)?.length ?? 0;
@@ -111,8 +110,12 @@ const sameSet = <T>(a: T[], b: T[], same: (x: T, y: T) => boolean) =>
   a.every((x) => b.some((y) => same(x, y))) &&
   b.every((y) => a.some((x) => same(x, y)));
 
+const sameList = <T>(a: T[], b: T[], same: (x: T, y: T) => boolean) =>
+  a.length === b.length &&
+  a.every((x, i) => b[i] !== undefined && same(x, b[i]));
+
 const sameTuple = (a: BoxedExpression[], b: BoxedExpression[]) =>
-  a.length === b.length && a.every((x, i) => b[i] && equal(x, b[i]));
+  sameList(a, b, equal);
 
 const parsed = (boxes: string[]) => boxes.filter(isFilled).map(parseMath);
 
@@ -204,13 +207,8 @@ function sameLayout(a: Layout, b: Layout) {
       usedGroups(b).map((row) => row.map(parseMath)),
       sameTuple,
     );
-  if (a.kind === "interval" && b.kind === "interval") {
-    const [left, right] = [merged(a.pieces), merged(b.pieces)];
-    return (
-      left.length === right.length &&
-      left.every((span, i) => right[i] && sameSpan(span, right[i]))
-    );
-  }
+  if (a.kind === "interval" && b.kind === "interval")
+    return sameList(merged(a.pieces), merged(b.pieces), sameSpan);
   return false;
 }
 
@@ -267,12 +265,9 @@ function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
   };
 }
 
-const isBlank = (input: string) =>
-  input.replaceAll("\\placeholder{}", "").trim() === "";
-
 function gradePart(part: GradedPart, answer: string): Graded {
   const input = withoutUnit(answer, part.unit);
-  if (isBlank(input)) return { outcome: "empty" };
+  if (!isFilled(input)) return { outcome: "empty" };
   const kind = kindOf(part);
   return isBoxKind(kind)
     ? gradeBoxes(part, kind, input)
