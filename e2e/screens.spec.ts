@@ -173,6 +173,7 @@ test("switches the locale", async ({ page }) => {
 });
 
 test("switches the locale on the launch page", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/launch");
   await page.getByRole("button", { name: /jezik/i }).click();
   await page.getByRole("menuitemradio", { name: "Русский" }).click();
