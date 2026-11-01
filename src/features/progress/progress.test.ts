@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getTouched, getTouchStatuses } from "./progress";
+import { getTouched, getVisitStatuses } from "./progress";
 
 const rows = vi.hoisted(() => ({
   touches: [] as object[],
@@ -87,11 +87,10 @@ describe("getTouched", () => {
   });
 });
 
-describe("getTouchStatuses", () => {
-  it("tells what was done with each task a student touched", async () => {
-    const found = await getTouched("p1");
-    const ids = ["a", "b", "c", "d", "e", "f", "g", "untouched"];
-    expect([...(await getTouchStatuses("p1", ids, found))]).toEqual([
+describe("getVisitStatuses", () => {
+  it("tells what was done with each task of the visit", async () => {
+    const ids = ["a", "b", "c", "d", "e", "f", "g"];
+    expect([...(await getVisitStatuses("p1", ids, 0))]).toEqual([
       ["a", "solved"],
       ["b", "wrong"],
       ["c", "revealed"],
@@ -103,15 +102,13 @@ describe("getTouchStatuses", () => {
   });
 
   it("does not call a task revealed for a solution seen in a test", async () => {
-    const found = await getTouched("p1");
-    expect([...(await getTouchStatuses("p1", ["e"], found))]).toEqual([
+    expect([...(await getVisitStatuses("p1", ["e"], 0))]).toEqual([
       ["e", "opened"],
     ]);
   });
 
   it("asks only for the tasks it was given", async () => {
-    const found = await getTouched("p1");
-    const shown = await getTouchStatuses("p1", ["d", "a"], found);
+    const shown = await getVisitStatuses("p1", ["d", "a"], 0);
     expect([...shown]).toEqual([
       ["d", "skipped"],
       ["a", "solved"],
@@ -119,7 +116,6 @@ describe("getTouchStatuses", () => {
   });
 
   it("has nothing for a visitor without a profile", async () => {
-    const found = await getTouched("0");
-    expect(await getTouchStatuses("0", ["a"], found)).toEqual(new Map());
+    expect(await getVisitStatuses("0", ["a"], 0)).toEqual(new Map());
   });
 });

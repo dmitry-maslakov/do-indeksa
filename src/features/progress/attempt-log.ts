@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, inArray, type SQL } from "drizzle-orm";
+import { and, eq, gte, inArray, type SQL } from "drizzle-orm";
 import { cache } from "react";
 import { isPractice, type SessionKind } from "@/db/columns";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
@@ -160,7 +160,7 @@ export async function getTasksWith(
   return new Set(rows.map((row) => row.taskId));
 }
 
-export const getShownTasks = cache(async (profileId: string) => {
+export const getShownTasks = cache(async (profileId: string, since = 0) => {
   const rows = await db
     .selectDistinct({ taskId: reveals.taskId, kind: taskSessions.kind })
     .from(reveals)
@@ -169,6 +169,7 @@ export const getShownTasks = cache(async (profileId: string) => {
       and(
         eq(reveals.profileId, profileId),
         inArray(reveals.part, ["answer", "solution"]),
+        gte(reveals.createdAt, new Date(since)),
       ),
     );
   return new Set(rows.filter(isPractice).map((row) => row.taskId));

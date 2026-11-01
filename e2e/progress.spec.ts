@@ -26,19 +26,23 @@ test("the bank filters tasks by their latest attempt", async ({
   await expect(task("eks-001")).toHaveCount(0);
 });
 
-test("the task rail marks the latest attempt", async ({ page, auth }) => {
+test("the line above a task names its latest earlier attempt", async ({
+  page,
+  auth,
+}) => {
   await seed(auth.db, (await auth.signIn()).profileId);
-  const row = (id: string, mark: string) =>
-    page
-      .getByRole("complementary")
-      .locator(`a[href$="/bank/${id}"]`)
-      .getByText(mark, { exact: true });
+  const current = page
+    .getByRole("complementary")
+    .locator("a[data-id][aria-current=page]");
 
   await page.goto("/bank/eks-001");
-  await expect(row("eks-001", "tačno")).toBeVisible();
+  const meta = page.getByRole("article");
+  await expect(meta.getByText("rešen ranije", { exact: true })).toBeVisible();
+  await expect(current).not.toContainText("tačno");
 
   await page.goto("/bank/fun-002");
-  await expect(row("fun-002", "netačno")).toBeVisible();
+  await expect(meta.getByText("ranije netačno", { exact: true })).toBeVisible();
+  await expect(current).not.toContainText("netačno");
 });
 
 test("the task rail keeps its rows while the student moves between tasks", async ({

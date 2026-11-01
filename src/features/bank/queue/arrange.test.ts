@@ -44,9 +44,9 @@ describe("arrange", () => {
     expect(ids(next.upcoming)).toEqual(["u1", "u2"]);
   });
 
-  it("drops the repeat mark and the pick reason of the moved task", () => {
+  it("keeps the repeat mark of the moved task and drops its pick reason", () => {
     const [moved] = arrange(queue, "u1").visit.slice(-1);
-    expect(moved).toEqual(row("u1"));
+    expect(moved).toEqual(row("u1", { repeat: true }));
   });
 });
 
