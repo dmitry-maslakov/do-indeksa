@@ -5,11 +5,13 @@ import {
   isSymbol,
 } from "@cortex-js/compute-engine";
 import type { PartOutcome } from "@/db/columns";
+import { topLevel } from "@/lib/tex";
 import {
   type BoxKind,
   boxesOf,
   boxesOfPiece,
   groupsOf,
+  hasDecimalComma,
   isBoxKind,
   isFilled,
   isRange,
@@ -48,6 +50,9 @@ export function parseMath(latex: string): BoxedExpression {
 
 const isOrdered = (latex: string) =>
   /^\s*(\\left)?\(/.test(latex) && !latex.includes("\\cup");
+
+const isReadable = (latex: string) =>
+  !latex.includes("\\placeholder") && parseMath(latex).isValid;
 
 const items = (expr: BoxedExpression) =>
   isFunction(expr) && ["Tuple", "Set", "Union"].includes(expr.operator)
@@ -89,7 +94,7 @@ export function reasonOf(box: string): Reason {
 
 function gradeSingle(input: string, expected: string): Graded {
   const given = readings(input);
-  if (!given.some((reading) => parseMath(reading).isValid))
+  if (!given.some(isReadable))
     return {
       outcome: "unreadable",
       problem: { box: 0, reason: reasonOf(input) },
@@ -121,7 +126,12 @@ interface Span {
   closedTo: boolean;
 }
 
-const real = (expr: BoxedExpression) => expr.N().re;
+function real(expr: BoxedExpression) {
+  const value = expr.N();
+  return value.im === 0 ? value.re : Number.NaN;
+}
+
+const isBounded = (expr: BoxedExpression) => Math.abs(real(expr)) !== Infinity;
 
 function order(a: BoxedExpression, b: BoxedExpression) {
   const [x, y] = [real(a), real(b)];
@@ -137,8 +147,8 @@ function spanOf(piece: Piece): Span {
   return {
     from,
     to,
-    closedFrom: piece.open === "[" && Number.isFinite(real(from)),
-    closedTo: piece.close === "]" && Number.isFinite(real(to)),
+    closedFrom: piece.open === "[" && isBounded(from),
+    closedTo: piece.close === "]" && isBounded(to),
   };
 }
 
@@ -207,26 +217,33 @@ function sameLayout(a: Layout, b: Layout) {
 function problemOf(layout: Layout): Problem | undefined {
   const needed = layout.kind !== "values";
   const blank = layout.kind === "interval" ? "end" : "coordinate";
-  let box = 0;
+  let start = 0;
   for (const group of groupsOf(layout)) {
     const used = group.some(isFilled);
-    for (const text of group) {
+    for (const [i, text] of group.entries()) {
       if (!isFilled(text)) {
-        if (needed && used) return { box, reason: blank };
-      } else if (!parseMath(text).isValid) {
-        return { box, reason: reasonOf(text) };
+        if (!needed || !used) continue;
+        const decimal = group.findIndex(hasDecimalComma);
+        return decimal === -1
+          ? { box: start + i, reason: blank }
+          : { box: start + decimal, reason: "decimal" };
       }
-      box += 1;
+      if (!isReadable(text)) return { box: start + i, reason: reasonOf(text) };
     }
+    start += group.length;
   }
 }
 
 const withoutUnit = (input: string, unit?: string | null) =>
   unit ? input.replaceAll(unit, "") : input;
 
-function gradeBoxes(part: GradedPart, kind: BoxKind, input: string): Graded {
-  const text = withoutUnit(input, part.unit);
-  const layouts = (text.includes(";") ? [text] : readings(text)).flatMap(
+const isSeparated = (kind: BoxKind, text: string) =>
+  kind === "point" || kind === "points"
+    ? topLevel(text, ";").some((tuple) => tuple.includes(";"))
+    : text.includes(";");
+
+function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
+  const layouts = (isSeparated(kind, text) ? [text] : readings(text)).flatMap(
     (reading) => layoutOf(kind, reading) ?? [],
   );
   const [first] = layouts;
@@ -253,7 +270,8 @@ function gradeBoxes(part: GradedPart, kind: BoxKind, input: string): Graded {
 const isBlank = (input: string) =>
   input.replaceAll("\\placeholder{}", "").trim() === "";
 
-function gradePart(part: GradedPart, input: string): Graded {
+function gradePart(part: GradedPart, answer: string): Graded {
+  const input = withoutUnit(answer, part.unit);
   if (isBlank(input)) return { outcome: "empty" };
   const kind = kindOf(part);
   return isBoxKind(kind)

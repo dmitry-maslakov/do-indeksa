@@ -152,6 +152,7 @@ const reasonKeys = {
   bracket: "problemBracket",
   end: "problemEnd",
   coordinate: "problemCoordinate",
+  decimal: "problemDecimal",
   expression: "problemExpression",
 } as const satisfies Record<Reason, string>;
 

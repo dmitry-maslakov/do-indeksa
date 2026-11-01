@@ -116,6 +116,33 @@ describe("values", () => {
   it("is empty when no box has anything", () => {
     expect(grade("1, 4", ";", "values")).toBe("empty");
   });
+
+  it.each([
+    ["\\alpha=\\{-2,2\\}", "-2, 2"],
+    ["\\theta\\in\\{2;-2\\}", "-2, 2"],
+    ["\\varphi_1=2;-2", "-2, 2"],
+  ])("reads a Greek letter before the list in %s", (input, expected) => {
+    expect(grade(expected, input, "values")).toBe("right");
+  });
+
+  describe("a set in braces", () => {
+    const expected = "\\left\\{\\frac{\\pi}{6},\\frac{5\\pi}{6}\\right\\}";
+
+    it.each([
+      "\\frac{5\\pi}{6};\\frac{\\pi}{6}",
+      "\\frac{\\pi}{6},\\frac{5\\pi}{6}",
+      "\\theta\\in\\left\\{\\frac{\\pi}{6},\\frac{5\\pi}{6}\\right\\}",
+      "x=\\frac{\\pi}{6};x=\\frac{5\\pi}{6}",
+    ])("is read as a list: accepts %s", (input) => {
+      expect(grade(expected, input)).toBe("right");
+    });
+
+    it("keeps a complex root apart from its real part", () => {
+      expect(grade("\\{3,2-i\\}", "3;2-i")).toBe("right");
+      expect(grade("\\{3,2-i\\}", "3;2+i")).toBe("wrong");
+      expect(grade("\\{3,2-i\\}", "3;2")).toBe("wrong");
+    });
+  });
 });
 
 describe("point and points", () => {
@@ -153,6 +180,18 @@ describe("point and points", () => {
     ["(1;2);(4;3)", "(1,2),(3,4)"],
   ])("rejects %s for %s", (input, expected) => {
     expect(grade(expected, input, "points")).toBe("wrong");
+  });
+
+  it("reads tuples of the old style, with a comma inside and ; between", () => {
+    expect(grade("(1,2),(3,4)", "(1{,}2);(3{,}4)", "points")).toBe("right");
+    expect(grade("(1,2),(3,4)", "(3{,}4);(1{,}2)", "points")).toBe("right");
+    expect(grade("(1,2)", "(1{,}2)", "point")).toBe("right");
+    expect(grade("(1,2),(3,4)", "(1{,}2);(4{,}3)", "points")).toBe("wrong");
+  });
+
+  it("keeps a decimal comma inside a tuple of the new style", () => {
+    expect(grade("(1,5)", "(1{,}5;2)", "point")).toBe("wrong");
+    expect(grade("(\\frac{3}{2},5)", "(1{,}5;5)", "point")).toBe("right");
   });
 });
 
@@ -193,6 +232,11 @@ describe("interval", () => {
       grade("(-\\infty,+\\infty)", "(-\\infty;0]\\cup(0;\\infty)", "interval"),
     ).toBe("right");
     expect(grade("(0,1)\\cup(1,2)", "(0;2)", "interval")).toBe("wrong");
+  });
+
+  it("keeps the bracket of a symbolic end", () => {
+    expect(grade("(-\\infty,a)", "(-\\infty;a)", "interval")).toBe("right");
+    expect(grade("(-\\infty,a)", "(-\\infty;a]", "interval")).toBe("wrong");
   });
 
   it("compares symbolic ends by value", () => {
@@ -244,6 +288,19 @@ describe("the box that cannot be read", () => {
     });
   });
 
+  it("names the box whose decimal comma swallowed the next one", () => {
+    expect(
+      problem("(0,1)\\cup(2,3)", "(0;1)\\cup(2{,}3;)", "interval"),
+    ).toEqual({
+      outcome: "unreadable",
+      problem: { box: 2, reason: "decimal" },
+    });
+    expect(problem("(3,2)", "(3{,}2;)", "point")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 0, reason: "decimal" },
+    });
+  });
+
   it("names the empty coordinate of a point", () => {
     expect(problem("(3,2)", "(3;)", "point")).toEqual({
       outcome: "unreadable",
@@ -254,6 +311,17 @@ describe("the box that cannot be read", () => {
   it("ignores a piece or a row with nothing in it", () => {
     expect(grade("(0,1)", "(0;1)\\cup(;)", "interval")).toBe("right");
     expect(grade("(1,2),(3,4)", "(1;2);(3;4);(;)", "points")).toBe("right");
+  });
+
+  it("calls an unfilled place of a power unreadable, not wrong", () => {
+    expect(problem("2", "2^{\\placeholder{}}", "value")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 0, reason: "fraction" },
+    });
+    expect(problem("1, 2", "1;2^{\\placeholder{}}", "values")).toEqual({
+      outcome: "unreadable",
+      problem: { box: 1, reason: "fraction" },
+    });
   });
 
   it("points at the single field of a value", () => {
@@ -272,6 +340,12 @@ describe("the unit", () => {
       unit: "\\text{cm}",
     };
     expect(gradeParts([part], ["(3;2)\\text{cm}"])[0]?.outcome).toBe("right");
+  });
+
+  it("is dropped from a single value too", () => {
+    const part = { expected: "120", unit: "\\text{cm}^2" };
+    expect(gradeParts([part], ["120\\text{cm}^2"])[0]?.outcome).toBe("right");
+    expect(gradeParts([part], ["121\\text{cm}^2"])[0]?.outcome).toBe("wrong");
   });
 });
 

@@ -155,13 +155,14 @@
     "clearNoSolution": "Obriši „nema rešenja“",
     "infinity": "beskonačno",
     "hintValue": "Enter proverava",
-    "hintValues": "Zarez ili ; otvara sledeće rešenje",
-    "hintPoint": "Zarez ili ; prelazi na sledeću koordinatu",
+    "hintValues": "; ili zarez i razmak otvara sledeće rešenje",
+    "hintPoint": "; ili zarez i razmak prelazi na sledeću koordinatu",
     "hintInterval": "Klik na zagradu menja ( ↔ [",
     "problemFraction": "Razlomak, koren ili stepen nije dovršen — popuni prazna mesta.",
     "problemBracket": "Zagrada u ovom polju nije zatvorena.",
-    "problemEnd": "Kraj intervala je prazan. Zarez iza cifre je decimalni — za sledeće polje ukucaj ; ili zarez i razmak.",
-    "problemCoordinate": "Koordinata je prazna. Zarez iza cifre je decimalni — za sledeće polje ukucaj ; ili zarez i razmak.",
+    "problemEnd": "Kraj intervala je prazan.",
+    "problemCoordinate": "Koordinata je prazna.",
+    "problemDecimal": "Zarez iza cifre je decimalni, pa je ovo jedan broj. Za sledeće polje ukucaj ; ili zarez i razmak.",
     "problemExpression": "Ovo polje nije broj ni izraz — proveri zapis."
   },
   "Variants": {

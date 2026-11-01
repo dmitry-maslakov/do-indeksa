@@ -24,6 +24,7 @@ export const reasons = [
   "bracket",
   "end",
   "coordinate",
+  "decimal",
   "expression",
 ] as const;
 
@@ -43,7 +44,7 @@ interface Shape {
 const noSolution = "\\emptyset";
 const separators = ";,";
 const relation =
-  /^\s*(?:\([^()=]*\)|[A-Za-z](?:_\{[^}]*\}|_\w)?)\s*(?:=|\\in(?![a-z]))\s*/;
+  /^\s*(?:\([^()=]*\)|(?:\\[A-Za-z]+|[A-Za-z])(?:_\{[^}]*\}|_\w)?)\s*(?:=|\\in(?![a-z]))\s*/;
 
 export const isBoxKind = (kind: Kind | null): kind is BoxKind =>
   kind !== null && kind !== "value";
@@ -55,6 +56,11 @@ export const trimComma = (latex: string) => latex.replace(/\{,\}$/, "");
 
 export const isFilled = (box: string) =>
   box.replaceAll("\\placeholder{}", "").trim() !== "";
+
+const commaParts = (latex: string) =>
+  topLevel(latex.replaceAll("{,}", ";"), ";").map((part) => part.trim());
+
+export const hasDecimalComma = (latex: string) => commaParts(latex).length > 1;
 
 export const isRange = (piece: Piece): piece is Range => "from" in piece;
 
