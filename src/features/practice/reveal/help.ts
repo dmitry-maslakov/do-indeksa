@@ -11,6 +11,11 @@ export function helpOf(opened: RevealPart[]) {
   };
 }
 
+export const cardsOf = (opened: RevealPart[], answerText: boolean) =>
+  opened.filter(
+    (part) => part !== "answer" || (answerText && !opened.includes("solution")),
+  );
+
 interface Ladder {
   opened: RevealPart[];
   hintCount: number;
