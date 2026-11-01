@@ -136,6 +136,14 @@ test("the bank searches while typing and keeps the query in the URL", async ({
   expect(errors).toEqual([]);
 });
 
+test("a click anywhere on a card opens its task", async ({ page }) => {
+  await open(page, "/bank/topic/logarithms");
+  const { cards, links } = bank(page);
+  const href = await links.first().getAttribute("href");
+  await cards.first().click({ position: { x: 12, y: 12 } });
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
+});
+
 test("a task opens from the filtered list", async ({ page, errors }) => {
   await open(page, "/bank/topic/logarithms?level=easy");
   const { links } = bank(page);
