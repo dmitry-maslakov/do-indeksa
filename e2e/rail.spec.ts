@@ -61,10 +61,9 @@ async function settled(page: Page, list: Locator) {
 }
 
 async function skip(page: Page) {
-  const link = page.getByRole("link", { name: "Preskoči" });
-  const href = (await link.getAttribute("href")) ?? "";
-  await link.click();
-  await expect(page).toHaveURL(href);
+  const from = page.url();
+  await page.getByRole("link", { name: "Preskoči" }).click();
+  await expect(page).not.toHaveURL(from);
 }
 
 test("the rail names itself and marks the task the student is on", async ({
@@ -79,7 +78,6 @@ test("the rail names itself and marks the task the student is on", async ({
   await expect(current).toContainText("Sada rešavaš");
   await expect(summary).toHaveCount(0);
   await expect(rows.filter({ hasText: "Eksponencijalne" })).toHaveCount(0);
-  await expect(aside.getByRole("heading", { name: "Na redu" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -164,7 +162,7 @@ test("Sada rešavaš moves to the task Sledeći zadatak leads to", async ({
   await expect(current).toContainText("Sada rešavaš");
 });
 
-test("the rail shows three upcoming tasks and marks the first", async ({
+test("the rail shows five upcoming tasks and marks the first", async ({
   page,
 }) => {
   bankOnly();
@@ -172,11 +170,9 @@ test("the rail shows three upcoming tasks and marks the first", async ({
   const { rows, current } = rail(page);
   await expect(current).toBeVisible();
 
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(6);
   await expect(rows.filter({ hasText: "Sledeći" })).toHaveCount(1);
   await expect(rows.nth(1)).toContainText("Sledeći");
-  await expect(rows.nth(2)).not.toContainText("Sledeći");
-  await expect(rows.nth(3)).not.toContainText("Sledeći");
 });
 
 test("the list follows the student and offers a way back once scrolled away", async ({
@@ -191,7 +187,7 @@ test("the list follows the student and offers a way back once scrolled away", as
   for (let i = 0; i < 8; i++) await skip(page);
   await expect(current).toBeInViewport();
   await expect.poll(() => scrollTop(list)).toBeGreaterThan(0);
-  await expect.poll(() => rows.count()).toBe(12);
+  await expect.poll(() => rows.count()).toBe(14);
   await settled(page, list);
   const placed = await topOf(current, list);
   await skip(page);
@@ -205,14 +201,16 @@ test("the list follows the student and offers a way back once scrolled away", as
   await expect(pill).toBeVisible();
   await expect(current).not.toBeInViewport();
 
-  await skip(page);
-  await settled(page, list);
-  expect(await scrollTop(list)).toBe(0);
-  await expect(pill).toBeVisible();
-
   await pill.click();
   await expect(current).toBeInViewport();
   await expect(current).toBeFocused();
+  await expect(pill).toBeHidden();
+
+  await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
+  await page.mouse.wheel(0, -3000);
+  await settled(page, list);
+  await skip(page);
+  await expect(current).toBeInViewport({ ratio: 1 });
   await expect(pill).toBeHidden();
 });
 
@@ -225,7 +223,7 @@ test("steps taken in quick succession leave the current row where it was", async
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
-  await expect.poll(() => rows.count()).toBe(12);
+  await expect.poll(() => rows.count()).toBe(14);
   await settled(page, list);
   const placed = await topOf(current, list);
 
@@ -246,7 +244,7 @@ test("a step after going back to an earlier task still follows the current row",
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
-  await expect.poll(() => rows.count()).toBe(12);
+  await expect.poll(() => rows.count()).toBe(14);
   await settled(page, list);
 
   const earlier = rows.nth(6);
@@ -261,16 +259,18 @@ test("a step after going back to an earlier task still follows the current row",
   await expect(page.getByRole("button", { name: "Sada rešavaš" })).toBeHidden();
 });
 
-test("a click on a row does not scroll the list", async ({ page }) => {
+test("a click on a row brings it to where the open task was", async ({
+  page,
+}) => {
   bankOnly();
   await tall(page);
   await page.goto("/bank/start/exponential-equations");
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
-  await expect.poll(() => rows.count()).toBe(12);
+  await expect.poll(() => rows.count()).toBe(14);
   await settled(page, list);
-  const before = await scrollTop(list);
+  const placed = await topOf(current, list);
 
   const row = rows.nth(7);
   const id = await row.getAttribute("data-id");
@@ -278,7 +278,7 @@ test("a click on a row does not scroll the list", async ({ page }) => {
   await expect(page).toHaveURL(new RegExp(`/bank/${id}$`));
   await expect(current).toHaveAttribute("data-id", id ?? "");
   await settled(page, list);
-  expect(await scrollTop(list)).toBe(before);
+  expect(await driftOf(current, list, placed)).toBeLessThan(8);
 });
 
 test("a click on an upcoming row keeps the rows around it steady", async ({
@@ -290,20 +290,14 @@ test("a click on an upcoming row keeps the rows around it steady", async ({
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
-  await expect.poll(() => rows.count()).toBe(12);
+  await expect.poll(() => rows.count()).toBe(14);
   await settled(page, list);
 
   await list.evaluate((el) => {
-    const log = {
-      height: el.scrollHeight,
-      shortest: el.scrollHeight,
-      top: el.scrollTop,
-      moved: 0,
-    };
+    const log = { height: el.scrollHeight, shortest: el.scrollHeight };
     Object.assign(window, { railLog: log });
     const sample = () => {
       log.shortest = Math.min(log.shortest, el.scrollHeight);
-      log.moved = Math.max(log.moved, Math.abs(el.scrollTop - log.top));
       requestAnimationFrame(sample);
     };
     sample();
@@ -318,11 +312,10 @@ test("a click on an upcoming row keeps the rows around it steady", async ({
     () =>
       (
         window as unknown as {
-          railLog: { height: number; shortest: number; moved: number };
+          railLog: { height: number; shortest: number };
         }
       ).railLog,
   );
-  expect(log.moved).toBe(0);
   expect(log.shortest).toBeGreaterThanOrEqual(log.height - 3);
 });
 

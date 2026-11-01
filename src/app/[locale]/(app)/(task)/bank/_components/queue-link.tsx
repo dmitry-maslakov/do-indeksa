@@ -1,5 +1,4 @@
 import { cn } from "cn";
-import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import { RailLink } from "@/components/rail";
@@ -21,7 +20,6 @@ interface QueueLinkProps {
   intent: string;
   state: RowState;
   ahead: boolean;
-  heading: boolean;
   entering: boolean;
   page: string;
   recommendation?: BrowserEvents["recommendation_made"];
@@ -33,19 +31,16 @@ export function QueueLink({
   intent,
   state,
   ahead,
-  heading,
   entering,
   page,
   recommendation,
 }: QueueLinkProps) {
-  const t = useTranslations("Solve");
   const [fresh, setFresh] = useState(entering);
   const seen = useExposure("recommendation_made", recommendation, page);
   return (
     <div
       data-ahead={ahead || undefined}
       data-here={state === "current" || undefined}
-      data-heading={heading || undefined}
       data-fresh={fresh || undefined}
       onTransitionEnd={(event) =>
         event.target === event.currentTarget && setFresh(false)
@@ -76,14 +71,6 @@ export function QueueLink({
             <QueueMeta task={task} state={state} />
           </span>
         </RailLink>
-        <div
-          aria-hidden={!heading}
-          className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-260 ease-out group-data-heading/item:grid-rows-[1fr] motion-reduce:transition-none"
-        >
-          <h3 className="min-h-0 overflow-hidden pl-8 font-semibold text-muted-foreground text-xs leading-4">
-            <span className="block pt-2.5 pb-1">{t("upcoming")}</span>
-          </h3>
-        </div>
       </div>
     </div>
   );

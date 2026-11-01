@@ -18,7 +18,7 @@ export function arrange(queue: Lists, current: string): Lists {
   };
 }
 
-export const shownUpcoming = 3;
+export const shownUpcoming = 5;
 
 export function progressOf({ visit }: Lists, current: string) {
   const index = visit.findIndex((row) => row.id === current);

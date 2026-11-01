@@ -37,7 +37,7 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
   const progress = progressOf(lists, current);
   const [live, setLive] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { list, events, back } = useQueueScroll(current, upcoming[0]?.id);
+  const { list, events, back } = useQueueScroll(current);
 
   useEffect(() => setLive(true), []);
 
@@ -86,11 +86,6 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
               state={stateOf(place, rank, task.id === current)}
               ahead={index > hereIndex}
               entering={live}
-              heading={
-                place === "visit" &&
-                rank === lists.visit.length &&
-                upcoming.length > 0
-              }
               page={current}
               recommendation={
                 place === "upcoming"
