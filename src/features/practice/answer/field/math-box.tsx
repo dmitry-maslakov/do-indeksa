@@ -11,7 +11,7 @@ import type { BoxKeys } from "./box-keys";
 import { useMathBox } from "./use-math-box";
 
 export const slot = cva(
-  "h-9 min-w-10 max-w-full rounded-[9px] bg-muted px-2.5 text-xl outline-none focus-within:bg-card focus-within:ring-[1.5px] focus-within:ring-foreground data-invalid:bg-card data-invalid:ring-2 data-invalid:ring-overtime",
+  "min-h-9 min-w-10 max-w-full rounded-[9px] bg-muted px-2.5 text-xl outline-none focus-within:bg-card focus-within:ring-[1.5px] focus-within:ring-foreground data-invalid:bg-card data-invalid:ring-2 data-invalid:ring-overtime",
   {
     variants: {
       shown: {
