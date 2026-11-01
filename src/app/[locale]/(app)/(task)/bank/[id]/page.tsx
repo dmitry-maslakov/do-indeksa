@@ -24,7 +24,7 @@ import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import { QueueFeed } from "../_components/queue-store";
 import { firstTasks } from "./_components/first-tasks";
-import { loadPersonal } from "./_components/personal";
+import { loadPersonal, loadSitting } from "./_components/personal";
 import { PhoneBar } from "./_components/phone-bar";
 import { TaskMeta } from "./_components/task-meta";
 
@@ -84,7 +84,7 @@ export default async function SolvePage({
     <TaskSessionProvider key={id} taskId={id}>
       <QueueFeed {...feed} />
       <Suspense>
-        <SittingFeed sitting={personal.then((p) => p.sitting)} />
+        <SittingFeed sitting={loadSitting(id)} />
       </Suspense>
       <PhoneBar
         title={topic}

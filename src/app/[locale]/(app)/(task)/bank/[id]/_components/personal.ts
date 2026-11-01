@@ -22,11 +22,10 @@ async function solvedBefore(profileId: string, id: string) {
 
 export async function loadPersonal({ id, topic, locale }: PersonalInput) {
   const profileId = await getProfileId();
-  const [queue, starts, solved, sitting] = await Promise.all([
+  const [queue, starts, solved] = await Promise.all([
     loadQueue({ topic, profileId, current: id, locale }),
     nextTasks(profileId),
     solvedBefore(profileId, id),
-    getSittingState(profileId, id),
   ]);
   return {
     queue,
@@ -38,6 +37,9 @@ export async function loadPersonal({ id, topic, locale }: PersonalInput) {
       recommendation: recommendationOf("next", topic, queue.upcoming[0]),
     },
     solved,
-    sitting,
   };
+}
+
+export async function loadSitting(id: string) {
+  return getSittingState(await getProfileId(), id);
 }
