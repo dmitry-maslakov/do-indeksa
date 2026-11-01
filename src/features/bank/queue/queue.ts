@@ -6,14 +6,10 @@ import { getTask } from "@/features/catalog/tasks";
 import { topicName } from "@/features/catalog/topics";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { difficultyOf } from "@/features/progress/learning/types";
-import { getTouched } from "@/features/progress/progress";
-import {
-  type Answered,
-  isAnswered,
-  type TouchStatus,
-} from "@/features/progress/status";
+import { getTouched, getTouchStatuses } from "@/features/progress/progress";
+import type { Answered, TouchStatus } from "@/features/progress/status";
 import { getTimeline } from "@/features/progress/student-learning";
-import { type Pick, planQueue, upcomingSize } from "./picks";
+import { type Pick, planQueue, startSize, upcomingSize } from "./picks";
 import type { PickReason } from "./recommendation";
 import { examYear, previewHtml } from "./task-preview";
 import { visitOf } from "./visit";
@@ -73,7 +69,7 @@ async function plan({ topic, profileId, current }: PoolInput) {
     now,
     current,
   });
-  return { touched, queue, now };
+  return { touched, queue };
 }
 
 export async function nextTasks(profileId: string) {
@@ -95,7 +91,7 @@ export async function nextTasks(profileId: string) {
         touches: mine,
         statuses,
         now,
-        size: visitOf(mine, now).length ? upcomingSize : 1,
+        size: visitOf(mine, now).length ? upcomingSize : startSize,
       });
       const next = upcoming[0] ?? (ids[0] && { id: ids[0] });
       return next ? [[topic, next] as const] : [];
@@ -111,7 +107,10 @@ export const topicStart = (
 export async function loadQueue(
   input: PoolInput & { locale: Locale },
 ): Promise<Queue> {
-  const { touched, queue, now } = await plan(input);
+  const { touched, queue } = await plan(input);
+  const { current, profileId } = input;
+  const listed = [...queue.visit, ...queue.upcoming.map((p) => p.id)];
+  const statuses = await getTouchStatuses(profileId, listed, touched);
   const row = (id: string, pick?: Pick): QueueRow[] => {
     const task = getTask(id);
     if (!task) return [];
@@ -122,20 +121,18 @@ export async function loadQueue(
         label: task.preview.replaceAll("$", ""),
         topic: topicName(task.topic, input.locale),
         year: examYear(id),
-        status: touched.statuses.get(id),
+        status: statuses.get(id),
         repeat: pick?.repeat,
         reason: pick?.reason,
       },
     ];
   };
-  const { current } = input;
-  const returning =
-    current !== undefined &&
-    !visitOf(touched.touches, now).some((t) => t.taskId === current);
-  const earlier = returning ? touched.statuses.get(current) : undefined;
   return {
     next: queue.upcoming[0]?.id,
-    before: isAnswered(earlier) ? earlier : undefined,
+    before:
+      current !== undefined && queue.returning
+        ? touched.statuses.get(current)
+        : undefined,
     visit: queue.visit.flatMap((id) => row(id)),
     upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
   };

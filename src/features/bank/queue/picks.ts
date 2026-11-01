@@ -1,18 +1,17 @@
+import { uniq } from "es-toolkit";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { plan } from "@/features/progress/learning/planner/plan";
 import { rules } from "@/features/progress/learning/planner/rules/rules";
 import { signals } from "@/features/progress/learning/planner/signals/signals";
 import { isDue, isRepeat } from "@/features/progress/learning/repeats/history";
 import type { Learning } from "@/features/progress/learning/state";
-import {
-  isAnswered,
-  type Touch,
-  type TouchStatuses,
-} from "@/features/progress/status";
+import type { TaskStatuses, Touch } from "@/features/progress/status";
 import type { PickReason } from "./recommendation";
-import { visitOf } from "./visit";
+import { isPractice, visitOf } from "./visit";
 
 export const upcomingSize = 6;
+
+export const startSize = 1;
 
 export interface Pick {
   id: string;
@@ -20,11 +19,11 @@ export interface Pick {
   reason: PickReason;
 }
 
-interface Moment {
+interface Context {
   pool: Candidate[];
   learning: Learning;
   seen: Map<string, number>;
-  statuses: TouchStatuses;
+  statuses: TaskStatuses;
   now: number;
 }
 
@@ -32,14 +31,14 @@ interface QueueInput {
   pool: Candidate[];
   learningAt: (moment: number) => Learning;
   touches: Touch[];
-  statuses: TouchStatuses;
+  statuses: TaskStatuses;
   now: number;
   current?: string;
   size?: number;
 }
 
 function pickNext(
-  { pool, learning, seen, statuses, now }: Moment,
+  { pool, learning, seen, statuses, now }: Context,
   taken: Set<string>,
   picked: Candidate[],
 ): Pick | null {
@@ -60,7 +59,7 @@ function pickNext(
     .filter(
       (t) =>
         seen.has(t.taskId) &&
-        !isAnswered(statuses.get(t.taskId)) &&
+        !statuses.has(t.taskId) &&
         !learning.tasks.has(t.taskId),
     )
     .sort((a, b) => (seen.get(a.taskId) ?? 0) - (seen.get(b.taskId) ?? 0));
@@ -83,14 +82,18 @@ export function planQueue({
 }: QueueInput) {
   const run = visitOf(touches, now);
   const begun = run[0]?.from ?? now;
-  const steps = touches.filter((t) => t.from >= begun);
-  if (current && !run.some((t) => t.taskId === current))
-    steps.push({ taskId: current, kind: "first", from: now, to: now });
+  const added: Touch[] =
+    current && !run.some((t) => t.taskId === current)
+      ? [{ taskId: current, kind: "first", from: now, to: now }]
+      : [];
+  const steps = [...touches.filter((t) => t.from >= begun), ...added];
   const opened: string[] = [];
   let upcoming: Pick[] = [];
 
   const topUp = (moment: number) => {
-    if (upcoming.length >= size) return;
+    const taken = new Set([...opened, ...upcoming.map((p) => p.id)]);
+    if (upcoming.length >= size || pool.every((t) => taken.has(t.taskId)))
+      return;
     const context = {
       pool,
       statuses,
@@ -98,7 +101,6 @@ export function planQueue({
       seen: seenBefore(touches, moment),
       now: Math.min(moment, now),
     };
-    const taken = new Set([...opened, ...upcoming.map((p) => p.id)]);
     const picked = [...taken].flatMap((id) =>
       pool.filter((t) => t.taskId === id),
     );
@@ -113,12 +115,14 @@ export function planQueue({
 
   topUp(begun);
   for (const { taskId, from } of steps) {
-    if (!opened.includes(taskId)) opened.push(taskId);
+    if (opened.includes(taskId)) continue;
+    opened.push(taskId);
     upcoming = upcoming.filter((p) => p.id !== taskId);
     topUp(from);
   }
-  const members = new Set(
-    steps.filter((t) => t.kind !== "mock").map((t) => t.taskId),
-  );
-  return { visit: opened.filter((id) => members.has(id)), upcoming };
+  return {
+    visit: uniq(steps.filter(isPractice).map((t) => t.taskId)),
+    upcoming,
+    returning: added.length > 0,
+  };
 }

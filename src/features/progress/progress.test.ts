@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getTouched } from "./progress";
+import { getTouched, getTouchStatuses } from "./progress";
 
 const rows = vi.hoisted(() => ({
   touches: [] as object[],
@@ -46,19 +46,6 @@ rows.shown = [{ taskId: "c" }, { taskId: "f" }, { taskId: "g" }];
 rows.skipped = [{ taskId: "d" }, { taskId: "f" }];
 
 describe("getTouched", () => {
-  it("tells what was done with each task a student touched", async () => {
-    const { statuses } = await getTouched("p1");
-    expect([...statuses]).toEqual([
-      ["a", "solved"],
-      ["b", "wrong"],
-      ["c", "revealed"],
-      ["d", "skipped"],
-      ["e", "opened"],
-      ["f", "revealed"],
-      ["g", "wrong"],
-    ]);
-  });
-
   it("returns the touches in the order they were read", async () => {
     const { touches } = await getTouched("p1");
     expect(touches.map((t) => t.taskId)).toEqual([
@@ -72,10 +59,49 @@ describe("getTouched", () => {
     ]);
   });
 
+  it("tells which tasks were answered and how", async () => {
+    const { statuses } = await getTouched("p1");
+    expect([...statuses]).toEqual([
+      ["a", "solved"],
+      ["b", "wrong"],
+      ["g", "wrong"],
+    ]);
+  });
+
   it("has nothing for a visitor without a profile", async () => {
     expect(await getTouched("0")).toEqual({
       touches: [],
       statuses: new Map(),
     });
+  });
+});
+
+describe("getTouchStatuses", () => {
+  it("tells what was done with each task a student touched", async () => {
+    const found = await getTouched("p1");
+    const ids = ["a", "b", "c", "d", "e", "f", "g", "untouched"];
+    expect([...(await getTouchStatuses("p1", ids, found))]).toEqual([
+      ["a", "solved"],
+      ["b", "wrong"],
+      ["c", "revealed"],
+      ["d", "skipped"],
+      ["e", "opened"],
+      ["f", "revealed"],
+      ["g", "wrong"],
+    ]);
+  });
+
+  it("asks only for the tasks it was given", async () => {
+    const found = await getTouched("p1");
+    const shown = await getTouchStatuses("p1", ["d", "a"], found);
+    expect([...shown]).toEqual([
+      ["d", "skipped"],
+      ["a", "solved"],
+    ]);
+  });
+
+  it("has nothing for a visitor without a profile", async () => {
+    const found = await getTouched("0");
+    expect(await getTouchStatuses("0", ["a"], found)).toEqual(new Map());
   });
 });
