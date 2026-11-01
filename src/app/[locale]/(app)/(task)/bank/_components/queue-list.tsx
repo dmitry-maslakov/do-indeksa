@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   arrange,
   progressOf,
@@ -9,23 +9,17 @@ import {
 import type { Queue } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { intentOf } from "@/lib/analytics-browser";
+import { JumpPill } from "./jump-pill";
 import { QueueLink } from "./queue-link";
 import type { RowState } from "./queue-mark";
 import { VisitHeader } from "./queue-progress";
+import { useQueueScroll } from "./use-queue-scroll";
 
 interface QueueListProps {
   queue: Queue;
   current: string;
   topic: string;
   href: (id: string) => string;
-}
-
-function centerCurrent(list: HTMLElement, id: string) {
-  const row = list.querySelector<HTMLElement>(`[data-id="${id}"]`);
-  if (!row) return;
-  const offset =
-    row.getBoundingClientRect().top - list.getBoundingClientRect().top;
-  list.scrollTop += offset - (list.clientHeight - row.offsetHeight) / 2;
 }
 
 const stateOf = (
@@ -41,12 +35,11 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
   const lists = arrange(queue, current);
   const upcoming = lists.upcoming.slice(0, shownUpcoming);
   const progress = progressOf(lists, current);
+  const [live, setLive] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const list = useRef<HTMLDivElement>(null);
+  const { list, events, back } = useQueueScroll(current, upcoming[0]?.id);
 
-  useLayoutEffect(() => {
-    if (list.current) centerCurrent(list.current, current);
-  }, [current]);
+  useEffect(() => setLive(true), []);
 
   const rows = [
     ...lists.visit.map((task, i) => ({
@@ -62,9 +55,13 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
   ];
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col border-t">
+    <div
+      data-live={live || undefined}
+      className="group/list relative flex min-h-0 flex-1 flex-col border-t"
+    >
       <div
         ref={list}
+        {...events}
         onScroll={(event) => setScrolled(event.currentTarget.scrollTop > 0)}
         className="min-h-0 flex-1 overflow-y-auto px-2 pb-3 [overflow-anchor:none]"
       >
@@ -100,6 +97,7 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
           ))}
         </div>
       </div>
+      <JumpPill list={list} current={current} onJump={back} />
     </div>
   );
 }

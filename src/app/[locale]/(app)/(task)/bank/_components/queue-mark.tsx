@@ -62,7 +62,10 @@ export function QueueMark({
 }) {
   const mark = markOf(task, state);
   return (
-    <span className="mt-0.5 flex shrink-0">
+    <span
+      key={mark}
+      className="mt-0.5 flex shrink-0 transition-[scale,opacity] duration-220 ease-out group-data-live/list:starting:scale-50 group-data-live/list:starting:opacity-0 motion-reduce:transition-none"
+    >
       <Icon mark={mark} />
     </span>
   );
