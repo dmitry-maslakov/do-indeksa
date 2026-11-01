@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { partOutcomes, reportKinds, sessionKinds } from "@/db/columns";
 import { revealPart, testKind } from "@/db/schema";
+import { kinds } from "@/features/catalog/kinds";
 import { levels } from "@/features/catalog/level";
 import { maxParts } from "@/features/catalog/parts";
 import { defineEvent, type EventMap, text } from "@/lib/analytics-schema";
@@ -78,6 +79,8 @@ const answerInput = defineEvent("answer_input", {
   task_id: text,
   answer_client_id: z.uuid().optional(),
   fields: z.int().min(1).max(maxParts),
+  kinds: z.array(z.enum(kinds)).max(maxParts).optional(),
+  boxes: count.optional(),
   inputs: count,
   deletes: count,
   pastes: count,

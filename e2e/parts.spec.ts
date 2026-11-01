@@ -6,7 +6,7 @@ test.skip(
   "the frames are checked on the public sample tasks",
 );
 
-const boxes = (page: Page) => page.locator("math-field").locator("..");
+const boxes = (page: Page) => page.locator("[data-field]");
 
 const symbols = (box: Locator) => box.locator(".katex-html");
 
@@ -72,6 +72,6 @@ test("the result of a task without an answer text is built from its checks", asy
   const reveal = await (
     await request.get("/api/tasks/eks-003/reveal?part=answer")
   ).json();
-  expect(reveal.values).toEqual(["(-\\infty,0)\\cup(2,+\\infty)"]);
+  expect(reveal.values).toEqual(["(-\\infty;0)\\cup(2;+\\infty)"]);
   expect(reveal.html).toContain(">(-\\infty,0)\\cup(2,+\\infty)<");
 });

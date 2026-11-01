@@ -68,6 +68,8 @@ const valid = {
     task_id: "eks-001",
     answer_client_id: id,
     fields: 2,
+    kinds: ["values", "interval"],
+    boxes: 5,
     inputs: 14,
     deletes: 2,
     pastes: 0,
