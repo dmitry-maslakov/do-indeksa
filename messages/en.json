@@ -156,7 +156,6 @@
     "hintValue": "Enter checks",
     "hintValues": "; or a comma and a space opens the next solution",
     "hintPoint": "; or a comma and a space moves to the next coordinate",
-    "hintInterval": "Click a bracket to switch ( ↔ [",
     "problemFraction": "A fraction, root or power is unfinished — fill in the empty places.",
     "problemBracket": "A bracket in this box is not closed.",
     "problemEnd": "The end of the interval is empty.",

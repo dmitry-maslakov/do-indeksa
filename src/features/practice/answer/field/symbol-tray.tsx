@@ -11,7 +11,6 @@ export const symbols = {
   fraction: { label: "a/b", latex: "\\frac{#@}{#?}", name: "fraction" },
   power: { label: "xⁿ", latex: "#@^{#?}", name: "power" },
   log: { label: "log", latex: "\\log_{#?}{#?}", name: "log" },
-  infinity: { label: "∞", latex: "\\infty", name: "infinity" },
 } as const;
 
 type Key = (typeof symbols)[keyof typeof symbols];
@@ -60,7 +59,7 @@ export function TrayButton({
 interface SymbolTrayProps {
   keys: Key[];
   active: RefObject<MathfieldElement | null>;
-  hint: string;
+  hint?: string;
   locked: boolean;
   children?: ReactNode;
 }
@@ -85,7 +84,7 @@ export function SymbolTray({
           {label}
         </TrayButton>
       ))}
-      <span className="ml-auto text-subtle text-xs">{hint}</span>
+      {hint && <span className="ml-auto text-subtle text-xs">{hint}</span>}
     </div>
   );
 }

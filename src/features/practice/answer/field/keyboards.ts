@@ -70,7 +70,8 @@ const brackets: Row = [
   { label: "[", insert: "[" },
   { label: "]", insert: "]" },
   { label: ")", insert: ")" },
-  { label: "∞", latex: "\\infty" },
+  { label: "−∞", latex: "-\\infty" },
+  { label: "+∞", latex: "+\\infty" },
   { label: "∪", insert: "\\cup" },
 ];
 

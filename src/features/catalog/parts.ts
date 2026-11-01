@@ -21,7 +21,6 @@ const answerSymbols = {
   fraction: /\\[dt]?frac/,
   power: /\^/,
   log: /\\(?:log|ln)/,
-  infinity: /\\infty/,
 };
 
 export type AnswerSymbol = keyof typeof answerSymbols;

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import {
   isInfiniteEnd,
@@ -41,7 +42,11 @@ function Bracket({
       tabIndex={-1}
       onPointerDown={(event) => event.preventDefault()}
       onClick={onToggle}
-      className={`${glyph} rounded-md px-0.5 outline-none enabled:hover:bg-muted enabled:hover:text-foreground disabled:cursor-default`}
+      className={cn(
+        glyph,
+        "inline-flex h-9 min-w-7 items-center justify-center rounded-lg border-[1.5px] border-transparent px-1 outline-none disabled:cursor-default",
+        "enabled:border-subtle/80 enabled:border-dashed enabled:text-foreground enabled:hover:border-subtle enabled:hover:bg-muted",
+      )}
     >
       {text}
     </button>
@@ -180,10 +185,9 @@ export function IntervalField({
         </fieldset>
       </Frame>
       <SymbolTray
-        keys={trayKeys(part, "infinity", "root", "pi", "fraction")}
+        keys={trayKeys(part, "root", "pi", "fraction")}
         active={active}
         locked={readOnly}
-        hint={t("hintInterval")}
       >
         <TrayButton onPress={() => add()}>∪ {t("addPiece")}</TrayButton>
         <TrayButton
@@ -191,6 +195,12 @@ export function IntervalField({
         >{`{a} ${t("addIsolated")}`}</TrayButton>
         <TrayButton math onPress={() => commit({ kind: "none" })}>
           ∅
+        </TrayButton>
+        <TrayButton math onPress={() => active.current?.insert("-\\infty")}>
+          −∞
+        </TrayButton>
+        <TrayButton math onPress={() => active.current?.insert("+\\infty")}>
+          +∞
         </TrayButton>
       </SymbolTray>
     </>

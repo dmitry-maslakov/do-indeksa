@@ -182,10 +182,10 @@ test.describe("an interval", () => {
   test.beforeEach(async ({ page }) => open(page, "/bank/eks-003"));
 
   test("is typed as on paper into its boxes and checked", async ({ page }) => {
-    await enter(page, fields(page).first(), "-");
-    await page.getByRole("button", { name: "∞" }).click();
-    await page.keyboard.type(";0)U2;+");
-    await page.getByRole("button", { name: "∞" }).click();
+    await enter(page, fields(page).first(), "");
+    await page.getByRole("button", { name: "−∞" }).click();
+    await page.keyboard.type(";0)U2;");
+    await page.getByRole("button", { name: "+∞" }).click();
     await expect(fields(page)).toHaveCount(4);
     await expect(sent(page)).toHaveValue("(-\\infty;0)\\cup(2;+\\infty)");
     await check(page);
@@ -236,8 +236,7 @@ test.describe("an interval", () => {
     await expect(sent(page)).toHaveValue("[0;1]");
     await enter(page, fields(page).first(), "");
     await page.keyboard.press("Backspace");
-    await page.keyboard.type("-");
-    await page.getByRole("button", { name: "∞" }).click();
+    await page.getByRole("button", { name: "−∞" }).click();
     await expect(sent(page)).toHaveValue("(-\\infty;1]");
     await expect(left).toBeDisabled();
   });
@@ -380,8 +379,8 @@ test.describe("on a phone", () => {
     await expect(fields(page)).toHaveCount(4);
     await expect(fields(page).nth(2)).toBeFocused();
     await page.waitForTimeout(150);
-    await cap(page, "∞").tap();
-    await expect(sent(page)).toHaveValue("[1;2)\\cup(\\infty;)");
+    await cap(page, "−∞").tap();
+    await expect(sent(page)).toHaveValue("[1;2)\\cup(-\\infty;)");
   });
 
   test("a bracketed pair typed with the decimal comma key lands in two ends", {
