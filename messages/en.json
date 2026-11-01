@@ -132,7 +132,7 @@
     "hintStep": "{next, number}/{total, number}",
     "answerShown": "Answer shown",
     "solutionOpened": "Solution opened",
-    "ownParts": "{own, number} of {total, number} yours",
+    "ownParts": "{own, number} of {total, number} on your own",
     "withHint": "with a hint"
   },
   "Variants": {
