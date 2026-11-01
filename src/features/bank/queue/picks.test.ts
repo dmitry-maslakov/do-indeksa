@@ -234,10 +234,10 @@ describe("planQueue", () => {
       expect(twice.upcoming).toEqual(once.upcoming);
     });
 
-    it("leaves a visit that ended an hour ago, keeping the current task", () => {
+    it("leaves a visit that ended four hours ago, keeping the current task", () => {
       const queue = planQueue({
         ...input,
-        touches: [touch("a", -200), touch("b", -190)],
+        touches: [touch("a", -300), touch("b", -290)],
         statuses: statuses({ a: "solved", b: "solved" }),
         current: "c",
       });

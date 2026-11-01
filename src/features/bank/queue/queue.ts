@@ -5,9 +5,16 @@ import { type Level, levelOf } from "@/features/catalog/level";
 import { getTask } from "@/features/catalog/tasks";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { difficultyOf } from "@/features/progress/learning/types";
-import { getTouched, getVisitStatuses } from "@/features/progress/progress";
+import {
+  getOutcomes,
+  getTouched,
+  getVisitStatuses,
+  getZone,
+} from "@/features/progress/progress";
 import type { Answered, TouchStatus } from "@/features/progress/status";
 import { getTimeline } from "@/features/progress/student-learning";
+import { timeZone } from "@/lib/dates";
+import { earlierCount, earlierGroups, type Period } from "./earlier";
 import { type Pick, planQueue, startSize, upcomingSize } from "./picks";
 import type { PickReason } from "./recommendation";
 import { examYear, previewHtml } from "./task-preview";
@@ -29,8 +36,20 @@ export type Before = Answered | "repeat";
 export interface Queue {
   next?: string;
   before?: Before;
+  earlier: number;
   visit: QueueRow[];
   upcoming: QueueRow[];
+}
+
+export interface EarlierGroup {
+  key: string;
+  period: Period;
+  rows: QueueRow[];
+}
+
+export interface Earlier {
+  tz: string;
+  groups: EarlierGroup[];
 }
 
 interface PoolInput {
@@ -70,8 +89,23 @@ async function plan({ topic, profileId, current }: PoolInput) {
     now,
     current,
   });
-  return { touched, queue };
+  return { touched, queue, now };
 }
+
+const rowOf = (id: string, status?: TouchStatus): QueueRow[] => {
+  const task = getTask(id);
+  if (!task) return [];
+  return [
+    {
+      id,
+      html: previewHtml(id),
+      label: task.preview.replaceAll("$", ""),
+      year: examYear(id),
+      level: levelOf(task.difficulty),
+      status,
+    },
+  ];
+};
 
 export async function nextTasks(profileId: string) {
   const topics = positions.map(({ topic }) => ({
@@ -106,33 +140,49 @@ export const topicStart = (
 ) => `/bank/${starts.get(topic)?.id ?? `start/${topic}`}`;
 
 export async function loadQueue(input: PoolInput): Promise<Queue> {
-  const { touched, queue } = await plan(input);
-  const { current, profileId } = input;
-  const statuses = await getVisitStatuses(profileId, queue.visit, queue.begun);
+  const { touched, queue, now } = await plan(input);
+  const { current, profileId, topic } = input;
+  const [statuses, outcomes, zone] = await Promise.all([
+    getVisitStatuses(profileId, queue.visit, queue.begun),
+    getOutcomes(profileId, topicIds(topic)),
+    getZone(profileId),
+  ]);
   const beforeOf = (id: string): Before | undefined => {
     if (queue.repeated.includes(id)) return "repeat";
     return queue.returning ? touched.statuses.get(id) : undefined;
   };
-  const row = (id: string, pick?: Pick): QueueRow[] => {
-    const task = getTask(id);
-    if (!task) return [];
-    return [
-      {
-        id,
-        html: previewHtml(id),
-        label: task.preview.replaceAll("$", ""),
-        year: examYear(id),
-        level: levelOf(task.difficulty),
-        status: statuses.get(id),
-        repeat: pick?.repeat ?? queue.repeated.includes(id),
-        reason: pick?.reason,
-      },
-    ];
-  };
+  const row = (id: string, pick?: Pick) =>
+    rowOf(id, statuses.get(id)).map((r) => ({
+      ...r,
+      repeat: pick?.repeat ?? queue.repeated.includes(id),
+      reason: pick?.reason,
+    }));
   return {
     next: queue.upcoming[0]?.id,
     before: current === undefined ? undefined : beforeOf(current),
+    earlier: earlierCount(earlierGroups(touched.touches, outcomes, now, zone)),
     visit: queue.visit.flatMap((id) => row(id)),
     upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
+  };
+}
+
+export async function loadEarlier(
+  profileId: string,
+  topic: string,
+): Promise<Earlier> {
+  const ids = topicIds(topic);
+  const [{ touches }, outcomes, zone] = await Promise.all([
+    getTouched(profileId, ids),
+    getOutcomes(profileId, ids),
+    getZone(profileId),
+  ]);
+  const groups = earlierGroups(touches, outcomes, Date.now(), zone);
+  return {
+    tz: zone ?? timeZone,
+    groups: groups.map(({ key, period, tasks }) => ({
+      key,
+      period,
+      rows: tasks.flatMap((t) => rowOf(t.id, t.result)),
+    })),
   };
 }

@@ -1,5 +1,12 @@
 import type { Locator, Page } from "@playwright/test";
-import { answer, expect, seedAttempt, test } from "./fixtures";
+import {
+  answer,
+  expect,
+  seedAttempt,
+  seedReveal,
+  seedSkip,
+  test,
+} from "./fixtures";
 
 const bankOnly = () =>
   test.skip(
@@ -317,6 +324,71 @@ test("a click on an upcoming row keeps the rows around it steady", async ({
       ).railLog,
   );
   expect(log.shortest).toBeGreaterThanOrEqual(log.height - 3);
+});
+
+test("earlier sessions wait above the visit and fold back on a new task", async ({
+  page,
+  auth,
+  errors,
+}) => {
+  const { profileId } = await auth.signIn();
+  await seedAttempt(auth.db, profileId, "eks-001", false, 240);
+  await seedAttempt(auth.db, profileId, "eks-002", true, 144);
+  await seedAttempt(auth.db, profileId, "eks-001", true, 120);
+  await seedReveal(auth.db, profileId, "eks-002", "answer", 96);
+  await seedSkip(auth.db, profileId, "eks-003", 96);
+  await seedAttempt(auth.db, profileId, "eks-001", false, 72);
+  await seedAttempt(auth.db, profileId, "eks-002", true, 26);
+  await seedSkip(auth.db, profileId, "eks-002");
+  await page.goto("/bank/eks-003");
+  const { aside, rows, current, list } = rail(page);
+  const headings = list.getByRole("heading");
+  const earlier = aside.locator("a[data-earlier]");
+  await expect(current).toHaveAttribute("data-id", "eks-003");
+  await expect(headings).toHaveCount(4);
+  await expect(earlier).toHaveCount(0);
+  await settled(page, list);
+  await expect(headings.last()).not.toBeInViewport();
+  await expect(rows.first()).toBeInViewport();
+
+  await list.evaluate((el) => {
+    el.scrollTop = 0;
+  });
+  await expect(headings).toHaveCount(6);
+  await expect(headings.last()).toBeInViewport();
+  for (const heading of await headings.all())
+    await expect(heading.getByRole("button")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  await expect(headings.first()).toContainText("· 1");
+
+  const newest = headings.last().getByRole("button");
+  await settled(page, list);
+  const placed = await topOf(newest, list);
+  await newest.click();
+  await expect(newest).toHaveAttribute("aria-expanded", "true");
+  await expect(earlier).toHaveCount(1);
+  await expect(earlier.first()).toHaveAttribute("data-earlier", "eks-002");
+  await expect(earlier.first()).toContainText("tačno");
+  await expect
+    .poll(async () => Math.abs((await topOf(newest, list)) - placed))
+    .toBeLessThan(2);
+
+  const revealed = headings.nth(3).getByRole("button");
+  await revealed.click();
+  await expect(earlier).toHaveCount(2);
+  await expect(earlier.first()).toContainText("pogledan odgovor");
+  await expect(aside.locator('a[data-earlier="eks-003"]')).toHaveCount(0);
+  await expect(rows.and(page.locator('[data-id="eks-002"]'))).toContainText(
+    "preskočen",
+  );
+
+  await rows.and(page.locator('[data-id="eks-002"]')).click();
+  await expect(current).toHaveAttribute("data-id", "eks-002");
+  await expect(headings).toHaveCount(4);
+  await expect(earlier).toHaveCount(0);
+  expect(errors).toEqual([]);
 });
 
 test("the phone bar says where the student is in the visit", {
