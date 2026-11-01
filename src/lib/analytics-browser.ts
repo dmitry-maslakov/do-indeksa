@@ -44,6 +44,8 @@ const batchSize = 10;
 const flushMs = 5 * secondMs;
 const flushBytes = batchBytes / 2;
 const visitKey = "visit";
+
+const releaseKey = "release";
 const browser = () => navigator as Navigator & BrowserExtras;
 const historyIntent: Intent = { via: "history" };
 
@@ -218,6 +220,14 @@ function loadNavigation(): Navigation {
   return type === "back_forward" ? "traverse" : "load";
 }
 
+function newRelease() {
+  const release = document.documentElement.dataset.dplId;
+  const [, before] = attempt(() => sessionStorage.getItem(releaseKey));
+  if (!release) return undefined;
+  attempt(() => sessionStorage.setItem(releaseKey, release));
+  return before && before !== release ? true : undefined;
+}
+
 export function viewPage(pathname: string) {
   const first = pageViews++ === 0;
   const params = new URLSearchParams(location.search);
@@ -237,6 +247,7 @@ export function viewPage(pathname: string) {
       undefined,
     visible: document.visibilityState === "visible",
     prev_route: lastRoute,
+    new_release: first ? newRelease() : undefined,
   });
   lastRoute = routeOf(pathname).route;
   transition = undefined;

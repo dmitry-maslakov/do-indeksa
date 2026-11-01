@@ -14,7 +14,11 @@ import {
 } from "react";
 import { arrange, progressOf } from "@/features/bank/queue/arrange";
 import type { Queue } from "@/features/bank/queue/queue";
-import { useRouter } from "@/i18n/navigation";
+import { recommendationOf } from "@/features/bank/queue/recommendation";
+import {
+  type NextTask,
+  NextTaskContext,
+} from "@/features/practice/answer/action-bar";
 
 interface Meta {
   topic: string;
@@ -31,7 +35,7 @@ interface Loaded {
 interface QueueStore {
   meta?: Meta;
   loaded?: Loaded;
-  publish: (meta: Meta, queue: Promise<Queue>) => boolean;
+  publish: (meta: Meta, queue: Promise<Queue>) => void;
 }
 
 const QueueContext = createContext<QueueStore | null>(null);
@@ -44,8 +48,7 @@ export function QueueProvider({ children }: { children: ReactNode }) {
   const latest = useRef<{ topic: string; queue: Promise<Queue> }>(undefined);
 
   const publish = useCallback((next: Meta, queue: Promise<Queue>) => {
-    const shown = published.has(queue);
-    if (shown && latest.current?.topic === next.topic) return false;
+    if (published.has(queue) && latest.current?.topic === next.topic) return;
     published.add(queue);
     latest.current = { topic: next.topic, queue };
     startTransition(() => setMeta(next));
@@ -53,7 +56,6 @@ export function QueueProvider({ children }: { children: ReactNode }) {
       if (latest.current?.queue === queue)
         startTransition(() => setLoaded({ topic: next.topic, queue: data }));
     }, noop);
-    return !shown;
   }, []);
 
   return (
@@ -74,6 +76,27 @@ export function useVisitProgress() {
   return progressOf(arrange(loaded.queue, id), id);
 }
 
+function useNextTask(id: string): NextTask | undefined {
+  const { meta, loaded } = useQueue();
+  if (!meta || loaded?.topic !== meta.topic) return undefined;
+  const [next] = arrange(loaded.queue, id).upcoming;
+  return {
+    href: next && `/bank/${next.id}`,
+    recommendation: recommendationOf("next", meta.topic, next),
+  };
+}
+
+export function LiveNextTask({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) {
+  const next = useNextTask(id);
+  return <NextTaskContext value={next}>{children}</NextTaskContext>;
+}
+
 export function QueueFeed({
   topic,
   topics,
@@ -81,12 +104,11 @@ export function QueueFeed({
   starts,
   queue,
 }: Meta & { queue: Promise<Queue> }) {
-  const router = useRouter();
   const { publish } = useQueue();
 
   useEffect(() => {
-    if (!publish({ topic, topics, listHref, starts }, queue)) router.refresh();
-  }, [publish, router, topic, topics, listHref, starts, queue]);
+    publish({ topic, topics, listHref, starts }, queue);
+  }, [publish, topic, topics, listHref, starts, queue]);
 
   return null;
 }
