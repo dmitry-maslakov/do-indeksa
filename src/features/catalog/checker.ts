@@ -74,7 +74,38 @@ const items = (expr: BoxedExpression) =>
     ? [...expr.ops]
     : [expr];
 
-const equal = (a: BoxedExpression, b: BoxedExpression) => a.isEqual(b) === true;
+const samplePoints = [0.37, 1.29, 2.53, 0.81];
+
+const hasUnknowns = (expr: BoxedExpression) => expr.unknowns.length > 0;
+
+const oneSide = (expr: BoxedExpression) =>
+  isFunction(expr) && expr.operator === "Equal"
+    ? expr.op1.sub(expr.op2)
+    : undefined;
+
+function ratioAt(a: BoxedExpression, b: BoxedExpression) {
+  const names = [...new Set([...a.unknowns, ...b.unknowns])];
+  for (const shift of samplePoints) {
+    const point = Object.fromEntries(
+      names.map((name, i) => [name, shift + (samplePoints[i] ?? 0)]),
+    );
+    const ratio = a.subs(point).N().re / b.subs(point).N().re;
+    if (Number.isFinite(ratio) && ratio !== 0) return ratio;
+  }
+}
+
+function proportional(a: BoxedExpression, b: BoxedExpression) {
+  const ratio = ratioAt(a, b);
+  return ratio !== undefined && a.isIdenticallyEqual(b.mul(ratio)) === true;
+}
+
+function equal(a: BoxedExpression, b: BoxedExpression) {
+  if (a.isEqual(b) === true) return true;
+  if (!hasUnknowns(a) && !hasUnknowns(b)) return false;
+  const [sideA, sideB] = [oneSide(a), oneSide(b)];
+  if (sideA && sideB) return proportional(sideA, sideB);
+  return a.isIdenticallyEqual(b) === true;
+}
 
 function sameItems(expected: BoxedExpression[], given: BoxedExpression[]) {
   const left = [...given];
@@ -277,7 +308,7 @@ function gradePart(part: GradedPart, answer: string): Graded {
     : gradeSingle(input, part.expected);
 }
 
-export const checkerVersion = 6;
+export const checkerVersion = 7;
 
 export const gradeParts = (parts: GradedPart[], answers: string[]) =>
   parts.map((part, i) => gradePart(part, answers[i] ?? ""));
