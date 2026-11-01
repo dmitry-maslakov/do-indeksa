@@ -1,5 +1,9 @@
 import type { MathfieldElement } from "mathlive";
-import { type Bracket, noSolution } from "@/features/catalog/boxes";
+import {
+  type Bracket,
+  noSolution,
+  pastedComma,
+} from "@/features/catalog/boxes";
 
 export interface BoxKeys {
   next: (carry?: string) => void;
@@ -47,6 +51,13 @@ export function attachKeys(
     box.executeCommand("deleteBackward");
     busy = false;
     current()?.next(plain.test(carry) ? carry : undefined);
+  };
+  const pasted = (text: string) => {
+    if (current()?.paste?.(text)) return true;
+    const latex = pastedComma(text);
+    if (latex === text) return false;
+    box.insert(latex, { format: "latex" });
+    return true;
   };
 
   box.addEventListener(
@@ -126,7 +137,7 @@ export function attachKeys(
     "paste",
     (event) => {
       const text = event.clipboardData?.getData("text/plain");
-      if (!text || !current()?.paste?.(text)) return;
+      if (!text || !pasted(text)) return;
       event.preventDefault();
       event.stopPropagation();
     },

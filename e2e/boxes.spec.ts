@@ -25,6 +25,30 @@ async function enter(page: Page, box: Locator, text: string) {
 const check = (page: Page) =>
   page.getByRole("button", { name: "Proveri" }).click();
 
+const paste = (box: Locator, text: string) =>
+  box.evaluate((el, text) => {
+    const data = new DataTransfer();
+    data.setData("text/plain", text);
+    el.shadowRoot?.querySelector(".ML__keyboard-sink")?.dispatchEvent(
+      new ClipboardEvent("paste", {
+        clipboardData: data,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }),
+    );
+  }, text);
+
+const shades = (box: Locator) =>
+  box.evaluate((el) =>
+    Object.fromEntries(
+      [...(el.shadowRoot?.querySelectorAll(".ML__cmr") ?? [])].map((glyph) => [
+        glyph.textContent,
+        getComputedStyle(glyph).color,
+      ]),
+    ),
+  );
+
 async function open(page: Page, path: string) {
   await page.goto(path);
   await page.waitForFunction(() => customElements.get("math-field"));
@@ -40,6 +64,33 @@ test.describe("a list of values", () => {
     await enter(page, fields(page).first(), "1,5");
     await expect(fields(page)).toHaveCount(1);
     await expect(sent(page)).toHaveValue("1{,}5");
+  });
+
+  test("reads 1,4 as one number with a quiet comma and checks it so", async ({
+    page,
+  }) => {
+    await enter(page, fields(page).first(), "1,4");
+    await expect(fields(page)).toHaveCount(1);
+    await expect(sent(page)).toHaveValue("1{,}4");
+    const { "1": digit, ",": comma } = await shades(fields(page).first());
+    expect(comma).not.toBe(digit);
+    await check(page);
+    await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
+  });
+
+  test("lays out a pasted 1, 4 as two roots and a pasted 1,4 as one number", async ({
+    page,
+  }) => {
+    await enter(page, fields(page).first(), "");
+    await paste(fields(page).first(), "1, 4");
+    await expect(fields(page)).toHaveCount(2);
+    await expect(sent(page)).toHaveValue("1;4");
+    await page.reload();
+    await page.waitForFunction(() => customElements.get("math-field"));
+    await enter(page, fields(page).first(), "");
+    await paste(fields(page).first(), "1,4");
+    await expect(fields(page)).toHaveCount(1);
+    await expect(sent(page)).toHaveValue("1{,}4");
   });
 
   test("opens the next box at a comma and a space, at ; and at the plus", async ({
@@ -206,20 +257,7 @@ test.describe("an interval", () => {
 
   test("lays out an interval pasted as text", async ({ page }) => {
     await enter(page, fields(page).first(), "1");
-    await fields(page)
-      .first()
-      .evaluate((box) => {
-        const data = new DataTransfer();
-        data.setData("text/plain", "x\\in(-∞,-1)∪[0,1)");
-        box.shadowRoot?.querySelector(".ML__keyboard-sink")?.dispatchEvent(
-          new ClipboardEvent("paste", {
-            clipboardData: data,
-            bubbles: true,
-            cancelable: true,
-            composed: true,
-          }),
-        );
-      });
+    await paste(fields(page).first(), "x\\in(-∞,-1)∪[0,1)");
     await expect(fields(page)).toHaveCount(4);
     await expect(sent(page)).toHaveValue("(-\\infty;-1)\\cup[0;1)");
   });

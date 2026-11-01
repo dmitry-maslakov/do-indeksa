@@ -9,8 +9,23 @@ import { keyboardFor } from "./keyboards";
 
 const keyboardGap = 16;
 
+const decimalComma =
+  "[data-atom-id]:not([class]) > .ML__cmr:only-child:not([data-atom-id])";
+
 let setup: Promise<unknown> | undefined;
 let selected = "";
+let decimalStyle: CSSStyleSheet | undefined;
+
+function greyDecimalComma(box: MathfieldElement) {
+  const root = box.shadowRoot;
+  if (!root) return;
+  if (!decimalStyle) {
+    decimalStyle = new CSSStyleSheet();
+    decimalStyle.replaceSync(`${decimalComma} { color: var(--subtle); }`);
+  }
+  if (!root.adoptedStyleSheets.includes(decimalStyle))
+    root.adoptedStyleSheets = [...root.adoptedStyleSheets, decimalStyle];
+}
 
 function publishKeyboardHeight() {
   const keyboard = window.mathVirtualKeyboard;
@@ -132,7 +147,9 @@ export function useMathBox(
         toggled,
         { signal },
       );
-      if (boxed) attachKeys(el, keysNow, signal);
+      if (!boxed) return;
+      greyDecimalComma(el);
+      attachKeys(el, keysNow, signal);
     });
     return () => listening.abort();
   }, [field, active, stats, boxed]);

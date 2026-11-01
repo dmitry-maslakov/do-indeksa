@@ -55,13 +55,18 @@ export const isBoxKind = (kind: Kind | null): kind is BoxKind =>
 export const decimalComma = (latex: string) =>
   latex.replace(/(\d)\.(?=\d)/g, "$1{,}");
 
+export const pastedComma = (text: string) =>
+  text.replace(/(\d),(?=\d)/g, "$1{,}");
+
 export const trimComma = (latex: string) => latex.replace(/\{,\}$/, "");
 
 export const isFilled = (box: string) =>
   box.replaceAll("\\placeholder{}", "").trim() !== "";
 
 const commaParts = (latex: string) =>
-  topLevel(latex.replaceAll("{,}", ";"), ";").map((part) => part.trim());
+  topLevel(latex.replaceAll("{,}", ";"), ";").map((part) =>
+    part.replaceAll(";", "{,}").trim(),
+  );
 
 export const hasDecimalComma = (latex: string) => commaParts(latex).length > 1;
 
@@ -247,6 +252,9 @@ const unbrace = (latex: string) => /^\\\{(.*)\\\}$/s.exec(latex)?.[1] ?? latex;
 
 const trimmed = (items: string[]) => items.map((item) => item.trim());
 
+const spread = (items: string[]) =>
+  items.length === 1 ? commaParts(items[0] ?? "") : trimmed(items);
+
 function plusMinus(item: string) {
   const rest = /^\\pm\s*(.+)$/.exec(item)?.[1];
   return rest ? [rest, `-(${rest})`] : [item];
@@ -254,7 +262,7 @@ function plusMinus(item: string) {
 
 function tupleOf(latex: string) {
   const group = groupOf(latex, separators);
-  return trimmed(group ? group.items : topLevel(latex, separators));
+  return spread(group ? group.items : topLevel(latex, separators));
 }
 
 function piecesOf(latex: string): Piece[] | null {
@@ -267,8 +275,9 @@ function piecesOf(latex: string): Piece[] | null {
       continue;
     }
     const group = groupOf(piece, separators);
-    if (group?.items.length !== 2) return null;
-    const [from = "", to = ""] = trimmed(group.items);
+    const ends = spread(group?.items ?? []);
+    if (!group || ends.length !== 2) return null;
+    const [from = "", to = ""] = ends;
     pieces.push({
       open: group.open === "[" ? "[" : "(",
       from,
@@ -305,18 +314,16 @@ export function layoutOf(kind: BoxKind, text: string): Layout | null {
 }
 
 export function pastedLayout(kind: BoxKind, text: string, arity: number) {
-  const layout =
-    kind === "values"
-      ? null
-      : layoutOf(
-          kind,
-          text
-            .replaceAll("∞", "\\infty")
-            .replaceAll("∪", "\\cup")
-            .replaceAll("−", "-"),
-        );
+  const layout = layoutOf(
+    kind,
+    (kind === "values" ? pastedComma(text) : text)
+      .replaceAll("∞", "\\infty")
+      .replaceAll("∪", "\\cup")
+      .replaceAll("−", "-"),
+  );
   if (!layout || boxesOf(layout).length < 2) return null;
   const sized =
+    kind === "values" ||
     kind === "interval" ||
     groupsOf(layout).every((boxes) => boxes.length === arity);
   return sized ? layout : null;
