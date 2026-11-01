@@ -16,8 +16,36 @@ describe("sittingState", () => {
     expect(stateAt(5, {})).toEqual(openSitting);
   });
 
-  it("does not see a hint alone as a sitting", () => {
-    expect(stateAt(5, { reveals: [reveal(1, "hint1")] })).toEqual(openSitting);
+  it("keeps a hint opened alone open, for an hour", () => {
+    const reveals = [reveal(1, "hint1"), reveal(2, "hint2")];
+    expect(stateAt(5, { reveals })).toEqual({ ...openSitting, hints: 2 });
+    expect(stateAt(1 + 60, { reveals })).toMatchObject({ hints: 1 });
+    expect(stateAt(2 + 60, { reveals })).toEqual(openSitting);
+  });
+
+  it("forgets the hints of a sitting that ended an hour ago", () => {
+    expect(
+      stateAt(days(1), {
+        submits: [stored(2, ["wrong"], ["3"])],
+        reveals: [reveal(1, "hint1")],
+      }),
+    ).toEqual(openSitting);
+  });
+
+  it("ignores an answer given under another key", () => {
+    expect(
+      stateAt(5, {
+        submits: [{ ...stored(1, ["right"], ["2"]), keyRev: "k0" }],
+      }),
+    ).toEqual(openSitting);
+    expect(
+      stateAt(5, {
+        submits: [
+          { ...stored(1, ["right"], ["2"]), keyRev: "k0" },
+          stored(2, ["wrong"], ["3"]),
+        ],
+      }),
+    ).toMatchObject({ correct: false, solved: [undefined] });
   });
 
   it("stays open after a wrong answer and keeps the hints", () => {

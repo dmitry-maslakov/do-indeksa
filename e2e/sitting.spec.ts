@@ -93,6 +93,25 @@ test("the solution keeps its card, the hints and the lock after a reload", async
   await expect(chip(page, "Rešenje")).toBeHidden();
 });
 
+test("a hint opened alone is still open after a reload", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await page.goto("/bank/eks-001");
+  await chip(page, "Nagoveštaj 1/2").click();
+  await expect
+    .poll(() => recorded(auth.db, "reveals", profileId, "eks-001"))
+    .toBe(1);
+
+  await page.reload();
+  await expect(
+    page.locator("article").getByRole("heading", { level: 2 }),
+  ).toHaveText("Nagoveštaj 1 od 2");
+  await expect(chip(page, "Nagoveštaj 2/2")).toBeVisible();
+  await expect(chip(page, "Proveri")).toBeVisible();
+});
+
 test("a right answer stays green and locked after a reload", async ({
   page,
   auth,

@@ -1,6 +1,11 @@
 import { isRight, type StoredReveal } from "@/db/columns";
 import { firstShown, isHint, sittings } from "./observation";
-import type { LoggedSubmit, StoredSubmit, TaskLog } from "./types";
+import type {
+  LoggedReveal,
+  LoggedSubmit,
+  StoredSubmit,
+  TaskLog,
+} from "./types";
 
 export interface SittingState {
   hints: number;
@@ -18,8 +23,11 @@ export const openSitting: SittingState = {
   solved: [],
 };
 
-export const isClosed = ({ correct, answer, solution }: SittingState) =>
+export const isLocked = ({ correct, answer, solution }: SittingState) =>
   correct || answer || solution;
+
+const hintsOf = (reveals: LoggedReveal[]) =>
+  new Set(reveals.filter(isHint).map((r) => r.part)).size;
 
 export function sittingState(
   log: TaskLog<StoredSubmit>,
@@ -27,14 +35,20 @@ export function sittingState(
   gapMs: number,
 ): SittingState {
   const current = sittings(log, now, gapMs).at(-1);
-  if (!current || current.closed) return openSitting;
+  if (!current || current.closed)
+    return {
+      ...openSitting,
+      hints: hintsOf(log.reveals.filter((r) => now - r.at < gapMs)),
+    };
   const shownAt = firstShown(current.reveals);
-  const before = current.submits.filter((s) => s.at < shownAt);
+  const before = current.submits.filter(
+    (s) => s.at < shownAt && s.keyRev === log.keyRev,
+  );
   const done = before.find((s) => s.correct) ?? before.at(-1);
   const opened = (part: StoredReveal) =>
     current.reveals.some((r) => r.part === part);
   return {
-    hints: new Set(current.reveals.filter(isHint).map((r) => r.part)).size,
+    hints: hintsOf(current.reveals),
     answer: opened("answer"),
     solution: opened("solution"),
     correct: done?.correct ?? false,
