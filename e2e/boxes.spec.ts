@@ -234,7 +234,9 @@ test.describe("an interval", () => {
     await expect(left).toHaveAttribute("aria-pressed", "true");
     await right.click();
     await expect(sent(page)).toHaveValue("[0;1]");
-    await enter(page, fields(page).first(), "-");
+    await enter(page, fields(page).first(), "");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.type("-");
     await page.getByRole("button", { name: "∞" }).click();
     await expect(sent(page)).toHaveValue("(-\\infty;1]");
     await expect(left).toBeDisabled();
