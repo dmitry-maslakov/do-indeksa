@@ -54,6 +54,8 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
     })),
   ];
 
+  const hereIndex = rows.findIndex(({ task }) => task.id === current);
+
   return (
     <div
       data-live={live || undefined}
@@ -63,7 +65,7 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
         ref={list}
         {...events}
         onScroll={(event) => setScrolled(event.currentTarget.scrollTop > 0)}
-        className="min-h-0 flex-1 overflow-y-auto px-2 pb-3 [overflow-anchor:none]"
+        className="min-h-0 flex-1 scroll-pt-10 overflow-y-auto px-2 pb-3 [overflow-anchor:none]"
       >
         <VisitHeader
           done={progress?.done ?? 0}
@@ -71,7 +73,7 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
           scrolled={scrolled}
         />
         <div>
-          {rows.map(({ task, place, rank }) => (
+          {rows.map(({ task, place, rank }, index) => (
             <QueueLink
               key={task.id}
               task={task}
@@ -82,6 +84,8 @@ export function QueueList({ queue, current, topic, href }: QueueListProps) {
                 rank,
               })}
               state={stateOf(place, rank, task.id === current)}
+              ahead={index > hereIndex}
+              entering={live}
               heading={
                 place === "visit" &&
                 rank === lists.visit.length &&

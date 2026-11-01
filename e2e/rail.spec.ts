@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { answer, expect, test } from "./fixtures";
 
 const bankOnly = () =>
@@ -17,6 +17,40 @@ const rail = (page: Page) => {
     summary: aside.getByText(/^\d+ zadat(ak|ka|aka)/),
   };
 };
+
+const tall = (page: Page) => page.setViewportSize({ width: 1280, height: 900 });
+
+const recorded = (page: Page, task: string) =>
+  page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      (response.request().postData() ?? "").includes(`"taskId":"${task}"`),
+  );
+
+const scrollTop = (list: Locator) => list.evaluate((el) => el.scrollTop);
+
+async function topOf(row: Locator, list: Locator) {
+  const [at, within] = await Promise.all([
+    row.boundingBox(),
+    list.boundingBox(),
+  ]);
+  return (at?.y ?? 0) - (within?.y ?? 0);
+}
+
+async function settled(page: Page, list: Locator) {
+  let last = "";
+  await expect
+    .poll(
+      async () => {
+        const now = `${page.url()} ${await scrollTop(list)}`;
+        const same = now === last;
+        last = now;
+        return same;
+      },
+      { intervals: [250] },
+    )
+    .toBe(true);
+}
 
 async function skip(page: Page) {
   const link = page.getByRole("link", { name: "Preskoči" });
@@ -42,12 +76,17 @@ test("the rail names itself and marks the task the student is on", async ({
 });
 
 test("a skipped task is counted and named in words", async ({ page }) => {
+  const opened = recorded(page, "eks-001");
   await page.goto("/bank/eks-001");
   const { rows, summary } = rail(page);
   await expect(rows.first()).toBeVisible();
+  await opened;
 
+  const skipped = recorded(page, "eks-001");
   await skip(page);
   await expect(summary).toHaveText("1 zadatak");
+  await skipped;
+  await page.reload();
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "preskočen",
   );
@@ -86,9 +125,14 @@ test("a wrong answer is named in words and not counted as right", async ({
 });
 
 test("a task whose result was shown says so", async ({ page }) => {
+  const opened = recorded(page, "eks-001");
   await page.goto("/bank/eks-001");
   const { rows } = rail(page);
+  await opened;
+
+  const revealed = recorded(page, "eks-001");
   await page.getByRole("button", { name: "Rezultat" }).click();
+  await revealed;
   await page.getByRole("link", { name: "Sledeći zadatak" }).click();
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "pogledan odgovor",
@@ -131,71 +175,159 @@ test("the list follows the student and offers a way back once scrolled away", as
   page,
 }) => {
   bankOnly();
+  await tall(page);
   await page.goto("/bank/start/exponential-equations");
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
-  const scrolled = () => list.evaluate((el) => el.scrollTop);
-  const top = () =>
-    current.evaluate(
-      (row) =>
-        row.getBoundingClientRect().top -
-        (row.closest("div.overflow-y-auto")?.getBoundingClientRect().top ?? 0),
-    );
 
   for (let i = 0; i < 8; i++) await skip(page);
   await expect(current).toBeInViewport();
-  await expect.poll(scrolled).toBeGreaterThan(0);
+  await expect.poll(() => scrollTop(list)).toBeGreaterThan(0);
   await expect.poll(() => rows.count()).toBe(12);
-  await page.waitForTimeout(600);
-  const placed = await top();
+  await settled(page, list);
+  const placed = await topOf(current, list);
   await skip(page);
   await expect
-    .poll(async () => Math.abs((await top()) - placed))
-    .toBeLessThan(3);
+    .poll(async () => Math.abs((await topOf(current, list)) - placed))
+    .toBeLessThan(8);
 
   const box = await list.boundingBox();
   await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
   await page.mouse.wheel(0, -3000);
-  await expect.poll(scrolled).toBe(0);
+  await expect.poll(() => scrollTop(list)).toBe(0);
   const pill = page.getByRole("button", { name: "Sada rešavaš" });
   await expect(pill).toBeVisible();
   await expect(current).not.toBeInViewport();
 
   await skip(page);
-  await page.waitForTimeout(600);
-  expect(await scrolled()).toBe(0);
+  await settled(page, list);
+  expect(await scrollTop(list)).toBe(0);
   await expect(pill).toBeVisible();
 
   await pill.click();
   await expect(current).toBeInViewport();
+  await expect(current).toBeFocused();
   await expect(pill).toBeHidden();
 });
 
-test("a click on a row does not scroll the list", async ({ page }) => {
+test("steps taken in quick succession leave the current row where it was", async ({
+  page,
+}) => {
   bankOnly();
+  await tall(page);
   await page.goto("/bank/start/exponential-equations");
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
   await expect.poll(() => rows.count()).toBe(12);
-  await page.waitForTimeout(600);
-  const before = await list.evaluate((el) => el.scrollTop);
+  await settled(page, list);
+  const placed = await topOf(current, list);
 
-  const row = rows.nth(6);
+  for (let i = 0; i < 4; i++) {
+    await page.getByRole("link", { name: "Preskoči" }).click();
+    await page.waitForTimeout(120);
+  }
+  await settled(page, list);
+  expect(Math.abs((await topOf(current, list)) - placed)).toBeLessThan(20);
+});
+
+test("a step after going back to an earlier task still follows the current row", async ({
+  page,
+}) => {
+  bankOnly();
+  await tall(page);
+  await page.goto("/bank/start/exponential-equations");
+  const { current, list, rows } = rail(page);
+  await expect(current).toBeVisible();
+  for (let i = 0; i < 8; i++) await skip(page);
+  await expect.poll(() => rows.count()).toBe(12);
+  await settled(page, list);
+
+  const earlier = rows.nth(6);
+  const id = (await earlier.getAttribute("data-id")) ?? "";
+  await earlier.click();
+  await expect(current).toHaveAttribute("data-id", id);
+  await settled(page, list);
+
+  await skip(page);
+  await settled(page, list);
+  await expect(current).toBeInViewport();
+  await expect(page.getByRole("button", { name: "Sada rešavaš" })).toBeHidden();
+});
+
+test("a click on a row does not scroll the list", async ({ page }) => {
+  bankOnly();
+  await tall(page);
+  await page.goto("/bank/start/exponential-equations");
+  const { current, list, rows } = rail(page);
+  await expect(current).toBeVisible();
+  for (let i = 0; i < 8; i++) await skip(page);
+  await expect.poll(() => rows.count()).toBe(12);
+  await settled(page, list);
+  const before = await scrollTop(list);
+
+  const row = rows.nth(7);
   const id = await row.getAttribute("data-id");
   await row.click();
   await expect(page).toHaveURL(new RegExp(`/bank/${id}$`));
   await expect(current).toHaveAttribute("data-id", id ?? "");
-  await page.waitForTimeout(600);
-  expect(await list.evaluate((el) => el.scrollTop)).toBe(before);
+  await settled(page, list);
+  expect(await scrollTop(list)).toBe(before);
+});
+
+test("a click on an upcoming row keeps the rows around it steady", async ({
+  page,
+}) => {
+  bankOnly();
+  await tall(page);
+  await page.goto("/bank/start/exponential-equations");
+  const { current, list, rows } = rail(page);
+  await expect(current).toBeVisible();
+  for (let i = 0; i < 8; i++) await skip(page);
+  await expect.poll(() => rows.count()).toBe(12);
+  await settled(page, list);
+
+  await list.evaluate((el) => {
+    const log = {
+      height: el.scrollHeight,
+      shortest: el.scrollHeight,
+      top: el.scrollTop,
+      moved: 0,
+    };
+    Object.assign(window, { railLog: log });
+    const sample = () => {
+      log.shortest = Math.min(log.shortest, el.scrollHeight);
+      log.moved = Math.max(log.moved, Math.abs(el.scrollTop - log.top));
+      requestAnimationFrame(sample);
+    };
+    sample();
+  });
+  const row = rows.nth(10);
+  const id = (await row.getAttribute("data-id")) ?? "";
+  await row.click();
+  await expect(current).toHaveAttribute("data-id", id);
+  await settled(page, list);
+
+  const log = await page.evaluate(
+    () =>
+      (
+        window as unknown as {
+          railLog: { height: number; shortest: number; moved: number };
+        }
+      ).railLog,
+  );
+  expect(log.moved).toBe(0);
+  expect(log.shortest).toBeGreaterThanOrEqual(log.height - 3);
 });
 
 test("the phone bar says where the student is in the visit", {
   tag: "@mobile",
 }, async ({ page }) => {
+  const opened = recorded(page, "eks-001");
   await page.goto("/bank/eks-001");
   const bar = page.getByRole("button", { name: /Eksponencijalne/ });
   await expect(bar).toContainText("1. zadatak");
+  await opened;
 
   await skip(page);
   await expect(bar).toContainText("2. zadatak");

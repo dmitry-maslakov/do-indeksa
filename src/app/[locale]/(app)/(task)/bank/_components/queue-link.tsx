@@ -1,5 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import { RailLink } from "@/components/rail";
 import type { QueueRow } from "@/features/bank/queue/queue";
@@ -9,17 +10,19 @@ import { QueueMark, type RowState } from "./queue-mark";
 import { QueueMeta } from "./queue-meta";
 
 const grows =
-  "grid grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-260 ease-out group-data-live/list:starting:grid-rows-[0fr] group-data-live/list:starting:opacity-0 motion-reduce:transition-none";
+  "grid grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-260 ease-out data-fresh:starting:grid-rows-[0fr] data-fresh:starting:opacity-0 motion-reduce:transition-none";
 
 const line =
-  "before:absolute before:top-0 before:left-[15.25px] before:h-2.5 before:w-[1.5px] before:bg-input after:absolute after:top-6.5 after:bottom-0 after:left-[15.25px] after:w-[1.5px] after:bg-input first:before:hidden last:after:hidden data-upcoming:before:dashed-v data-upcoming:after:dashed-v data-heading:after:dashed-v";
+  "before:pointer-events-none before:absolute before:top-0 before:left-[15.25px] before:h-2.5 before:w-[1.5px] before:bg-input after:pointer-events-none after:absolute after:top-6.5 after:bottom-0 after:left-[15.25px] after:w-[1.5px] after:bg-input first:before:hidden last:after:hidden data-ahead:before:dashed-v data-ahead:after:dashed-v data-here:after:dashed-v";
 
 interface QueueLinkProps {
   task: QueueRow;
   href: string;
   intent: string;
   state: RowState;
+  ahead: boolean;
   heading: boolean;
+  entering: boolean;
   page: string;
   recommendation?: BrowserEvents["recommendation_made"];
 }
@@ -29,16 +32,24 @@ export function QueueLink({
   href,
   intent,
   state,
+  ahead,
   heading,
+  entering,
   page,
   recommendation,
 }: QueueLinkProps) {
   const t = useTranslations("Solve");
+  const [fresh, setFresh] = useState(entering);
   const seen = useExposure("recommendation_made", recommendation, page);
   return (
     <div
-      data-upcoming={state === "next" || state === "later" || undefined}
+      data-ahead={ahead || undefined}
+      data-here={state === "current" || undefined}
       data-heading={heading || undefined}
+      data-fresh={fresh || undefined}
+      onTransitionEnd={(event) =>
+        event.target === event.currentTarget && setFresh(false)
+      }
       className={cn("group/item relative", grows, line)}
     >
       <div className="min-h-0 overflow-hidden">
@@ -69,7 +80,7 @@ export function QueueLink({
           aria-hidden={!heading}
           className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-260 ease-out group-data-heading/item:grid-rows-[1fr] motion-reduce:transition-none"
         >
-          <h3 className="min-h-0 overflow-hidden pl-8 font-semibold text-subtle text-xs leading-4">
+          <h3 className="min-h-0 overflow-hidden pl-8 font-semibold text-muted-foreground text-xs leading-4">
             <span className="block pt-2.5 pb-1">{t("upcoming")}</span>
           </h3>
         </div>
