@@ -116,6 +116,7 @@
     "exam": "Exam {year}",
     "visitPosition": "Task {position, number}{right, plural, =0 {} other { · <ok># correct</ok>}}",
     "current": "Solving now",
+    "earlierGroup": "{period, select, today {Today · {time}} yesterday {Yesterday · {time}} other {{date}}}",
     "back": "Back",
     "sheet": "Topic tasks",
     "before": "{status, select, solved {solved before} repeat {review} other {wrong before}}",
