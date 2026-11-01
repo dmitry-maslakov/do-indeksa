@@ -1,14 +1,20 @@
 import "server-only";
-import { and, desc, eq, gte, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNotNull, ne } from "drizzle-orm";
 import { cache } from "react";
-import { attempts, skips, taskSessions } from "@/db/schema";
+import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { examTopics } from "@/features/catalog/exams";
 import { db } from "@/server/db";
 import { noId } from "@/server/profile";
 import { getShownTasks, getTasksWith } from "./attempt-log";
 import { type TaskStat, weakest } from "./stats";
-import type { Answered, TaskStatuses, Touched, TouchStatus } from "./status";
+import type {
+  Answered,
+  Outcome,
+  TaskStatuses,
+  Touched,
+  TouchStatus,
+} from "./status";
 import { getLearning } from "./student-learning";
 import { decisiveAttempts } from "./task-stats";
 import { suggest } from "./topic-progress";
@@ -112,6 +118,61 @@ export async function getVisitStatuses(
     return skipped.has(taskId) ? "skipped" : "opened";
   };
   return new Map(taskIds.map((id) => [id, statusOf(id)]));
+}
+
+const inPractice = ne(taskSessions.kind, "mock");
+
+export async function getOutcomes(
+  profileId: string,
+  taskIds: string[],
+): Promise<Outcome[]> {
+  if (profileId === noId || !taskIds.length) return [];
+  const [answered, shown] = await Promise.all([
+    db
+      .select({
+        taskId: attempts.taskId,
+        at: epochMs(attempts.createdAt),
+        correct: attempts.correct,
+      })
+      .from(attempts)
+      .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
+      .where(and(await decisiveAttempts(profileId, taskIds), inPractice)),
+    db
+      .select({
+        taskId: reveals.taskId,
+        at: epochMs(reveals.createdAt),
+      })
+      .from(reveals)
+      .innerJoin(taskSessions, eq(taskSessions.id, reveals.sessionId))
+      .where(
+        and(
+          eq(reveals.profileId, profileId),
+          inArray(reveals.taskId, taskIds),
+          inArray(reveals.part, ["answer", "solution"]),
+          inPractice,
+        ),
+      ),
+  ]);
+  return [
+    ...answered.map(({ correct, ...row }) => ({
+      ...row,
+      result: correct ? ("solved" as const) : ("wrong" as const),
+    })),
+    ...shown.map((row) => ({ ...row, result: "revealed" as const })),
+  ].sort((a, b) => a.at - b.at);
+}
+
+export async function getZone(profileId: string) {
+  if (profileId === noId) return null;
+  const [row] = await db
+    .select({ tz: taskSessions.tz })
+    .from(taskSessions)
+    .where(
+      and(eq(taskSessions.profileId, profileId), isNotNull(taskSessions.tz)),
+    )
+    .orderBy(desc(taskSessions.startedAt))
+    .limit(1);
+  return row?.tz ?? null;
 }
 
 export async function getSolved(profileId: string) {

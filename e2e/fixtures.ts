@@ -139,6 +139,26 @@ export function seedReveal(
   );
 }
 
+export function seedSkip(
+  db: Client,
+  profileId: string,
+  taskId: string,
+  hoursAgo = 0,
+) {
+  return db.query(
+    `with session as (
+       insert into task_sessions (profile_id, task_id, kind, started_at, last_seen_at)
+       values ($1, $2, 'first', now() - $3::int * interval '1 hour' - interval '1 minute',
+         now() - $3::int * interval '1 hour')
+       returning id
+     )
+     insert into skips (profile_id, task_id, session_id, created_at)
+     select $1, $2, id, now() - $3::int * interval '1 hour'
+     from session`,
+    [profileId, taskId, hoursAgo],
+  );
+}
+
 export async function answer(page: Page, value: string) {
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").first();

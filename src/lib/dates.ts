@@ -12,7 +12,7 @@ export const daySeconds = dayMs / secondMs;
 
 export const toMinutes = (ms: number) => Math.round(ms / minuteMs);
 
-const timeZone = "Europe/Belgrade";
+export const timeZone = "Europe/Belgrade";
 
 const dateFormats = new Map<string, Intl.DateTimeFormat>();
 
