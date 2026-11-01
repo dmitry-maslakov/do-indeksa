@@ -1,6 +1,7 @@
 import {
   type MouseEvent,
   type RefObject,
+  useEffect,
   useLayoutEffect,
   useRef,
 } from "react";
@@ -16,34 +17,56 @@ const easeInOut = (k: number) =>
 const rowOf = (list: HTMLElement, id: string) =>
   list.querySelector<HTMLElement>(`[data-id="${id}"]`);
 
-const anchored = (list: HTMLElement, row: HTMLElement) =>
-  row.getBoundingClientRect().top -
-  list.getBoundingClientRect().top +
-  list.scrollTop -
-  anchor * list.clientHeight;
+const topOf = (list: HTMLElement, row: HTMLElement) =>
+  row.getBoundingClientRect().top - list.getBoundingClientRect().top;
 
-function glide(list: HTMLElement, to: number, frame: RefObject<number>) {
-  cancelAnimationFrame(frame.current);
+const scrollFor = (list: HTMLElement, row: HTMLElement, home: number) =>
+  topOf(list, row) + list.scrollTop - home;
+
+interface Motion {
+  frame: number;
+  home: number;
+}
+
+function glide(
+  list: HTMLElement,
+  row: HTMLElement,
+  home: number,
+  motion: RefObject<Motion>,
+) {
+  cancelAnimationFrame(motion.current.frame);
+  motion.current = { frame: 0, home };
   const from = list.scrollTop;
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    list.scrollTop = to;
+    list.scrollTop = scrollFor(list, row, home);
     return;
   }
   const start = performance.now();
   const tick = (now: number) => {
     const k = Math.min(1, (now - start) / glideMs);
-    list.scrollTop = from + (to - from) * easeInOut(k);
-    if (k < 1) frame.current = requestAnimationFrame(tick);
+    if (row.isConnected)
+      list.scrollTop =
+        from + (scrollFor(list, row, home) - from) * easeInOut(k);
+    motion.current.frame =
+      row.isConnected && k < 1 ? requestAnimationFrame(tick) : 0;
   };
-  frame.current = requestAnimationFrame(tick);
+  motion.current.frame = requestAnimationFrame(tick);
+}
+
+function homeOf(list: HTMLElement, top: number, motion: Motion) {
+  if (!motion.frame) return top;
+  const room = list.scrollHeight - list.clientHeight - list.scrollTop;
+  return Math.max(motion.home, top - room);
 }
 
 export function useQueueScroll(current: string, next?: string) {
   const list = useRef<HTMLDivElement>(null);
-  const frame = useRef(0);
+  const motion = useRef<Motion>({ frame: 0, home: 0 });
   const touchedAt = useRef(0);
-  const clicked = useRef(false);
+  const clicked = useRef<string>(undefined);
   const shown = useRef<{ current: string; next?: string }>(undefined);
+
+  useEffect(() => () => cancelAnimationFrame(motion.current.frame), []);
 
   useLayoutEffect(() => {
     const el = list.current;
@@ -52,21 +75,25 @@ export function useQueueScroll(current: string, next?: string) {
     shown.current = { current, next };
     if (!el || !row || before?.current === current) return;
     if (!before) {
-      el.scrollTop = anchored(el, row);
+      el.scrollTop = scrollFor(el, row, anchor * el.clientHeight);
       return;
     }
     const left = rowOf(el, before.current);
     const stepped =
       before.next === current &&
-      !clicked.current &&
+      clicked.current !== current &&
       Date.now() - touchedAt.current >= holdMs;
-    clicked.current = false;
-    if (stepped && left) glide(el, el.scrollTop + left.offsetHeight, frame);
+    clicked.current = undefined;
+    if (!stepped || !left) return;
+    const top = topOf(el, left);
+    if (top + left.offsetHeight <= 0 || top >= el.clientHeight) return;
+    glide(el, row, homeOf(el, top, motion.current), motion);
   }, [current, next]);
 
   const touched = () => {
     touchedAt.current = Date.now();
-    cancelAnimationFrame(frame.current);
+    cancelAnimationFrame(motion.current.frame);
+    motion.current.frame = 0;
   };
 
   return {
@@ -76,9 +103,9 @@ export function useQueueScroll(current: string, next?: string) {
       onTouchMove: touched,
       onKeyDown: touched,
       onClickCapture: (event: MouseEvent) => {
-        clicked.current =
-          event.target instanceof Element &&
-          event.target.closest("a:not([aria-current])") !== null;
+        if (event.target instanceof Element)
+          clicked.current =
+            event.target.closest<HTMLElement>("a[data-id]")?.dataset.id;
       },
     },
     back: () => {
@@ -86,7 +113,8 @@ export function useQueueScroll(current: string, next?: string) {
       const row = el && rowOf(el, current);
       if (!el || !row) return;
       touchedAt.current = 0;
-      glide(el, anchored(el, row), frame);
+      glide(el, row, anchor * el.clientHeight, motion);
+      row.focus({ preventScroll: true });
     },
   };
 }
