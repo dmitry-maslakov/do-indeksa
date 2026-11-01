@@ -61,7 +61,7 @@ export default async function SolvePage({
 
   const [locale, html] = await Promise.all([getLocale(), renderTask(id)]);
   if (!html) notFound();
-  const personal = loadPersonal({ id, topic: task.topic, locale });
+  const personal = loadPersonal({ id, topic: task.topic });
   const topic = topicName(task.topic, locale);
   const meta = {
     id,

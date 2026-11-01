@@ -32,7 +32,7 @@ test("the task rail marks the latest attempt", async ({ page, auth }) => {
     page
       .getByRole("complementary")
       .locator(`a[href$="/bank/${id}"]`)
-      .getByRole("img", { name: mark, exact: true });
+      .getByText(mark, { exact: true });
 
   await page.goto("/bank/eks-001");
   await expect(row("eks-001", "tačno")).toBeVisible();

@@ -13,7 +13,7 @@ export default async function BankLayout({
       <main className="px-4 pb-28 md:px-10 md:pt-2 md:pb-15">
         <h1 className="sr-only">{bank("title")}</h1>
         <div className="md:flex md:items-start md:gap-14">
-          <RailPanel label={bank("all")}>
+          <RailPanel label={bank("recommended")}>
             <Rail />
           </RailPanel>
           {children}

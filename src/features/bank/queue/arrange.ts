@@ -17,3 +17,16 @@ export function arrange(queue: Lists, current: string): Lists {
     upcoming: queue.upcoming.filter((r) => r.id !== current),
   };
 }
+
+export const shownUpcoming = 3;
+
+export function progressOf({ visit }: Lists, current: string) {
+  const index = visit.findIndex((row) => row.id === current);
+  if (index < 0) return undefined;
+  return {
+    position: index + 1,
+    done: index,
+    right: visit.slice(0, index).filter((row) => row.status === "solved")
+      .length,
+  };
+}

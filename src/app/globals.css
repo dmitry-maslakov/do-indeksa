@@ -186,6 +186,15 @@
   scrollbar-width: none;
 }
 
+@utility dashed-v {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-input) 0 3px,
+    transparent 3px 7px
+  );
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
