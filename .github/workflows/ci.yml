@@ -176,6 +176,8 @@ jobs:
           key: playwright-shell-${{ steps.playwright.outputs.version }}
       - run: pnpm exec playwright install --only-shell chromium
       - run: pnpm e2e
+        env:
+          CONTENT_DIR: ${{ github.event_name == 'pull_request' && 'content' || 'bank' }}
       - if: failure()
         run: docker logs web
       - if: failure() && github.event_name == 'pull_request'

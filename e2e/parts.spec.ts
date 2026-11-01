@@ -1,6 +1,11 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
+test.skip(
+  process.env.CONTENT_DIR === "bank",
+  "the frames are checked on the public sample tasks",
+);
+
 const boxes = (page: Page) => page.locator("math-field").locator("..");
 
 const symbols = (box: Locator) => box.locator(".katex-html");
