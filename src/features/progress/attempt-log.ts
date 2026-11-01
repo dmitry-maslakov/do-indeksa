@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, inArray, type SQL } from "drizzle-orm";
 import { cache } from "react";
-import type { SessionKind } from "@/db/columns";
+import { isPractice, type SessionKind } from "@/db/columns";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
@@ -124,7 +124,7 @@ export async function getTaskLogs(profileId: string): Promise<TaskLogs> {
   };
 }
 
-export async function getTaskLogsOf(
+export async function getPracticeLogsOf(
   profileId: string,
   taskIds: string[],
 ): Promise<TaskLog<StoredSubmit>[]> {
@@ -134,7 +134,11 @@ export async function getTaskLogsOf(
     profileId,
     taskIds,
   );
-  return toTaskLogs(submits, opened, skipped);
+  return toTaskLogs(
+    submits.filter(isPractice),
+    opened.filter(isPractice),
+    skipped.filter(isPractice),
+  );
 }
 
 export async function getTasksWith(
@@ -156,14 +160,19 @@ export async function getTasksWith(
   return new Set(rows.map((row) => row.taskId));
 }
 
-export const getShownTasks = cache(async (profileId: string) =>
-  getTasksWith(
-    reveals,
-    profileId,
-    undefined,
-    inArray(reveals.part, ["answer", "solution"]),
-  ),
-);
+export const getShownTasks = cache(async (profileId: string) => {
+  const rows = await db
+    .selectDistinct({ taskId: reveals.taskId, kind: taskSessions.kind })
+    .from(reveals)
+    .innerJoin(taskSessions, eq(taskSessions.id, reveals.sessionId))
+    .where(
+      and(
+        eq(reveals.profileId, profileId),
+        inArray(reveals.part, ["answer", "solution"]),
+      ),
+    );
+  return new Set(rows.filter(isPractice).map((row) => row.taskId));
+});
 
 export async function getActivity(profileId: string): Promise<TaskActivity[]> {
   if (profileId === noId) return [];

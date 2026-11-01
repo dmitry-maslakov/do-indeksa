@@ -1,7 +1,6 @@
+import { isPractice } from "@/db/columns";
 import { defaultPolicy } from "@/features/progress/learning/policy";
 import type { Touch } from "@/features/progress/status";
-
-export const isPractice = (touch: Touch) => touch.kind !== "mock";
 
 export function visitOf(touches: Touch[], now: number) {
   const runs: Touch[][] = [];

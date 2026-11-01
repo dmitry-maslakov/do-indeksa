@@ -12,6 +12,7 @@ vi.mock("@/server/db", async () => {
   const { reveals } = await import("@/db/schema");
   const query = (found: object[]) => ({
     from: () => query(found),
+    innerJoin: () => query(found),
     where: () =>
       Object.assign(Promise.resolve(found), { orderBy: async () => found }),
   });
@@ -31,7 +32,7 @@ vi.mock("@/server/profile", () => ({ noId: "0" }));
 
 vi.mock("./attempt-log", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./attempt-log")>()),
-  getTaskLogsOf: async () => [],
+  getPracticeLogsOf: async () => [],
 }));
 
 const touch = (taskId: string, from: number) => ({
@@ -47,7 +48,12 @@ rows.answered = [
   { taskId: "b", correct: false, createdAt: new Date(0) },
   { taskId: "g", correct: false, createdAt: new Date(0) },
 ];
-rows.shown = [{ taskId: "c" }, { taskId: "f" }, { taskId: "g" }];
+rows.shown = [
+  { taskId: "c", kind: "first" },
+  { taskId: "e", kind: "mock" },
+  { taskId: "f", kind: "retry" },
+  { taskId: "g", kind: "first" },
+];
 rows.skipped = [{ taskId: "d" }, { taskId: "f" }];
 
 describe("getTouched", () => {
@@ -93,6 +99,13 @@ describe("getTouchStatuses", () => {
       ["e", "opened"],
       ["f", "revealed"],
       ["g", "wrong"],
+    ]);
+  });
+
+  it("does not call a task revealed for a solution seen in a test", async () => {
+    const found = await getTouched("p1");
+    expect([...(await getTouchStatuses("p1", ["e"], found))]).toEqual([
+      ["e", "opened"],
     ]);
   });
 

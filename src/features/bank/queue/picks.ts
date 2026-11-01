@@ -1,4 +1,5 @@
 import { uniq } from "es-toolkit";
+import { isPractice } from "@/db/columns";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { plan } from "@/features/progress/learning/planner/plan";
 import { rules } from "@/features/progress/learning/planner/rules/rules";
@@ -7,7 +8,7 @@ import { isDue, isRepeat } from "@/features/progress/learning/repeats/history";
 import type { Learning } from "@/features/progress/learning/state";
 import type { TaskStatuses, Touch } from "@/features/progress/status";
 import type { PickReason } from "./recommendation";
-import { isPractice, visitOf } from "./visit";
+import { visitOf } from "./visit";
 
 export const upcomingSize = 6;
 

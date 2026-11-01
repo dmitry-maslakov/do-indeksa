@@ -11,7 +11,7 @@ const found = vi.hoisted(() => ({
 }));
 
 vi.mock("./attempt-log", () => ({
-  getTaskLogsOf: async () => found.logs,
+  getPracticeLogsOf: async () => found.logs,
   getShownTasks: async () => found.shown,
 }));
 
