@@ -13,6 +13,7 @@ const rail = (page: Page) => {
     aside,
     rows: aside.locator("a[data-id]"),
     current: aside.locator("a[data-id][aria-current=page]"),
+    list: aside.locator("div.overflow-y-auto"),
     summary: aside.getByText(/^\d+ zadat(ak|ka|aka)/),
   };
 };
@@ -124,4 +125,67 @@ test("the rail shows three upcoming tasks and marks the first", async ({
   await expect(rows.nth(1)).toContainText("Sledeći");
   await expect(rows.nth(2)).not.toContainText("Sledeći");
   await expect(rows.nth(3)).not.toContainText("Sledeći");
+});
+
+test("the list follows the student and offers a way back once scrolled away", async ({
+  page,
+}) => {
+  bankOnly();
+  await page.goto("/bank/start/exponential-equations");
+  const { current, list, rows } = rail(page);
+  await expect(current).toBeVisible();
+  const scrolled = () => list.evaluate((el) => el.scrollTop);
+  const top = () =>
+    current.evaluate(
+      (row) =>
+        row.getBoundingClientRect().top -
+        (row.closest("div.overflow-y-auto")?.getBoundingClientRect().top ?? 0),
+    );
+
+  for (let i = 0; i < 8; i++) await skip(page);
+  await expect(current).toBeInViewport();
+  await expect.poll(scrolled).toBeGreaterThan(0);
+  await expect.poll(() => rows.count()).toBe(12);
+  await page.waitForTimeout(600);
+  const placed = await top();
+  await skip(page);
+  await expect
+    .poll(async () => Math.abs((await top()) - placed))
+    .toBeLessThan(3);
+
+  const box = await list.boundingBox();
+  await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
+  await page.mouse.wheel(0, -3000);
+  await expect.poll(scrolled).toBe(0);
+  const pill = page.getByRole("button", { name: "Sada rešavaš" });
+  await expect(pill).toBeVisible();
+  await expect(current).not.toBeInViewport();
+
+  await skip(page);
+  await page.waitForTimeout(600);
+  expect(await scrolled()).toBe(0);
+  await expect(pill).toBeVisible();
+
+  await pill.click();
+  await expect(current).toBeInViewport();
+  await expect(pill).toBeHidden();
+});
+
+test("a click on a row does not scroll the list", async ({ page }) => {
+  bankOnly();
+  await page.goto("/bank/start/exponential-equations");
+  const { current, list, rows } = rail(page);
+  await expect(current).toBeVisible();
+  for (let i = 0; i < 8; i++) await skip(page);
+  await expect.poll(() => rows.count()).toBe(12);
+  await page.waitForTimeout(600);
+  const before = await list.evaluate((el) => el.scrollTop);
+
+  const row = rows.nth(6);
+  const id = await row.getAttribute("data-id");
+  await row.click();
+  await expect(page).toHaveURL(new RegExp(`/bank/${id}$`));
+  await expect(current).toHaveAttribute("data-id", id ?? "");
+  await page.waitForTimeout(600);
+  expect(await list.evaluate((el) => el.scrollTop)).toBe(before);
 });
