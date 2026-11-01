@@ -7,6 +7,7 @@ import type { Touched } from "@/features/progress/status";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 
 interface TaskMetaProps {
+  id: string;
   topic: string;
   exam: ExamSource | null;
   level: Level;
@@ -17,7 +18,7 @@ function Dot() {
   return <span className="size-1 shrink-0 rounded-full bg-input" />;
 }
 
-export function TaskMeta({ topic, exam, level, ...props }: TaskMetaProps) {
+export function TaskMeta({ id, topic, exam, level, ...props }: TaskMetaProps) {
   const t = useTranslations("Solve");
   const before = props.before && use(props.before);
   const bank = useTranslations("Bank");
@@ -58,6 +59,10 @@ export function TaskMeta({ topic, exam, level, ...props }: TaskMetaProps) {
           {t("before", { status: before })}
         </span>
       )}
+      <span className="flex items-center gap-2">
+        <Dot />
+        {id}
+      </span>
     </div>
   );
 }

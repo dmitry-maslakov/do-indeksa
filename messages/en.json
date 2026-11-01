@@ -82,7 +82,7 @@
     "taskLevel": "{level, select, easy {easy} medium {medium} hard {hard} other {}}",
     "status": "My status",
     "statuses": "{status, select, new {Not solved} solved {Solved correctly} wrong {Mistakes} other {}}",
-    "searchPlaceholder": "Text, formula, year…",
+    "searchPlaceholder": "Text, formula, year, number…",
     "position": "Task {number, number}",
     "anyLevel": "Any",
     "source": "Source",

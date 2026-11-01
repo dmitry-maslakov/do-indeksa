@@ -39,6 +39,11 @@ describe("searchBank", () => {
     expect(exam.filter((id) => ours.includes(id))).toEqual([]);
   });
 
+  it("finds a task by its id", () => {
+    expect(ids({ q: "eks-002" })).toEqual(["eks-002"]);
+    expect(ids({ q: "KB-003" })).toEqual(["kb-003"]);
+  });
+
   it("searches the source", () => {
     expect(ids({ q: "do indeksa" })).toEqual(ids({ source: "ours" }));
   });

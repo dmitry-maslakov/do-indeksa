@@ -82,7 +82,7 @@
     "taskLevel": "{level, select, easy {лёгкая} medium {средняя} hard {сложная} other {}}",
     "status": "Мой статус",
     "statuses": "{status, select, new {Нерешённые} solved {Решённые верно} wrong {Ошибки} other {}}",
-    "searchPlaceholder": "Текст, формула, год…",
+    "searchPlaceholder": "Текст, формула, год, номер…",
     "position": "{number, number}-я задача",
     "anyLevel": "Любая",
     "source": "Источник",
