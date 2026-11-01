@@ -41,6 +41,18 @@ function UrlSelect({ name, ...props }: FilterSelectProps) {
   );
 }
 
+function ShellSelect({ name, ...props }: FilterSelectProps) {
+  const [topic] = useBankState().topic;
+
+  return (
+    <NativeSelect
+      {...props}
+      name={name}
+      defaultValue={name === "topic" ? (topic ?? "") : undefined}
+    />
+  );
+}
+
 export function FilterSelect({
   label,
   className,
@@ -54,7 +66,7 @@ export function FilterSelect({
   };
   return (
     <FilterLabel text={label}>
-      <Suspense fallback={<NativeSelect {...styled} />}>
+      <Suspense fallback={<ShellSelect {...styled} />}>
         <UrlSelect {...styled} />
       </Suspense>
     </FilterLabel>

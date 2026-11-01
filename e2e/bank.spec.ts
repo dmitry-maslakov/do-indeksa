@@ -197,6 +197,7 @@ test.describe("before scripts run", () => {
     const { cards } = bank(page);
     await expect(cards.first()).toBeVisible();
     await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
+    await expect(bank(page).topic.first()).toHaveValue("logarithms");
   });
 });
 
