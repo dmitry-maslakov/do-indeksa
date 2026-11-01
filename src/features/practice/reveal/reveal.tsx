@@ -18,25 +18,29 @@ interface RevealContentProps {
   className?: string;
 }
 
-export function RevealContent({ taskId, part, className }: RevealContentProps) {
-  const { data: html, isFetching, isError, refetch } = useReveal(taskId, part);
+function RevealError({ onRetry }: { onRetry: () => void }) {
   const t = useTranslations("Errors");
   const errorText = useErrorText();
+  return (
+    <div className="flex flex-wrap items-center gap-3 text-sm">
+      <span role="alert" className="text-error-text">
+        {errorText()}
+      </span>
+      <Button size="sm" variant="ghost" onClick={onRetry}>
+        {t("retry")}
+      </Button>
+    </div>
+  );
+}
+
+export function RevealContent({ taskId, part, className }: RevealContentProps) {
+  const { data, isFetching, isError, refetch } = useReveal(taskId, part);
 
   if (isFetching) return <Skeleton className="my-1 h-4 w-2/3" />;
-  if (isError) {
-    return (
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <span role="alert" className="text-error-text">
-          {errorText()}
-        </span>
-        <Button size="sm" variant="ghost" onClick={() => refetch()}>
-          {t("retry")}
-        </Button>
-      </div>
-    );
-  }
-  return html ? <MathHtml html={html} className={className} /> : null;
+  if (isError) return <RevealError onRetry={() => refetch()} />;
+  return data?.html ? (
+    <MathHtml html={data.html} className={className} />
+  ) : null;
 }
 
 interface RevealSwitchProps {

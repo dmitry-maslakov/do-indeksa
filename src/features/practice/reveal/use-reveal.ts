@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import type { RevealPart } from "./reveals";
+import { skipToken, useQuery } from "@tanstack/react-query";
+import type { Reveal, RevealPart } from "./reveals";
 
 async function fetchPart(
   taskId: string,
   part: RevealPart,
   signal: AbortSignal,
-) {
+): Promise<Reveal> {
   const params = new URLSearchParams({ part: String(part) });
   const response = await fetch(`/api/tasks/${taskId}/reveal?${params}`, {
     signal,
@@ -14,13 +14,15 @@ async function fetchPart(
     throw new Error(`reveal failed: ${response.status}`, {
       cause: response.status,
     });
-  const { html }: { html: string } = await response.json();
-  return html;
+  return response.json();
 }
 
-export const useReveal = (taskId: string, part: RevealPart) =>
+export const useReveal = (taskId: string, part?: RevealPart) =>
   useQuery({
     queryKey: ["reveal", taskId, part],
-    queryFn: ({ signal }) => fetchPart(taskId, part, signal),
+    queryFn:
+      part === undefined
+        ? skipToken
+        : ({ signal }) => fetchPart(taskId, part, signal),
     staleTime: Number.POSITIVE_INFINITY,
   });
