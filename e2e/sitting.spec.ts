@@ -220,10 +220,10 @@ test("an answer that follows a reveal in the same sitting does not make a task s
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await seedReveal(auth.db, profileId, "eks-001", "answer", 3);
-  await seedAttempt(auth.db, profileId, "eks-001", true, 3);
-  await seedReveal(auth.db, profileId, "fun-002", "answer", 6);
-  await seedAttempt(auth.db, profileId, "fun-002", true, 3);
+  await seedReveal(auth.db, profileId, "eks-001", "answer", 7);
+  await seedAttempt(auth.db, profileId, "eks-001", true, 7);
+  await seedReveal(auth.db, profileId, "fun-002", "answer", 10);
+  await seedAttempt(auth.db, profileId, "fun-002", true, 7);
   const card = (id: string) =>
     page.getByRole("main").locator(`a[href$="/bank/${id}"]`);
 

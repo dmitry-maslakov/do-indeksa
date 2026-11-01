@@ -23,6 +23,7 @@ interface QueueLinkProps {
   entering: boolean;
   page: string;
   recommendation?: BrowserEvents["recommendation_made"];
+  earlier?: boolean;
 }
 
 export function QueueLink({
@@ -34,6 +35,7 @@ export function QueueLink({
   entering,
   page,
   recommendation,
+  earlier = false,
 }: QueueLinkProps) {
   const [fresh, setFresh] = useState(entering);
   const seen = useExposure("recommendation_made", recommendation, page);
@@ -51,7 +53,8 @@ export function QueueLink({
         <RailLink
           ref={seen}
           href={href}
-          data-id={task.id}
+          data-id={earlier ? undefined : task.id}
+          data-earlier={earlier ? task.id : undefined}
           data-intent={intent}
           current={state === "current"}
           className={cn(

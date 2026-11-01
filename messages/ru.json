@@ -116,6 +116,7 @@
     "exam": "Экзамен {year}",
     "visitPosition": "{position, number}-я задача{right, plural, =0 {} other { · <ok># верно</ok>}}",
     "current": "Сейчас решаешь",
+    "earlierGroup": "{period, select, today {Сегодня · {time}} yesterday {Вчера · {time}} other {{date}}}",
     "back": "Назад",
     "sheet": "Задачи темы",
     "before": "{status, select, solved {решена раньше} repeat {повторение} other {раньше неверно}}",

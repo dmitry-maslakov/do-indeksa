@@ -116,6 +116,7 @@
     "exam": "Prijemni {year}",
     "visitPosition": "{position, number}. zadatak{right, plural, =0 {} other { · <ok># tačno</ok>}}",
     "current": "Sada rešavaš",
+    "earlierGroup": "{period, select, today {Danas · {time}} yesterday {Juče · {time}} other {{date}}}",
     "back": "Nazad",
     "sheet": "Zadaci teme",
     "before": "{status, select, solved {rešen ranije} repeat {ponavljanje} other {ranije netačno}}",

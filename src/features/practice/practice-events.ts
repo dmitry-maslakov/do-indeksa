@@ -23,6 +23,7 @@ export const placements = [
   "topic_select",
   "rail_upcoming",
   "rail_visit",
+  "rail_earlier",
   "next",
   "skip",
   "card",

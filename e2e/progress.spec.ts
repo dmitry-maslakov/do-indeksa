@@ -3,10 +3,10 @@ import { checkerVersion } from "@/features/catalog/checker";
 import { answer, expect, seedAttempt, test } from "./fixtures";
 
 async function seed(db: Client, profileId: string) {
-  await seedAttempt(db, profileId, "eks-001", false, 3);
-  await seedAttempt(db, profileId, "eks-001", true, 1);
-  await seedAttempt(db, profileId, "fun-002", true, 3);
-  await seedAttempt(db, profileId, "fun-002", false, 1);
+  await seedAttempt(db, profileId, "eks-001", false, 7);
+  await seedAttempt(db, profileId, "eks-001", true, 5);
+  await seedAttempt(db, profileId, "fun-002", true, 7);
+  await seedAttempt(db, profileId, "fun-002", false, 5);
 }
 
 test("the bank filters tasks by their latest attempt", async ({
