@@ -80,7 +80,7 @@ export function SymbolTray({
   locked,
   children,
 }: SymbolTrayProps) {
-  if (locked) return null;
+  if (locked || (!keys.length && !children && !hint)) return null;
   return (
     <div className="invisible hidden min-h-8 flex-wrap items-center gap-1.5 group-focus-within/field:visible pointer-fine:flex">
       {children}

@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { EyeIcon, LightbulbIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { isRight, type PartOutcome } from "@/db/columns";
+import type { PartOutcome } from "@/db/columns";
 import { cardsOf } from "@/features/practice/reveal/help";
 import { RevealError } from "@/features/practice/reveal/reveal";
 import { useReveal } from "@/features/practice/reveal/use-reveal";
@@ -91,14 +91,6 @@ function Content({
     <span className={cn("flex items-center gap-2", look)}>
       {status && <StatusIcon status={status} className="size-5" />}
       {t(verdict)}
-      {verdict === "wrong" && outcomes.length > 1 && (
-        <Note>
-          {t("partsRight", {
-            right: outcomes.filter(isRight).length,
-            total: outcomes.length,
-          })}
-        </Note>
-      )}
     </span>
   );
 }

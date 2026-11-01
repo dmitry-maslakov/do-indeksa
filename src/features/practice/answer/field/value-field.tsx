@@ -1,7 +1,6 @@
 "use client";
 
 import { cva } from "class-variance-authority";
-import { useTranslations } from "next-intl";
 import { type FieldProps, Frame } from "./field-frame";
 import { MathBox } from "./math-box";
 import { functionSymbols, SymbolTray, symbolKeys } from "./symbol-tray";
@@ -27,8 +26,6 @@ export function ValueField({
   stats,
   onEdit,
 }: FieldProps) {
-  const t = useTranslations("Field");
-
   return (
     <>
       <Frame part={part} variant={variant} state={state} reason={reason}>
@@ -57,7 +54,6 @@ export function ValueField({
         )}
         active={active}
         locked={locked}
-        hint={t("hintValue")}
       />
     </>
   );
