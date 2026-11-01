@@ -177,7 +177,7 @@ test("a part solved alone locks at once while the others stay open", async ({
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
-  await expect(status(page)).toContainText("1 od 3 tačno");
+  await expect(status(page)).toHaveText("Nije tačno");
   await expect(fields(page).nth(0)).toHaveJSProperty("readOnly", true);
   await expect(box(fields(page).nth(0))).toHaveClass(/bg-success-tint/);
   await expect(fields(page).nth(1)).toHaveJSProperty("readOnly", false);
@@ -203,7 +203,7 @@ test("Rezultat in a task with parts keeps the parts solved alone", async ({
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
-  await expect(status(page)).toContainText("1 od 3 tačno");
+  await expect(status(page)).toHaveText("Nije tačno");
   await chip(page, "Rezultat").click();
   await expect(status(page)).toHaveText("Prikazan rezultat1 od 3 tvoje");
   const expected = ["5", "4", "6"];

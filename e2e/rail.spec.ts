@@ -74,7 +74,6 @@ test("the rail names itself and marks the task the student is on", async ({
 
   await expect(aside).toBeVisible();
   await expect(current).toHaveAttribute("data-id", "eks-001");
-  await expect(current).toContainText("Sada rešavaš");
   await expect(rows.filter({ hasText: "Eksponencijalne" })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
@@ -100,7 +99,6 @@ test("a right answer is named in words", async ({ page }) => {
   const { current, rows } = rail(page);
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
-  await expect(current).toContainText("Sada rešavaš");
   await expect(current).toContainText("tačno");
 
   await page.getByRole("link", { name: "Sledeći zadatak" }).click();
@@ -157,34 +155,24 @@ test("a task whose result was shown says so", async ({ page }) => {
   );
 });
 
-test("Sada rešavaš moves to the task Sledeći zadatak leads to", async ({
-  page,
-}) => {
+test("Preskoči leads to the row after the current one", async ({ page }) => {
   await page.goto("/bank/eks-001");
-  const { aside, rows, current } = rail(page);
-  const next = rows.filter({ hasText: "Sledeći" });
-  await expect(next).toHaveCount(1);
-  const id = (await next.getAttribute("data-id")) ?? "";
+  const { rows, current } = rail(page);
   await expect(rows.nth(0)).toHaveAttribute("data-id", "eks-001");
-  await expect(rows.nth(1)).toHaveAttribute("data-id", id);
+  const id = (await rows.nth(1).getAttribute("data-id")) ?? "";
 
   await skip(page);
   await expect(current).toHaveAttribute("data-id", id);
-  await expect(aside.getByText("Sada rešavaš")).toHaveCount(1);
-  await expect(current).toContainText("Sada rešavaš");
+  await expect(current).toHaveCount(1);
 });
 
-test("the rail shows five upcoming tasks and marks the first", async ({
-  page,
-}) => {
+test("the rail shows five upcoming tasks", async ({ page }) => {
   bankOnly();
   await page.goto("/bank/start/exponential-equations");
   const { rows, current } = rail(page);
   await expect(current).toBeVisible();
 
   await expect(rows).toHaveCount(6);
-  await expect(rows.filter({ hasText: "Sledeći" })).toHaveCount(1);
-  await expect(rows.nth(1)).toContainText("Sledeći");
 });
 
 test("the list follows the student and offers a way back once scrolled away", async ({
@@ -347,7 +335,5 @@ test("the phone bar says where the student is in the visit", {
     if (!(await sheet.isVisible())) await bar.click();
     await expect(sheet).toBeVisible({ timeout: 1000 });
   }).toPass();
-  await expect(sheet.locator("a[data-id][aria-current=page]")).toContainText(
-    "Sada rešavaš",
-  );
+  await expect(sheet.locator("a[data-id][aria-current=page]")).toBeVisible();
 });

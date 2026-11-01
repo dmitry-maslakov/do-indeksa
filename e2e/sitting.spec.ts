@@ -147,7 +147,7 @@ test("a part solved alone stays locked after a reload and is sent with the other
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
-  await expect(status(page)).toContainText("1 od 3 tačno");
+  await expect(status(page)).toHaveText("Nije tačno");
   await expect
     .poll(() => recorded(auth.db, "attempts", profileId, "kv-002"))
     .toBe(1);

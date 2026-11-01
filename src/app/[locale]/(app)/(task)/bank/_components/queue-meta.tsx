@@ -35,17 +35,10 @@ export function QueueMeta({
 }) {
   const t = useTranslations("Solve");
   const bank = useTranslations("Bank");
-  const upcoming = state === "next" || state === "later";
   const result = resultOf(task, state);
 
   return (
     <span className="mt-0.5 flex min-h-4 min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap text-subtle text-xs leading-4">
-      {state === "current" && (
-        <Part className="font-semibold text-foreground">{t("current")}</Part>
-      )}
-      {state === "next" && (
-        <Part className="font-medium text-foreground">{t("upNext")}</Part>
-      )}
       {result && (
         <Part className={statusTones[result]}>
           {t("status", { status: result })}
@@ -62,7 +55,9 @@ export function QueueMeta({
           <ExamMark>{t("exam", { year: String(task.year) })}</ExamMark>
         </Part>
       )}
-      {upcoming && <Part>{bank("taskLevel", { level: task.level })}</Part>}
+      {state !== "past" && (
+        <Part>{bank("taskLevel", { level: task.level })}</Part>
+      )}
     </span>
   );
 }
