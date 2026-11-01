@@ -2,7 +2,6 @@
 
 import { cva } from "class-variance-authority";
 import { cn } from "cn";
-import { EyeIcon, LockIcon } from "lucide-react";
 import type { MathfieldElement } from "mathlive";
 import { useTranslations } from "next-intl";
 import type { PointerEvent, ReactNode, RefObject } from "react";
@@ -126,13 +125,6 @@ function Mark({ state }: { state: FieldState }) {
           status={state === "right" ? "solved" : "wrong"}
           className="size-5"
         />
-      </span>
-    );
-  if (state === "shown")
-    return (
-      <span className="ml-auto flex items-center gap-1.5 pr-4">
-        <LockIcon aria-hidden className="size-4 text-data-soft" />
-        <EyeIcon aria-hidden className="size-5 text-data" />
       </span>
     );
   return null;

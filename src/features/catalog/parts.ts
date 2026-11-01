@@ -15,9 +15,26 @@ export interface PartMarkup {
   unit: string | null;
 }
 
+const answerSymbols = {
+  root: /\\sqrt/,
+  pi: /\\pi/,
+  fraction: /\\[dt]?frac/,
+  power: /\^/,
+  log: /\\(?:log|ln)/,
+  infinity: /\\infty/,
+};
+
+export type AnswerSymbol = keyof typeof answerSymbols;
+
+export const symbolsIn = (answers: string[]) =>
+  (Object.keys(answerSymbols) as AnswerSymbol[]).filter((name) =>
+    answers.some((answer) => answerSymbols[name].test(answer)),
+  );
+
 export interface PartLabel {
   kind: Kind | null;
   arity: number;
+  symbols: AnswerSymbol[];
   letter: string;
   prefix: string | null;
   suffix: string | null;
@@ -91,6 +108,7 @@ export function labelOf(
   markup: PartMarkup,
   index: number,
   count: number,
+  symbols: AnswerSymbol[] = [],
 ): PartLabel {
   const { label, part, var: variable, unit } = markup;
   const kind = markup.kind ?? inferKind(markup.expected);
@@ -103,6 +121,7 @@ export function labelOf(
   return {
     kind,
     arity: kind === "point" || kind === "points" ? arityOf(markup) : 0,
+    symbols,
     letter: part ? `${part})` : (match?.[1] ?? fallback),
     caption,
     ...frame(kind, symbol, unit),

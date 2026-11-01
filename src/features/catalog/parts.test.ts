@@ -8,6 +8,7 @@ import {
   partSchema,
   resultOf,
   statementLetters,
+  symbolsIn,
   uncheckedLetters,
 } from "./parts";
 
@@ -279,6 +280,16 @@ describe("partSchema", () => {
     const result = parse(part);
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toContain(message);
+  });
+});
+
+describe("symbolsIn", () => {
+  it("names the symbols the answers use, in the order of the symbol row", () => {
+    expect(
+      symbolsIn(["4, \\sqrt{2}", "(-\\infty,0)", "\\dfrac{\\pi}{2}"]),
+    ).toEqual(["root", "pi", "fraction", "infinity"]);
+    expect(symbolsIn(["2^{n}", "\\log_2 3"])).toEqual(["power", "log"]);
+    expect(symbolsIn(["6", "-1"])).toEqual([]);
   });
 });
 
