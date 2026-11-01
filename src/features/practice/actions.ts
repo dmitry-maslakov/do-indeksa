@@ -81,7 +81,7 @@ export const checkAnswer = actionClient
         clientId,
       });
       if ("sitting" in submitted) return { sitting: submitted.sitting };
-      const { session, attempt, outcomes, correct } = submitted;
+      const { session, attempt, outcomes, problems, correct } = submitted;
       await trackOpening(profileId, taskId, session, sessionId);
       if (attempt)
         await track(
@@ -93,7 +93,7 @@ export const checkAnswer = actionClient
           { profileId },
         );
       refresh();
-      return { outcomes, correct, sessionId: session.id };
+      return { outcomes, problems, correct, sessionId: session.id };
     },
   );
 

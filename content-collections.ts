@@ -4,7 +4,7 @@ import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
 import { compact, uniqBy } from "es-toolkit";
 import { z } from "zod";
-import { parseMath } from "./src/features/catalog/checker";
+import { answerProblem, parseMath } from "./src/features/catalog/checker";
 import {
   labelOf,
   maxParts,
@@ -91,6 +91,11 @@ const tasks = defineCollection({
     markup.forEach((c, i) => {
       const problem = partProblem(c, letters);
       if (problem) throw new Error(`${origin}: part ${i + 1}: ${problem}`);
+      const unsent = answerProblem(c);
+      if (unsent)
+        throw new Error(
+          `${origin}: part ${i + 1}: expected "${c.expected}" ${unsent}`,
+        );
     });
     await rendered(compact([content, answer, solution, ...hints]), origin);
     if (!answer) await rendered([resultOf(markup)], `${origin}: result`);

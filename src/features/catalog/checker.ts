@@ -5,8 +5,37 @@ import {
   isSymbol,
 } from "@cortex-js/compute-engine";
 import type { PartOutcome } from "@/db/columns";
+import {
+  type BoxKind,
+  boxesOf,
+  boxesOfPiece,
+  groupsOf,
+  isBoxKind,
+  isFilled,
+  isRange,
+  type Layout,
+  layoutOf,
+  type Piece,
+  type Problem,
+  type Reason,
+  sentForm,
+  sentOf,
+} from "./boxes";
+import { type Kind, kindOf } from "./kinds";
 
 const ce = new ComputeEngine();
+
+export interface GradedPart {
+  expected: string;
+  kind?: Kind | null;
+  var?: string | null;
+  unit?: string | null;
+}
+
+export interface Graded {
+  outcome: PartOutcome;
+  problem?: Problem;
+}
 
 export function parseMath(latex: string): BoxedExpression {
   const expr = ce.parse(latex.replaceAll("{,}", "."));
@@ -51,22 +80,200 @@ function matches(input: string, expected: string, target: BoxedExpression) {
   return candidates.some((c) => sameItems(items(target), items(c)));
 }
 
-export function isEquivalent(input: string, expected: string): boolean {
+export function reasonOf(box: string): Reason {
+  if (/\\placeholder|\{\}/.test(box)) return "fraction";
+  const opened = box.match(/[([]/g)?.length ?? 0;
+  const closed = box.match(/[)\]]/g)?.length ?? 0;
+  return /\\right\?/.test(box) || opened !== closed ? "bracket" : "expression";
+}
+
+function gradeSingle(input: string, expected: string): Graded {
+  const given = readings(input);
+  if (!given.some((reading) => parseMath(reading).isValid))
+    return {
+      outcome: "unreadable",
+      problem: { box: 0, reason: reasonOf(input) },
+    };
   const target = parseMath(expected);
-  return readings(input).some((reading) => matches(reading, expected, target));
+  return {
+    outcome: given.some((reading) => matches(reading, expected, target))
+      ? "right"
+      : "wrong",
+  };
+}
+
+const sameSet = <T>(a: T[], b: T[], same: (x: T, y: T) => boolean) =>
+  a.every((x) => b.some((y) => same(x, y))) &&
+  b.every((y) => a.some((x) => same(x, y)));
+
+const sameTuple = (a: BoxedExpression[], b: BoxedExpression[]) =>
+  a.length === b.length && a.every((x, i) => b[i] && equal(x, b[i]));
+
+const parsed = (boxes: string[]) => boxes.filter(isFilled).map(parseMath);
+
+const usedGroups = (layout: Layout) =>
+  groupsOf(layout).filter((group) => group.some(isFilled));
+
+interface Span {
+  from: BoxedExpression;
+  to: BoxedExpression;
+  closedFrom: boolean;
+  closedTo: boolean;
+}
+
+const real = (expr: BoxedExpression) => expr.N().re;
+
+function order(a: BoxedExpression, b: BoxedExpression) {
+  const [x, y] = [real(a), real(b)];
+  return x === y || equal(a, b) ? 0 : Math.sign(x - y);
+}
+
+function spanOf(piece: Piece): Span {
+  if (!isRange(piece)) {
+    const point = parseMath(piece.point);
+    return { from: point, to: point, closedFrom: true, closedTo: true };
+  }
+  const [from, to] = [parseMath(piece.from), parseMath(piece.to)];
+  return {
+    from,
+    to,
+    closedFrom: piece.open === "[" && Number.isFinite(real(from)),
+    closedTo: piece.close === "]" && Number.isFinite(real(to)),
+  };
+}
+
+const isEmptySpan = ({ from, to, closedFrom, closedTo }: Span) => {
+  const side = order(from, to);
+  return side > 0 || (side === 0 && !(closedFrom && closedTo));
+};
+
+const touches = (last: Span, span: Span) => {
+  const gap = order(span.from, last.to);
+  return gap < 0 || (gap === 0 && (last.closedTo || span.closedFrom));
+};
+
+function merged(pieces: Piece[]) {
+  const spans = pieces
+    .filter((piece) => boxesOfPiece(piece).some(isFilled))
+    .map(spanOf)
+    .filter((span) => !isEmptySpan(span))
+    .sort(
+      (a, b) =>
+        order(a.from, b.from) || Number(b.closedFrom) - Number(a.closedFrom),
+    );
+  const joined: Span[] = [];
+  for (const span of spans) {
+    const last = joined.at(-1);
+    if (!last || !touches(last, span)) {
+      joined.push(span);
+      continue;
+    }
+    const longer = order(span.to, last.to);
+    if (longer > 0)
+      Object.assign(last, { to: span.to, closedTo: span.closedTo });
+    else if (longer === 0) last.closedTo = last.closedTo || span.closedTo;
+  }
+  return joined;
+}
+
+const sameSpan = (a: Span, b: Span) =>
+  order(a.from, b.from) === 0 &&
+  order(a.to, b.to) === 0 &&
+  a.closedFrom === b.closedFrom &&
+  a.closedTo === b.closedTo;
+
+function sameLayout(a: Layout, b: Layout) {
+  if (a.kind === "none" || b.kind === "none") return a.kind === b.kind;
+  if (a.kind === "values" && b.kind === "values")
+    return sameSet(parsed(a.boxes), parsed(b.boxes), equal);
+  if (a.kind === "point" && b.kind === "point")
+    return sameTuple(a.boxes.map(parseMath), b.boxes.map(parseMath));
+  if (a.kind === "points" && b.kind === "points")
+    return sameSet(
+      usedGroups(a).map((row) => row.map(parseMath)),
+      usedGroups(b).map((row) => row.map(parseMath)),
+      sameTuple,
+    );
+  if (a.kind === "interval" && b.kind === "interval") {
+    const [left, right] = [merged(a.pieces), merged(b.pieces)];
+    return (
+      left.length === right.length &&
+      left.every((span, i) => right[i] && sameSpan(span, right[i]))
+    );
+  }
+  return false;
+}
+
+function problemOf(layout: Layout): Problem | undefined {
+  const needed = layout.kind !== "values";
+  const blank = layout.kind === "interval" ? "end" : "coordinate";
+  let box = 0;
+  for (const group of groupsOf(layout)) {
+    const used = group.some(isFilled);
+    for (const text of group) {
+      if (!isFilled(text)) {
+        if (needed && used) return { box, reason: blank };
+      } else if (!parseMath(text).isValid) {
+        return { box, reason: reasonOf(text) };
+      }
+      box += 1;
+    }
+  }
+}
+
+const withoutUnit = (input: string, unit?: string | null) =>
+  unit ? input.replaceAll(unit, "") : input;
+
+function gradeBoxes(part: GradedPart, kind: BoxKind, input: string): Graded {
+  const text = withoutUnit(input, part.unit);
+  const layouts = (text.includes(";") ? [text] : readings(text)).flatMap(
+    (reading) => layoutOf(kind, reading) ?? [],
+  );
+  const [first] = layouts;
+  if (!first)
+    return {
+      outcome: "unreadable",
+      problem: { box: 0, reason: "expression" },
+    };
+  if (first.kind !== "none" && !boxesOf(first).some(isFilled))
+    return { outcome: "empty" };
+  const problems = layouts.map(problemOf);
+  const readable = layouts.filter((_, i) => !problems[i]);
+  if (readable.length === 0)
+    return { outcome: "unreadable", problem: problems.find(Boolean) };
+  const target = layoutOf(kind, part.expected);
+  return {
+    outcome:
+      target && readable.some((layout) => sameLayout(target, layout))
+        ? "right"
+        : "wrong",
+  };
 }
 
 const isBlank = (input: string) =>
   input.replaceAll("\\placeholder{}", "").trim() === "";
 
-function gradePart(input: string, expected: string): PartOutcome {
-  if (isBlank(input)) return "empty";
-  if (!readings(input).some((reading) => parseMath(reading).isValid))
-    return "unreadable";
-  return isEquivalent(input, expected) ? "right" : "wrong";
+function gradePart(part: GradedPart, input: string): Graded {
+  if (isBlank(input)) return { outcome: "empty" };
+  const kind = kindOf(part);
+  return isBoxKind(kind)
+    ? gradeBoxes(part, kind, input)
+    : gradeSingle(input, part.expected);
 }
 
-export const checkerVersion = 3;
+export const checkerVersion = 4;
 
-export const gradeParts = (expected: string[], answers: string[]) =>
-  expected.map((e, i) => gradePart(answers[i] ?? "", e));
+export const gradeParts = (parts: GradedPart[], answers: string[]) =>
+  parts.map((part, i) => gradePart(part, answers[i] ?? ""));
+
+export function answerProblem(part: GradedPart) {
+  const sent = sentForm(part);
+  const kind = kindOf(part);
+  if (sent === null) return `cannot be laid out as kind "${kind}"`;
+  const { outcome } = gradePart(part, sent);
+  if (outcome !== "right")
+    return `is graded "${outcome}" when sent as "${sent}"`;
+  const layout = isBoxKind(kind) && layoutOf(kind, sent);
+  if (layout && sentOf(layout) !== sent)
+    return `is not kept by its boxes: sent as "${sent}", read back as "${sentOf(layout)}"`;
+}

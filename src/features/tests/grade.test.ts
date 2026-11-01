@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { gradeTest } from "./grade";
 
 const tasks = [
-  { taskId: "a", expected: ["2"] },
-  { taskId: "b", expected: ["1", "3"] },
-  { taskId: "c", expected: ["5"] },
+  { taskId: "a", parts: [{ expected: "2" }] },
+  { taskId: "b", parts: [{ expected: "1" }, { expected: "3" }] },
+  { taskId: "c", parts: [{ expected: "5" }] },
 ];
 
 describe("gradeTest", () => {
@@ -20,7 +20,12 @@ describe("gradeTest", () => {
 
   it("keeps unreadable and empty parts apart from wrong ones", () => {
     const [d] = gradeTest(
-      [{ taskId: "d", expected: ["1", "2", "3"] }],
+      [
+        {
+          taskId: "d",
+          parts: [{ expected: "1" }, { expected: "2" }, { expected: "3" }],
+        },
+      ],
       [["1", "\\frac{2", ""]],
     );
     expect(d).toMatchObject({

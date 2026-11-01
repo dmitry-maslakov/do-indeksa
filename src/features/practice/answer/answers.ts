@@ -29,10 +29,9 @@ export async function submitAnswer(
   const sitting = await getSittingState(profileId, taskId);
   if (isLocked(sitting)) return { sitting };
 
-  const outcomes = gradeParts(
-    task.check.map((c) => c.expected),
-    answers,
-  );
+  const graded = gradeParts(task.check, answers);
+  const outcomes = graded.map((g) => g.outcome);
+  const problems = graded.map((g) => g.problem ?? null);
   const correct = outcomes.every(isRight);
 
   return db.transaction(async (tx) => {
@@ -55,7 +54,7 @@ export async function submitAnswer(
         target: [attempts.profileId, attempts.clientId],
       })
       .returning();
-    return { outcomes, correct, session, attempt };
+    return { outcomes, problems, correct, session, attempt };
   });
 }
 
