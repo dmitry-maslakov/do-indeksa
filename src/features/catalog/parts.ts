@@ -1,6 +1,7 @@
 import { compact, uniq } from "es-toolkit";
+import { z } from "zod";
 import { squash, topLevel } from "@/lib/tex";
-import { inferKind, type Kind, kindProblem } from "./kinds";
+import { inferKind, type Kind, kindProblem, kinds } from "./kinds";
 
 export const maxParts = 6;
 
@@ -22,6 +23,26 @@ export interface PartLabel {
 
 export const hasBareTex = (label: string) =>
   /[\^_\\{}]/.test(label.replace(/\$+[^$]*\$+/g, ""));
+
+const tex = z
+  .string()
+  .min(1)
+  .refine((source) => !source.includes("$"), "TeX without $…$");
+
+export const partSchema = z.object({
+  part: z
+    .string()
+    .regex(/^[a-zđ]$/u, "a single lowercase letter")
+    .optional(),
+  var: tex.optional(),
+  kind: z.enum(kinds).optional(),
+  unit: tex.optional(),
+  label: z
+    .string()
+    .refine((label) => !hasBareTex(label), "TeX outside $…$")
+    .optional(),
+  expected: z.string().min(1),
+});
 
 const lettered = /^([a-zđ]\))\s*(.*)$/u;
 

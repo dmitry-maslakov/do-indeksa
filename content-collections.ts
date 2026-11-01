@@ -5,12 +5,12 @@ import { defineCollection, defineConfig } from "@content-collections/core";
 import { compact, uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { parseMath } from "./src/features/catalog/checker";
-import { kinds } from "./src/features/catalog/kinds";
 import {
-  hasBareTex,
   labelOf,
   maxParts,
   partProblem,
+  partSchema,
+  resultOf,
   statementLetters,
 } from "./src/features/catalog/parts";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
@@ -25,11 +25,6 @@ const keyRevOf = (expected: string[]) =>
     .slice(0, 12);
 
 const root = process.env.CONTENT_DIR ?? "content";
-
-const tex = z
-  .string()
-  .min(1)
-  .refine((source) => !source.includes("$"), "TeX without $…$");
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
 
@@ -57,25 +52,7 @@ const tasks = defineCollection({
     difficulty: z.number().int().min(1).max(5),
     source: z.string().min(1),
     answer: z.string().min(1).optional(),
-    check: z
-      .array(
-        z.object({
-          part: z
-            .string()
-            .regex(/^[a-zđ]$/u)
-            .optional(),
-          var: tex.optional(),
-          kind: z.enum(kinds).optional(),
-          unit: tex.optional(),
-          label: z
-            .string()
-            .refine((label) => !hasBareTex(label), "TeX outside $…$")
-            .optional(),
-          expected: z.string().min(1),
-        }),
-      )
-      .min(1)
-      .max(maxParts),
+    check: z.array(partSchema).min(1).max(maxParts),
     hints: z.array(z.string().min(1)).max(3).default([]),
     solution: z.string().min(1),
     type: z.string().min(1),
@@ -96,7 +73,12 @@ const tasks = defineCollection({
     }
     const title = headline(content);
     if (!title) throw new Error(`${origin}: statement must start with words`);
-    const render = (source: string) => renderMarkdown(source, origin);
+    const rendered = (sources: string[], where: string) =>
+      cache(sources, (list) =>
+        Promise.all(list.map((source) => renderMarkdown(source, where))).then(
+          () => true,
+        ),
+      );
     const markup = check.map((c) => ({
       expected: c.expected,
       label: c.label ?? null,
@@ -110,19 +92,15 @@ const tasks = defineCollection({
       const problem = partProblem(c, letters);
       if (problem) throw new Error(`${origin}: part ${i + 1}: ${problem}`);
     });
-    await cache(
-      compact([
-        content,
-        answer,
-        solution,
-        ...hints,
-        ...markup.flatMap((c, i, all) => {
-          const { prefix, suffix, caption } = labelOf(c, i, all.length);
-          return [prefix, suffix, caption];
-        }),
-      ]),
-      (sources) => Promise.all(sources.map(render)).then(() => true),
-    );
+    await rendered(compact([content, answer, solution, ...hints]), origin);
+    if (!answer) await rendered([resultOf(markup)], `${origin}: result`);
+    for (const [i, c] of markup.entries()) {
+      const { prefix, suffix, caption } = labelOf(c, i, markup.length);
+      await rendered(
+        compact([prefix, suffix, caption]),
+        `${origin}: part ${i + 1}`,
+      );
+    }
     return {
       id: task._meta.path,
       ...task,

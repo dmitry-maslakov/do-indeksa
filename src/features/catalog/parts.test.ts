@@ -5,6 +5,7 @@ import {
   labelOf,
   type PartMarkup,
   partProblem,
+  partSchema,
   resultOf,
   statementLetters,
   uncheckedLetters,
@@ -191,6 +192,39 @@ describe("partProblem", () => {
     expect(
       partProblem(markup({ var: "(x, y)", expected: "\\emptyset" }), letters),
     ).toBeUndefined();
+  });
+});
+
+describe("partSchema", () => {
+  const parse = (part: object) =>
+    partSchema.safeParse({ expected: "1", ...part });
+
+  it("accepts the fields of a checked part", () => {
+    expect(
+      parse({
+        part: "đ",
+        var: "(x, y)",
+        kind: "point",
+        unit: "\\text{cm}",
+        label: "na $[0,2\\pi)$",
+      }).success,
+    ).toBe(true);
+  });
+
+  it.each([
+    [{ part: "ab" }, "a single lowercase letter"],
+    [{ part: "A" }, "a single lowercase letter"],
+    [{ part: "" }, "a single lowercase letter"],
+    [{ kind: "set" }, "Invalid option"],
+    [{ var: "$x$" }, "TeX without $…$"],
+    [{ unit: "^\\circ$" }, "TeX without $…$"],
+    [{ var: "" }, "Too small"],
+    [{ label: "x^2" }, "TeX outside $…$"],
+    [{ label: "$x$ i y_1" }, "TeX outside $…$"],
+  ])("rejects %j", (part, message) => {
+    const result = parse(part);
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toContain(message);
   });
 });
 
