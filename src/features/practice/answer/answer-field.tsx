@@ -89,7 +89,7 @@ function Prefix({
     <span
       className={cn(
         "flex max-w-1/2 items-center gap-2 overflow-hidden whitespace-nowrap pl-4 font-math text-xl italic",
-        shown ? "text-data-soft" : "text-muted-foreground",
+        shown ? "text-data" : "text-muted-foreground",
       )}
     >
       {letter && (
