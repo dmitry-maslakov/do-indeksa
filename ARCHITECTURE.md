@@ -72,6 +72,8 @@ The server keeps task sessions. While the page is visible it pings every 30 seco
 
 In practice a session is `first` until the task has been worked on, meaning an answer with a part right or wrong or an opened answer or solution, and an hour has passed since the last attempt, reveal or skip on it; after that it is `retry`. A hint, an empty or unreadable answer or a skip alone leaves the first attempt open. A reload or a short break doesn't count as a second try. In a test it is `mock`. Each attempt stores the task's difficulty, a hash of its key and the checker version, so results can be recomputed when content or grading changes. The action client refuses crawlers by User-Agent, so they never get a profile.
 
+The task page, `checkAnswer` and the statuses read a sitting through the same `sittings()` as the learning model, with the same hour of silence. A right answer, an opened answer or an opened solution closes the sitting: the page restores the lock, the opened cards and the solved parts after a reload, and `checkAnswer` records no more answers in it. An answer given after an opened answer or solution in the same sitting, old data included, counts for no task status, statistic or bank filter.
+
 ### A test is a draft until it is finished
 
 A running test lives in the browser (zustand with localStorage) and is saved as a draft in its `test_sessions` row, so it survives a reload or a switch to another device. The draft is never graded and stays out of history and statistics.
