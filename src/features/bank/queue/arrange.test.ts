@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { arrange, listed } from "./arrange";
+import { arrange, listed, progressOf } from "./arrange";
 import type { QueueRow } from "./queue";
 
 const row = (id: string, rest: Partial<QueueRow> = {}): QueueRow => ({
   id,
   html: id,
   label: id,
-  topic: "t",
   year: null,
+  level: "easy",
   ...rest,
 });
 
@@ -62,5 +62,43 @@ describe("listed", () => {
 
   it("does not find a task the queue does not have", () => {
     expect(listed(queue, "x")).toBe(false);
+  });
+});
+
+describe("progressOf", () => {
+  const visit = [
+    row("a", { status: "solved" }),
+    row("b", { status: "wrong" }),
+    row("c", { status: "revealed" }),
+    row("d", { status: "solved" }),
+    row("e"),
+  ];
+
+  it("counts the tasks before the current one and the right ones among them", () => {
+    expect(progressOf({ visit, upcoming: [] }, "e")).toEqual({
+      position: 5,
+      done: 4,
+      right: 2,
+    });
+  });
+
+  it("counts only what precedes a task in the middle of the visit", () => {
+    expect(progressOf({ visit, upcoming: [] }, "b")).toEqual({
+      position: 2,
+      done: 1,
+      right: 1,
+    });
+  });
+
+  it("has nothing before the first task", () => {
+    expect(progressOf({ visit, upcoming: [] }, "a")).toEqual({
+      position: 1,
+      done: 0,
+      right: 0,
+    });
+  });
+
+  it("does not know a task outside the visit", () => {
+    expect(progressOf({ visit, upcoming: rows("u") }, "u")).toBeUndefined();
   });
 });

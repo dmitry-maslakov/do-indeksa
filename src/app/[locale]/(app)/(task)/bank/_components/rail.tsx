@@ -27,7 +27,7 @@ function QueueSkeleton() {
   return (
     <div className="flex flex-1 flex-col gap-2 border-t px-4 pt-4">
       {[1, 2, 3, 4, 5, 6].map((n) => (
-        <Skeleton key={n} className="h-12 rounded-lg" />
+        <Skeleton key={n} className="h-16 rounded-lg" />
       ))}
     </div>
   );

@@ -1,5 +1,4 @@
 import "server-only";
-import type { Locale } from "next-intl";
 import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { positions } from "@/features/catalog/exams";
@@ -11,7 +10,6 @@ import { getProfileId } from "@/server/profile";
 interface PersonalInput {
   id: string;
   topic: string;
-  locale: Locale;
 }
 
 async function solvedBefore(profileId: string, id: string) {
@@ -20,10 +18,10 @@ async function solvedBefore(profileId: string, id: string) {
   return solved.filter((s) => s.taskId !== id).length + 1;
 }
 
-export async function loadPersonal({ id, topic, locale }: PersonalInput) {
+export async function loadPersonal({ id, topic }: PersonalInput) {
   const profileId = await getProfileId();
   const [queue, starts, solved] = await Promise.all([
-    loadQueue({ topic, profileId, current: id, locale }),
+    loadQueue({ topic, profileId, current: id }),
     nextTasks(profileId),
     solvedBefore(profileId, id),
   ]);

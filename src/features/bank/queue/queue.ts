@@ -1,9 +1,8 @@
 import "server-only";
-import type { Locale } from "next-intl";
 import { findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
+import { type Level, levelOf } from "@/features/catalog/level";
 import { getTask } from "@/features/catalog/tasks";
-import { topicName } from "@/features/catalog/topics";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
 import { difficultyOf } from "@/features/progress/learning/types";
 import { getTouched, getTouchStatuses } from "@/features/progress/progress";
@@ -18,8 +17,8 @@ export interface QueueRow {
   id: string;
   html: string;
   label: string;
-  topic: string;
   year: number | null;
+  level: Level;
   status?: TouchStatus;
   repeat?: boolean;
   reason?: PickReason;
@@ -104,9 +103,7 @@ export const topicStart = (
   topic: string,
 ) => `/bank/${starts.get(topic)?.id ?? `start/${topic}`}`;
 
-export async function loadQueue(
-  input: PoolInput & { locale: Locale },
-): Promise<Queue> {
+export async function loadQueue(input: PoolInput): Promise<Queue> {
   const { touched, queue } = await plan(input);
   const { current, profileId } = input;
   const listed = [...queue.visit, ...queue.upcoming.map((p) => p.id)];
@@ -119,8 +116,8 @@ export async function loadQueue(
         id,
         html: previewHtml(id),
         label: task.preview.replaceAll("$", ""),
-        topic: topicName(task.topic, input.locale),
         year: examYear(id),
+        level: levelOf(task.difficulty),
         status: statuses.get(id),
         repeat: pick?.repeat,
         reason: pick?.reason,
