@@ -159,23 +159,38 @@ describe("partProblem", () => {
 
   it("rejects a part letter the statement does not have", () => {
     expect(partProblem(markup({ part: "g" }), letters)).toBe(
-      'the statement has no part "g)"',
+      'the statement has no part "g)", it has a) b) v)',
     );
     expect(partProblem(markup({ part: "a" }), [])).toBe(
-      'the statement has no part "a)"',
+      'the statement has no part "a)", it has no lettered parts',
     );
   });
 
   it("rejects a kind that does not fit the expected value", () => {
     expect(
       partProblem(markup({ kind: "value", expected: "1, 4" }), letters),
-    ).toBe('kind "value" does not fit expected "1, 4"');
+    ).toBe('kind "value" does not fit expected "1, 4" (fits: values)');
     expect(
       partProblem(
         markup({ kind: "point", var: "(x, y, z)", expected: "(3,2)" }),
         letters,
       ),
     ).toBe('"(3,2)" does not have the 3 components of var "(x, y, z)"');
+  });
+
+  it("checks the components of a tuple var against the kind read from expected", () => {
+    expect(
+      partProblem(markup({ var: "(x, y)", expected: "(1,2,3)" }), letters),
+    ).toBe('"(1,2,3)" does not have the 2 components of var "(x, y)"');
+    expect(
+      partProblem(markup({ var: "(x, y, z)", expected: "(3,2)" }), letters),
+    ).toBe('"(3,2)" does not have the 3 components of var "(x, y, z)"');
+    expect(
+      partProblem(markup({ var: "(x, y)", expected: "(3,2)" }), letters),
+    ).toBeUndefined();
+    expect(
+      partProblem(markup({ var: "(x, y)", expected: "\\emptyset" }), letters),
+    ).toBeUndefined();
   });
 });
 

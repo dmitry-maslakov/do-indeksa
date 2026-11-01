@@ -62,6 +62,14 @@ describe("kindProblem", () => {
     ["points", "(3,2), (1,1)", "(x, y)"],
     ["points", "(3,2)", "(x, y)"],
     ["points", "(0,1,2), (1,1,1)", "(a, b, c)"],
+    [null, "(3,2)", "(x, y)"],
+    [null, "(0,1,2)", "(x, y, z)"],
+    [null, "(1,1), (2,3)", "(x, y)"],
+    [null, "(-2,2)", "m"],
+    [null, "(-2,2)", null],
+    [null, "\\emptyset", "(x, y)"],
+    [null, "2", "(x, y)"],
+    [null, "(1,2)\\cup[3,4]", "D"],
   ] as const)("accepts %s for %s with var %s", (kind, expected, variable) => {
     expect(kindProblem(kind, expected, variable)).toBeUndefined();
   });
@@ -87,6 +95,9 @@ describe("kindProblem", () => {
     ["point", "(0,1,2)", "(x, y)"],
     ["points", "(3,2), (1,1,1)", "(x, y)"],
     ["points", "1, 4", null],
+    [null, "(1,2,3)", "(x, y)"],
+    [null, "(3,2)", "(x, y, z)"],
+    [null, "(1,1), (2,3,4)", "(x, y)"],
   ] as const)("rejects %s for %s with var %s", (kind, expected, variable) => {
     expect(kindProblem(kind, expected, variable)).toEqual(expect.any(String));
   });

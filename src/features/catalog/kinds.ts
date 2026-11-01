@@ -82,16 +82,20 @@ function arityProblem(latex: string, variable: string | null) {
 }
 
 export function kindProblem(
-  kind: Kind,
+  kind: Kind | null,
   expected: string,
   variable: string | null,
 ) {
-  if (!fittingKinds(expected).includes(kind)) {
-    return `kind "${kind}" does not fit expected "${expected}"`;
+  const fits = fittingKinds(expected);
+  if (kind && !fits.includes(kind)) {
+    return `kind "${kind}" does not fit expected "${expected}" (fits: ${fits.join(", ")})`;
   }
   const latex = squash(expected);
   if (kind === "interval") return intervalProblem(latex);
-  if (kind === "point" || kind === "points") {
-    return arityProblem(latex, variable);
-  }
+  const read = kind ?? inferKind(expected);
+  const tuples =
+    read === "point" ||
+    read === "points" ||
+    (read === null && !isEmptySet(latex));
+  if (tuples) return arityProblem(latex, variable);
 }

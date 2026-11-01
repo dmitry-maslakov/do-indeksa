@@ -93,9 +93,9 @@ export function resultOf(parts: PartMarkup[]) {
 export function partProblem(markup: PartMarkup, letters: string[]) {
   const { part, kind, expected, var: variable } = markup;
   if (part && !letters.includes(`${part})`)) {
-    return `the statement has no part "${part})"`;
+    return `the statement has no part "${part})", it has ${letters.join(" ") || "no lettered parts"}`;
   }
-  return kind ? kindProblem(kind, expected, variable) : undefined;
+  return kindProblem(kind, expected, variable);
 }
 
 const maths = (text: string) => text.match(/\$\$?[^$]+\$\$?/g) ?? [];
