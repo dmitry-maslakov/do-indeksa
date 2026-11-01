@@ -55,7 +55,7 @@ export function TaskCard({ card, statuses, intent }: TaskCardProps) {
   const [intended, setIntended] = useState(false);
 
   return (
-    <article className="flex flex-col gap-3 rounded-2xl bg-card px-4 pt-4 pb-4 [contain-intrinsic-size:auto_200px] [content-visibility:auto] lg:bg-muted lg:px-5 lg:pt-4 lg:pb-5">
+    <article className="relative flex flex-col gap-3 rounded-2xl bg-card px-4 pt-4 pb-4 [contain-intrinsic-size:auto_200px] [content-visibility:auto] lg:bg-muted lg:px-5 lg:pt-4 lg:pb-5">
       <div className="flex flex-wrap items-center gap-3">
         <span className="inline-flex items-center gap-2 font-semibold text-sm">
           <TopicIcon icon={card.topic.icon} tone={card.topic.tone} size="sm" />
@@ -77,7 +77,7 @@ export function TaskCard({ card, statuses, intent }: TaskCardProps) {
         onMouseEnter={() => setIntended(true)}
         onFocus={() => setIntended(true)}
         data-intent={intent}
-        className="rounded-lg text-base leading-relaxed outline-none  focus-visible:ring-2 focus-visible:ring-ring lg:text-lg"
+        className="text-base leading-relaxed outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring lg:text-lg"
       >
         <MathHtml
           html={card.statement}
