@@ -22,6 +22,7 @@ const pageView = defineEvent("page_view", {
   tab: text.optional(),
   visible: z.boolean(),
   prev_route: z.enum([...routeTemplates, "/[...rest]"]).optional(),
+  new_release: z.literal(true).optional(),
 });
 
 const webVital = defineEvent("web_vital", {

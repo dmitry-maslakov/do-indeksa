@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { use } from "react";
+import { createContext, use } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
@@ -13,6 +13,8 @@ export interface NextTask {
   href?: string;
   recommendation?: Recommendation;
 }
+
+export const NextTaskContext = createContext<NextTask | undefined>(undefined);
 
 interface ActionBarProps {
   go: boolean;
@@ -90,7 +92,8 @@ export function ActionBar({
   disabled,
 }: ActionBarProps) {
   const t = useTranslations("Solve");
-  const step = next && use(next);
+  const live = use(NextTaskContext);
+  const step = live ?? (next && use(next));
   const seen = useExposure("recommendation_made", step?.recommendation);
   return (
     <div className={phoneBar}>

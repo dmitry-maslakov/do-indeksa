@@ -22,7 +22,7 @@ import { SittingFeed } from "@/features/practice/session/sitting-feed";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
-import { QueueFeed } from "../_components/queue-store";
+import { LiveNextTask, QueueFeed } from "../_components/queue-store";
 import { firstTasks } from "./_components/first-tasks";
 import { loadPersonal, loadSitting } from "./_components/personal";
 import { PhoneBar } from "./_components/phone-bar";
@@ -101,19 +101,21 @@ export default async function SolvePage({
           html={html.statement}
           className="mt-3 overflow-x-auto text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
         />
-        <AnswerForm
-          taskId={id}
-          parts={html.parts}
-          unchecked={html.unchecked}
-          answerText={html.answerText}
-          next={personal.then((p) => p.next)}
-          fallback="/bank"
-          afterCorrect={
-            <Suspense>
-              <TaskSignInStrip solved={personal.then((p) => p.solved)} />
-            </Suspense>
-          }
-        />
+        <LiveNextTask id={id}>
+          <AnswerForm
+            taskId={id}
+            parts={html.parts}
+            unchecked={html.unchecked}
+            answerText={html.answerText}
+            next={personal.then((p) => p.next)}
+            fallback="/bank"
+            afterCorrect={
+              <Suspense>
+                <TaskSignInStrip solved={personal.then((p) => p.solved)} />
+              </Suspense>
+            }
+          />
+        </LiveNextTask>
         <HelpPanel
           taskId={id}
           hintCount={html.hints.length}
