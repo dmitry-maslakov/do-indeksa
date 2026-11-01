@@ -12,8 +12,7 @@ const found = vi.hoisted(() => ({
 
 vi.mock("./attempt-log", () => ({
   getTaskLogsOf: async () => found.logs,
-  getTasksWith: async () => found.shown,
-  shownReveals: undefined,
+  getShownTasks: async () => found.shown,
 }));
 
 vi.mock("@/server/profile", () => ({ noId: "0" }));
@@ -65,7 +64,9 @@ describe("getAfterShown", () => {
         reveals: [reveal(5, "solution")],
       }),
     ];
-    expect(await getAfterShown("p1")).toEqual(["attempt-5"]);
+    expect(await getAfterShown("p1")).toEqual([
+      { id: "attempt-5", taskId: "a" },
+    ]);
   });
 
   it("reads nothing when no task had a reveal", async () => {

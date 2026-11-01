@@ -26,7 +26,9 @@ const decidesStatus = or(
 );
 
 export async function decisiveAttempts(profileId: string, taskIds?: string[]) {
-  const given = await getAfterShown(profileId, taskIds);
+  const given = (await getAfterShown(profileId))
+    .filter((s) => !taskIds || taskIds.includes(s.taskId))
+    .map((s) => s.id);
   return and(
     eq(attempts.profileId, profileId),
     taskIds && inArray(attempts.taskId, taskIds),
