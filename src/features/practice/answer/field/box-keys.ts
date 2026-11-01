@@ -6,9 +6,10 @@ export interface BoxKeys {
   next: (carry?: string) => void;
   back: () => void;
   step: (direction: 1 | -1) => boolean;
-  bracket?: (bracket: Bracket) => void;
+  bracket?: (bracket: Bracket, text: string) => void;
   union?: () => void;
   none?: () => void;
+  paste?: (text: string) => boolean;
 }
 
 const digit = /^\d$/;
@@ -67,7 +68,7 @@ export function attachKeys(
       if (key.length > 1 && !modifiers.has(key)) comma = false;
       if (keys.bracket && isBracket(key)) {
         claim();
-        keys.bracket(key);
+        keys.bracket(key, box.value);
       } else if (keys.union && (key === "U" || key === "∪")) {
         claim();
         keys.union();
@@ -92,7 +93,9 @@ export function attachKeys(
       if (event.inputType !== "insertText") return;
       const data = event.data ?? "";
       const act =
-        (isBracket(data) && keys.bracket && (() => keys.bracket?.(data))) ||
+        (isBracket(data) &&
+          keys.bracket &&
+          (() => keys.bracket?.(data, box.value))) ||
         (data === "\\cup" && keys.union) ||
         (data === "\\emptyset" && keys.none);
       if (act) {
@@ -106,7 +109,7 @@ export function attachKeys(
           event.preventDefault();
           separate(data);
         }
-      } else if (data === ";") {
+      } else if (data === ";" || data === ",") {
         event.preventDefault();
         keys.next();
       } else if (data === "{,}") {
@@ -118,6 +121,17 @@ export function attachKeys(
       }
     },
     { signal },
+  );
+
+  box.addEventListener(
+    "paste",
+    (event) => {
+      const text = event.clipboardData?.getData("text/plain");
+      if (!text || !current()?.paste?.(text)) return;
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    { capture: true, signal },
   );
 
   box.addEventListener(

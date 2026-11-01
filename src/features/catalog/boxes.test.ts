@@ -8,9 +8,11 @@ import {
   grown,
   type Layout,
   layoutOf,
+  pastedLayout,
   sentForm,
   sentOf,
   shrunk,
+  splitAtComma,
   withBox,
   withBracket,
 } from "./boxes";
@@ -175,6 +177,61 @@ describe("editing the boxes", () => {
     expect(sentAfter(interval && withBox(interval, 1, "\\infty"))).toBe(
       "[0;\\infty)",
     );
+  });
+});
+
+describe("splitAtComma", () => {
+  const split = (kind: BoxKind, text: string, flat = 0) => {
+    const layout = layoutOf(kind, text);
+    return layout && sentOf(splitAtComma(layout, flat));
+  };
+
+  it("lays the decimal comma of an interval typed in one go into two ends", () => {
+    expect(split("interval", "(0{,}1;)")).toBe("(0;1)");
+    expect(split("interval", "[-1{,}\\frac{1}{2};)")).toBe("[-1;\\frac{1}{2})");
+    expect(split("interval", "(0;1)\\cup(2{,}3;)", 2)).toBe("(0;1)\\cup(2;3)");
+  });
+
+  it("splits a coordinate list typed in one go over the empty boxes", () => {
+    expect(split("point", "(1{,}2{,}3;;)")).toBe("(1;2;3)");
+    expect(split("point", "(1{,}2{,}3;)")).toBe("(1{,}2{,}3;)");
+  });
+
+  it("keeps a decimal that has nothing to be split from", () => {
+    expect(split("interval", "(0{,}5;1)")).toBe("(0{,}5;1)");
+    expect(split("interval", "(0{,}5;)")).toBe("(0;5)");
+    expect(split("interval", "(1;2{,}5)", 1)).toBe("(1;2{,}5)");
+    expect(split("interval", "(\\frac{1{,}5}{2};)")).toBe(
+      "(\\frac{1{,}5}{2};)",
+    );
+    expect(split("interval", "(1{,};)")).toBe("(1{,};)");
+  });
+});
+
+describe("pastedLayout", () => {
+  it.each([
+    ["interval", "[0,2]", "[0;2]"],
+    ["interval", "x\\in[0,2]", "[0;2]"],
+    [
+      "interval",
+      "(-∞,-1)∪(0,1)∪(1,+∞)",
+      "(-\\infty;-1)\\cup(0;1)\\cup(1;+\\infty)",
+    ],
+    ["point", "(3,2)", "(3;2)"],
+    ["points", "(1,2),(3,4)", "(1;2);(3;4)"],
+  ] as const)("lays %s %s out in boxes", (kind, text, sent) => {
+    const layout = pastedLayout(kind, text, 2);
+    expect(layout && sentOf(layout)).toBe(sent);
+  });
+
+  it.each([
+    ["values", "1,4"],
+    ["interval", "5"],
+    ["interval", "\\emptyset"],
+    ["point", "(1,2,3)"],
+    ["point", "7"],
+  ] as const)("leaves %s %s to the field", (kind, text) => {
+    expect(pastedLayout(kind, text, 2)).toBeNull();
   });
 });
 

@@ -66,6 +66,17 @@ test.describe("a list of values", () => {
     await expect(fields(page)).toHaveCount(2);
   });
 
+  test("opens the next box at a comma after a letter, a root or a bracket", async ({
+    page,
+  }) => {
+    await enter(page, fields(page).first(), "2pi, 3");
+    await expect(sent(page)).toHaveValue("2\\pi;3");
+    await expect(fields(page)).toHaveCount(2);
+    await page.keyboard.type(", (1+2),4");
+    await expect(fields(page)).toHaveCount(4);
+    await expect(sent(page)).toHaveValue("2\\pi;3;\\left(1+2\\right);4");
+  });
+
   test("removes an empty box at Backspace and goes back to the one before", async ({
     page,
   }) => {
@@ -111,6 +122,34 @@ test.describe("a list of values", () => {
     await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
   });
 
+  test("puts the cursor in the last box when the empty part of the frame is clicked", async ({
+    page,
+  }) => {
+    await enter(page, fields(page).first(), "4;3");
+    await fields(page).first().click();
+    const frame = page.locator("[data-field]").first();
+    const { width, height } = (await frame.boundingBox()) ?? {
+      width: 0,
+      height: 0,
+    };
+    await frame.click({ position: { x: width - 40, y: height / 2 } });
+    await expect(fields(page).last()).toBeFocused();
+  });
+
+  test("takes the symbol row away once the answer is shown or checked", async ({
+    page,
+  }) => {
+    const tray = page.locator("button", { hasText: "∅ nema rešenja" });
+    await expect(tray.locator("xpath=ancestor::*[@inert]")).toHaveCount(0);
+    await enter(page, fields(page).first(), "4;");
+    await page.getByRole("button", { name: "√" }).click();
+    await page.keyboard.type("2");
+    await check(page);
+    await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+    await expect(tray.locator("xpath=ancestor::*[@inert]")).toHaveCount(1);
+    await expect(sent(page)).toHaveValue("4;\\sqrt2");
+  });
+
   test("shows the result in the boxes, read only", async ({ page }) => {
     await page.getByRole("button", { name: "Rezultat" }).click();
     await expect(fields(page)).toHaveCount(2);
@@ -149,6 +188,38 @@ test.describe("an interval", () => {
     await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
   });
 
+  test("splits a pair typed in one go with a bare comma into its two ends", async ({
+    page,
+  }) => {
+    await enter(page, fields(page).first(), "[0,2]");
+    await expect(fields(page)).toHaveCount(2);
+    await expect(sent(page)).toHaveValue("[0;2]");
+    await expect(fields(page).last()).toBeFocused();
+    await page.keyboard.type("U(3,4)");
+    await expect(fields(page)).toHaveCount(4);
+    await expect(sent(page)).toHaveValue("[0;2]\\cup(3;4)");
+  });
+
+  test("lays out an interval pasted as text", async ({ page }) => {
+    await enter(page, fields(page).first(), "1");
+    await fields(page)
+      .first()
+      .evaluate((box) => {
+        const data = new DataTransfer();
+        data.setData("text/plain", "x\\in(-∞,-1)∪[0,1)");
+        box.shadowRoot?.querySelector(".ML__keyboard-sink")?.dispatchEvent(
+          new ClipboardEvent("paste", {
+            clipboardData: data,
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+          }),
+        );
+      });
+    await expect(fields(page)).toHaveCount(4);
+    await expect(sent(page)).toHaveValue("(-\\infty;-1)\\cup[0;1)");
+  });
+
   test("changes a bracket by a click and keeps an infinite end round", async ({
     page,
   }) => {
@@ -185,6 +256,16 @@ test.describe("an interval", () => {
       page.getByRole("alert").filter({ hasText: "Kraj intervala je prazan" }),
     ).toBeVisible();
     await expect(fields(page).nth(1)).toHaveAttribute("data-invalid", "");
+  });
+
+  test("says that a decimal comma swallowed the next end", async ({ page }) => {
+    await enter(page, fields(page).first(), "0,5");
+    await check(page);
+    const problem = page
+      .getByRole("alert")
+      .filter({ hasText: "Zarez iza cifre je decimalni" });
+    await expect(problem).toBeVisible();
+    await expect(fields(page).first()).toHaveAttribute("data-invalid", "");
   });
 
   test("shows the result as an interval in boxes", async ({ page }) => {
@@ -293,6 +374,33 @@ test.describe("on a phone", () => {
     await expect(fields(page).nth(2)).toBeFocused();
     await cap(page, "∞").tap();
     await expect(sent(page)).toHaveValue("[1;2)\\cup(\\infty;)");
+  });
+
+  test("a bracketed pair typed with the decimal comma key lands in two ends", {
+    tag: "@mobile",
+  }, async ({ page }) => {
+    await touch(page, "/bank/eks-003");
+    await cap(page, "[").tap();
+    await key(page, "0").tap();
+    await keys(page).locator('[data-command*="insertDecimalSeparator"]').tap();
+    await page.waitForTimeout(150);
+    await key(page, "2").tap();
+    await cap(page, "]").tap();
+    await expect(fields(page)).toHaveCount(2);
+    await expect(sent(page)).toHaveValue("[0;2]");
+  });
+
+  test("the letters keyboard has the operators and keeps the keys of the kind", {
+    tag: "@mobile",
+  }, async ({ page }) => {
+    await touch(page, "/bank/log-001");
+    await cap(page, "abc").tap();
+    await expect(cap(page, "q")).toBeVisible();
+    await expect(cap(page, "sledeće ⇥")).toBeVisible();
+    await expect(key(page, "+")).toBeVisible();
+    await expect(key(page, "-")).toBeVisible();
+    await cap(page, "xⁿ").tap();
+    await expect(cap(page, "123")).toBeVisible();
   });
 
   test("a single value keeps the plain keyboard", { tag: "@mobile" }, async ({

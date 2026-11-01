@@ -137,14 +137,17 @@ function Mark({ state }: { state: FieldState }) {
   return null;
 }
 
-function focusFirst(event: PointerEvent<HTMLDivElement>) {
+function focusEmpty(event: PointerEvent<HTMLDivElement>) {
   if ((event.target as Element).closest("math-field, button")) return;
-  const first = event.currentTarget.querySelector<MathfieldElement>(
-    "math-field:not([read-only])",
-  );
-  if (!first) return;
+  const boxes = [
+    ...event.currentTarget.querySelectorAll<MathfieldElement>(
+      "math-field:not([read-only])",
+    ),
+  ];
+  const target = boxes.find((box) => box.value === "") ?? boxes.at(-1);
+  if (!target) return;
   event.preventDefault();
-  focusBox(first);
+  focusBox(target);
 }
 
 const reasonKeys = {
@@ -184,7 +187,7 @@ export function Frame({
     <>
       <div
         data-field={part.kind ?? "value"}
-        onPointerDown={focusFirst}
+        onPointerDown={focusEmpty}
         className={frame({
           variant,
           state: variant === "solve" ? state : "empty",

@@ -124,6 +124,16 @@ export function withBox(layout: Layout, index: number, text: string): Layout {
   }
 }
 
+export function splitAtComma(layout: Layout, flat: number): Layout {
+  const { group, index, size } = locate(layout, flat);
+  const boxes = groupsOf(layout)[group] ?? [];
+  const parts = commaParts(boxes[index] ?? "");
+  const fits = parts.length > 1 && parts.length <= size - index;
+  if (!fits || !parts.every(isFilled) || boxes.slice(index + 1).some(isFilled))
+    return layout;
+  return parts.reduce((next, part, i) => withBox(next, flat + i, part), layout);
+}
+
 export function withBracket(
   layout: Layout,
   group: number,
@@ -289,6 +299,24 @@ export function layoutOf(kind: BoxKind, text: string): Layout | null {
       return pieces && { kind, pieces };
     }
   }
+}
+
+export function pastedLayout(kind: BoxKind, text: string, arity: number) {
+  const layout =
+    kind === "values"
+      ? null
+      : layoutOf(
+          kind,
+          text
+            .replaceAll("∞", "\\infty")
+            .replaceAll("∪", "\\cup")
+            .replaceAll("−", "-"),
+        );
+  if (!layout || boxesOf(layout).length < 2) return null;
+  const sized =
+    kind === "interval" ||
+    groupsOf(layout).every((boxes) => boxes.length === arity);
+  return sized ? layout : null;
 }
 
 export function filledCount(kind: Kind | null, text: string) {

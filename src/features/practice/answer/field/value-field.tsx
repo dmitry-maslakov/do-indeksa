@@ -61,6 +61,7 @@ export function ValueField({
           symbols.log,
         ]}
         active={active}
+        locked={locked}
         hint={t("hintValue")}
       />
     </>
