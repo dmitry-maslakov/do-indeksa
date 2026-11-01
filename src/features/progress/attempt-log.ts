@@ -1,5 +1,6 @@
 import "server-only";
 import { and, eq, inArray, type SQL } from "drizzle-orm";
+import { cache } from "react";
 import type { SessionKind } from "@/db/columns";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
@@ -51,28 +52,42 @@ function toTaskLogs<S extends LoggedSubmit & Row & { tz: string | null }>(
   });
 }
 
-async function readEvents(profileId: string, taskIds?: string[]) {
+const submitFields = {
+  taskId: attempts.taskId,
+  kind: taskSessions.kind,
+  at: epochMs(attempts.createdAt),
+  outcomes: attempts.outcomes,
+  correct: attempts.correct,
+  difficulty: attempts.difficulty,
+  keyRev: attempts.keyRev,
+  tz: taskSessions.tz,
+};
+
+const submitsWith = (where: SQL | undefined) =>
+  db
+    .select(submitFields)
+    .from(attempts)
+    .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
+    .where(where);
+
+const storedWith = (where: SQL | undefined) =>
+  db
+    .select({ ...submitFields, id: attempts.id, answers: attempts.answers })
+    .from(attempts)
+    .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
+    .where(where);
+
+async function readEvents<S>(
+  readSubmits: (where: SQL | undefined) => PromiseLike<S[]>,
+  profileId: string,
+  taskIds?: string[],
+) {
   const ofProfile = and(
     eq(taskSessions.profileId, profileId),
     taskIds && inArray(taskSessions.taskId, taskIds),
   );
   const [submits, opened, skipped] = await Promise.all([
-    db
-      .select({
-        id: attempts.id,
-        taskId: attempts.taskId,
-        kind: taskSessions.kind,
-        at: epochMs(attempts.createdAt),
-        answers: attempts.answers,
-        outcomes: attempts.outcomes,
-        correct: attempts.correct,
-        difficulty: attempts.difficulty,
-        keyRev: attempts.keyRev,
-        tz: taskSessions.tz,
-      })
-      .from(attempts)
-      .innerJoin(taskSessions, eq(taskSessions.id, attempts.sessionId))
-      .where(ofProfile),
+    readSubmits(ofProfile),
     db
       .select({
         taskId: reveals.taskId,
@@ -98,7 +113,7 @@ async function readEvents(profileId: string, taskIds?: string[]) {
 
 export async function getTaskLogs(profileId: string): Promise<TaskLogs> {
   if (profileId === noId) return { firstAttempts: [], taskLogs: [] };
-  const { submits, opened, skipped } = await readEvents(profileId);
+  const { submits, opened, skipped } = await readEvents(submitsWith, profileId);
   return {
     firstAttempts: toTaskLogs(
       submits.filter(isFirst),
@@ -114,11 +129,13 @@ export async function getTaskLogsOf(
   taskIds: string[],
 ): Promise<TaskLog<StoredSubmit>[]> {
   if (profileId === noId) return [];
-  const { submits, opened, skipped } = await readEvents(profileId, taskIds);
+  const { submits, opened, skipped } = await readEvents(
+    storedWith,
+    profileId,
+    taskIds,
+  );
   return toTaskLogs(submits, opened, skipped);
 }
-
-export const shownReveals = inArray(reveals.part, ["answer", "solution"]);
 
 export async function getTasksWith(
   table: typeof reveals | typeof skips,
@@ -138,6 +155,15 @@ export async function getTasksWith(
     );
   return new Set(rows.map((row) => row.taskId));
 }
+
+export const getShownTasks = cache(async (profileId: string) =>
+  getTasksWith(
+    reveals,
+    profileId,
+    undefined,
+    inArray(reveals.part, ["answer", "solution"]),
+  ),
+);
 
 export async function getActivity(profileId: string): Promise<TaskActivity[]> {
   if (profileId === noId) return [];

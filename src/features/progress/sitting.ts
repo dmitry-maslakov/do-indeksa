@@ -1,8 +1,7 @@
 import "server-only";
 import { cache } from "react";
-import { reveals } from "@/db/schema";
 import { noId } from "@/server/profile";
-import { getTaskLogsOf, getTasksWith, shownReveals } from "./attempt-log";
+import { getShownTasks, getTaskLogsOf } from "./attempt-log";
 import { defaultPolicy } from "./learning/policy";
 import {
   afterShown,
@@ -21,15 +20,16 @@ export async function getSittingState(
   return log ? sittingState(log, Date.now(), attemptGapMs) : openSitting;
 }
 
-export const getAfterShown = cache(
-  async (profileId: string, taskIds?: string[]) => {
-    if (profileId === noId) return [];
-    const shown = await getTasksWith(reveals, profileId, taskIds, shownReveals);
-    if (shown.size === 0) return [];
-    const logs = await getTaskLogsOf(profileId, [...shown]);
-    const now = Date.now();
-    return logs.flatMap((log) =>
-      afterShown(log, now, attemptGapMs).map((s) => s.id),
-    );
-  },
-);
+export const getAfterShown = cache(async (profileId: string) => {
+  if (profileId === noId) return [];
+  const shown = await getShownTasks(profileId);
+  if (shown.size === 0) return [];
+  const logs = await getTaskLogsOf(profileId, [...shown]);
+  const now = Date.now();
+  return logs.flatMap((log) =>
+    afterShown(log, now, attemptGapMs).map(({ id }) => ({
+      id,
+      taskId: log.taskId,
+    })),
+  );
+});
