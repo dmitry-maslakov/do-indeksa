@@ -3,32 +3,32 @@ topic: trigonometry
 type: roots-in-interval
 difficulty: 2
 source: Do indeksa
-answer: 'na $[0,2\pi)$: $x\in\left\{\frac{\pi}{2},\ \frac{5\pi}{6}\right\}$; u $\left(\frac{2\pi}{3},2\pi\right)$: samo $x=\frac{5\pi}{6}$'
+answer: 'na $[0,\pi)$: $x\in\left\{\frac{\pi}{4},\ \operatorname{arctg}2\right\}$; u $\left(\frac{\pi}{3},\frac{\pi}{2}\right)$: samo $x=\operatorname{arctg}2$'
 check:
-- label: na $[0,2\pi)$
+- label: na $[0,\pi)$
   var: x
   kind: values
-  expected: \frac{\pi}{2}, \frac{5\pi}{6}
-- label: u $\left(\frac{2\pi}{3},2\pi\right)$
+  expected: \frac{\pi}{4}, \arctan 2
+- label: u $\left(\frac{\pi}{3},\frac{\pi}{2}\right)$
   var: x
-  expected: \frac{5\pi}{6}
+  expected: \arctan 2
 hints:
 - |
-  Podeli jednačinu sa $2$ da dobiješ tabličnu vrednost sinusa. Sinus istu vrednost uzima za dva ugla, pa zapiši obe serije rešenja, a zatim odaberi one korene koji upadaju u tražene intervale.
+  Uvedi smenu $t=\operatorname{tg}x$ i reši dobijenu kvadratnu jednačinu. Tangens ima osnovni period $\pi$, pa na $[0,\pi)$ svaka vrednost tangensa daje tačno jedan ugao; zatim odaberi korene koji upadaju u drugi interval.
 - |
-  Iz $\sin\!\left(x-\dfrac{\pi}{6}\right)=\dfrac{\sqrt{3}}{2}$ dobijaš dve serije: $x-\frac{\pi}{6}=\frac{\pi}{3}+2k\pi$ ili $x-\frac{\pi}{6}=\frac{2\pi}{3}+2k\pi$. Prebaci $\dfrac{\pi}{6}$ na desnu stranu, pa proveri koje vrednosti pripadaju svakom od dva intervala.
+  Iz $t^2-3t+2=0$ dobijaš $\operatorname{tg}x=1$ ili $\operatorname{tg}x=2$. Za drugi interval iskoristi to što tangens na $\left(0,\dfrac{\pi}{2}\right)$ raste i što je $\operatorname{tg}\dfrac{\pi}{3}=\sqrt{3}$.
 solution: |
-  Iz $\sin\!\left(x-\dfrac{\pi}{6}\right)=\dfrac{\sqrt{3}}{2}$ dobijamo dve serije:
+  Smenom $t=\operatorname{tg}x$ dobijamo $t^2-3t+2=0$, pa je $t=1$ ili $t=2$:
 
-  $$x-\frac{\pi}{6}=\frac{\pi}{3}+2k\pi\quad\text{ili}\quad x-\frac{\pi}{6}=\frac{2\pi}{3}+2k\pi,$$
+  $$\operatorname{tg}x=1\quad\text{ili}\quad\operatorname{tg}x=2.$$
 
-  to jest $x=\dfrac{\pi}{2}+2k\pi$ ili $x=\dfrac{5\pi}{6}+2k\pi$. Na $[0,2\pi)$ ostaju $x=\dfrac{\pi}{2}$ i $x=\dfrac{5\pi}{6}$.
+  Tangens ima osnovni period $\pi$, pa na $[0,\pi)$ svaka od ovih jednačina ima tačno jedno rešenje: $x=\dfrac{\pi}{4}$ i $x=\operatorname{arctg}2$.
 
-  Odabir korena koji pripadaju $\left(\dfrac{2\pi}{3},2\pi\right)$: $\dfrac{\pi}{2}\approx 1{,}57<\dfrac{2\pi}{3}\approx 2{,}09$ — ne pripada, a $\dfrac{5\pi}{6}\approx 2{,}62$ — pripada.
+  Odabir korena koji pripadaju $\left(\dfrac{\pi}{3},\dfrac{\pi}{2}\right)$: tangens na $\left(0,\dfrac{\pi}{2}\right)$ raste, a $\operatorname{tg}\dfrac{\pi}{4}=1<\sqrt{3}=\operatorname{tg}\dfrac{\pi}{3}<2$, pa $\dfrac{\pi}{4}$ ne pripada, a $\operatorname{arctg}2$ pripada.
 ---
 
 Naći sva rešenja jednačine
 
-$$2\sin\!\left(x-\frac{\pi}{6}\right)=\sqrt{3},$$
+$$\operatorname{tg}^2x-3\operatorname{tg}x+2=0,$$
 
-koja pripadaju intervalu $[0,\,2\pi)$, i posebno ona od njih koja leže u $\left(\dfrac{2\pi}{3},\,2\pi\right)$.
+koja pripadaju intervalu $[0,\,\pi)$, i posebno ona od njih koja leže u $\left(\dfrac{\pi}{3},\,\dfrac{\pi}{2}\right)$.

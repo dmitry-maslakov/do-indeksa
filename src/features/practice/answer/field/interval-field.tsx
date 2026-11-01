@@ -16,7 +16,12 @@ import {
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
 import { comma, glyph, MathBox, NoSolution, slot } from "./math-box";
-import { SymbolTray, TrayButton, trayKeys } from "./symbol-tray";
+import {
+  functionSymbols,
+  SymbolTray,
+  symbolKeys,
+  TrayButton,
+} from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
 
 function Bracket({
@@ -116,6 +121,7 @@ export function IntervalField({
         value={text}
         label={t(name, { number: group + 1 })}
         keyboard="interval"
+        symbols={part.symbols}
         keys={keysOf(index)}
         locked={readOnly}
         invalid={invalid === index}
@@ -185,7 +191,13 @@ export function IntervalField({
         </fieldset>
       </Frame>
       <SymbolTray
-        keys={trayKeys(part, "root", "pi", "fraction")}
+        keys={symbolKeys(
+          part.symbols,
+          "root",
+          "pi",
+          "fraction",
+          ...functionSymbols,
+        )}
         active={active}
         locked={readOnly}
       >

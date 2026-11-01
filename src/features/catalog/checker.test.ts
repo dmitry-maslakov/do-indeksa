@@ -145,6 +145,35 @@ describe("values", () => {
   });
 });
 
+describe("a function typed with its key", () => {
+  it.each([
+    ["a\\ctg\\alpha", "a\\cot\\alpha"],
+    ["3\\tg^2x+3\\tg^4x", "3\\tan^2 x+3\\tan^4 x"],
+    ["2\\cos x-3\\sin x", "-3\\sin x+2\\cos x"],
+    ["\\arccos\\frac{9}{10}", "\\arccos\\frac{9}{10}"],
+    ["\\frac72+\\ln2", "\\frac{7}{2}+\\ln 2"],
+  ])("accepts %s for %s", (input, expected) => {
+    expect(grade(expected, input)).toBe("right");
+  });
+
+  it("is read in the boxes of a list and of an interval", () => {
+    expect(grade("2\\arctan 2, \\pi", "\\pi;2\\arctg2", "values")).toBe(
+      "right",
+    );
+    expect(
+      grade(
+        "[\\ln\\frac{4}{5},+\\infty)",
+        "[\\ln\\frac45;+\\infty)",
+        "interval",
+      ),
+    ).toBe("right");
+  });
+
+  it("is not taken for its inverse", () => {
+    expect(grade("\\arctan 2", "\\tg2")).toBe("wrong");
+  });
+});
+
 describe("point and points", () => {
   it.each([
     ["(3;2)", "(3,2)"],

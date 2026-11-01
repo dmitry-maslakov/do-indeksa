@@ -2,6 +2,7 @@ import type { MathfieldElement } from "mathlive";
 import { type RefObject, useEffect, useEffectEvent } from "react";
 import { trimComma } from "@/features/catalog/boxes";
 import type { Kind } from "@/features/catalog/kinds";
+import type { AnswerSymbol } from "@/features/catalog/parts";
 import { countInput, focused, type InputStats, shown } from "../input-stats";
 import { attachKeys, type BoxKeys } from "./box-keys";
 import { keyboardFor } from "./keyboards";
@@ -50,18 +51,19 @@ function loadMathlive() {
   return setup;
 }
 
-function selectKeyboard(kind: Kind, next: string) {
+function selectKeyboard(kind: Kind, next: string, symbols: AnswerSymbol[]) {
   const keyboard = window.mathVirtualKeyboard;
-  const id = `${kind}/${next}`;
+  const id = `${kind}/${next}/${symbols.join()}`;
   if (!keyboard || selected === id) return;
   selected = id;
-  keyboard.layouts = keyboardFor(kind, next);
+  keyboard.layouts = keyboardFor(kind, next, symbols);
 }
 
 interface MathBoxOptions {
   active: RefObject<MathfieldElement | null>;
   value: string;
   keyboard: Kind;
+  symbols: AnswerSymbol[];
   next: string;
   keys?: BoxKeys;
   stats: RefObject<InputStats>;
@@ -70,12 +72,21 @@ interface MathBoxOptions {
 
 export function useMathBox(
   field: RefObject<MathfieldElement | null>,
-  { active, value, keyboard, next, keys, stats, onEdit }: MathBoxOptions,
+  {
+    active,
+    value,
+    keyboard,
+    symbols,
+    next,
+    keys,
+    stats,
+    onEdit,
+  }: MathBoxOptions,
 ) {
   const boxed = Boolean(keys);
   const edited = useEffectEvent((latex: string) => onEdit(latex));
   const keysNow = useEffectEvent(() => keys);
-  const choose = useEffectEvent(() => selectKeyboard(keyboard, next));
+  const choose = useEffectEvent(() => selectKeyboard(keyboard, next, symbols));
 
   useEffect(() => {
     const el = field.current;
