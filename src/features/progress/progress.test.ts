@@ -29,6 +29,11 @@ vi.mock("@/server/db", async () => {
 
 vi.mock("@/server/profile", () => ({ noId: "0" }));
 
+vi.mock("./attempt-log", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./attempt-log")>()),
+  getTaskLogsOf: async () => [],
+}));
+
 const touch = (taskId: string, from: number) => ({
   taskId,
   kind: "first",

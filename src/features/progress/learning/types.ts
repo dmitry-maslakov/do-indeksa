@@ -20,12 +20,17 @@ export interface LoggedSubmit {
   keyRev: string;
 }
 
+export interface StoredSubmit extends LoggedSubmit {
+  id: string;
+  answers: string[];
+}
+
 export interface LoggedReveal {
   at: number;
   part: StoredReveal;
 }
 
-export interface TaskLog {
+export interface TaskLog<S extends LoggedSubmit = LoggedSubmit> {
   taskId: string;
   topic: string;
   type: string;
@@ -33,7 +38,7 @@ export interface TaskLog {
   keyRev: string;
   tz: string | null;
   lastTz: string | null;
-  submits: LoggedSubmit[];
+  submits: S[];
   reveals: LoggedReveal[];
   skips: number[];
 }

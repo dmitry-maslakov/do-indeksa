@@ -1,5 +1,10 @@
 import { dayMs, minuteMs } from "@/lib/dates";
-import type { LoggedReveal, LoggedSubmit, TaskLog } from "./types";
+import type {
+  LoggedReveal,
+  LoggedSubmit,
+  StoredSubmit,
+  TaskLog,
+} from "./types";
 
 export const logStart = Date.parse("2026-10-20T10:00:00Z");
 
@@ -19,12 +24,24 @@ export const submit = (
   keyRev,
 });
 
+export const stored = (
+  minutes: number,
+  outcomes: LoggedSubmit["outcomes"],
+  answers: string[],
+): StoredSubmit => ({
+  ...submit(minutes, outcomes),
+  id: `attempt-${minutes}`,
+  answers,
+});
+
 export const reveal = (
   minutes: number,
   part: LoggedReveal["part"],
 ): LoggedReveal => ({ at: at(minutes), part });
 
-export const taskLog = (over: Partial<TaskLog>): TaskLog => ({
+export const taskLog = <S extends LoggedSubmit = LoggedSubmit>(
+  over: Partial<TaskLog<S>>,
+): TaskLog<S> => ({
   taskId: "t1",
   topic: "logarithms",
   type: "substitution",

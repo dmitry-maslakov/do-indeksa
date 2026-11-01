@@ -1,17 +1,39 @@
 import "server-only";
-import { and, count, eq, gte, max, or, type SQL, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  eq,
+  gte,
+  inArray,
+  max,
+  notInArray,
+  or,
+  type SQL,
+  sql,
+} from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { numberOf } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
+import { getAfterShown } from "./sitting";
 import { accuracyDays, type TaskStat } from "./stats";
 
-export const decidesStatus = or(
+const decidesStatus = or(
   eq(attempts.correct, true),
   sql`'wrong' = any(${attempts.outcomes})`,
 );
+
+export async function decisiveAttempts(profileId: string, taskIds?: string[]) {
+  const given = await getAfterShown(profileId, taskIds);
+  return and(
+    eq(attempts.profileId, profileId),
+    taskIds && inArray(attempts.taskId, taskIds),
+    decidesStatus,
+    given.length > 0 ? notInArray(attempts.id, given) : undefined,
+  );
+}
 
 type TaskTotals = Omit<TaskStat, "number" | "topic">;
 
@@ -47,7 +69,7 @@ export async function getTaskStats(profileId: string) {
       lastAt: epochMs(max(attempts.createdAt)),
     })
     .from(attempts)
-    .where(and(eq(attempts.profileId, profileId), decidesStatus))
+    .where(await decisiveAttempts(profileId))
     .groupBy(attempts.taskId);
   return taskStats(rows);
 }
