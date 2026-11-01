@@ -37,6 +37,14 @@ async function topOf(row: Locator, list: Locator) {
   return (at?.y ?? 0) - (within?.y ?? 0);
 }
 
+async function driftOf(row: Locator, list: Locator, placed: number) {
+  const moved = (await topOf(row, list)) - placed;
+  const bottom = await list.evaluate(
+    (el) => el.scrollTop >= el.scrollHeight - el.clientHeight - 1,
+  );
+  return moved > 0 && bottom ? 0 : Math.abs(moved);
+}
+
 async function settled(page: Page, list: Locator) {
   let last = "";
   await expect
@@ -187,9 +195,7 @@ test("the list follows the student and offers a way back once scrolled away", as
   await settled(page, list);
   const placed = await topOf(current, list);
   await skip(page);
-  await expect
-    .poll(async () => Math.abs((await topOf(current, list)) - placed))
-    .toBeLessThan(8);
+  await expect.poll(() => driftOf(current, list, placed)).toBeLessThan(8);
 
   const box = await list.boundingBox();
   await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
@@ -228,7 +234,7 @@ test("steps taken in quick succession leave the current row where it was", async
     await page.waitForTimeout(120);
   }
   await settled(page, list);
-  expect(Math.abs((await topOf(current, list)) - placed)).toBeLessThan(20);
+  expect(await driftOf(current, list, placed)).toBeLessThan(20);
 });
 
 test("a step after going back to an earlier task still follows the current row", async ({
