@@ -8,6 +8,8 @@ A task page needs only its address to render the statement and the answer field,
 
 Pages with nothing personal, theory, privacy and terms, are prerendered whole and served from the cache with `s-maxage`. The shared layouts read no cookie or header, because one such read anywhere in them makes every page render on each request.
 
+Cloudflare serves `/_next/static` on doindeksa.rs from the R2 bucket `do-indeksa-static` through a Cloud Connector rule, not from the pods. CI uploads the static files of every trusted build before the image is tagged, and the bucket keeps the files of all builds. During a rollout two builds run side by side, so a page always finds the scripts and styles of the build that rendered it, and so does a tab opened before the rollout.
+
 ## Code map
 
 `content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`. Theory is `theory/<topic>/index.md` with `##` sections plus `theory/<topic>/methods/<slug>.md`, and uses the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`. Each topic lists its task types in `types` and every task names one in `type`: the slug of the method that is the key to solving it, or a kind of task that no method covers.
