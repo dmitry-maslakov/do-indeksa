@@ -12,7 +12,19 @@ Cloudflare serves `/_next/static` on doindeksa.rs from the R2 bucket `do-indeksa
 
 ## Code map
 
-`content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`. Theory is `theory/<topic>/index.md` with `##` sections plus `theory/<topic>/methods/<slug>.md`, and uses the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`. Each topic lists its task types in `types` and every task names one in `type`: the slug of the method that is the key to solving it, or a kind of task that no method covers.
+`content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`.
+
+A task's `check` lists the parts its answer field asks for. Each part has the `expected` LaTeX and may add:
+
+- `part`: the letter of the part in the statement, written as `**a)**` there. Latin and Serbian lettering both work: `a`, `b`, `v`, `g`, `d`, `đ`, `e`. The build rejects a letter the statement does not have. Several checked parts can share a letter.
+- `var`: the unknown the part asks for, as TeX without dollar signs: `x`, `m`, `(x, y)`, `|z|`.
+- `kind`: `value` (one number or expression, shown as `x =`), `values` (roots in no order, `x ∈ { }`), `interval` (an interval, a union or isolated points, `x ∈`, or `D =` when `var` is one capital letter), `point` (a tuple, `(x, y) =`) or `points` (tuples in no order, `(x, y) ∈ { }`). The build rejects a kind that does not fit `expected`: `values` is a list, `point` is a tuple as long as `var` when `var` is a tuple, `interval` is brackets joined by `\cup` with an open bracket at each `\infty`, and `\emptyset` fits `values` and `interval`.
+- `unit`: TeX shown after the field, which the student does not type.
+- `label`: a caption over the field, Serbian text with TeX only inside `$…$`.
+
+Without `kind`, the kind is read from `expected`: `\cup`, `\infty` or `\{` in it, or a square bracket at the end of a pair, make an interval, three or more components a point, a list of tuples points and any other list values. A bare pair `(a, b)` and `\emptyset` stay unread and are shown with `=`. Without `var`, a short `label` is the unknown, as before. `answer` is optional: without it the result is built from `check`. `keyRev` hashes `expected` only, so these fields never change it.
+
+Theory is `theory/<topic>/index.md` with `##` sections plus `theory/<topic>/methods/<slug>.md`, and uses the blocks `:::remember`, `:::example`, `:::mistake` and `:::formulas`. Each topic lists its task types in `types` and every task names one in `type`: the slug of the method that is the key to solving it, or a kind of task that no method covers.
 
 A weekly variant is `variants/nedelja-<Monday>.yaml` with tasks `nedelja-<Monday>-01` to `-10`, each of difficulty 3 or more. During its week it is Varijanta nedelje; the home page caches the card for up to an hour, so a new week can start with the old card. Until the bank marks it `released: true`, its tasks stay out of the bank list, search, practice and the sitemap, though each still opens by its link; once released, the variant joins the curated tests. A week with no variant of its own takes a curated test in turn.
 
