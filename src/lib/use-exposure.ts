@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useOnInView } from "react-intersection-observer";
+import { observe } from "react-intersection-observer";
 import { type BrowserEvents, queueEvent } from "./analytics-browser";
 
 const exposed = new Set<string>();
@@ -17,15 +17,24 @@ export function viewKey(bfcacheId: string, subject: string) {
 export function useExposure<Name extends keyof BrowserEvents>(
   name: Name,
   props?: BrowserEvents[Name],
+  page = "",
 ) {
   const { bfcacheId } = useRouter();
-  return useOnInView(
-    (inView) => {
-      const key = viewKey(bfcacheId, `${name} ${JSON.stringify(props)}`);
-      if (!inView || !props || exposed.has(key)) return;
-      exposed.add(key);
-      queueEvent(name, props);
-    },
-    { threshold: 0.5, triggerOnce: true, skip: !props },
-  );
+
+  return (node: Element | null) => {
+    if (!node || !props) return;
+    return observe(
+      node,
+      (inView) => {
+        const key = viewKey(
+          bfcacheId,
+          `${name} ${page} ${JSON.stringify(props)}`,
+        );
+        if (!inView || exposed.has(key)) return;
+        exposed.add(key);
+        queueEvent(name, props);
+      },
+      { threshold: 0.5 },
+    );
+  };
 }
