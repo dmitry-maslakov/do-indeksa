@@ -1,10 +1,15 @@
 import { cn } from "cn";
 import { CircleCheckIcon, CircleIcon, CircleXIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { TaskStatus } from "./status";
+import type { TaskStatus, TouchStatus } from "./status";
+
+const empty = { Icon: CircleIcon, look: "text-input" } as const;
 
 const icons = {
-  new: { Icon: CircleIcon, look: "text-input" },
+  new: empty,
+  opened: empty,
+  skipped: empty,
+  revealed: empty,
   solved: { Icon: CircleCheckIcon, look: "fill-success stroke-card" },
   wrong: { Icon: CircleXIcon, look: "fill-error stroke-card" },
 } as const;
@@ -15,7 +20,7 @@ export const statusTones = {
 } as const;
 
 interface StatusIconProps {
-  status?: TaskStatus;
+  status?: TaskStatus | TouchStatus;
   decorative?: boolean;
   className?: string;
 }

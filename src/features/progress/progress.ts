@@ -1,31 +1,16 @@
 import "server-only";
-import { and, desc, eq, inArray, max } from "drizzle-orm";
+import { and, desc, eq, inArray, type SQL } from "drizzle-orm";
 import { cache } from "react";
-import { attempts, taskSessions } from "@/db/schema";
+import { attempts, reveals, skips, taskSessions } from "@/db/schema";
+import { epochMs } from "@/db/sql";
 import { examTopics } from "@/features/catalog/exams";
-import { belgradeDate } from "@/lib/dates";
 import { db } from "@/server/db";
 import { noId } from "@/server/profile";
 import { type TaskStat, weakest } from "./stats";
-import type { TaskStatus, TaskStatuses, Touched } from "./status";
+import type { Answered, TaskStatuses, Touched, TouchStatus } from "./status";
 import { getLearning } from "./student-learning";
 import { decidesStatus } from "./task-stats";
 import { suggest } from "./topic-progress";
-
-async function getLastSeen(profileId: string, taskIds?: string[]) {
-  if (profileId === noId) return [];
-  const rows = await db
-    .select({ taskId: taskSessions.taskId, at: max(taskSessions.lastSeenAt) })
-    .from(taskSessions)
-    .where(
-      and(
-        eq(taskSessions.profileId, profileId),
-        taskIds && inArray(taskSessions.taskId, taskIds),
-      ),
-    )
-    .groupBy(taskSessions.taskId);
-  return rows.flatMap((r) => (r.at ? [{ taskId: r.taskId, at: r.at }] : []));
-}
 
 const latestAttemptsOf = (profileId: string, taskIds?: string[]) =>
   db
@@ -60,31 +45,73 @@ export async function getTaskStatuses(
   taskIds?: string[],
 ): Promise<TaskStatuses> {
   const rows = await getLatestAttempts(profileId, taskIds);
-  return new Map<string, TaskStatus>(
+  return new Map<string, Answered>(
     rows.map((row) => [row.taskId, row.correct ? "solved" : "wrong"]),
   );
 }
 
-export async function getTouched(profileId: string, taskIds?: string[]) {
-  const today = belgradeDate();
-  const [seen, latest] = await Promise.all([
-    getLastSeen(profileId, taskIds),
-    getLatestAttempts(profileId, taskIds),
+const touchesOf = (profileId: string, taskIds?: string[]) =>
+  db
+    .select({
+      taskId: taskSessions.taskId,
+      kind: taskSessions.kind,
+      from: epochMs(taskSessions.startedAt),
+      to: epochMs(taskSessions.lastSeenAt),
+    })
+    .from(taskSessions)
+    .where(
+      and(
+        eq(taskSessions.profileId, profileId),
+        taskIds && inArray(taskSessions.taskId, taskIds),
+      ),
+    )
+    .orderBy(taskSessions.startedAt);
+
+async function tasksWith(
+  table: typeof reveals | typeof skips,
+  profileId: string,
+  taskIds?: string[],
+  ...conditions: (SQL | undefined)[]
+) {
+  const rows = await db
+    .selectDistinct({ taskId: table.taskId })
+    .from(table)
+    .where(
+      and(
+        eq(table.profileId, profileId),
+        taskIds && inArray(table.taskId, taskIds),
+        ...conditions,
+      ),
+    );
+  return new Set(rows.map((row) => row.taskId));
+}
+
+export async function getTouched(
+  profileId: string,
+  taskIds?: string[],
+): Promise<Touched> {
+  if (profileId === noId) return { touches: [], statuses: new Map() };
+  const [touches, answered, shown, skipped] = await Promise.all([
+    touchesOf(profileId, taskIds),
+    getTaskStatuses(profileId, taskIds),
+    tasksWith(
+      reveals,
+      profileId,
+      taskIds,
+      inArray(reveals.part, ["answer", "solution"]),
+    ),
+    tasksWith(skips, profileId, taskIds),
   ]);
-  const touched = new Map<string, Touched>();
-  const touch = (taskId: string, at: Date, status?: Touched["status"]) => {
-    const prev = touched.get(taskId);
-    const last = prev && prev.at > at ? prev.at : at;
-    touched.set(taskId, {
-      status: status ?? prev?.status,
-      at: last,
-      today: belgradeDate(last) === today,
-    });
+  const statusOf = (taskId: string): TouchStatus => {
+    const decided = answered.get(taskId);
+    if (decided) return decided;
+    if (shown.has(taskId)) return "revealed";
+    return skipped.has(taskId) ? "skipped" : "opened";
   };
-  for (const { taskId, at } of seen) touch(taskId, at);
-  for (const row of latest)
-    touch(row.taskId, row.createdAt, row.correct ? "solved" : "wrong");
-  return touched;
+  return {
+    touches,
+    statuses: new Map(touches.map(({ taskId }) => [taskId, statusOf(taskId)])),
+  };
 }
 
 export async function getSolved(profileId: string) {
