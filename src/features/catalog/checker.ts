@@ -37,9 +37,11 @@ function sameItems(expected: BoxedExpression[], given: BoxedExpression[]) {
   return left.length === 0;
 }
 
-export function isEquivalent(input: string, expected: string): boolean {
+const readings = (latex: string) =>
+  latex.includes("{,}") ? [latex, latex.replaceAll("{,}", ",")] : [latex];
+
+function matches(input: string, expected: string, target: BoxedExpression) {
   const given = parseMath(input);
-  const target = parseMath(expected);
   if (!given.isValid) return false;
   if (isOrdered(expected)) return equal(given, target);
   const candidates =
@@ -47,6 +49,11 @@ export function isEquivalent(input: string, expected: string): boolean {
       ? [given, parseMath(`${input}^\\circ`)]
       : [given];
   return candidates.some((c) => sameItems(items(target), items(c)));
+}
+
+export function isEquivalent(input: string, expected: string): boolean {
+  const target = parseMath(expected);
+  return readings(input).some((reading) => matches(reading, expected, target));
 }
 
 const isBlank = (input: string) =>
@@ -58,7 +65,7 @@ function gradePart(input: string, expected: string): PartOutcome {
   return isEquivalent(input, expected) ? "right" : "wrong";
 }
 
-export const checkerVersion = 1;
+export const checkerVersion = 2;
 
 export const gradeParts = (expected: string[], answers: string[]) =>
   expected.map((e, i) => gradePart(answers[i] ?? "", e));

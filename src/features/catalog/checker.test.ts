@@ -17,6 +17,10 @@ describe("isEquivalent", () => {
     ["(2,\\infty)\\cup(-\\infty,0)", "(-\\infty,0)\\cup(2,+\\infty)"],
     ["x\\in(-1,0)\\cup(2,3)", "(-1,0)\\cup(2,3)"],
     ["[-1,\\frac{6}{2}]", "[-1,3]"],
+    ["\\left\\lbrack0{,}2\\right\\rbrack", "[0,2]"],
+    ["\\left(1{,}2\\right\\rbrack", "(1,2]"],
+    ["-1{,}1", "-1, 1"],
+    ["0{,}5", "\\frac{1}{2}"],
   ])("accepts %s for %s", (input, expected) => {
     expect(isEquivalent(input, expected)).toBe(true);
   });
@@ -30,6 +34,8 @@ describe("isEquivalent", () => {
     ["120", "\\frac{2\\pi}{3}"],
     ["(-\\infty,0]\\cup(2,\\infty)", "(-\\infty,0)\\cup(2,\\infty)"],
     ["(-1,3)", "[-1,3]"],
+    ["\\left\\lbrack0{,}3\\right\\rbrack", "[0,2]"],
+    ["0{,}2", "[0,2]"],
     ["\\frac{1", "1"],
     ["", "1"],
   ])("rejects %s for %s", (input, expected) => {
