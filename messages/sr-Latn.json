@@ -82,7 +82,7 @@
     "taskLevel": "{level, select, easy {lako} medium {srednje} hard {teško} other {}}",
     "status": "Moj status",
     "statuses": "{status, select, new {Nerešeni} solved {Tačno rešeni} wrong {Greške} other {}}",
-    "searchPlaceholder": "Tekst, formula, godina…",
+    "searchPlaceholder": "Tekst, formula, godina, broj…",
     "position": "{number, number}. zadatak",
     "anyLevel": "Bilo koja",
     "source": "Izvor",

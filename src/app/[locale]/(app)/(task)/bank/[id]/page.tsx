@@ -68,6 +68,7 @@ export default async function SolvePage({
   const personal = loadPersonal({ id, topic: task.topic, locale });
   const topic = topicName(task.topic, locale);
   const meta = {
+    id,
     topic,
     exam: examSource(task.source),
     level: levelOf(task.difficulty),

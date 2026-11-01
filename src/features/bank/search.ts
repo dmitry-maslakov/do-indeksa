@@ -18,7 +18,7 @@ interface Entry {
 
 const entries: Entry[] = tasks.map((task) => ({
   summary: summarize(task),
-  text: fold(`${task.text} ${task.source}`),
+  text: fold(`${task.id} ${task.text} ${task.source}`),
   exam: examSource(task.source) !== null,
 }));
 
