@@ -1,4 +1,5 @@
 import type { Client } from "pg";
+import { checkerVersion } from "@/features/catalog/checker";
 import { answer, expect, seedAttempt, test } from "./fixtures";
 
 async function seed(db: Client, profileId: string) {
@@ -165,7 +166,13 @@ test.describe("attempt log", () => {
         );
         return rows;
       })
-      .toEqual([{ difficulty: expect.any(Number), key_rev: 12, checker: 1 }]);
+      .toEqual([
+        {
+          difficulty: expect.any(Number),
+          key_rev: 12,
+          checker: checkerVersion,
+        },
+      ]);
     expect(await sessions()).toEqual([
       { kind: "first", tz: "Europe/Belgrade" },
     ]);
