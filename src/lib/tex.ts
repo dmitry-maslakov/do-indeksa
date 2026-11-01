@@ -10,19 +10,19 @@ export const squash = (latex: string) =>
     .replaceAll("\\lbrack", "[")
     .replaceAll("\\rbrack", "]");
 
-export function topLevel(latex: string) {
+export function topLevel(latex: string, separators = ",") {
   const items = [""];
   let depth = 0;
   for (const char of latex) {
     if ("([{".includes(char)) depth++;
     if (")]}".includes(char)) depth--;
-    if (char === "," && depth === 0) items.push("");
+    if (separators.includes(char) && depth === 0) items.push("");
     else items[items.length - 1] += char;
   }
   return items;
 }
 
-export function groupOf(latex: string) {
+export function groupOf(latex: string, separators = ",") {
   if (!/^[([].*[)\]]$/.test(latex)) return null;
   let depth = 0;
   for (const [i, char] of Array.from(latex).entries()) {
@@ -33,6 +33,6 @@ export function groupOf(latex: string) {
   return {
     open: latex.slice(0, 1),
     close: latex.slice(-1),
-    items: topLevel(latex.slice(1, -1)),
+    items: topLevel(latex.slice(1, -1), separators),
   };
 }

@@ -1,0 +1,309 @@
+import { groupOf, squash, topLevel } from "@/lib/tex";
+import { isEmptySet, isInfinite, type Kind, kindOf } from "./kinds";
+
+export type BoxKind = Exclude<Kind, "value">;
+
+export interface Range {
+  open: "(" | "[";
+  from: string;
+  to: string;
+  close: ")" | "]";
+}
+
+export type Piece = Range | { point: string };
+
+export type Layout =
+  | { kind: "none" }
+  | { kind: "values"; boxes: string[] }
+  | { kind: "point"; boxes: string[] }
+  | { kind: "points"; rows: string[][] }
+  | { kind: "interval"; pieces: Piece[] };
+
+export const reasons = [
+  "fraction",
+  "bracket",
+  "end",
+  "coordinate",
+  "expression",
+] as const;
+
+export type Reason = (typeof reasons)[number];
+
+export interface Problem {
+  box: number;
+  reason: Reason;
+}
+
+interface Shape {
+  expected: string;
+  kind?: Kind | null;
+  var?: string | null;
+}
+
+const noSolution = "\\emptyset";
+const separators = ";,";
+const relation =
+  /^\s*(?:\([^()=]*\)|[A-Za-z](?:_\{[^}]*\}|_\w)?)\s*(?:=|\\in(?![a-z]))\s*/;
+
+export const isBoxKind = (kind: Kind | null): kind is BoxKind =>
+  kind !== null && kind !== "value";
+
+export const decimalComma = (latex: string) =>
+  latex.replace(/(\d)\.(?=\d)/g, "$1{,}");
+
+export const trimComma = (latex: string) => latex.replace(/\{,\}$/, "");
+
+export const isFilled = (box: string) =>
+  box.replaceAll("\\placeholder{}", "").trim() !== "";
+
+export const isRange = (piece: Piece): piece is Range => "from" in piece;
+
+export const boxesOfPiece = (piece: Piece) =>
+  isRange(piece) ? [piece.from, piece.to] : [piece.point];
+
+export function groupsOf(layout: Layout): string[][] {
+  switch (layout.kind) {
+    case "none":
+      return [];
+    case "values":
+      return layout.boxes.map((box) => [box]);
+    case "point":
+      return [layout.boxes];
+    case "points":
+      return layout.rows;
+    case "interval":
+      return layout.pieces.map(boxesOfPiece);
+  }
+}
+
+export const boxesOf = (layout: Layout) => groupsOf(layout).flat();
+
+export function locate(layout: Layout, flat: number) {
+  let start = 0;
+  const groups = groupsOf(layout);
+  for (const [group, boxes] of groups.entries()) {
+    if (flat < start + boxes.length)
+      return { group, index: flat - start, size: boxes.length };
+    start += boxes.length;
+  }
+  return { group: groups.length, index: 0, size: 0 };
+}
+
+const rounded = (piece: Range): Range => ({
+  ...piece,
+  open: isInfinite(squash(piece.from)) ? "(" : piece.open,
+  close: isInfinite(squash(piece.to)) ? ")" : piece.close,
+});
+
+export function withBox(layout: Layout, index: number, text: string): Layout {
+  let at = -1;
+  const set = (box: string) => (++at === index ? text : box);
+  switch (layout.kind) {
+    case "none":
+      return layout;
+    case "values":
+    case "point":
+      return { ...layout, boxes: layout.boxes.map(set) };
+    case "points":
+      return { ...layout, rows: layout.rows.map((row) => row.map(set)) };
+    case "interval":
+      return {
+        ...layout,
+        pieces: layout.pieces.map((piece) =>
+          isRange(piece)
+            ? rounded({ ...piece, from: set(piece.from), to: set(piece.to) })
+            : { point: set(piece.point) },
+        ),
+      };
+  }
+}
+
+export function withBracket(
+  layout: Layout,
+  group: number,
+  bracket: "(" | "[" | ")" | "]",
+): Layout {
+  if (layout.kind !== "interval") return layout;
+  const side = bracket === "(" || bracket === "[" ? "open" : "close";
+  const end = side === "open" ? "from" : "to";
+  return {
+    ...layout,
+    pieces: layout.pieces.map((piece, i) => {
+      if (i !== group || !isRange(piece)) return piece;
+      const square = bracket === "[" || bracket === "]";
+      if (square && isInfinite(squash(piece[end]))) return piece;
+      return side === "open"
+        ? { ...piece, open: bracket === "[" ? "[" : "(" }
+        : { ...piece, close: bracket === "]" ? "]" : ")" };
+    }),
+  };
+}
+
+export function grown(layout: Layout, arity: number, point = false): Layout {
+  switch (layout.kind) {
+    case "values":
+      return { ...layout, boxes: [...layout.boxes, ""] };
+    case "points":
+      return { ...layout, rows: [...layout.rows, emptyBoxes(arity)] };
+    case "interval":
+      return {
+        ...layout,
+        pieces: [...layout.pieces, point ? { point: "" } : blankRange()],
+      };
+    default:
+      return layout;
+  }
+}
+
+export function shrunk(layout: Layout, group: number): Layout {
+  const keep = <T>(list: T[]) =>
+    list.length > 1 ? list.filter((_, i) => i !== group) : list;
+  switch (layout.kind) {
+    case "values":
+      return { ...layout, boxes: keep(layout.boxes) };
+    case "points":
+      return { ...layout, rows: keep(layout.rows) };
+    case "interval":
+      return { ...layout, pieces: keep(layout.pieces) };
+    default:
+      return layout;
+  }
+}
+
+const tuple = (boxes: string[]) => `(${boxes.join(";")})`;
+
+const span = ({ open, from, to, close }: Range) =>
+  `${open}${from};${to}${close}`;
+
+export function sentOf(layout: Layout) {
+  if (layout.kind === "none") return noSolution;
+  if (!boxesOf(layout).some(isFilled)) return "";
+  switch (layout.kind) {
+    case "values":
+      return layout.boxes.join(";");
+    case "point":
+      return tuple(layout.boxes);
+    case "points":
+      return layout.rows.map(tuple).join(";");
+    case "interval":
+      return layout.pieces
+        .map((piece) => (isRange(piece) ? span(piece) : `\\{${piece.point}\\}`))
+        .join("\\cup");
+  }
+}
+
+const emptyBoxes = (size: number) => Array.from({ length: size }, () => "");
+
+const blankRange = (): Range => ({
+  open: "(",
+  from: "",
+  to: "",
+  close: ")",
+});
+
+export function blankLayout(kind: BoxKind, arity: number): Layout {
+  switch (kind) {
+    case "values":
+      return { kind, boxes: [""] };
+    case "point":
+      return { kind, boxes: emptyBoxes(arity) };
+    case "points":
+      return { kind, rows: [emptyBoxes(arity)] };
+    case "interval":
+      return { kind, pieces: [blankRange()] };
+  }
+}
+
+const tidy = (latex: string) =>
+  latex
+    .replace(/\\left|\\right/g, "")
+    .replace(/\\[ ,;!]/g, " ")
+    .replaceAll("\\lbrack", "[")
+    .replaceAll("\\rbrack", "]")
+    .replaceAll("\\lbrace", "\\{")
+    .replaceAll("\\rbrace", "\\}")
+    .trim();
+
+const unbrace = (latex: string) => /^\\\{(.*)\\\}$/s.exec(latex)?.[1] ?? latex;
+
+const trimmed = (items: string[]) => items.map((item) => item.trim());
+
+function plusMinus(item: string) {
+  const rest = /^\\pm\s*(.+)$/.exec(item)?.[1];
+  return rest ? [rest, `-(${rest})`] : [item];
+}
+
+function tupleOf(latex: string) {
+  const group = groupOf(latex, separators);
+  return trimmed(group ? group.items : topLevel(latex, separators));
+}
+
+function piecesOf(latex: string): Piece[] | null {
+  const pieces: Piece[] = [];
+  for (const source of topLevel(latex.replaceAll("\\cup", ";"), ";")) {
+    const piece = source.trim();
+    if (piece.startsWith("\\{")) {
+      const points = topLevel(unbrace(piece), separators);
+      pieces.push(...trimmed(points).map((point) => ({ point })));
+      continue;
+    }
+    const group = groupOf(piece, separators);
+    if (group?.items.length !== 2) return null;
+    const [from = "", to = ""] = trimmed(group.items);
+    pieces.push({
+      open: group.open === "[" ? "[" : "(",
+      from,
+      to,
+      close: group.close === "]" ? "]" : ")",
+    });
+  }
+  return pieces;
+}
+
+export function layoutOf(kind: BoxKind, text: string): Layout | null {
+  const latex = tidy(text).replace(relation, "").trim();
+  if (isEmptySet(squash(latex))) {
+    return kind === "values" || kind === "interval" ? { kind: "none" } : null;
+  }
+  switch (kind) {
+    case "values":
+      return {
+        kind,
+        boxes: trimmed(topLevel(unbrace(latex), separators)).flatMap(plusMinus),
+      };
+    case "point":
+      return { kind, boxes: tupleOf(latex) };
+    case "points":
+      return {
+        kind,
+        rows: topLevel(latex, separators).map((row) => tupleOf(row.trim())),
+      };
+    case "interval": {
+      const pieces = piecesOf(latex);
+      return pieces && { kind, pieces };
+    }
+  }
+}
+
+export function filledCount(kind: Kind | null, text: string) {
+  const layout = isBoxKind(kind) ? layoutOf(kind, text) : null;
+  return layout
+    ? boxesOf(layout).filter(isFilled).length
+    : Number(isFilled(text));
+}
+
+export function arityOf(part: Shape) {
+  const declared = part.var && groupOf(squash(part.var))?.items.length;
+  if (declared) return declared;
+  const kind = kindOf(part);
+  const layout = isBoxKind(kind) ? layoutOf(kind, part.expected) : null;
+  if (layout?.kind === "point") return layout.boxes.length;
+  return layout?.kind === "points" ? (layout.rows[0]?.length ?? 2) : 2;
+}
+
+export function sentForm(part: Shape) {
+  const kind = kindOf(part);
+  if (!isBoxKind(kind)) return decimalComma(part.expected);
+  const layout = layoutOf(kind, decimalComma(part.expected));
+  return layout && sentOf(layout);
+}

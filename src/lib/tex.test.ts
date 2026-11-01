@@ -26,6 +26,17 @@ describe("topLevel", () => {
   });
 });
 
+describe("topLevel with other separators", () => {
+  it.each([
+    ["1;2,3", ";,", ["1", "2", "3"]],
+    ["1{,}5;2", ";,", ["1{,}5", "2"]],
+    ["(1;2);(3;4)", ";", ["(1;2)", "(3;4)"]],
+    ["(1,2);3", ";", ["(1,2)", "3"]],
+  ])("splits %s at %s outside brackets", (latex, separators, items) => {
+    expect(topLevel(latex, separators)).toEqual(items);
+  });
+});
+
 describe("groupOf", () => {
   it.each([
     ["(1,2)", { open: "(", close: ")", items: ["1", "2"] }],
@@ -48,5 +59,13 @@ describe("groupOf", () => {
     [""],
   ])("does not read %s as one group", (latex) => {
     expect(groupOf(latex)).toBeNull();
+  });
+
+  it("splits a group at the given separators", () => {
+    expect(groupOf("(1;2]", ";")).toEqual({
+      open: "(",
+      close: "]",
+      items: ["1", "2"],
+    });
   });
 });
