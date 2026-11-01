@@ -28,14 +28,9 @@ const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
   incomplete: { look: "text-overtime-text" },
 };
 
-function Tag({ shown, children }: { shown?: boolean; children: ReactNode }) {
+function Tag({ children }: { children: ReactNode }) {
   return (
-    <span
-      className={cn(
-        "inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 font-medium text-xs [&_svg]:size-3.5",
-        shown ? "bg-data-tint text-data" : "bg-muted text-muted-foreground",
-      )}
-    >
+    <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-muted px-2.5 font-medium text-muted-foreground text-xs [&_svg]:size-3.5">
       {children}
     </span>
   );
@@ -59,8 +54,6 @@ function Content({
   const t = useTranslations("Solve");
   const { hints, shown, solution, opened } = useTaskSession();
   const { isError, refetch } = useReveal(taskId, shown);
-  const helpLabel = t(solution ? "solutionOpened" : "answerShown");
-
   if (solved === total)
     return (
       <>
@@ -74,12 +67,6 @@ function Content({
             {t("withHint")}
           </Tag>
         )}
-        {shown && (
-          <Tag shown>
-            <EyeIcon aria-hidden />
-            {helpLabel}
-          </Tag>
-        )}
       </>
     );
   if (shown)
@@ -87,7 +74,7 @@ function Content({
       <>
         <span className="flex items-center gap-2 text-data">
           <EyeIcon aria-hidden className="size-5" />
-          {helpLabel}
+          {t(solution ? "solutionOpened" : "answerShown")}
         </span>
         {total > 1 && solved > 0 && (
           <Note>{t("ownParts", { own: solved, total })}</Note>
