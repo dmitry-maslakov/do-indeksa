@@ -1,6 +1,6 @@
 import { groupOf, squash, topLevel } from "@/lib/tex";
 
-export const kinds = [
+export const mathKinds = [
   "value",
   "values",
   "interval",
@@ -8,7 +8,18 @@ export const kinds = [
   "points",
 ] as const;
 
+export const kinds = [...mathKinds, "yesno"] as const;
+
 export type Kind = (typeof kinds)[number];
+
+type MathKind = (typeof mathKinds)[number];
+
+export const yesNo = ["yes", "no"] as const;
+
+export type YesNo = (typeof yesNo)[number];
+
+export const isYesNo = (text: string): text is YesNo =>
+  (yesNo as readonly string[]).includes(text);
 
 type Group = NonNullable<ReturnType<typeof groupOf>>;
 
@@ -24,7 +35,7 @@ const isSpan = (group: Group | null) =>
   group?.items.length === 2 &&
   (group.open === "[" || group.close === "]" || group.items.some(isInfinite));
 
-export function inferKind(expected: string): Kind | null {
+export function inferKind(expected: string): MathKind | null {
   const latex = squash(expected);
   if (isBraceSet(latex)) return "values";
   const groups = topLevel(latex).map((item) => groupOf(item));
@@ -42,7 +53,7 @@ export function inferKind(expected: string): Kind | null {
 export const kindOf = (part: { expected: string; kind?: Kind | null }) =>
   part.kind ?? inferKind(part.expected);
 
-const fitting: Record<Kind, readonly Kind[]> = {
+const fitting: Record<MathKind, readonly Kind[]> = {
   value: ["value", "values"],
   values: ["values"],
   interval: ["interval"],

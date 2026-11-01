@@ -109,6 +109,27 @@ describe("gradeParts", () => {
   );
 });
 
+describe("yesno", () => {
+  const part = { expected: "no", kind: "yesno" as const };
+  const graded = (answer: string) => gradeParts([part], [answer])[0];
+
+  it("is right only for the expected answer, with no partial credit", () => {
+    expect(graded("no")).toEqual({ outcome: "right" });
+    expect(graded("yes")).toEqual({ outcome: "wrong" });
+  });
+
+  it("is empty when nothing is picked and unreadable for anything else", () => {
+    expect(graded("")).toEqual({ outcome: "empty" });
+    expect(graded("maybe")).toEqual({ outcome: "unreadable" });
+    expect(graded("No")).toEqual({ outcome: "unreadable" });
+  });
+
+  it("is satisfied by its expected answer sent as it is", () => {
+    expect(answerProblem(part)).toBeUndefined();
+    expect(answerProblem({ expected: "yes", kind: "yesno" })).toBeUndefined();
+  });
+});
+
 describe("values", () => {
   it.each([
     ["1;4", "1, 4"],
