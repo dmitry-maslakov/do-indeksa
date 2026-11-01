@@ -41,6 +41,56 @@ test("the task rail marks the latest attempt", async ({ page, auth }) => {
   await expect(row("fun-002", "netačno")).toBeVisible();
 });
 
+test("the task rail keeps its rows while the student moves between tasks", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await seedAttempt(auth.db, profileId, "eks-001", true);
+  const rows = page
+    .getByRole("complementary")
+    .locator("a[href^='/bank/']:not(nav a)");
+  const current = rows.and(page.locator("[aria-current=page]"));
+  const hrefs = (unmarked = false) =>
+    rows.evaluateAll(
+      (links, unmarked) =>
+        links
+          .filter((link) => !unmarked || !("kept" in link))
+          .map((link) => link.getAttribute("href")),
+      unmarked,
+    );
+
+  await page.goto("/bank/eks-001");
+  await expect(current).toHaveAttribute("href", /\/bank\/eks-001$/);
+  const before = await hrefs();
+  const next = before[before.indexOf("/bank/eks-001") + 1] ?? "";
+  expect(next).toMatch(/^\/bank\/[\w-]+$/);
+  await rows.evaluateAll((links) => {
+    for (const link of links) Object.assign(link, { kept: true });
+  });
+  await page.evaluate(() =>
+    new MutationObserver(() => {
+      if (document.querySelector("aside [data-slot=skeleton]"))
+        document.documentElement.dataset.skeleton = "";
+    }).observe(document.body, { childList: true, subtree: true }),
+  );
+  const remounted = async () =>
+    (await hrefs(true)).filter(
+      (href) => before.includes(href) && href !== next,
+    );
+
+  await rows.nth(before.indexOf(next)).click();
+  await expect(page).toHaveURL(next);
+  await expect(current).toHaveAttribute("href", next);
+  expect(await remounted()).toEqual([]);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/bank\/eks-001$/);
+  await expect(current).toHaveAttribute("href", /\/bank\/eks-001$/);
+  expect(await remounted()).toEqual([]);
+  await expect(page.locator("html")).not.toHaveAttribute("data-skeleton");
+});
+
 test("a topic starts from its recommended task", async ({ page, auth }) => {
   await seed(auth.db, (await auth.signIn()).profileId);
   await page.goto("/bank/start/exponential-equations");

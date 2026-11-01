@@ -15,6 +15,7 @@ interface QueueLinkProps {
   href: string;
   intent: string;
   current: boolean;
+  page: string;
   next?: boolean;
   recommendation?: BrowserEvents["recommendation_made"];
 }
@@ -24,11 +25,12 @@ export function QueueLink({
   href,
   intent,
   current,
+  page,
   next,
   recommendation,
 }: QueueLinkProps) {
   const t = useTranslations("Solve");
-  const seen = useExposure("recommendation_made", recommendation);
+  const seen = useExposure("recommendation_made", recommendation, page);
   return (
     <RailLink
       ref={seen}

@@ -1,24 +1,25 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Suspense } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Queue } from "@/features/bank/queue/queue";
 import { useRouter } from "@/i18n/navigation";
 import { rememberIntent } from "@/lib/analytics-browser";
 import { QueueList } from "./queue-list";
+import { useQueue } from "./queue-store";
 
-export interface RailProps {
-  current: string;
-  topic: string;
-  topics: { id: string; name: string }[];
-  listHref: string;
-  queue: Promise<Queue>;
-  starts: Promise<Record<string, string>>;
-  variant?: RailVariant;
+const href = (id: string) => `/bank/${id}`;
+
+function HeadSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 px-4 pb-4">
+      <Skeleton className="h-10 rounded-xl" />
+      <Skeleton className="h-15 rounded-lg" />
+    </div>
+  );
 }
 
 function QueueSkeleton() {
@@ -31,18 +32,19 @@ function QueueSkeleton() {
   );
 }
 
-export function Rail({
-  current,
-  topic,
-  topics,
-  listHref,
-  queue,
-  starts,
-  variant,
-}: RailProps) {
+export function Rail({ variant }: { variant?: RailVariant }) {
   const bank = useTranslations("Bank");
   const router = useRouter();
-  const href = (id: string) => `/bank/${id}`;
+  const { id: current } = useParams<{ id: string }>();
+  const { meta, loaded } = useQueue();
+
+  if (!meta)
+    return (
+      <RailContent variant={variant}>
+        <HeadSkeleton />
+        <QueueSkeleton />
+      </RailContent>
+    );
 
   return (
     <RailContent variant={variant}>
@@ -52,34 +54,35 @@ export function Rail({
           variant="fill"
           items={[
             { href: href(current), label: bank("recommended"), active: true },
-            { href: listHref, label: bank("all"), active: false },
+            { href: meta.listHref, label: bank("all"), active: false },
           ]}
         />
         <RailSelect
           label={bank("topic")}
-          value={topic}
+          value={meta.topic}
           onChange={(e) => {
             const next = e.target.value;
             rememberIntent({ via: "picker", placement: "topic_select" });
-            starts.then((all) => all[next] && router.push(all[next]));
+            meta.starts.then((all) => all[next] && router.push(all[next]));
           }}
         >
-          {topics.map((x) => (
+          {meta.topics.map((x) => (
             <NativeSelectOption key={x.id} value={x.id}>
               {x.name}
             </NativeSelectOption>
           ))}
         </RailSelect>
       </div>
-      <Suspense fallback={<QueueSkeleton />}>
+      {loaded?.topic === meta.topic ? (
         <QueueList
-          key={current}
-          queue={queue}
+          queue={loaded.queue}
           current={current}
-          topic={topic}
+          topic={loaded.topic}
           href={href}
         />
-      </Suspense>
+      ) : (
+        <QueueSkeleton />
+      )}
     </RailContent>
   );
 }
