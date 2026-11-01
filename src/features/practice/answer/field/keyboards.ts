@@ -40,17 +40,32 @@ const digits: Row[] = [
   ],
 ];
 
+const operators: Row = [
+  "[+]",
+  "[-]",
+  { label: "√", insert: "\\sqrt{#0}" },
+  { label: "a/b", insert: "\\frac{#@}{#?}" },
+  { label: "xⁿ", insert: "#@^{#?}" },
+  "[(]",
+  "[)]",
+  "[,]",
+  "[left]",
+  "[right]",
+];
+
 const letters: Row[] = [
+  operators,
   "qwertyuiop".split("").map((label) => ({ label })),
   "asdfghjkl".split("").map((label) => ({ label })),
-  "zxcvbnm".split("").map((label) => ({ label })),
   [
-    { label: "123", class: action, command: ["switchKeyboardLayer", "digits"] },
-    "[(]",
-    "[)]",
-    "[left]",
-    "[right]",
-    "[backspace]",
+    {
+      label: "123",
+      class: action,
+      width: 1.5,
+      command: ["switchKeyboardLayer", "digits"],
+    },
+    ..."zxcvbnm".split("").map((label) => ({ label })),
+    { label: "[backspace]", width: 1.5 },
   ],
 ];
 
@@ -62,6 +77,13 @@ const brackets: Row = [
   { label: "∞", latex: "\\infty" },
   { label: "∪", insert: "\\cup" },
 ];
+
+const nextEnd: Key = {
+  label: "⇥",
+  insert: ";",
+  class: `${action} small`,
+  width: 1.5,
+};
 
 const next = (label: string): Key => ({
   label: `${label} ⇥`,
@@ -81,7 +103,7 @@ const top = (kind: KeyboardKind, label: string): Row | undefined => {
     case "points":
       return [next(label)];
     case "interval":
-      return brackets;
+      return [...brackets, nextEnd];
     default:
       return undefined;
   }
@@ -92,12 +114,13 @@ export function keyboardFor(
   label: string,
 ): VirtualKeyboardLayout {
   const first = top(kind, label);
+  const withTop = (rows: Row[]) => (first ? [first, ...rows] : rows);
   return {
     id: kind,
     displayEditToolbar: false,
     layers: [
-      { id: "digits", rows: first ? [first, ...digits] : digits },
-      { id: "letters", rows: letters },
+      { id: "digits", rows: withTop(digits) },
+      { id: "letters", rows: withTop(letters) },
     ],
   };
 }

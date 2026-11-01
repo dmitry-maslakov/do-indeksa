@@ -54,12 +54,25 @@ interface SymbolTrayProps {
   keys: Key[];
   active: RefObject<MathfieldElement | null>;
   hint: string;
+  locked: boolean;
   children?: ReactNode;
 }
 
-export function SymbolTray({ keys, active, hint, children }: SymbolTrayProps) {
+export function SymbolTray({
+  keys,
+  active,
+  hint,
+  locked,
+  children,
+}: SymbolTrayProps) {
   return (
-    <div className="hidden min-h-8 flex-wrap items-center gap-1.5 pointer-fine:flex invisible group-focus-within/field:visible">
+    <div
+      inert={locked}
+      className={cn(
+        "invisible hidden min-h-8 flex-wrap items-center gap-1.5 pointer-fine:flex",
+        !locked && "group-focus-within/field:visible",
+      )}
+    >
       {children}
       {keys.map(({ label, latex, name }) => (
         <TrayButton key={name} onPress={() => active.current?.insert(latex)}>

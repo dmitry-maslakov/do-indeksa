@@ -9,6 +9,9 @@ import {
   locate,
   type Piece,
   shrunk,
+  splitAtComma,
+  trimComma,
+  withBox,
   withBracket,
 } from "@/features/catalog/boxes";
 import { isInfinite } from "@/features/catalog/kinds";
@@ -70,15 +73,25 @@ export function IntervalField({
   onEdit,
 }: FieldProps) {
   const t = useTranslations("Field");
-  const { root, layout, shown, readOnly, commit, go, clear, add, edit } =
-    useBoxLayout({
-      kind: "interval",
-      arity: 0,
-      defaultValue,
-      fill,
-      locked,
-      onEdit,
-    });
+  const {
+    root,
+    current,
+    shown,
+    readOnly,
+    commit,
+    go,
+    clear,
+    add,
+    paste,
+    edit,
+  } = useBoxLayout({
+    kind: "interval",
+    arity: 0,
+    defaultValue,
+    fill,
+    locked,
+    onEdit,
+  });
   const pieces = shown.kind === "interval" ? shown.pieces : [];
   const firstOf = (group: number) =>
     pieces
@@ -88,18 +101,25 @@ export function IntervalField({
   const keysOf = (index: number): BoxKeys => ({
     next: (carry) => go(index + 1, carry),
     back: () => {
+      const layout = current();
       const { group, index: column } = locate(layout, index);
-      const current = layout.kind === "interval" && layout.pieces[group];
-      const empty = current && !boxesOfPiece(current).some(isFilled);
+      const last = layout.kind === "interval" && layout.pieces[group];
+      const empty = last && !boxesOfPiece(last).some(isFilled);
       go(index - 1);
       if (column === 0 && group > 0 && empty)
         flushSync(() => commit(shrunk(layout, group)));
     },
     step: (direction) => go(index + direction),
-    bracket: (bracket) =>
-      commit(withBracket(layout, locate(layout, index).group, bracket)),
+    bracket: (bracket, text) => {
+      const layout = withBox(current(), index, trimComma(text));
+      const closing = bracket === ")" || bracket === "]";
+      const settled = closing ? splitAtComma(layout, index) : layout;
+      commit(withBracket(settled, locate(layout, index).group, bracket));
+      if (settled !== layout) go(index + 1);
+    },
     union: () => add(),
     none: () => commit({ kind: "none" }),
+    paste,
   });
 
   const piece = (item: Piece, group: number) => {
@@ -139,7 +159,7 @@ export function IntervalField({
           square={item.open === "["}
           fixed={readOnly || isFixed(item.from)}
           onToggle={() =>
-            commit(withBracket(layout, group, item.open === "(" ? "[" : "("))
+            commit(withBracket(current(), group, item.open === "(" ? "[" : "("))
           }
         />
         {box(first, item.from, "from")}
@@ -151,7 +171,9 @@ export function IntervalField({
           square={item.close === "]"}
           fixed={readOnly || isFixed(item.to)}
           onToggle={() =>
-            commit(withBracket(layout, group, item.close === ")" ? "]" : ")"))
+            commit(
+              withBracket(current(), group, item.close === ")" ? "]" : ")"),
+            )
           }
         />
       </>
@@ -185,6 +207,7 @@ export function IntervalField({
       <SymbolTray
         keys={[symbols.infinity, symbols.root, symbols.pi, symbols.fraction]}
         active={active}
+        locked={readOnly}
         hint={t("hintInterval")}
       >
         <TrayButton onPress={() => add()}>∪ {t("addPiece")}</TrayButton>

@@ -22,7 +22,7 @@ interface SlotsFieldProps extends FieldProps {
   arity: number;
 }
 
-const unit = "flex items-center gap-1";
+const unit = "flex max-w-full flex-wrap items-center gap-1";
 const comma = "font-math text-muted-foreground text-xl";
 const paren = "font-math text-2xl text-muted-foreground";
 
@@ -44,8 +44,18 @@ export function SlotsField({
   onEdit,
 }: SlotsFieldProps) {
   const t = useTranslations("Field");
-  const { root, layout, shown, readOnly, commit, go, clear, add, edit } =
-    useBoxLayout({ kind, arity, defaultValue, fill, locked, onEdit });
+  const {
+    root,
+    current,
+    shown,
+    readOnly,
+    commit,
+    go,
+    clear,
+    add,
+    paste,
+    edit,
+  } = useBoxLayout({ kind, arity, defaultValue, fill, locked, onEdit });
   const rows = groupsOf(shown);
   const grows = kind !== "point";
   const firstOf = (group: number) =>
@@ -53,17 +63,19 @@ export function SlotsField({
 
   const keysOf = (index: number): BoxKeys => ({
     next: (carry) => {
-      if (index + 1 < boxesOf(layout).length) go(index + 1, carry);
+      if (index + 1 < boxesOf(current()).length) go(index + 1, carry);
       else if (grows) add(false, carry);
     },
     back: () => {
+      const layout = current();
       const { group, index: column } = locate(layout, index);
       go(index - 1);
-      if (grows && column === 0 && !rows[group]?.some(isFilled))
+      if (grows && column === 0 && !groupsOf(layout)[group]?.some(isFilled))
         flushSync(() => commit(shrunk(layout, group)));
     },
     step: (direction) => go(index + direction),
     none: kind === "values" ? () => commit({ kind: "none" }) : undefined,
+    paste,
   });
 
   const addLabel = t(kind === "values" ? "addValue" : "addPoint");
@@ -119,6 +131,7 @@ export function SlotsField({
       <SymbolTray
         keys={[symbols.root, symbols.pi, symbols.fraction]}
         active={active}
+        locked={readOnly}
         hint={t(kind === "point" ? "hintPoint" : "hintValues")}
       >
         {grows && (
