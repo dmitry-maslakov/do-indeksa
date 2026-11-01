@@ -6,8 +6,11 @@ source: Do indeksa
 answer: 'na $[0,2\pi)$: $x\in\left\{\frac{\pi}{2},\ \frac{5\pi}{6}\right\}$; u $\left(\frac{2\pi}{3},2\pi\right)$: samo $x=\frac{5\pi}{6}$'
 check:
 - label: na $[0,2\pi)$
+  var: x
+  kind: values
   expected: \frac{\pi}{2}, \frac{5\pi}{6}
 - label: u $\left(\frac{2\pi}{3},2\pi\right)$
+  var: x
   expected: \frac{5\pi}{6}
 hints:
 - |

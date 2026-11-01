@@ -5,11 +5,14 @@ difficulty: 4
 source: Do indeksa
 answer: a) $a=6$; b) $d=2\sqrt{3}$; v) $\frac{\sqrt{3}}{9}$
 check:
-- label: a)
+- part: a
+  var: a
   expected: '6'
-- label: b)
+- part: b
+  var: d
   expected: 2\sqrt{3}
-- label: v)
+- part: v
+  label: odnos zapremina
   expected: \frac{\sqrt{3}}{9}
 hints:
 - |
