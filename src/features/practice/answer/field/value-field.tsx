@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { useTranslations } from "next-intl";
 import { type FieldProps, Frame } from "./field-frame";
 import { MathBox } from "./math-box";
-import { SymbolTray, trayKeys } from "./symbol-tray";
+import { functionSymbols, SymbolTray, symbolKeys } from "./symbol-tray";
 
 const input = cva("min-w-0 flex-1 self-center bg-transparent outline-none", {
   variants: {
@@ -38,6 +38,7 @@ export function ValueField({
           value={value}
           label={label}
           keyboard="value"
+          symbols={part.symbols}
           locked={locked}
           placeholder={placeholder}
           className={input({ variant, shown: state === "shown" })}
@@ -46,7 +47,14 @@ export function ValueField({
         />
       </Frame>
       <SymbolTray
-        keys={trayKeys(part, "root", "pi", "fraction", "power", "log")}
+        keys={symbolKeys(
+          part.symbols,
+          "root",
+          "pi",
+          "fraction",
+          "power",
+          ...functionSymbols,
+        )}
         active={active}
         locked={locked}
         hint={t("hintValue")}

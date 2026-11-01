@@ -5,8 +5,18 @@ import { kindOf } from "@/features/catalog/kinds";
 import { getTask } from "@/features/catalog/tasks";
 import type { Comparisons } from "./review";
 
+const macros = {
+  "\\tg": "\\operatorname{tg}",
+  "\\ctg": "\\operatorname{ctg}",
+  "\\arctg": "\\operatorname{arctg}",
+};
+
 const latexToHtml = (latex: string) =>
-  katex.renderToString(latex, { throwOnError: false, output: "html" });
+  katex.renderToString(latex, {
+    throwOnError: false,
+    output: "html",
+    macros,
+  });
 
 export function comparisonsOf(
   attempts: { taskId: string; answers: string[] }[],

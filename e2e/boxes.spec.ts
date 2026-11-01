@@ -312,6 +312,31 @@ test("a task with several parts keeps a field for each", async ({ page }) => {
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
 });
 
+test("a topic with functions in its answers offers their keys", async ({
+  page,
+}) => {
+  const functions = page.getByRole("button", {
+    name: /^(sin|cos|c?tg|arc|ln)/,
+  });
+  await open(page, "/bank/log-001");
+  await enter(page, fields(page).first(), "4");
+  await expect(page.getByRole("button", { name: "√" })).toBeVisible();
+  await expect(functions).toHaveCount(0);
+
+  await open(page, "/bank/trig-001");
+  await enter(page, fields(page).first(), "pi/4;");
+  await expect(functions).toHaveText(["arcsin", "arccos", "arctg"]);
+  await page.getByRole("button", { name: "arctg" }).click();
+  await page.keyboard.type("2");
+  await enter(page, fields(page).last(), "");
+  await page.getByRole("button", { name: "arctg" }).click();
+  await page.keyboard.type("2");
+  await expect(sent(page)).toHaveValue("\\frac{\\pi}{4};\\arctg2");
+  await expect(sent(page, 1)).toHaveValue("\\arctg2");
+  await check(page);
+  await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
+});
+
 test("a test restores the boxes of its draft", async ({ page }) => {
   await open(page, "/variants/ftn-p1-2025");
   const rail = page.getByRole("complementary", { name: "Zadaci" });
@@ -421,5 +446,18 @@ test.describe("on a phone", () => {
     await expect(cap(page, "q")).toBeVisible();
     await cap(page, "123").tap();
     await expect(sent(page)).toHaveValue("2");
+  });
+
+  test("a topic with functions in its answers has their row above the digits", {
+    tag: "@mobile",
+  }, async ({ page }) => {
+    await touch(page, "/bank/log-001");
+    await expect(key(page, "4")).toBeVisible();
+    await expect(cap(page, "arctg")).toBeHidden();
+    await touch(page, "/bank/trig-001");
+    await expect(cap(page, "arcsin")).toBeVisible();
+    await cap(page, "arctg").tap();
+    await key(page, "2").tap();
+    await expect(sent(page)).toHaveValue("\\arctg2");
   });
 });

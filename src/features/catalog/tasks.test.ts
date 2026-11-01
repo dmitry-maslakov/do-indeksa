@@ -9,6 +9,7 @@ import sr from "../../../messages/sr-Latn.json";
 import {
   getTask,
   idsByTopic,
+  renderParts,
   renderStatement,
   summarize,
   taskIdSchema,
@@ -91,6 +92,19 @@ describe("task excerpts", () => {
       "vek-002":
         "U prostoru su date tačke A(1,1,1), B(-1,2,2) i C(0,0,3). a) Naći ugao…",
     });
+  });
+});
+
+describe("part symbols", () => {
+  const symbolsOf = async (id: string) =>
+    (await renderParts(getTask(id) as Task)).map((part) => part.symbols);
+
+  it("are the symbols of every answer in the topic, the same for each part", async () => {
+    expect(await symbolsOf("trig-001")).toEqual([
+      ["pi", "fraction", "arc"],
+      ["pi", "fraction", "arc"],
+    ]);
+    expect(await symbolsOf("log-001")).toEqual([["root"]]);
   });
 });
 

@@ -1,6 +1,8 @@
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from "mathlive";
 import { noSolution } from "@/features/catalog/boxes";
 import type { Kind } from "@/features/catalog/kinds";
+import type { AnswerSymbol } from "@/features/catalog/parts";
+import { functionSymbols, symbolKeys } from "./symbol-tray";
 
 type Key = string | Partial<VirtualKeyboardKeycap>;
 
@@ -106,14 +108,30 @@ const top = (kind: Kind, label: string): Row | undefined => {
   }
 };
 
-export function keyboardFor(kind: Kind, label: string): VirtualKeyboardLayout {
+function functionRows(symbols: AnswerSymbol[]): Row[] {
+  const row = symbolKeys(symbols, ...functionSymbols).map(
+    ({ label, latex }): Key => ({
+      label,
+      insert: latex,
+      class: "small",
+      width: label.length > 3 ? 1.5 : 1,
+    }),
+  );
+  return row.length ? [row] : [];
+}
+
+export function keyboardFor(
+  kind: Kind,
+  label: string,
+  symbols: AnswerSymbol[],
+): VirtualKeyboardLayout {
   const first = top(kind, label);
   const withTop = (rows: Row[]) => (first ? [first, ...rows] : rows);
   return {
     id: kind,
     displayEditToolbar: false,
     layers: [
-      { id: "digits", rows: withTop(digits) },
+      { id: "digits", rows: withTop([...functionRows(symbols), ...digits]) },
       { id: "letters", rows: withTop(letters) },
     ],
   };

@@ -291,6 +291,16 @@ describe("symbolsIn", () => {
     expect(symbolsIn(["2^{n}", "\\log_2 3"])).toEqual(["power", "log"]);
     expect(symbolsIn(["6", "-1"])).toEqual([]);
   });
+
+  it("tells a function from its inverse and ln from log", () => {
+    expect(symbolsIn(["a\\cot\\alpha", "2\\arctan 2, \\pi"])).toEqual([
+      "pi",
+      "trig",
+      "arc",
+    ]);
+    expect(symbolsIn(["\\arccos\\frac{9}{10}"])).toEqual(["fraction", "arc"]);
+    expect(symbolsIn(["\\frac{7}{2}+\\ln 2"])).toEqual(["fraction", "ln"]);
+  });
 });
 
 describe("statementLetters", () => {

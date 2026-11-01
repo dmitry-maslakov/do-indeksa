@@ -20,6 +20,14 @@ describe("comparisonsOf", () => {
     expect(comparison?.given).not.toContain('<span class="mpunct">;</span>');
   });
 
+  it("writes tg, ctg and arctg typed with their keys", () => {
+    const given = comparisonsOf([
+      { taskId: "eks-001", answers: ["\\tg x+\\ctg x+\\arctg2"] },
+    ])["eks-001"]?.given;
+    expect(given).not.toContain("katex-error");
+    expect(given).toContain("arctg");
+  });
+
   it("leaves out multi-part and unknown tasks", () => {
     expect(
       comparisonsOf([

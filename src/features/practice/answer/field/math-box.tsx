@@ -6,6 +6,7 @@ import type { MathfieldElement } from "mathlive";
 import { useTranslations } from "next-intl";
 import { type RefObject, useRef, useState } from "react";
 import type { Kind } from "@/features/catalog/kinds";
+import type { AnswerSymbol } from "@/features/catalog/parts";
 import type { InputStats } from "../input-stats";
 import type { BoxKeys } from "./box-keys";
 import { useMathBox } from "./use-math-box";
@@ -54,6 +55,7 @@ interface MathBoxProps {
   value: string;
   label: string;
   keyboard: Kind;
+  symbols: AnswerSymbol[];
   keys?: BoxKeys;
   locked: boolean;
   invalid?: boolean;
@@ -69,6 +71,7 @@ export function MathBox({
   value,
   label,
   keyboard,
+  symbols,
   keys,
   locked,
   invalid,
@@ -84,6 +87,7 @@ export function MathBox({
     active,
     value,
     keyboard,
+    symbols,
     next: t("next"),
     keys,
     stats,

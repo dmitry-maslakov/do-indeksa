@@ -20,7 +20,10 @@ const answerSymbols = {
   pi: /\\pi/,
   fraction: /\\[dt]?frac/,
   power: /\^/,
-  log: /\\(?:log|ln)/,
+  log: /\\log/,
+  ln: /\\ln/,
+  trig: /\\(?:sin|cos|tan|cot)/,
+  arc: /\\arc(?:sin|cos|tan|cot)/,
 };
 
 export type AnswerSymbol = keyof typeof answerSymbols;
