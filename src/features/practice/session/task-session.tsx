@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { isRight, type PartOutcome } from "@/db/columns";
+
 import { keepTaskSession } from "@/features/practice/actions";
 import { whenFieldReady } from "@/features/practice/answer/input-stats";
 import type { Verdict } from "@/features/practice/answer/verdicts";
@@ -25,6 +26,9 @@ import {
 } from "@/lib/analytics-browser";
 import { localTimeZone } from "@/lib/time-zone";
 import { keepAliveMs } from "./session-kind";
+
+const decides = (outcomes: PartOutcome[]) =>
+  outcomes.every(isRight) || outcomes.includes("wrong");
 
 type Send = (sessionId?: string) => Promise<string | undefined>;
 
@@ -51,6 +55,7 @@ interface TaskSession {
   solution: boolean;
   solved: (string | undefined)[];
   correct: boolean;
+  answered: boolean;
   open: (part: RevealPart) => void;
   solve: (outcomes: PartOutcome[], sent: string[]) => void;
   restore: (sitting: SittingState) => void;
@@ -96,6 +101,7 @@ export function TaskSessionProvider({
   }, []);
   const [opened, setOpened] = useState<RevealPart[]>([]);
   const [solved, setSolved] = useState<(string | undefined)[]>([]);
+  const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
     const current = visit.current;
@@ -175,8 +181,11 @@ export function TaskSessionProvider({
         correct:
           solved.length > 0 && solved.every((text) => text !== undefined),
         open: (part) => setOpened((all) => [...all, part]),
-        solve: (outcomes, sent) =>
-          setSolved(outcomes.map((o, i) => (isRight(o) ? sent[i] : undefined))),
+        answered,
+        solve: (outcomes, sent) => {
+          setSolved(outcomes.map((o, i) => (isRight(o) ? sent[i] : undefined)));
+          if (decides(outcomes)) setAnswered(true);
+        },
         restore: (sitting) => {
           setOpened((all) => union(openedOf(sitting), all));
           setSolved(sitting.solved);
