@@ -83,11 +83,13 @@ export function TodayHero({
         className="pointer-events-none absolute -top-4 -right-2 h-75 w-auto max-xl:hidden"
       />
       <div className="relative xl:max-w-3xl">
-        <Suspense fallback={<HeadlineSkeleton />}>
-          <Await promise={suggestion}>
-            {(hero) => hero && <Headline {...hero} />}
-          </Await>
-        </Suspense>
+        <div className="flex min-h-35 flex-col justify-end md:min-h-49">
+          <Suspense fallback={<HeadlineSkeleton />}>
+            <Await promise={suggestion}>
+              {(hero) => hero && <Headline {...hero} />}
+            </Await>
+          </Suspense>
+        </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <Suspense fallback={<Skeleton className="h-12 w-32 rounded-xl" />}>
             <Await promise={suggestion}>
