@@ -27,6 +27,7 @@ export interface QueueRow {
   year: number | null;
   level: Level;
   status?: TouchStatus;
+  before?: Answered;
   repeat?: boolean;
   reason?: PickReason;
 }
@@ -143,10 +144,14 @@ export async function loadQueue(input: PoolInput): Promise<Queue> {
   const { touched, queue, now } = await plan(input);
   const { current, profileId } = input;
   const statuses = await getVisitStatuses(profileId, queue.visit, queue.begun);
-  const beforeOf = (id: string): Before | undefined => {
-    if (queue.repeated.includes(id)) return "repeat";
-    return queue.returning ? touched.statuses.get(id) : undefined;
+  const earlierOf = (id: string) => {
+    const status = statuses.get(id);
+    return status === "solved" || status === "wrong"
+      ? undefined
+      : touched.statuses.get(id);
   };
+  const beforeOf = (id: string): Before | undefined =>
+    queue.repeated.includes(id) ? "repeat" : earlierOf(id);
   const row = (id: string, pick?: Pick) =>
     rowOf(id, statuses.get(id)).map((r) => ({
       ...r,
@@ -157,7 +162,9 @@ export async function loadQueue(input: PoolInput): Promise<Queue> {
     next: queue.upcoming[0]?.id,
     before: current === undefined ? undefined : beforeOf(current),
     earlier: earlierRuns(touched.touches, now).length > 0,
-    visit: queue.visit.flatMap((id) => row(id)),
+    visit: queue.visit.flatMap((id) =>
+      row(id).map((r) => ({ ...r, before: earlierOf(id) })),
+    ),
     upcoming: queue.upcoming.flatMap((p) => row(p.id, p)),
   };
 }

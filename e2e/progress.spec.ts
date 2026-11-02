@@ -26,7 +26,7 @@ test("the bank filters tasks by their latest attempt", async ({
   await expect(task("eks-001")).toHaveCount(0);
 });
 
-test("the line above a task names its latest earlier attempt", async ({
+test("a task and its rail row name the latest earlier attempt", async ({
   page,
   auth,
 }) => {
@@ -38,11 +38,13 @@ test("the line above a task names its latest earlier attempt", async ({
   await page.goto("/bank/eks-001");
   const meta = page.getByRole("article");
   await expect(meta.getByText("rešen ranije", { exact: true })).toBeVisible();
+  await expect(current).toContainText("rešen ranije");
   await expect(current).not.toContainText("tačno");
 
   await page.goto("/bank/fun-002");
   await expect(meta.getByText("ranije netačno", { exact: true })).toBeVisible();
-  await expect(current).not.toContainText("netačno");
+  await expect(current).toContainText("ranije netačno");
+  await expect(current).not.toContainText(/(?<!ranije )netačno/);
 });
 
 test("the task rail keeps its rows while the student moves between tasks", async ({

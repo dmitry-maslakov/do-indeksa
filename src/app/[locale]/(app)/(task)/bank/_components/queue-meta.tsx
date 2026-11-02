@@ -45,6 +45,11 @@ export function QueueMeta({
           {t("status", { status: result })}
         </Part>
       )}
+      {task.before && !task.repeat && !result && (
+        <Part className={statusTones[task.before]}>
+          {t("before", { status: task.before })}
+        </Part>
+      )}
       {task.repeat && !result && (
         <Part className="gap-0.5 text-progress-text">
           <RotateCcwIcon aria-hidden className="size-3 stroke-[2.4]" />

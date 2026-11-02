@@ -276,17 +276,6 @@ describe("planQueue", () => {
       expect(queue.visit).toEqual(["a", "b", "z", "c"]);
     });
 
-    it("tells whether the current task is new to the visit", () => {
-      const touches = [touch("a", -30), touch("b", -20)];
-      const plan = (current: string) =>
-        planQueue({ ...input, touches, statuses: new Map(), current });
-      expect(plan("b").returning).toBe(false);
-      expect(plan("c").returning).toBe(true);
-      expect(
-        planQueue({ ...input, touches, statuses: new Map() }).returning,
-      ).toBe(false);
-    });
-
     it("lists an open task outside the topic and offers the whole pool", () => {
       const queue = planQueue({
         ...input,
@@ -310,7 +299,6 @@ describe("planQueue", () => {
       expect(queue).toEqual({
         visit: ["a"],
         upcoming: [],
-        returning: false,
         repeated: [],
         begun: at(-10),
       });

@@ -127,7 +127,6 @@ export function planQueue({
   return {
     visit: uniq(steps.filter(isPractice).map((t) => t.taskId)),
     upcoming,
-    returning: added.length > 0,
     repeated,
     begun,
   };
