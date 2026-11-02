@@ -52,10 +52,13 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
   const start = `/bank/start/${filters.topic ?? positions[0]?.topic}`;
   const list = bankHref(filters);
   const tabs = (
-    <Suspense fallback={<BankTabs start={start} list={list} />}>
+    <Suspense
+      fallback={<BankTabs start={start} list={list} filters={filters} />}
+    >
       <BankTabs
         start={start}
         list={list}
+        filters={filters}
         pick={personal?.then((p) => p.pick)}
       />
     </Suspense>

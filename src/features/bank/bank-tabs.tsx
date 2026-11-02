@@ -9,6 +9,7 @@ import { useExposure } from "@/lib/use-exposure";
 import { useBankState } from "./filters/bank-state";
 import { rememberList } from "./last-list";
 import { bankHref } from "./params";
+import type { BankQuery } from "./search";
 
 export interface BankPick {
   href: string;
@@ -17,9 +18,10 @@ export interface BankPick {
 
 interface TabsProps extends Partial<BankPick> {
   start: string;
+  filters: BankQuery;
 }
 
-function Tabs({ start, href, recommendation }: TabsProps) {
+function Tabs({ start, filters, href, recommendation }: TabsProps) {
   const t = useTranslations("Bank");
   const seen = useExposure("recommendation_made", recommendation);
   const [topic] = useBankState().topic;
@@ -38,7 +40,11 @@ function Tabs({ start, href, recommendation }: TabsProps) {
           active: starting,
           intent: intentOf({ via: "picker", placement: "bank_tab" }),
         },
-        { href: bankHref({ topic }), label: t("all"), active: !starting },
+        {
+          href: bankHref({ ...filters, topic }),
+          label: t("all"),
+          active: !starting,
+        },
       ]}
     />
   );
@@ -47,11 +53,14 @@ function Tabs({ start, href, recommendation }: TabsProps) {
 interface BankTabsProps {
   start: string;
   list: string;
+  filters: BankQuery;
   pick?: Promise<BankPick>;
 }
 
-export function BankTabs({ start, list, pick }: BankTabsProps) {
+export function BankTabs({ start, list, filters, pick }: BankTabsProps) {
   const resolved = pick && use(pick);
   useEffect(() => rememberList(list), [list]);
-  return <Tabs key={resolved?.href} start={start} {...resolved} />;
+  return (
+    <Tabs key={resolved?.href} start={start} filters={filters} {...resolved} />
+  );
 }

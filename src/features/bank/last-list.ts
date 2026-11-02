@@ -1,12 +1,20 @@
-import { noop } from "es-toolkit";
 import { useSyncExternalStore } from "react";
 
 const lastList = "bank-list";
 
-const subscribe = () => noop;
+const listeners = new Set<() => void>();
 
-export const rememberList = (href: string) =>
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+export const rememberList = (href: string) => {
   sessionStorage.setItem(lastList, href);
+  for (const listener of listeners) listener();
+};
 
 export const useListHref = (fallback: string) =>
   useSyncExternalStore(

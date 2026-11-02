@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { WithPathname } from "@/components/with-url";
-import { Link } from "@/i18n/navigation";
+import { SectionLink } from "./section-link";
 import { isActive, sections } from "./sections";
 
 export function BottomNav({ className }: { className?: string }) {
@@ -23,7 +23,7 @@ export function BottomNav({ className }: { className?: string }) {
             const { href, key, icon: Icon } = section;
             const active = isActive(pathname, section);
             return (
-              <Link
+              <SectionLink
                 key={key}
                 href={href}
                 aria-current={active ? "page" : undefined}
@@ -34,7 +34,7 @@ export function BottomNav({ className }: { className?: string }) {
               >
                 <Icon className="size-6" />
                 {t(key)}
-              </Link>
+              </SectionLink>
             );
           })
         }

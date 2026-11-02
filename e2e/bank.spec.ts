@@ -213,6 +213,47 @@ test("Svi zadaci from Preporučeno goes back to the list the student left", asyn
   expect(errors).toEqual([]);
 });
 
+test("Svi zadaci and Zadaci keep the filters the student set", async ({
+  page,
+  errors,
+}) => {
+  const { level, search, links } = bank(page);
+  const menu = page
+    .getByRole("navigation", { name: "Glavna navigacija" })
+    .getByRole("link", { name: "Zadaci", exact: true });
+  const tab = page
+    .getByRole("main")
+    .getByRole("link", { name: "Svi zadaci", exact: true });
+  const kept = { path: "/bank/topic/logarithms", level: "easy", q: "log" };
+  const filtered = async () => {
+    await expect.poll(() => at(page)).toEqual(kept);
+    await expect(level).toHaveValue("easy");
+    await expect(search).toHaveValue("log");
+  };
+
+  await open(page, "/bank/topic/logarithms?level=easy&q=log");
+  await expect(tab).toHaveAttribute(
+    "href",
+    /\/bank\/topic\/logarithms\?(?=.*\blevel=easy\b)(?=.*\bq=log\b)/,
+  );
+  await tab.click();
+  await filtered();
+
+  await menu.click();
+  await filtered();
+
+  await links.first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!topic\/)[\w-]+$/);
+  await menu.click();
+  await filtered();
+
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/|topic\/)[\w-]+$/);
+  await menu.click();
+  await filtered();
+  expect(errors).toEqual([]);
+});
+
 test("an old topic link moves to the topic page", async ({ request }) => {
   const response = await request.get("/ru/bank?topic=logarithms&level=easy", {
     maxRedirects: 0,
