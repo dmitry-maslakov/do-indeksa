@@ -1,5 +1,5 @@
 import "server-only";
-import { allExams } from "content-collections";
+import { allExams, allTopics } from "content-collections";
 
 export const currentExam = "ftn-p1";
 
@@ -16,9 +16,12 @@ export const examOptions = allExams.map((e) => ({
 
 export const positions = exam.positions;
 
-export const examTopics = positions.map((p) => p.topic);
-
 const byTopic = new Map(positions.map((p) => [p.topic, p]));
+
+export const examTopics = [
+  ...positions.map((p) => p.topic),
+  ...allTopics.map((t) => t.id).filter((id) => !byTopic.has(id)),
+];
 
 export const positionOf = (topic: string) => byTopic.get(topic);
 

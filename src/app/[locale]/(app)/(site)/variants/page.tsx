@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { positions } from "@/features/catalog/exams";
+import { examTopics, positions } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
@@ -36,10 +36,10 @@ export default async function VariantsPage({
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
-  const topics = positions.map((p) => ({
-    id: p.topic,
-    name: topicName(p.topic, locale),
-    look: topicLook(p.topic),
+  const topics = examTopics.map((topic) => ({
+    id: topic,
+    name: topicName(topic, locale),
+    look: topicLook(topic),
   }));
   const counts = {
     official: officialVariants.length,

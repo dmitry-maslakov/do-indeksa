@@ -10,7 +10,7 @@ describe("getVariant", () => {
     expect(official && getVariant(official.id)).toBe(official);
   });
 
-  it("orders a custom set by task number and rejects unknown tasks", () => {
+  it("orders a custom set by exam topic and rejects unknown tasks", () => {
     expect(getVariant("set-log-001.kb-003")?.taskIds).toEqual([
       "kb-003",
       "log-001",
@@ -31,18 +31,18 @@ describe("getVariant", () => {
 });
 
 describe("slotsOf", () => {
-  it("takes number, points and minutes from the exam positions", () => {
+  it("takes number, points and minutes from the place in the test", () => {
     expect(slotsOf(["log-001", "kb-003"])).toEqual([
       {
         taskId: "log-001",
-        number: 3,
+        number: 1,
         topic: "logarithms",
         points: 6,
         minutes: 24,
       },
       {
         taskId: "kb-003",
-        number: 1,
+        number: 2,
         topic: "complex-numbers",
         points: 6,
         minutes: 24,
@@ -73,8 +73,8 @@ describe("slotsOf", () => {
   });
 
   it("skips tasks that are not in the bank", () => {
-    expect(slotsOf(["missing", "log-001"]).map((t) => t.taskId)).toEqual([
-      "log-001",
-    ]);
+    expect(
+      slotsOf(["missing", "log-001"]).map((t) => [t.taskId, t.number]),
+    ).toEqual([["log-001", 1]]);
   });
 });

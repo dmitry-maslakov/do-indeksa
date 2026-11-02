@@ -1,6 +1,6 @@
 import "server-only";
 import { findTasks } from "@/features/bank/search";
-import { positions } from "@/features/catalog/exams";
+import { examTopics } from "@/features/catalog/exams";
 import { type Level, levelOf } from "@/features/catalog/level";
 import { getTask } from "@/features/catalog/tasks";
 import type { Candidate } from "@/features/progress/learning/planner/contracts";
@@ -108,7 +108,7 @@ const rowOf = (id: string, status?: TouchStatus): QueueRow[] => {
 };
 
 export async function nextTasks(profileId: string) {
-  const topics = positions.map(({ topic }) => ({
+  const topics = examTopics.map((topic) => ({
     topic,
     ids: topicIds(topic),
   }));

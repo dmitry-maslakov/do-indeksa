@@ -50,14 +50,14 @@ test("a composed test swaps an unanswered task and keeps the answers", async ({
   const before = page.url();
   await answer(page, "5");
   await page.getByRole("button", { name: "Sledeći" }).click();
-  await page.getByRole("button", { name: "Zameni zadatak 4" }).click();
+  await page.getByRole("button", { name: "Zameni zadatak 2" }).click();
   await expect(page).not.toHaveURL(before);
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   const rail = page.getByRole("complementary", { name: "Zadaci" });
   await expect(rail.getByText("Odgovoreno 1 od 2")).toBeVisible();
-  await expect(page.getByText("Zadatak 4 · 6 bodova")).toBeVisible();
+  await expect(page.getByText("Zadatak 2 · 6 bodova")).toBeVisible();
   await answer(page, "1");
   await expect(
-    page.getByRole("button", { name: "Zameni zadatak 4" }),
+    page.getByRole("button", { name: "Zameni zadatak 2" }),
   ).toHaveCount(0);
 });
