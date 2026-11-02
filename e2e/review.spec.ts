@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
+import { secondMs } from "../src/lib/dates";
 import { answer, expect, finish, test } from "./fixtures";
 
 async function finishSet(page: Page) {
@@ -53,6 +54,24 @@ test("a guest reviews a finished test and finds it in history", {
   await expectAnswers(page, errors);
   await page.goto("/variants?tab=history");
   await expect(page.locator(`main a[href$="${review}"]`)).toBeVisible();
+});
+
+test("finishing a test right after an answer sends no late draft save", async ({
+  page,
+  errors,
+}) => {
+  const conflicts: string[] = [];
+  page.on("response", (response) => {
+    const request = response.request();
+    if (request.method() === "POST" && response.status() === 409)
+      conflicts.push(request.url());
+  });
+  await finishSet(page);
+  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
+  await page.waitForTimeout(2 * secondMs);
+  await page.waitForLoadState("networkidle");
+  expect(conflicts).toEqual([]);
+  expect(errors).toEqual([]);
 });
 
 test("a guest is offered to save a test result", {
