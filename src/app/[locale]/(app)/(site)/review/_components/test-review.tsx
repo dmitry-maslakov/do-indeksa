@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
 import { comparisonsOf } from "@/features/tests/comparisons";
@@ -7,7 +8,7 @@ import { findSetCode } from "@/features/variants/custom/sets";
 import { variantTitle } from "@/features/variants/variant-title";
 import { getVariant, tasksFor } from "@/features/variants/variants";
 import { ReviewRows } from "./review-rows";
-import { ReviewSummary } from "./review-summary";
+import { ReviewSummary, reviewColumns } from "./review-summary";
 import { TimeSpent } from "./time-spent";
 
 export async function TestReview({
@@ -40,13 +41,15 @@ export async function TestReview({
       >
         {guest && <SignInStrip from="result">{strip("result")}</SignInStrip>}
       </ReviewSummary>
-      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14">
+      <div
+        className={result.timed ? cn(reviewColumns, "items-start") : undefined}
+      >
         <ReviewRows
           review={result}
           comparisons={comparisonsOf(found.attempts)}
           testSessionId={found.test.id}
         />
-        <TimeSpent review={result} />
+        {result.timed && <TimeSpent review={result} />}
       </div>
     </div>
   );

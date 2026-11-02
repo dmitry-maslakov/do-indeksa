@@ -11,6 +11,9 @@ import { toMinutes } from "@/lib/dates";
 import { ShareButton } from "./share-button";
 import { SimilarButton } from "./similar-button";
 
+export const reviewColumns =
+  "grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14";
+
 interface ReviewSummaryProps {
   review: Review;
   variantId: string;
@@ -69,7 +72,7 @@ export function ReviewSummary({
           </>
         )}
       </p>
-      <div className="grid gap-5.5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-end lg:gap-14">
+      <div className={cn(reviewColumns, "gap-5.5 lg:items-end")}>
         <div className="flex flex-col gap-5.5 md:gap-6">
           <div className="flex flex-col gap-1.5">
             <p className="flex items-baseline gap-3">
@@ -95,7 +98,7 @@ export function ReviewSummary({
           <div className="flex flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center md:gap-3">
             {missed.length > 0 && (
               <SimilarButton topics={missed} className={action}>
-                {t("similar", { count: review.rows.length - review.correct })}
+                {t("similar", { count: review.mistakes })}
               </SimilarButton>
             )}
             <Button

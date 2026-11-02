@@ -235,7 +235,7 @@
     "timeOf": "{spent, number} of {norm, number} min",
     "overNorm": "{count, plural, one {Over {minutes, number} min: task {numbers}.} other {Over {minutes, number} min: tasks {numbers}.}}",
     "inNorm": "No task took over {minutes, number} min.",
-    "similar": "Practice similar · {count, plural, one {# mistake} other {# mistakes}}",
+    "similar": "Practice similar{count, plural, =0 {} one { · # mistake} other { · # mistakes}}",
     "gave": "answered",
     "key": "correct",
     "partsRight": "{right, number} of {total, plural, one {# part} other {# parts}} right",

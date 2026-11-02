@@ -36,9 +36,16 @@ export interface Review<
   score: number;
   max: number;
   correct: number;
+  mistakes: number;
+  timed: boolean;
   spentMs: number;
   normMs: number;
 }
+
+const timedFromMs = minuteMs;
+
+const isMistake = (outcome: PartOutcome) =>
+  outcome === "wrong" || outcome === "unreadable";
 
 export const reviewHref = (testId: string) => `/review/${testId.slice(0, 8)}`;
 
@@ -73,6 +80,8 @@ export function review<T extends Slot, A extends ReviewAttempt>(
     ),
     max: sumBy(rows, (r) => r.points),
     correct: rows.filter((r) => r.attempt?.correct).length,
+    mistakes: rows.filter((r) => r.attempt?.outcomes.some(isMistake)).length,
+    timed: rows.some((r) => (r.attempt?.durationMs ?? 0) >= timedFromMs),
     spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
     normMs: sumBy(rows, (r) => r.minutes * minuteMs),
   };

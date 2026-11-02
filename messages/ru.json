@@ -235,7 +235,7 @@
     "timeOf": "{spent, number} из {norm, number} мин",
     "overNorm": "{count, plural, one {Дольше {minutes, number} мин: задача {numbers}.} other {Дольше {minutes, number} мин: задачи {numbers}.}}",
     "inNorm": "Ни одна задача не заняла больше {minutes, number} мин.",
-    "similar": "Порешать похожие · {count, plural, one {# ошибка} few {# ошибки} many {# ошибок} other {# ошибки}}",
+    "similar": "Порешать похожие{count, plural, =0 {} one { · # ошибка} few { · # ошибки} many { · # ошибок} other { · # ошибки}}",
     "gave": "твой ответ",
     "key": "верно",
     "partsRight": "верно {right, number} из {total, plural, one {# пункта} other {# пунктов}}",

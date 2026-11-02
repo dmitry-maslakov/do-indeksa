@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { ArrowRightIcon, ChevronRightIcon } from "lucide-react";
+import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MathHtml } from "@/components/math-html";
 import { segmentTone } from "@/components/segment-tone";
@@ -108,11 +108,13 @@ function Row({ row, comparison, testSessionId }: RowProps) {
           >
             <Link
               href={`/bank/${row.taskId}`}
+              target="_blank"
+              rel="noopener"
               data-intent={intentOf({ via: "review", placement: "review_row" })}
               className="ml-auto inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
             >
               {t("toTask")}
-              <ArrowRightIcon className="size-4" />
+              <ArrowUpRightIcon aria-hidden className="size-4" />
             </Link>
           </RevealSwitch>
         </div>
