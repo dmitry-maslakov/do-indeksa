@@ -50,6 +50,28 @@ describe("slotsOf", () => {
     ]);
   });
 
+  it("numbers a whole test by place, whatever its topics", () => {
+    const ids = [
+      "kv-002",
+      "kb-003",
+      "eks-001",
+      "log-001",
+      "trig-001",
+      "vek-002",
+      "plan-001",
+      "eks-002",
+      "fun-002",
+      "komb-002",
+    ];
+    const slots = slotsOf(ids);
+    expect(slots.map((s) => s.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(slots.slice(0, 2).map((s) => s.topic)).toEqual([
+      "quadratic-equations",
+      "complex-numbers",
+    ]);
+    expect(slots.every((s) => s.points === 6 && s.minutes === 24)).toBe(true);
+  });
+
   it("skips tasks that are not in the bank", () => {
     expect(slotsOf(["missing", "log-001"]).map((t) => t.taskId)).toEqual([
       "log-001",

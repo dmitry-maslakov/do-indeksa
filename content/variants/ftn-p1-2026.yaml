@@ -1,4 +1,4 @@
 exam: ftn-p1
 kind: official
 year: 2026
-taskIds: [kb-003, kv-002, log-001, eks-001, trig-001, vek-002, plan-001, ster-001, fun-002, komb-002]
+taskIds: [kv-002, kb-003, eks-001, log-001, trig-001, vek-002, plan-001, eks-002, fun-002, komb-002]
