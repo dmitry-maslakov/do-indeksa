@@ -111,7 +111,7 @@
     "list": "List",
     "solve": "Solve",
     "skip": "Skip",
-    "status": "{status, select, solved {correct} wrong {wrong} revealed {answer viewed} skipped {skipped} opened {opened} other {not solved}}",
+    "status": "{status, select, solved {correct} wrong {wrong} revealed {answer viewed} skipped {skipped} other {not solved}}",
     "repeat": "review",
     "exam": "Exam {year}",
     "visitPosition": "Task {position, number}{right, plural, =0 {} other { · <ok># correct</ok>}}",

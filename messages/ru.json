@@ -111,7 +111,7 @@
     "list": "Список",
     "solve": "Решать",
     "skip": "Пропустить",
-    "status": "{status, select, solved {верно} wrong {неверно} revealed {ответ показан} skipped {пропущена} opened {открыта} other {не решена}}",
+    "status": "{status, select, solved {верно} wrong {неверно} revealed {ответ показан} skipped {пропущена} other {не решена}}",
     "repeat": "повторение",
     "exam": "Экзамен {year}",
     "visitPosition": "{position, number}-я задача{right, plural, =0 {} other { · <ok># верно</ok>}}",

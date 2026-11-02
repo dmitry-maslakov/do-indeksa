@@ -35,7 +35,8 @@ export function QueueMeta({
 }) {
   const t = useTranslations("Solve");
   const bank = useTranslations("Bank");
-  const result = resultOf(task, state);
+  const status = resultOf(task, state);
+  const result = status === "opened" ? undefined : status;
 
   return (
     <span className="mt-0.5 flex min-h-4 min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap text-subtle text-xs leading-4">
@@ -55,7 +56,7 @@ export function QueueMeta({
           <ExamMark>{t("exam", { year: String(task.year) })}</ExamMark>
         </Part>
       )}
-      {state !== "past" && (
+      {(state !== "past" || !result) && (
         <Part>{bank("taskLevel", { level: task.level })}</Part>
       )}
     </span>
