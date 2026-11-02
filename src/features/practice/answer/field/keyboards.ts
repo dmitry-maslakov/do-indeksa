@@ -117,6 +117,7 @@ const top = (kind: Kind, label: string): Row | undefined => {
       ];
     case "point":
     case "points":
+    case "sequence":
       return [next(label)];
     case "interval":
       return [...brackets, nextEnd];

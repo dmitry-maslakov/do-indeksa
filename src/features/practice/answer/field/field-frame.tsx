@@ -71,12 +71,15 @@ const affix = cva(
   },
 );
 
+const letterOf = ({ part, variant }: Pick<FieldProps, "part" | "variant">) =>
+  variant === "solve" && !part.caption && part.letter;
+
 function Prefix({
   part,
   variant,
   shown,
 }: Pick<FieldProps, "part" | "variant"> & { shown: boolean }) {
-  const letter = variant === "solve" && !part.caption && part.letter;
+  const letter = letterOf({ part, variant });
   if (!letter && !part.prefix) return null;
   return (
     <span
@@ -150,6 +153,7 @@ const reasonKeys = {
   coordinate: "problemCoordinate",
   decimal: "problemDecimal",
   expression: "problemExpression",
+  item: "problemItem",
 } as const satisfies Record<Reason, string>;
 
 function Reading({ reason }: { reason: Reason }) {
@@ -176,16 +180,20 @@ export function Frame({
   children,
 }: FrameProps) {
   const shown = state === "shown";
+  const bare = !letterOf({ part, variant }) && !part.prefix;
   return (
     <>
       <div
         data-field={part.kind ?? "value"}
         onPointerDown={focusEmpty}
-        className={frame({
-          variant,
-          state: variant === "solve" ? state : "empty",
-          wrap,
-        })}
+        className={cn(
+          frame({
+            variant,
+            state: variant === "solve" ? state : "empty",
+            wrap,
+          }),
+          variant === "solve" && bare && "pl-4",
+        )}
       >
         <Prefix part={part} variant={variant} shown={shown} />
         {children}

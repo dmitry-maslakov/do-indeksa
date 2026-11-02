@@ -328,10 +328,10 @@ test("a point has as many boxes as its unknowns and moves on at a comma", async 
   page,
 }) => {
   await open(page, "/bank/vek-002");
-  await expect(fields(page)).toHaveCount(5);
+  await expect(fields(page)).toHaveCount(8);
   await enter(page, fields(page).nth(2), "0;1;2");
   await expect(sent(page, 2)).toHaveValue("(0;1;2)");
-  await expect(fields(page)).toHaveCount(5);
+  await expect(fields(page)).toHaveCount(8);
   await enter(page, fields(page).first(), "60");
   await enter(page, fields(page).nth(1), "3/2");
   await check(page);

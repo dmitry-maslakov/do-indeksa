@@ -59,7 +59,8 @@ export function useBoxLayout(
     const layout = live.current;
     const { group, index: column } = locate(layout, index);
     go(index - 1);
-    const removable = kind === "interval" ? group > 0 : kind !== "point";
+    const removable =
+      kind === "interval" ? group > 0 : kind !== "point" && kind !== "sequence";
     if (removable && column === 0 && !groupsOf(layout)[group]?.some(isFilled))
       flushSync(() => commit(shrunk(layout, group)));
   };

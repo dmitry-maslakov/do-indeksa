@@ -136,6 +136,7 @@
   "Field": {
     "value": "Value {number, number}",
     "coordinate": "Coordinate {number, number}",
+    "position": "Position {number, number}",
     "from": "Interval start {number, number}",
     "to": "Interval end {number, number}",
     "isolated": "Isolated point {number, number}",
@@ -152,12 +153,14 @@
     "infinity": "infinity",
     "hintValues": "; or a comma and a space opens the next solution",
     "hintPoint": "; or a comma and a space moves to the next coordinate",
+    "hintSequence": "; or a comma and a space moves to the next position",
     "problemFraction": "A fraction, root or power is unfinished — fill in the empty places.",
     "problemBracket": "A bracket in this box is not closed.",
     "problemEnd": "The end of the interval is empty.",
     "problemCoordinate": "A coordinate is empty.",
     "problemDecimal": "A comma after a digit is a decimal comma, so this is one number. For the next box type ; or a comma and a space.",
     "problemExpression": "This box is not a number or an expression — check how it is written.",
+    "problemItem": "A position is empty — fill in every position in order.",
     "yes": "Yes",
     "no": "No"
   },

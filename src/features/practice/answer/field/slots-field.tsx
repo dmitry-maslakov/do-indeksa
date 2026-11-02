@@ -1,8 +1,9 @@
 "use client";
 
+import { cn } from "cn";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { boxesOf, groupsOf, startOf } from "@/features/catalog/boxes";
 import type { BoxKeys } from "./box-keys";
 import { type FieldProps, Frame } from "./field-frame";
@@ -11,10 +12,39 @@ import { SymbolTray, TrayButton } from "./symbol-tray";
 import { useBoxLayout } from "./use-box-layout";
 
 interface SlotsFieldProps extends FieldProps {
-  kind: "values" | "point" | "points";
+  kind: "values" | "point" | "points" | "sequence";
 }
 
 const unit = "flex max-w-full flex-wrap items-center gap-1";
+
+function Numbered({ at, children }: { at?: number; children: ReactNode }) {
+  if (at === undefined) return children;
+  return (
+    <span className="relative inline-flex max-w-full">
+      {children}
+      <span
+        aria-hidden
+        className="absolute inset-x-0 -bottom-4 text-center text-subtle text-xs leading-4 tabular-nums"
+      >
+        {at}
+      </span>
+    </span>
+  );
+}
+
+const boxLabel = {
+  values: "value",
+  point: "coordinate",
+  points: "coordinate",
+  sequence: "position",
+} as const;
+
+const hintOf = {
+  values: "hintValues",
+  point: "hintPoint",
+  points: "hintPoint",
+  sequence: "hintSequence",
+} as const;
 
 export function SlotsField({
   kind,
@@ -47,7 +77,8 @@ export function SlotsField({
     edit,
   } = useBoxLayout(kind, { part, defaultValue, fill, locked, onEdit });
   const rows = groupsOf(shown);
-  const grows = kind !== "point";
+  const grows = kind === "values" || kind === "points";
+  const tupled = kind === "point" || kind === "points";
 
   const keysOf = (index: number): BoxKeys => ({
     next: (carry) => {
@@ -70,34 +101,39 @@ export function SlotsField({
             <NoSolution locked={readOnly} onClear={clear} />
           )}
           {rows.map((cells, group) => (
-            <span key={startOf(shown, group)} className={unit}>
+            <span
+              key={startOf(shown, group)}
+              className={cn(unit, kind === "sequence" && "pb-4")}
+            >
               {group > 0 && <span className={comma}>,</span>}
-              {kind !== "values" && <span className={glyph}>(</span>}
+              {tupled && <span className={glyph}>(</span>}
               {cells.map((text, column) => {
                 const index = startOf(shown, group) + column;
                 return (
                   <Fragment key={index}>
                     {column > 0 && <span className={comma}>,</span>}
-                    <MathBox
-                      id={index === 0 ? id : undefined}
-                      active={active}
-                      value={text}
-                      label={t(kind === "values" ? "value" : "coordinate", {
-                        number: (kind === "values" ? index : column) + 1,
-                      })}
-                      keyboard={kind}
-                      symbols={part.symbols}
-                      keys={keysOf(index)}
-                      locked={readOnly}
-                      invalid={invalid === index}
-                      className={slot({ shown: state === "shown" })}
-                      stats={stats}
-                      onEdit={(latex) => edit(index, latex)}
-                    />
+                    <Numbered at={kind === "sequence" ? column + 1 : undefined}>
+                      <MathBox
+                        id={index === 0 ? id : undefined}
+                        active={active}
+                        value={text}
+                        label={t(boxLabel[kind], {
+                          number: (kind === "values" ? index : column) + 1,
+                        })}
+                        keyboard={kind}
+                        symbols={part.symbols}
+                        keys={keysOf(index)}
+                        locked={readOnly}
+                        invalid={invalid === index}
+                        className={slot({ shown: state === "shown" })}
+                        stats={stats}
+                        onEdit={(latex) => edit(index, latex)}
+                      />
+                    </Numbered>
                   </Fragment>
                 );
               })}
-              {kind !== "values" && <span className={glyph}>)</span>}
+              {tupled && <span className={glyph}>)</span>}
             </span>
           ))}
           {grows && !readOnly && shown.kind !== "none" && (
@@ -111,7 +147,7 @@ export function SlotsField({
         symbols={part.symbols}
         active={active}
         locked={readOnly}
-        hint={t(kind === "point" ? "hintPoint" : "hintValues")}
+        hint={t(hintOf[kind])}
       >
         {grows && (
           <TrayButton onPress={() => add()}>
