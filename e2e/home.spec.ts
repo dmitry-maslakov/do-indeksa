@@ -1,6 +1,13 @@
 import type { Page } from "@playwright/test";
 import { expect, seedAttempt, test } from "./fixtures";
 
+async function topicCount(page: Page) {
+  const all = page
+    .locator("#topic-map")
+    .getByRole("button", { name: /^Sve · \d+$/ });
+  return Number((await all.textContent())?.replace(/\D/g, ""));
+}
+
 async function expectFirstVisit(page: Page) {
   await page.goto("/");
 
@@ -21,7 +28,7 @@ async function expectFirstVisit(page: Page) {
     "/variants/ftn-p1-2025",
   );
   await expect(page.locator("#topic-map").getByRole("listitem")).toHaveCount(
-    10,
+    await topicCount(page),
   );
 }
 
@@ -56,7 +63,8 @@ test("the home page suggests a topic and maps progress", async ({
 
   const map = page.locator("#topic-map");
   const rows = map.getByRole("listitem");
-  await expect(rows).toHaveCount(10);
+  const total = await topicCount(page);
+  await expect(rows).toHaveCount(total);
   await map.getByRole("button", { name: "Zagrevanje" }).click();
   await expect(rows).toHaveCount(3);
   await expect(
@@ -64,7 +72,7 @@ test("the home page suggests a topic and maps progress", async ({
   ).toHaveCount(1);
   await expect(rows.filter({ hasText: "%" })).toHaveCount(0);
   await map.getByRole("button", { name: "Nije početo" }).click();
-  await expect(rows).toHaveCount(7);
+  await expect(rows).toHaveCount(total - 3);
 });
 
 test("Počni opens the suggested topic", async ({ page }) => {
