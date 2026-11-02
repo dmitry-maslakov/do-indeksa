@@ -58,7 +58,7 @@ export function ReportTask({ taskId }: { taskId: string }) {
           )}
           <Button
             type="submit"
-            variant="secondary"
+            variant="lime"
             disabled={isPending}
             className="self-start"
           >
