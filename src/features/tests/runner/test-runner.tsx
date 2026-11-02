@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { isNavigationError } from "next-safe-action";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect, useEffectEvent, useMemo } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { RailPanel } from "@/components/rail";
 import { saveTest, submitTest } from "@/features/tests/actions";
@@ -17,6 +17,7 @@ import type {
   VariantTask as Task,
 } from "@/features/variants/variants";
 import { navigationStarted, queueEvent } from "@/lib/analytics-browser";
+import { secondMs } from "@/lib/dates";
 import { localTimeZone } from "@/lib/time-zone";
 import { useErrorText } from "@/lib/use-error-text";
 import { TestBar } from "./test-bar";
@@ -58,6 +59,8 @@ const failed = (kind: "test_save" | "test_finish", thrown?: unknown) =>
     reason: !thrown ? "server" : navigator.onLine ? "network" : "offline",
   });
 
+const draftSaveMs = 1.5 * secondMs;
+
 export function TestRunner({
   variantId,
   kind,
@@ -74,8 +77,10 @@ export function TestRunner({
   const t = useTranslations("Exam");
   const locale = useLocale();
   const errorText = useErrorText();
+  const finishing = useRef(false);
   const { executeAsync: submit, isPending: pending } = useAction(submitTest, {
     onError: ({ error }) => {
+      finishing.current = false;
       failed("test_finish", error.thrownError);
       toast.error(t("finishFailed"), {
         description: errorText(),
@@ -120,13 +125,14 @@ export function TestRunner({
     if (!test || test.updatedAt <= synced || test.updatedAt === test.startedAt)
       return;
     const id = setTimeout(() => {
+      if (finishing.current) return;
       saveTest(payload(variantId, test)).then(
         (result) =>
           (result?.serverError || result?.validationErrors) &&
           failed("test_save"),
         (error) => failed("test_save", error),
       );
-    }, 1500);
+    }, draftSaveMs);
     return () => clearTimeout(id);
   }, [test, synced, variantId]);
   const { goTo, recordInput, stats } = useTestViews(
@@ -168,6 +174,7 @@ export function TestRunner({
     onFinish: () => {
       recordInput();
       navigationStarted("push");
+      finishing.current = true;
       submit({
         ...payload(variantId, test),
         tz: localTimeZone(),
