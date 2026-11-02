@@ -12,7 +12,7 @@ import type { BoxKeys } from "./box-keys";
 import { useMathBox } from "./use-math-box";
 
 export const slot = cva(
-  "min-h-9 min-w-10 max-w-full rounded-[9px] bg-muted px-2.5 text-xl outline-none focus-within:bg-card focus-within:ring-[1.5px] focus-within:ring-foreground data-invalid:bg-card data-invalid:ring-2 data-invalid:ring-overtime",
+  "min-h-9 min-w-10 max-w-full rounded-[9px] border-2 border-transparent bg-muted px-2 text-xl outline-none focus-within:border-foreground focus-within:bg-card data-invalid:border-overtime data-invalid:bg-card",
   {
     variants: {
       shown: {
