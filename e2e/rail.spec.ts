@@ -393,6 +393,33 @@ test("the nearest earlier session shows above the visit and the rest load on scr
   expect(errors).toEqual([]);
 });
 
+test("a task opened again keeps its earlier result until it is answered", async ({
+  page,
+  auth,
+  errors,
+}) => {
+  const { profileId } = await auth.signIn();
+  await seedAttempt(auth.db, profileId, "eks-002", true, 240);
+  await page.goto("/bank/eks-002");
+  const { current } = rail(page);
+  const earlier = page.getByText("rešen ranije", { exact: true });
+  await expect(current).toHaveAttribute("data-id", "eks-002");
+  await expect(earlier).toHaveCount(2);
+  await expect(current).toContainText("rešen ranije");
+
+  await page.reload();
+  await expect(current).toHaveAttribute("data-id", "eks-002");
+  await expect(earlier).toHaveCount(2);
+
+  await answer(page, "0");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(current).toContainText("netačno");
+  await expect(earlier).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test("the phone bar says where the student is in the visit", {
   tag: "@mobile",
 }, async ({ page }) => {
