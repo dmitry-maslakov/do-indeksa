@@ -136,6 +136,7 @@
   "Field": {
     "value": "Vrednost {number, number}",
     "coordinate": "Koordinata {number, number}",
+    "position": "Mesto {number, number}",
     "from": "Početak intervala {number, number}",
     "to": "Kraj intervala {number, number}",
     "isolated": "Izdvojena tačka {number, number}",
@@ -152,12 +153,14 @@
     "infinity": "beskonačno",
     "hintValues": "; ili zarez i razmak otvara sledeće rešenje",
     "hintPoint": "; ili zarez i razmak prelazi na sledeću koordinatu",
+    "hintSequence": "; ili zarez i razmak prelazi na sledeće mesto",
     "problemFraction": "Razlomak, koren ili stepen nije dovršen — popuni prazna mesta.",
     "problemBracket": "Zagrada u ovom polju nije zatvorena.",
     "problemEnd": "Kraj intervala je prazan.",
     "problemCoordinate": "Koordinata je prazna.",
     "problemDecimal": "Zarez iza cifre je decimalni, pa je ovo jedan broj. Za sledeće polje ukucaj ; ili zarez i razmak.",
     "problemExpression": "Ovo polje nije broj ni izraz — proveri zapis.",
+    "problemItem": "Jedno mesto je prazno — popuni sva mesta redom.",
     "yes": "Da",
     "no": "Ne"
   },

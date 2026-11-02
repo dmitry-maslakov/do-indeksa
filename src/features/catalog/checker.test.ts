@@ -323,6 +323,32 @@ describe("point and points", () => {
   });
 });
 
+describe("sequence", () => {
+  it.each([
+    ["24, 10", "24;10"],
+    ["24, 10", "24;\\frac{20}{2}"],
+    ["\\log_5 8, \\log_3 5, \\log_2 3", "\\log_5 8;\\log_3 5;\\log_2 3"],
+    ["1, 1.5", "1;\\frac{3}{2}"],
+  ])("accepts %s as %s", (expected, input) => {
+    expect(grade(expected, input, "sequence")).toBe("right");
+  });
+
+  it.each([
+    ["24, 10", "10;24"],
+    ["\\log_5 8, \\log_3 5, \\log_2 3", "\\log_2 3;\\log_3 5;\\log_5 8"],
+    ["1, 2, 3", "1;2;3;4"],
+    ["1, 2, 3", "1;2"],
+  ])("grades %s as %s wrong, by position", (expected, input) => {
+    expect(grade(expected, input, "sequence")).toBe("wrong");
+  });
+
+  it("asks for an empty position before checking the order", () => {
+    expect(
+      gradeParts([{ expected: "1, 2, 3", kind: "sequence" }], ["1;;3"])[0],
+    ).toEqual({ outcome: "unreadable", problem: { box: 1, reason: "item" } });
+  });
+});
+
 describe("interval", () => {
   const expected = "(-\\infty,-1)\\cup(0,1]";
 

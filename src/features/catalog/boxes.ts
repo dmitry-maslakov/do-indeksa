@@ -18,6 +18,7 @@ export type Layout =
   | { kind: "none" }
   | { kind: "values"; boxes: string[] }
   | { kind: "point"; boxes: string[] }
+  | { kind: "sequence"; boxes: string[] }
   | { kind: "points"; rows: string[][] }
   | { kind: "interval"; pieces: Piece[] };
 
@@ -28,6 +29,7 @@ export const reasons = [
   "coordinate",
   "decimal",
   "expression",
+  "item",
 ] as const;
 
 export type Reason = (typeof reasons)[number];
@@ -84,6 +86,7 @@ export function groupsOf(layout: Layout): string[][] {
     case "values":
       return layout.boxes.map((box) => [box]);
     case "point":
+    case "sequence":
       return [layout.boxes];
     case "points":
       return layout.rows;
@@ -122,6 +125,7 @@ export function withBox(layout: Layout, index: number, text: string): Layout {
       return layout;
     case "values":
     case "point":
+    case "sequence":
       return { ...layout, boxes: layout.boxes.map(set) };
     case "points":
       return { ...layout, rows: layout.rows.map((row) => row.map(set)) };
@@ -209,6 +213,7 @@ export function sentOf(layout: Layout) {
   if (!boxesOf(layout).some(isFilled)) return "";
   switch (layout.kind) {
     case "values":
+    case "sequence":
       return layout.boxes.join(";");
     case "point":
       return tuple(layout.boxes);
@@ -230,6 +235,7 @@ export function blankLayout(kind: BoxKind, arity: number): Layout {
     case "values":
       return { kind, boxes: [""] };
     case "point":
+    case "sequence":
       return { kind, boxes: emptyBoxes(arity) };
     case "points":
       return { kind, rows: [emptyBoxes(arity)] };
@@ -301,6 +307,8 @@ export function layoutOf(kind: BoxKind, text: string): Layout | null {
       };
     case "point":
       return { kind, boxes: tupleOf(latex) };
+    case "sequence":
+      return { kind, boxes: trimmed(topLevel(latex, separators)) };
     case "points":
       return {
         kind,
@@ -341,6 +349,7 @@ export function arityOf(part: Shape) {
   if (declared) return declared;
   const kind = kindOf(part);
   const layout = isBoxKind(kind) ? layoutOf(kind, part.expected) : null;
+  if (layout?.kind === "sequence") return layout.boxes.length;
   if (layout?.kind !== "point" && layout?.kind !== "points") return pairArity;
   return groupsOf(layout)[0]?.length ?? pairArity;
 }

@@ -246,7 +246,10 @@ function sameLayout(a: Layout, b: Layout) {
   if (a.kind === "none" || b.kind === "none") return a.kind === b.kind;
   if (a.kind === "values" && b.kind === "values")
     return sameSet(parsed(a.boxes), parsed(b.boxes), equal);
-  if (a.kind === "point" && b.kind === "point")
+  if (
+    (a.kind === "point" && b.kind === "point") ||
+    (a.kind === "sequence" && b.kind === "sequence")
+  )
     return sameTuple(a.boxes.map(parseMath), b.boxes.map(parseMath));
   if (a.kind === "points" && b.kind === "points")
     return sameSet(
@@ -259,9 +262,18 @@ function sameLayout(a: Layout, b: Layout) {
   return false;
 }
 
+const blankReason: Record<Layout["kind"], Reason> = {
+  none: "coordinate",
+  values: "coordinate",
+  point: "coordinate",
+  points: "coordinate",
+  sequence: "item",
+  interval: "end",
+};
+
 function problemOf(layout: Layout): Problem | undefined {
   const needed = layout.kind !== "values";
-  const blank = layout.kind === "interval" ? "end" : "coordinate";
+  const blank = blankReason[layout.kind];
   let start = 0;
   for (const group of groupsOf(layout)) {
     const used = group.some(isFilled);

@@ -202,6 +202,29 @@ describe("resultOf", () => {
   });
 });
 
+describe("a sequence part", () => {
+  it("has a box for each item and an equals sign", () => {
+    const label = labelOf(
+      markup({
+        label: "dijagonale, od veće ka manjoj",
+        var: "d_1, d_2",
+        kind: "sequence",
+        unit: "\\text{cm}",
+        expected: "24, 10",
+      }),
+      0,
+      3,
+    );
+    expect(label).toMatchObject({
+      kind: "sequence",
+      arity: 2,
+      caption: "dijagonale, od veće ka manjoj",
+      prefix: "$d_1, d_2$ $=$",
+      suffix: "$\\text{cm}$",
+    });
+  });
+});
+
 describe("a yes/no part", () => {
   it("shows its label as the caption", () => {
     const label = labelOf(
@@ -265,7 +288,9 @@ describe("partProblem", () => {
   it("rejects a kind that does not fit the expected value", () => {
     expect(
       partProblem(markup({ kind: "value", expected: "1, 4" }), letters),
-    ).toBe('kind "value" does not fit expected "1, 4" (fits: values)');
+    ).toBe(
+      'kind "value" does not fit expected "1, 4" (fits: values, sequence)',
+    );
     expect(
       partProblem(
         markup({ kind: "point", var: "(x, y, z)", expected: "(3,2)" }),

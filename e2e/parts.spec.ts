@@ -44,7 +44,7 @@ test("Serbian part letters are shown as they are written", {
   await expect(letters(boxes(page))).toHaveText(["a)", "b)", "v)"]);
   await page.goto("/bank/vek-002");
   await expect(letters(boxes(page))).toHaveText(["a)", "b)", "v)"]);
-  await expect(symbols(boxes(page).last())).toHaveText(["T", "="]);
+  await expect(symbols(boxes(page).nth(2))).toHaveText(["T", "="]);
 });
 
 test("the unit stays after the field", { tag: "@responsive" }, async ({

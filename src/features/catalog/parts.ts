@@ -135,7 +135,10 @@ export function labelOf(
       : nameOf(rest);
   return {
     kind,
-    arity: kind === "point" || kind === "points" ? arityOf(markup) : 0,
+    arity:
+      kind === "point" || kind === "points" || kind === "sequence"
+        ? arityOf(markup)
+        : 0,
     symbols,
     letter: part ? `${part})` : (match?.[1] ?? fallback),
     caption,

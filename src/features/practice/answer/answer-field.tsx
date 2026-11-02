@@ -35,6 +35,7 @@ const fields: Record<Kind, ComponentType<FieldProps>> = {
   values: (props) => <SlotsField {...props} kind="values" />,
   point: (props) => <SlotsField {...props} kind="point" />,
   points: (props) => <SlotsField {...props} kind="points" />,
+  sequence: (props) => <SlotsField {...props} kind="sequence" />,
   interval: IntervalField,
   yesno: YesNoField,
 };

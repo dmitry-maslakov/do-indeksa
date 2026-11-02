@@ -33,6 +33,8 @@ describe("sentForm", () => {
       "(\\frac{3}{2}(9-\\sqrt{65});-6)",
     ],
     ["points", "(2,\\frac{1}{2}), (1,1)", "(2;\\frac{1}{2});(1;1)"],
+    ["sequence", "24, 10", "24;10"],
+    ["sequence", "\\log_5 8, 1.5, \\log_2 3", "\\log_5 8;1{,}5;\\log_2 3"],
     [
       "interval",
       "(-\\infty,0)\\cup(2,+\\infty)",
@@ -66,6 +68,7 @@ describe("layoutOf and sentOf", () => {
     ["point", "(\\frac{1}{2};\\sqrt{2};-1)"],
     ["point", "(1{,}5;2)"],
     ["points", "(1;2);(3;4)"],
+    ["sequence", "3;1{,}5;2"],
     ["interval", "(-\\infty;-1)\\cup(0;1]"],
     ["interval", "[0;2)\\cup\\{3\\}"],
     ["interval", "(0{,}5;1)\\cup\\{1{,}4\\}"],
@@ -137,10 +140,28 @@ describe("layoutOf and sentOf", () => {
   it("does not read what has no boxes", () => {
     expect(layoutOf("interval", "(1;2;3)")).toBeNull();
     expect(layoutOf("point", "\\emptyset")).toBeNull();
+    expect(layoutOf("sequence", "\\emptyset")).toBeNull();
+  });
+
+  it("gives a sequence a fixed box for each item", () => {
+    expect(blankLayout("sequence", 3)).toEqual({
+      kind: "sequence",
+      boxes: ["", "", ""],
+    });
+    expect(arityOf({ kind: "sequence", expected: "24, 10" })).toBe(2);
+    const layout = layoutOf("sequence", "1;2");
+    expect(layout && sentOf(grown(layout, 2))).toBe("1;2");
+    expect(layout && sentOf(shrunk(layout, 0))).toBe("1;2");
   });
 
   it("sends nothing while every box is empty", () => {
-    for (const kind of ["values", "point", "points", "interval"] as const)
+    for (const kind of [
+      "values",
+      "point",
+      "points",
+      "sequence",
+      "interval",
+    ] as const)
       expect(sentOf(blankLayout(kind, 2))).toBe("");
   });
 

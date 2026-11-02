@@ -6,13 +6,14 @@ export const mathKinds = [
   "interval",
   "point",
   "points",
+  "sequence",
 ] as const;
 
 export const kinds = [...mathKinds, "yesno"] as const;
 
 export type Kind = (typeof kinds)[number];
 
-type MathKind = (typeof mathKinds)[number];
+type ReadKind = Exclude<(typeof mathKinds)[number], "sequence">;
 
 export const yesNo = ["yes", "no"] as const;
 
@@ -35,7 +36,7 @@ const isSpan = (group: Group | null) =>
   group?.items.length === 2 &&
   (group.open === "[" || group.close === "]" || group.items.some(isInfinite));
 
-export function inferKind(expected: string): MathKind | null {
+export function inferKind(expected: string): ReadKind | null {
   const latex = squash(expected);
   if (isBraceSet(latex)) return "values";
   const groups = topLevel(latex).map((item) => groupOf(item));
@@ -53,9 +54,9 @@ export function inferKind(expected: string): MathKind | null {
 export const kindOf = (part: { expected: string; kind?: Kind | null }) =>
   part.kind ?? inferKind(part.expected);
 
-const fitting: Record<MathKind, readonly Kind[]> = {
+const fitting: Record<ReadKind, readonly Kind[]> = {
   value: ["value", "values"],
-  values: ["values"],
+  values: ["values", "sequence"],
   interval: ["interval"],
   point: ["point", "points"],
   points: ["points"],
@@ -99,6 +100,12 @@ function arityProblem(latex: string, variable: string | null) {
   }
 }
 
+function sequenceProblem(latex: string) {
+  if (isBraceSet(latex) || isEmptySet(latex))
+    return "a sequence is a plain list, without braces or \\emptyset";
+  if (topLevel(latex).length < 2) return "a sequence needs two or more items";
+}
+
 export function kindProblem(
   kind: Kind | null,
   expected: string,
@@ -110,6 +117,7 @@ export function kindProblem(
   }
   const latex = squash(expected);
   if (kind === "interval") return intervalProblem(latex);
+  if (kind === "sequence") return sequenceProblem(latex);
   const read = kind ?? inferKind(expected);
   const tuples =
     read === "point" ||
