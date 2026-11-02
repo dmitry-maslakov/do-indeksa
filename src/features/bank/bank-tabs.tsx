@@ -1,12 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { use, useTransition } from "react";
+import { use, useEffect, useTransition } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { useRouter } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
 import { useBankState } from "./filters/bank-state";
+import { rememberList } from "./last-list";
 import { bankHref } from "./params";
 
 export interface BankPick {
@@ -45,10 +46,12 @@ function Tabs({ start, href, recommendation }: TabsProps) {
 
 interface BankTabsProps {
   start: string;
+  list: string;
   pick?: Promise<BankPick>;
 }
 
-export function BankTabs({ start, pick }: BankTabsProps) {
+export function BankTabs({ start, list, pick }: BankTabsProps) {
   const resolved = pick && use(pick);
+  useEffect(() => rememberList(list), [list]);
   return <Tabs key={resolved?.href} start={start} {...resolved} />;
 }

@@ -6,6 +6,7 @@ import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailSelect, type RailVariant } from "@/components/rail";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useListHref } from "@/features/bank/last-list";
 import { listed } from "@/features/bank/queue/arrange";
 import { useRouter } from "@/i18n/navigation";
 import { rememberIntent } from "@/lib/analytics-browser";
@@ -38,6 +39,7 @@ export function Rail({ variant }: { variant?: RailVariant }) {
   const router = useRouter();
   const { id: current } = useParams<{ id?: string }>();
   const { meta, loaded } = useQueue();
+  const listHref = useListHref(meta?.listHref ?? "/bank");
 
   if (!current) return null;
 
@@ -57,7 +59,7 @@ export function Rail({ variant }: { variant?: RailVariant }) {
           variant="fill"
           items={[
             { href: href(current), label: bank("recommended"), active: true },
-            { href: meta.listHref, label: bank("all"), active: false },
+            { href: listHref, label: bank("all"), active: false },
           ]}
         />
         <RailSelect
