@@ -83,7 +83,6 @@ export function AnswerForm({
   return (
     <form
       action={(form) => {
-        setEdited(false);
         if (!answerId.current) {
           answerId.current = crypto.randomUUID();
           queueEvent("answer_input", {
@@ -101,6 +100,7 @@ export function AnswerForm({
         help.track(async (sessionId) => {
           if (sessionId) form.set("sessionId", sessionId);
           const data = (await executeAsync(form))?.data;
+          setEdited(false);
           if (!data) return;
           if (data.sitting) {
             help.restore(data.sitting);
