@@ -1,15 +1,18 @@
 import { io } from "next/cache";
+import { getLocale } from "next-intl/server";
+import { summarizeWeekly } from "@/features/tests/summaries";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import { weeklyVariant } from "@/features/variants/weekly";
-import { loadLatest } from "./catalog-tab";
+import { getProfileId } from "@/server/profile";
 
 export async function Weekly() {
   await io();
   const weekly = weeklyVariant();
   if (!weekly) return null;
-  const tests = await loadLatest([weekly.id]);
-  const test = tests.find(
-    (r) => weeklyVariant(new Date(r.finishedAt))?.week === weekly.week,
+  const test = await summarizeWeekly(
+    await getProfileId(),
+    weekly,
+    await getLocale(),
   );
   return <WeeklyCard {...weekly} test={test} />;
 }

@@ -49,7 +49,7 @@ export function WeeklyCard({
 
   return (
     <div className="@container">
-      <section className="relative flex flex-col items-start overflow-hidden rounded-xl bg-lime px-5 py-6 @4xl:grid @4xl:grid-cols-[auto_1fr_auto] @4xl:items-center @4xl:gap-x-8 @4xl:gap-y-2 @4xl:px-8">
+      <section className="relative flex flex-col items-start overflow-hidden rounded-xl bg-lime px-5 py-6 @4xl:grid @4xl:min-h-35 @4xl:content-center @4xl:grid-cols-[auto_1fr_auto] @4xl:items-center @4xl:gap-x-8 @4xl:gap-y-2 @4xl:px-8">
         <WeeklyWave className="@4xl:w-1/3" />
         <h2 className="relative font-semibold text-xl tracking-tight @4xl:col-start-1 @4xl:row-start-1">
           {home("weekly")}

@@ -1,16 +1,21 @@
 import "server-only";
+import { getLocale } from "next-intl/server";
 import { nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { getTopicPlan } from "@/features/progress/progress";
+import { summarizeWeekly } from "@/features/tests/summaries";
+import type { WeeklyVariant } from "@/features/variants/weekly";
 import { getProfileId } from "@/server/profile";
 
-export async function loadHome() {
+export async function loadHome(weekly?: WeeklyVariant) {
   const profileId = await getProfileId();
-  const [{ topics, suggestion }, starts] = await Promise.all([
+  const [{ topics, suggestion }, starts, weeklyTest] = await Promise.all([
     getTopicPlan(profileId),
     nextTasks(profileId),
+    weekly && summarizeWeekly(profileId, weekly, await getLocale()),
   ]);
   return {
+    weeklyTest,
     hero: suggestion && {
       ...suggestion,
       href: topicStart(starts, suggestion.topic),

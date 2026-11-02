@@ -21,7 +21,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Home weekly={weekly} personal={loadHome()} />
+      <Home weekly={weekly} personal={loadHome(weekly)} />
       <Suspense>
         <OneTapGate />
       </Suspense>
