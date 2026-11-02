@@ -1,6 +1,6 @@
 import "server-only";
 import { getTask, idsByTopic } from "@/features/catalog/tasks";
-import { byNumber, byPosition } from "@/features/variants/variants";
+import { byPosition, inExamOrder } from "@/features/variants/variants";
 import { compose, swap } from "./compose";
 
 export const composeTaskIds = (
@@ -12,7 +12,7 @@ export const composeTaskIds = (
     input,
     seed,
   );
-  return { ids: byNumber(ids), fallback };
+  return { ids: inExamOrder(ids), fallback };
 };
 
 export const swapIds = (ids: string[]) =>

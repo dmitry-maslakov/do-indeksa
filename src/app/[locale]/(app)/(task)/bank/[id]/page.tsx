@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
-import { positions } from "@/features/catalog/exams";
+import { examTopics } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
 import {
@@ -71,9 +71,9 @@ export default async function SolvePage({
   };
   const feed = {
     topic: task.topic,
-    topics: positions.map((p) => ({
-      id: p.topic,
-      name: topicName(p.topic, locale),
+    topics: examTopics.map((topic) => ({
+      id: topic,
+      name: topicName(topic, locale),
     })),
     listHref: bankHref({ topic: task.topic }),
     queue: personal.then((p) => p.queue),

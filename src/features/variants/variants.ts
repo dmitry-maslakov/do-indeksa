@@ -1,8 +1,8 @@
 import "server-only";
 import { allVariants, type Variant } from "content-collections";
-import { orderBy, sumBy } from "es-toolkit";
+import { sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
-import { numberOf, positionOf, positions } from "@/features/catalog/exams";
+import { examTopics, positions } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import {
   getTask,
@@ -38,15 +38,13 @@ export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
   const taskIds = customTaskIds(id, positions.length, getTask);
-  if (taskIds) return { id, kind: "custom", taskIds: byNumber(taskIds) };
+  if (taskIds) return { id, kind: "custom", taskIds: inExamOrder(taskIds) };
 }
 
-export const byNumber = (ids: string[]) =>
-  orderBy(
-    ids.map((id) => ({ id, number: numberOf(getTask(id)?.topic ?? "") })),
-    ["number"],
-    ["asc"],
-  ).map((task) => task.id);
+const examRank = (id: string) => examTopics.indexOf(getTask(id)?.topic ?? "");
+
+export const inExamOrder = (ids: string[]) =>
+  ids.toSorted((a, b) => examRank(a) - examRank(b));
 
 export interface Slot {
   taskId: string;
@@ -57,21 +55,19 @@ export interface Slot {
 }
 
 export const slotsOf = (taskIds: string[]): Slot[] =>
-  taskIds.flatMap((taskId, index) => {
-    const task = getTask(taskId);
-    if (!task) return [];
-    const place =
-      taskIds.length === positions.length
-        ? positions[index]
-        : positionOf(task.topic);
-    return {
-      taskId,
-      number: place?.number ?? 0,
-      topic: task.topic,
-      points: place?.points ?? 0,
-      minutes: place?.minutes ?? 0,
-    };
-  });
+  taskIds
+    .flatMap((id) => getTask(id) ?? [])
+    .flatMap((task, index) => {
+      const place = positions[index];
+      if (!place) return [];
+      return {
+        taskId: task.id,
+        number: place.number,
+        topic: task.topic,
+        points: place.points,
+        minutes: place.minutes,
+      };
+    });
 
 export const minutesOf = (variant: ExamVariant) =>
   sumBy(slotsOf(variant.taskIds), (slot) => slot.minutes);

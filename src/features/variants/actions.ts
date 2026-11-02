@@ -12,7 +12,7 @@ import { baseClient } from "@/server/action-client";
 import { composeModes } from "./custom/compose";
 import { composeTaskIds } from "./custom/compose-set";
 import { saveSet } from "./custom/sets";
-import { byNumber } from "./variants";
+import { inExamOrder } from "./variants";
 
 const topicIds = topics.map((t) => t.id);
 
@@ -54,5 +54,5 @@ export const swapTask = baseClient
     }),
   )
   .action(async ({ parsedInput: { locale, taskIds } }) => {
-    await openSet(byNumber(uniq(taskIds)), locale, "", "replace");
+    await openSet(inExamOrder(uniq(taskIds)), locale, "", "replace");
   });
