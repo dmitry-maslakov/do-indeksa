@@ -167,7 +167,7 @@
   "Variants": {
     "title": "Practice tests",
     "format": "{tasks, plural, one {# task} other {# tasks}} · {minutes, number} min",
-    "original": "Original (PDF) ↗",
+    "original": "Original (PDF)",
     "official": "Entrance exams · {count, number}",
     "curated": "Our tests · {count, number}",
     "history": "History",

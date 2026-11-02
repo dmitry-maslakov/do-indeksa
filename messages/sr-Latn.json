@@ -167,7 +167,7 @@
   "Variants": {
     "title": "Probni testovi",
     "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {minutes, number} min",
-    "original": "Original (PDF) ↗",
+    "original": "Original (PDF)",
     "official": "Prijemni ispiti · {count, number}",
     "curated": "Naši testovi · {count, number}",
     "history": "Istorija",

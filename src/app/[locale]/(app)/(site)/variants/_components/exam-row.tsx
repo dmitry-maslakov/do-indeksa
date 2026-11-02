@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { ArrowUpRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { segmentTone } from "@/components/segment-tone";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -75,9 +76,10 @@ export function ExamRow({
             href={original}
             target="_blank"
             rel="noopener"
-            className="relative block w-fit text-subtle text-xs underline underline-offset-3 hover:text-foreground"
+            className="relative flex w-fit items-center gap-0.5 text-subtle text-xs underline underline-offset-3 hover:text-foreground"
           >
             {t("original")}
+            <ArrowUpRightIcon aria-hidden className="size-3" />
           </a>
         )}
       </div>
