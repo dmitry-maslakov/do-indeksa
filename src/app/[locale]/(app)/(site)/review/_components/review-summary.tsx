@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { ArrowUpRightIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { segmentTone } from "@/components/segment-tone";
@@ -60,9 +61,10 @@ export function ReviewSummary({
               href={original}
               target="_blank"
               rel="noopener"
-              className="underline underline-offset-3 hover:text-foreground"
+              className="inline-flex items-center gap-0.5 underline underline-offset-3 hover:text-foreground"
             >
               {variants("original")}
+              <ArrowUpRightIcon aria-hidden className="size-3" />
             </a>
           </>
         )}

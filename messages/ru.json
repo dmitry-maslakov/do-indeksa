@@ -167,7 +167,7 @@
   "Variants": {
     "title": "Варианты",
     "format": "{tasks, plural, one {# задача} few {# задачи} other {# задач}} · {minutes, number} мин",
-    "original": "Оригинал (PDF) ↗",
+    "original": "Оригинал (PDF)",
     "official": "Вступительные экзамены · {count, number}",
     "curated": "Наши варианты · {count, number}",
     "history": "История",
