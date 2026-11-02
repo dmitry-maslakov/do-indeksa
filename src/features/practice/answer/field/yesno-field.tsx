@@ -3,38 +3,29 @@
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
 import { cva } from "class-variance-authority";
+import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { yesNo } from "@/features/catalog/kinds";
+import { StatusIcon } from "@/features/progress/status-icon";
 import { countPick } from "../input-stats";
-import type { FieldProps, FieldState } from "./field-frame";
+import type { FieldProps } from "./field-frame";
 
-const answer = cva(
-  "inline-flex min-w-20 items-center justify-center rounded-xl bg-card font-semibold outline-none transition-colors select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-readonly:cursor-default",
+const option = cva(
+  "min-w-16 rounded-lg px-4 py-1.5 font-medium text-sm transition-colors outline-none select-none focus-visible:ring-2 focus-visible:ring-ring data-unchecked:text-subtle not-data-readonly:data-unchecked:hover:text-foreground data-readonly:cursor-default",
   {
     variants: {
-      variant: {
-        exam: "h-11 border-[1.5px] px-5 text-[15px]",
-        solve: "h-12 border-2 px-6 text-base",
-      },
       state: {
-        open: "border-input text-foreground not-data-readonly:hover:bg-muted",
-        empty: "border-foreground bg-muted text-foreground",
-        right: "border-success bg-success-tint text-foreground",
-        wrong: "border-error bg-error-tint text-foreground",
-        unreadable: "border-overtime bg-overtime-tint text-foreground",
-        shown: "border-data-soft bg-data-tint text-data",
+        empty:
+          "data-checked:bg-card data-checked:text-foreground data-checked:shadow-sm",
+        right: "data-checked:bg-success-tint data-checked:text-success-text",
+        wrong: "data-checked:bg-error-tint data-checked:text-error-text",
+        unreadable:
+          "data-checked:bg-overtime-tint data-checked:text-overtime-text",
+        shown: "data-checked:bg-data-tint data-checked:text-data",
       },
     },
   },
 );
-
-function stateOf(
-  picked: boolean,
-  { variant, state }: Pick<FieldProps, "variant" | "state">,
-): FieldState | "open" {
-  if (!picked) return "open";
-  return variant === "solve" ? state : "empty";
-}
 
 export function YesNoField({
   id,
@@ -49,38 +40,44 @@ export function YesNoField({
 }: FieldProps) {
   const t = useTranslations("Field");
   const captioned = part.caption || (variant === "exam" && part.letter);
+  const verdict = variant === "solve" ? state : "empty";
   return (
-    <RadioGroup
-      id={id}
-      aria-labelledby={captioned ? `${id}-label` : undefined}
-      aria-label={label}
-      value={value}
-      readOnly={locked}
-      onValueChange={(picked: string) => {
-        countPick(stats.current);
-        onEdit(picked);
-      }}
-      className="flex flex-wrap items-center gap-2"
+    <div
+      className={cn("flex items-center gap-3", !locked && "pointer-fine:mb-10")}
     >
       {variant === "solve" && !part.caption && part.letter && (
-        <b className="pr-2 font-semibold text-foreground text-sm">
-          {part.letter}
-        </b>
+        <b className="font-semibold text-foreground text-sm">{part.letter}</b>
       )}
-      {yesNo.map((choice) => (
-        <Radio.Root
-          key={choice}
-          value={choice}
-          nativeButton
-          render={<button type="button" />}
-          className={answer({
-            variant,
-            state: stateOf(choice === value, { variant, state }),
-          })}
-        >
-          {t(choice)}
-        </Radio.Root>
-      ))}
-    </RadioGroup>
+      <RadioGroup
+        id={id}
+        aria-labelledby={captioned ? `${id}-label` : undefined}
+        aria-label={label}
+        value={value}
+        readOnly={locked}
+        onValueChange={(picked: string) => {
+          countPick(stats.current);
+          onEdit(picked);
+        }}
+        className="flex gap-1 rounded-xl bg-muted p-1"
+      >
+        {yesNo.map((choice) => (
+          <Radio.Root
+            key={choice}
+            value={choice}
+            nativeButton
+            render={<button type="button" />}
+            className={option({ state: verdict })}
+          >
+            {t(choice)}
+          </Radio.Root>
+        ))}
+      </RadioGroup>
+      {(verdict === "right" || verdict === "wrong") && (
+        <StatusIcon
+          status={verdict === "right" ? "solved" : "wrong"}
+          className="size-5"
+        />
+      )}
+    </div>
   );
 }
