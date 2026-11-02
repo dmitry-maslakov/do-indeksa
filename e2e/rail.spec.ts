@@ -414,6 +414,9 @@ test("a task opened again keeps its earlier result until it is answered", async 
   await answer(page, "0");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("article").getByText("rešen ranije", { exact: true }),
+  ).toHaveCount(0, { timeout: 0 });
   await page.reload();
   await expect(current).toContainText("netačno");
   await expect(earlier).toHaveCount(0);

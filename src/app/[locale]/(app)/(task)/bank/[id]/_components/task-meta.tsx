@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "cn";
 import { RotateCcwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -6,6 +8,7 @@ import { ExamMark } from "@/components/exam-mark";
 import type { Before } from "@/features/bank/queue/queue";
 import type { Level } from "@/features/catalog/level";
 import type { ExamSource } from "@/features/catalog/source";
+import { useTaskSession } from "@/features/practice/session/task-session";
 import { StatusIcon, statusTones } from "@/features/progress/status-icon";
 
 interface TaskMetaProps {
@@ -55,7 +58,9 @@ function Dot() {
 
 export function TaskMeta({ id, topic, exam, level, ...props }: TaskMetaProps) {
   const t = useTranslations("Solve");
-  const before = props.before && use(props.before);
+  const { answered } = useTaskSession();
+  const loaded = props.before && use(props.before);
+  const before = answered ? undefined : loaded;
   const bank = useTranslations("Bank");
   return (
     <div className="flex min-w-0 flex-1 items-center gap-x-2 gap-y-1 overflow-hidden whitespace-nowrap pt-2 text-subtle text-xs leading-snug md:flex-wrap md:pt-0 md:text-sm">
