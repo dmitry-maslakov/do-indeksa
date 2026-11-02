@@ -56,26 +56,28 @@ export interface Slot {
   minutes: number;
 }
 
-export function slotOf(taskId: string): Slot | undefined {
-  const task = getTask(taskId);
-  if (!task) return;
-  const position = positionOf(task.topic);
-  return {
-    taskId,
-    number: position?.number ?? 0,
-    topic: task.topic,
-    points: position?.points ?? 0,
-    minutes: position?.minutes ?? 0,
-  };
-}
-
-export const slotsOf = (taskIds: string[]) =>
-  taskIds.flatMap((taskId) => slotOf(taskId) ?? []);
+export const slotsOf = (taskIds: string[]): Slot[] =>
+  taskIds.flatMap((taskId, index) => {
+    const task = getTask(taskId);
+    if (!task) return [];
+    const place =
+      taskIds.length === positions.length
+        ? positions[index]
+        : positionOf(task.topic);
+    return {
+      taskId,
+      number: place?.number ?? 0,
+      topic: task.topic,
+      points: place?.points ?? 0,
+      minutes: place?.minutes ?? 0,
+    };
+  });
 
 export const minutesOf = (variant: ExamVariant) =>
-  sumBy(variant.taskIds, (taskId) => slotOf(taskId)?.minutes ?? 0);
+  sumBy(slotsOf(variant.taskIds), (slot) => slot.minutes);
 
-export const pointsOf = (taskId: string) => slotOf(taskId)?.points ?? 0;
+export const pointsOf = (variant: ExamVariant) =>
+  sumBy(slotsOf(variant.taskIds), (slot) => slot.points);
 
 export interface VariantTask extends Slot {
   topicName: string;
@@ -88,10 +90,9 @@ export async function tasksFor(
   locale: Locale,
 ): Promise<VariantTask[]> {
   const tasks = await Promise.all(
-    taskIds.map(async (taskId) => {
-      const task = getTask(taskId);
-      const slot = slotOf(taskId);
-      if (!task || !slot) return [];
+    slotsOf(taskIds).map(async (slot) => {
+      const task = getTask(slot.taskId);
+      if (!task) return [];
       return {
         ...slot,
         topicName: topicName(slot.topic, locale),

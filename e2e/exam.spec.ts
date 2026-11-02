@@ -22,6 +22,24 @@ test("the test rail tracks answers and hides the time", async ({ page }) => {
   await expect(page.getByRole("timer")).toBeVisible();
 });
 
+test("an exam in its own order numbers tasks by their place", async ({
+  page,
+}) => {
+  await page.goto("/variants/ftn-p1-2026");
+  const rail = page.getByRole("complementary", { name: "Zadaci" });
+  await expect(rail.getByText("Prijemni 2026")).toBeVisible();
+  await expect(
+    page.getByText("Zadatak 1 · 6 bodova · Kvadratna jednačina"),
+  ).toBeVisible();
+  await expect(
+    rail.getByRole("button", { name: /Eksponencijalne/ }),
+  ).toHaveCount(2);
+  await rail.getByRole("button", { name: /Kompleksni/ }).click();
+  await expect(
+    page.getByText("Zadatak 2 · 6 bodova · Kompleksni brojevi"),
+  ).toBeVisible();
+});
+
 test("the phone test bar switches tasks", { tag: "@mobile" }, async ({
   page,
 }) => {

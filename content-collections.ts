@@ -15,6 +15,7 @@ import {
   resultOf,
   statementLetters,
 } from "./src/features/catalog/parts";
+import { examSource } from "./src/features/catalog/source";
 import { symbolNames } from "./src/features/catalog/symbols";
 import { tones, topicIconSchema } from "./src/features/catalog/topic-look";
 import { images, sections, theoryMarkdown } from "./src/features/theory/blocks";
@@ -205,12 +206,20 @@ const variants = defineCollection({
     if (variant.taskIds.length !== exam.positions.length) {
       throw new Error(`${origin}: expected ${exam.positions.length} tasks`);
     }
+    if (new Set(variant.taskIds).size !== variant.taskIds.length) {
+      throw new Error(`${origin}: a task is listed twice`);
+    }
     variant.taskIds.forEach((taskId, i) => {
       const task = tasksById.get(taskId);
       if (!task) throw new Error(`${origin}: unknown task "${taskId}"`);
-      if (task.topic !== exam.positions[i]?.topic) {
+      const source = examSource(task.source);
+      if (
+        variant.kind === "official" &&
+        source &&
+        (source.year !== variant.year || source.position !== i + 1)
+      ) {
         throw new Error(
-          `${origin}: "${taskId}" does not fit position ${i + 1}`,
+          `${origin}: "${taskId}" is task ${source.position} of ${source.year}, not ${i + 1}`,
         );
       }
       if (week && taskId !== `${id}-${String(i + 1).padStart(2, "0")}`) {

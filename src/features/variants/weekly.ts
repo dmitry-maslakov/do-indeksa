@@ -1,5 +1,4 @@
 import "server-only";
-import { sumBy } from "es-toolkit";
 import { cacheLife } from "next/cache";
 import { getTask } from "@/features/catalog/tasks";
 import { belgradeDate, dayMs } from "@/lib/dates";
@@ -30,7 +29,7 @@ export function weeklyVariant(now = new Date()) {
       return topic ? [{ id, topic }] : [];
     }),
     hours: Math.round(minutesOf(variant) / 60),
-    points: sumBy(variant.taskIds, pointsOf),
+    points: pointsOf(variant),
     daysLeft: 7 - weekday,
   };
 }
