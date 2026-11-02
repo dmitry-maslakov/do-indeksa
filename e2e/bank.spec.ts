@@ -187,6 +187,32 @@ test("Svi zadaci opens the topic's list with its tabs and count in place", async
   expect(errors).toEqual([]);
 });
 
+test("Svi zadaci from Preporučeno goes back to the list the student left", async ({
+  page,
+  errors,
+}) => {
+  const all = page.getByRole("complementary").getByRole("link", {
+    name: "Svi zadaci",
+  });
+  await page.goto("/bank");
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
+  await expect(all).toHaveAttribute("href", /\/bank$/);
+  await all.click();
+  await expect(page).toHaveURL(/\/bank$/);
+
+  await page.goto("/bank/topic/logarithms?level=easy");
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/|topic\/)[\w-]+$/);
+  await expect(all).toHaveAttribute(
+    "href",
+    /\/bank\/topic\/logarithms\?level=easy$/,
+  );
+  await all.click();
+  await expect(page).toHaveURL(/\/bank\/topic\/logarithms\?level=easy$/);
+  expect(errors).toEqual([]);
+});
+
 test("an old topic link moves to the topic page", async ({ request }) => {
   const response = await request.get("/ru/bank?topic=logarithms&level=easy", {
     maxRedirects: 0,

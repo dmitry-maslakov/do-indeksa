@@ -8,7 +8,11 @@ import { BankFilters } from "@/features/bank/filters/bank-filters";
 import { FilterLabel } from "@/features/bank/filters/filter-label";
 import { FilterSearch } from "@/features/bank/filters/filter-search";
 import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
-import { loadBankFilters, serializeBankFilters } from "@/features/bank/params";
+import {
+  bankHref,
+  loadBankFilters,
+  serializeBankFilters,
+} from "@/features/bank/params";
 import { type BankQuery, findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
@@ -46,9 +50,14 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
   const search = serializeBankFilters(filters);
   const pending = !personal;
   const start = `/bank/start/${filters.topic ?? positions[0]?.topic}`;
+  const list = bankHref(filters);
   const tabs = (
-    <Suspense fallback={<BankTabs start={start} />}>
-      <BankTabs start={start} pick={personal?.then((p) => p.pick)} />
+    <Suspense fallback={<BankTabs start={start} list={list} />}>
+      <BankTabs
+        start={start}
+        list={list}
+        pick={personal?.then((p) => p.pick)}
+      />
     </Suspense>
   );
 

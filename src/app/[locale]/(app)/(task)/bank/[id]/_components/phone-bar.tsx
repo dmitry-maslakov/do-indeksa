@@ -4,6 +4,7 @@ import { ChevronDownIcon, ChevronLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { useListHref } from "@/features/bank/last-list";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { Link } from "@/i18n/navigation";
@@ -20,6 +21,7 @@ interface PhoneBarProps {
 export function PhoneBar({ title, listHref, look }: PhoneBarProps) {
   const t = useTranslations("Solve");
   const [open, setOpen] = useState(false);
+  const back = useListHref(listHref);
 
   useEffect(() => () => setOpen(false), []);
 
@@ -33,7 +35,7 @@ export function PhoneBar({ title, listHref, look }: PhoneBarProps) {
     >
       <div className="-mx-2 flex h-14 items-center gap-1 md:hidden">
         <Link
-          href={listHref}
+          href={back}
           aria-label={t("back")}
           className="flex size-11 shrink-0 items-center justify-center rounded-xl hover:bg-muted"
         >
