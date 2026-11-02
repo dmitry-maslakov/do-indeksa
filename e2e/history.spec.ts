@@ -57,7 +57,7 @@ test("a finished variant shows its result in the catalog", async ({
   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(0);
 });
 
-test("a finished weekly variant shows its score and review in the weekly card", async ({
+test("a finished weekly variant shows its score and review on both weekly cards", async ({
   page,
   auth,
 }) => {
@@ -81,6 +81,11 @@ test("a finished weekly variant shows its score and review in the weekly card", 
     "href",
     `/review/${testId.slice(0, 8)}`,
   );
+  await expect(start).toHaveCount(0);
+
+  await page.goto("/");
+  await expect(card).toContainText("0 / 0");
+  await expect(card.getByRole("link", { name: "Pregled →" })).toBeVisible();
   await expect(start).toHaveCount(0);
 });
 

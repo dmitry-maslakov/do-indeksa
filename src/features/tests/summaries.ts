@@ -9,7 +9,7 @@ import {
   getVariant,
   slotsOf,
 } from "@/features/variants/variants";
-import { weeklyVariant } from "@/features/variants/weekly";
+import { type WeeklyVariant, weeklyVariant } from "@/features/variants/weekly";
 import type { Segment } from "@/lib/strip";
 import type { Page } from "@/lib/use-feed";
 import { getLatestTests, getTestAttempts, getTests } from "./finished-tests";
@@ -95,5 +95,16 @@ export async function summarizeLatest(
     profileId,
     await getLatestTests(profileId, variantIds),
     locale,
+  );
+}
+
+export async function summarizeWeekly(
+  profileId: string,
+  weekly: WeeklyVariant,
+  locale: Locale,
+) {
+  const tests = await summarizeLatest(profileId, [weekly.id], locale);
+  return tests.find(
+    (test) => weeklyVariant(new Date(test.finishedAt))?.week === weekly.week,
   );
 }
