@@ -235,7 +235,7 @@
     "timeOf": "{spent, number} od {norm, number} min",
     "overNorm": "{count, plural, one {Duže od {minutes, number} min: zadatak {numbers}.} other {Duže od {minutes, number} min: zadaci {numbers}.}}",
     "inNorm": "Nijedan zadatak nije trajao duže od {minutes, number} min.",
-    "similar": "Vežbaj slično · {count, plural, one {# greška} few {# greške} other {# grešaka}}",
+    "similar": "Vežbaj slično{count, plural, =0 {} one { · # greška} few { · # greške} other { · # grešaka}}",
     "gave": "odgovor",
     "key": "tačno",
     "partsRight": "tačno {right, number} od {total, plural, one {# dela} few {# dela} other {# delova}}",

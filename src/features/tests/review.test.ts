@@ -34,6 +34,27 @@ describe("review", () => {
     { taskId: "c", outcomes: ["wrong"], correct: false, durationMs: minuteMs },
   ]);
 
+  it("counts a mistake only where a part is wrong or unreadable", () => {
+    expect(result.mistakes).toBe(2);
+    const blank = review(tasks, [
+      { taskId: "a", outcomes: ["empty", "empty"], correct: false },
+      { taskId: "b", outcomes: ["right", "empty"], correct: false },
+      { taskId: "c", outcomes: ["unreadable"], correct: false },
+    ]);
+    expect(blank.mistakes).toBe(1);
+  });
+
+  it("is timed once a task took a minute", () => {
+    expect(result.timed).toBe(true);
+    const quick = (durationMs: number) =>
+      review(tasks, [
+        { taskId: "a", outcomes: ["right"], correct: true, durationMs },
+      ]).timed;
+    expect(quick(minuteMs - 1)).toBe(false);
+    expect(quick(minuteMs)).toBe(true);
+    expect(review(tasks, []).timed).toBe(false);
+  });
+
   it("credits correct parts", () => {
     expect(result.score).toBe(9);
     expect(result.max).toBe(24);
