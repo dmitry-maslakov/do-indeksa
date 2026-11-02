@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { secondMs } from "@/lib/dates";
 import { answer, expect, hydrated, test } from "./fixtures";
 
 const chip = (page: Page, name: string | RegExp) =>
@@ -194,6 +195,30 @@ test("a part solved alone locks at once while the others stay open", async ({
   for (const index of [0, 1, 2])
     await expect(fields(page).nth(index)).toHaveJSProperty("readOnly", true);
   await expectLocked(page);
+});
+
+test("a corrected answer shows no verdict while it is being checked", async ({
+  page,
+}) => {
+  await page.goto("/bank/kv-002");
+  await typeInto(page, 0, "5");
+  await typeInto(page, 1, "1");
+  await chip(page, "Proveri").click();
+  await expect(status(page)).toHaveText("Nije tačno");
+
+  await page.route(/\/bank\/kv-002/, async (route) => {
+    if (!route.request().headers()["next-action"]) return route.continue();
+    await new Promise((resolve) => setTimeout(resolve, secondMs));
+    return route.continue();
+  });
+  await clear(page, 1);
+  await typeInto(page, 1, "4");
+  await typeInto(page, 2, "6");
+  await chip(page, "Proveri").click();
+  await page.waitForTimeout(secondMs / 2);
+  await expect(status(page)).toBeHidden();
+  await expect(box(fields(page).nth(1))).not.toHaveClass(/bg-error-tint/);
+  await expect(status(page)).toHaveText("Tačno");
 });
 
 test("Rezultat in a task with parts keeps the parts solved alone", async ({
