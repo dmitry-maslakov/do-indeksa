@@ -111,7 +111,7 @@
     "list": "Lista",
     "solve": "Reši",
     "skip": "Preskoči",
-    "status": "{status, select, solved {tačno} wrong {netačno} revealed {pogledan odgovor} skipped {preskočen} opened {otvoren} other {nije rešen}}",
+    "status": "{status, select, solved {tačno} wrong {netačno} revealed {pogledan odgovor} skipped {preskočen} other {nije rešen}}",
     "repeat": "ponavljanje",
     "exam": "Prijemni {year}",
     "visitPosition": "{position, number}. zadatak{right, plural, =0 {} other { · <ok># tačno</ok>}}",
