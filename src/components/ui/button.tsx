@@ -9,7 +9,6 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground",
         lime: "bg-lime text-foreground hover:bg-lime-strong",
-        secondary: "bg-data text-primary-foreground",
         tint: "bg-data-tint text-data",
         google: "border border-google-border bg-card text-google-text",
         destructive: "bg-error-tint text-error-text",
