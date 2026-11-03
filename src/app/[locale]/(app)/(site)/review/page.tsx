@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ReviewPage() {
   return (
-    <main className="max-w-300 px-4 pb-10 md:px-10 md:pb-14">
+    <main className="max-w-250 px-4 pb-10 md:px-10 md:pb-14">
       <Suspense fallback={<ReviewSkeleton />}>
         <ReviewView />
       </Suspense>

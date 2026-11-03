@@ -1,9 +1,9 @@
 import "server-only";
 import katex from "katex";
 import { isBoxKind } from "@/features/catalog/boxes";
-import { kindOf } from "@/features/catalog/kinds";
+import { isYesNo, type Kind, kindOf } from "@/features/catalog/kinds";
 import { getTask } from "@/features/catalog/tasks";
-import type { Comparisons } from "./review";
+import type { PartAnswer, TaskAnswers } from "./review";
 
 const macros = {
   "\\tg": "\\operatorname{tg}",
@@ -18,21 +18,36 @@ const latexToHtml = (latex: string) =>
     macros,
   });
 
-export function comparisonsOf(
+function partAnswer(
+  check: { expected: string; kind?: Kind | null },
+  given: string | undefined,
+): PartAnswer {
+  const kind = kindOf(check);
+  if (kind === "yesno" && isYesNo(check.expected))
+    return {
+      key: { yesno: check.expected },
+      given: given && isYesNo(given) ? { yesno: given } : undefined,
+    };
+  const shown = (latex: string) => ({
+    html: latexToHtml(isBoxKind(kind) ? latex.replaceAll(";", ", ") : latex),
+  });
+  return {
+    key: shown(check.expected),
+    given: given ? shown(given) : undefined,
+  };
+}
+
+export function answersOf(
+  taskIds: string[],
   attempts: { taskId: string; answers: string[] }[],
-): Comparisons {
-  const comparisons: Comparisons = {};
-  for (const { taskId, answers } of attempts) {
-    const [key, ...rest] = getTask(taskId)?.check ?? [];
-    if (key && rest.length === 0) {
-      const given = answers[0] ?? "";
-      comparisons[taskId] = {
-        given: latexToHtml(
-          isBoxKind(kindOf(key)) ? given.replaceAll(";", ", ") : given,
-        ),
-        key: latexToHtml(key.expected),
-      };
-    }
-  }
-  return comparisons;
+): TaskAnswers {
+  const given = new Map(attempts.map((a) => [a.taskId, a.answers]));
+  return Object.fromEntries(
+    taskIds.map((taskId) => [
+      taskId,
+      (getTask(taskId)?.check ?? []).map((check, i) =>
+        partAnswer(check, given.get(taskId)?.[i]?.trim() || undefined),
+      ),
+    ]),
+  );
 }

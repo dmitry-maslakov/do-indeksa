@@ -1,45 +1,64 @@
 import { describe, expect, it } from "vitest";
-import { comparisonsOf } from "./comparisons";
+import { answersOf } from "./comparisons";
 
-describe("comparisonsOf", () => {
+const html = (shown: unknown) =>
+  shown && typeof shown === "object" && "html" in shown ? shown.html : "";
+
+describe("answersOf", () => {
   it("renders the given answer and the key", () => {
-    const comparison = comparisonsOf([{ taskId: "eks-001", answers: ["3"] }])[
-      "eks-001"
-    ];
-    expect(comparison?.given).toContain('class="katex"');
-    expect(comparison?.given).toContain("3");
-    expect(comparison?.key).toContain('class="katex"');
-    expect(comparison?.key).toContain("2");
+    const [part] =
+      answersOf(["eks-001"], [{ taskId: "eks-001", answers: ["3"] }])[
+        "eks-001"
+      ] ?? [];
+    expect(html(part?.given)).toContain('class="katex"');
+    expect(html(part?.given)).toContain("3");
+    expect(html(part?.key)).toContain("2");
   });
 
   it("writes the boxes of a list with commas, as the key is written", () => {
-    const comparison = comparisonsOf([
-      { taskId: "log-001", answers: ["4;\\sqrt{2}"] },
-    ])["log-001"];
-    expect(comparison?.given).toContain('<span class="mpunct">,</span>');
-    expect(comparison?.given).not.toContain('<span class="mpunct">;</span>');
+    const [part] =
+      answersOf(["log-001"], [{ taskId: "log-001", answers: ["4;\\sqrt{2}"] }])[
+        "log-001"
+      ] ?? [];
+    expect(html(part?.given)).toContain('<span class="mpunct">,</span>');
+    expect(html(part?.given)).not.toContain('<span class="mpunct">;</span>');
   });
 
   it("writes tg, ctg and arctg typed with their keys", () => {
-    const given = comparisonsOf([
-      { taskId: "eks-001", answers: ["\\tg x+\\ctg x+\\arctg2"] },
-    ])["eks-001"]?.given;
-    expect(given).not.toContain("katex-error");
-    expect(given).toContain("arctg");
+    const [part] =
+      answersOf(
+        ["eks-001"],
+        [{ taskId: "eks-001", answers: ["\\tg x+\\ctg x+\\arctg2"] }],
+      )["eks-001"] ?? [];
+    expect(html(part?.given)).not.toContain("katex-error");
+    expect(html(part?.given)).toContain("arctg");
   });
 
-  it("leaves out multi-part and unknown tasks", () => {
-    expect(
-      comparisonsOf([
-        { taskId: "kb-003", answers: ["1", "2"] },
-        { taskId: "nema-takvog", answers: ["1"] },
-      ]),
-    ).toEqual({});
+  it("gives every part its key, with or without an answer", () => {
+    const answers = answersOf(
+      ["kb-003", "eks-001"],
+      [{ taskId: "kb-003", answers: ["6", "", " "] }],
+    );
+    expect(answers["kb-003"]?.map((p) => Boolean(p.given))).toEqual([
+      true,
+      false,
+      false,
+      false,
+    ]);
+    expect(answers["eks-001"]).toHaveLength(1);
+    expect(answers["eks-001"]?.[0]?.given).toBeUndefined();
   });
 
-  it("renders an empty answer", () => {
-    expect(
-      comparisonsOf([{ taskId: "eks-001", answers: [] }])["eks-001"]?.given,
-    ).toBeTypeOf("string");
+  it("keeps a yes/no part as yes or no", () => {
+    const parts =
+      answersOf(
+        ["vek-002"],
+        [{ taskId: "vek-002", answers: ["", "", "", "no"] }],
+      )["vek-002"] ?? [];
+    expect(parts[3]).toEqual({ key: { yesno: "yes" }, given: { yesno: "no" } });
+  });
+
+  it("skips an unknown task", () => {
+    expect(answersOf(["nema-takvog"], [])).toEqual({ "nema-takvog": [] });
   });
 });

@@ -1,5 +1,6 @@
 import { round, sumBy } from "es-toolkit";
 import { isRight, type PartOutcome } from "@/db/columns";
+import type { YesNo } from "@/features/catalog/kinds";
 import type { Slot } from "@/features/variants/variants";
 import { minuteMs } from "@/lib/dates";
 import { type Segment, segmentOf } from "@/lib/strip";
@@ -11,12 +12,14 @@ export interface ReviewAttempt {
   durationMs?: number;
 }
 
-export interface Comparison {
-  given: string;
-  key: string;
+export type Shown = { html: string } | { yesno: YesNo };
+
+export interface PartAnswer {
+  key: Shown;
+  given?: Shown;
 }
 
-export type Comparisons = Record<string, Comparison>;
+export type TaskAnswers = Record<string, PartAnswer[]>;
 
 export type ReviewRow<
   T extends Slot = Slot,
@@ -24,7 +27,6 @@ export type ReviewRow<
 > = T & {
   attempt?: A;
   earned: number;
-  over: boolean;
   segment: Segment;
 };
 
@@ -36,16 +38,14 @@ export interface Review<
   score: number;
   max: number;
   correct: number;
-  mistakes: number;
   timed: boolean;
   spentMs: number;
-  normMs: number;
 }
 
 const timedFromMs = minuteMs;
 
-const isMistake = (outcome: PartOutcome) =>
-  outcome === "wrong" || outcome === "unreadable";
+const isBlank = (outcomes: PartOutcome[]) =>
+  outcomes.every((outcome) => outcome === "empty");
 
 export const reviewHref = (testId: string) => `/review/${testId.slice(0, 8)}`;
 
@@ -67,8 +67,9 @@ export function review<T extends Slot, A extends ReviewAttempt>(
       ...task,
       attempt,
       earned: attempt ? creditOf(attempt.outcomes, task.points) : 0,
-      over: (attempt?.durationMs ?? 0) > task.minutes * minuteMs,
-      segment: segmentOf(attempt?.outcomes.map(isRight)),
+      segment: isBlank(attempt?.outcomes ?? [])
+        ? ("none" as const)
+        : segmentOf(attempt?.outcomes.map(isRight)),
     };
   });
 
@@ -80,9 +81,7 @@ export function review<T extends Slot, A extends ReviewAttempt>(
     ),
     max: sumBy(rows, (r) => r.points),
     correct: rows.filter((r) => r.attempt?.correct).length,
-    mistakes: rows.filter((r) => r.attempt?.outcomes.some(isMistake)).length,
     timed: rows.some((r) => (r.attempt?.durationMs ?? 0) >= timedFromMs),
     spentMs: sumBy(rows, (r) => r.attempt?.durationMs ?? 0),
-    normMs: sumBy(rows, (r) => r.minutes * minuteMs),
   };
 }

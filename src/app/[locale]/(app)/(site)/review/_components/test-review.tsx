@@ -1,15 +1,15 @@
-import { cn } from "cn";
 import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
-import { comparisonsOf } from "@/features/tests/comparisons";
+import { answersOf } from "@/features/tests/comparisons";
 import type { getTest } from "@/features/tests/finished-tests";
 import { review } from "@/features/tests/review";
 import { findSetCode } from "@/features/variants/custom/sets";
 import { variantTitle } from "@/features/variants/variant-title";
 import { getVariant, tasksFor } from "@/features/variants/variants";
-import { ReviewRows } from "./review-rows";
-import { ReviewSummary, reviewColumns } from "./review-summary";
-import { TimeSpent } from "./time-spent";
+import { toMinutes } from "@/lib/dates";
+import type { ReviewEntry } from "./review-entry";
+import { ReviewSummary } from "./review-summary";
+import { ReviewTasks } from "./review-tasks";
 
 export async function TestReview({
   found,
@@ -26,9 +26,27 @@ export async function TestReview({
     variant?.kind === "custom" && findSetCode(variant.taskIds),
   ]);
   const result = review(tasks, found.attempts);
+  const answers = answersOf(found.test.taskIds, found.attempts);
+  const entries: ReviewEntry[] = result.rows.map((row) => {
+    const ms = row.attempt?.durationMs ?? 0;
+    return {
+      taskId: row.taskId,
+      number: row.number,
+      topicName: row.topicName,
+      statement: row.statement,
+      parts: row.parts,
+      points: row.points,
+      earned: row.earned,
+      segment: row.segment,
+      ms,
+      minutesSpent: toMinutes(ms),
+      answers: answers[row.taskId] ?? [],
+      outcomes: row.attempt?.outcomes ?? [],
+    };
+  });
 
   return (
-    <div className="flex flex-col gap-10 pt-2 md:gap-12 md:pt-5">
+    <div className="flex flex-col gap-6 pt-2 md:gap-8 md:pt-5">
       <ReviewSummary
         review={result}
         variantId={found.test.variantId}
@@ -41,16 +59,11 @@ export async function TestReview({
       >
         {guest && <SignInStrip from="result">{strip("result")}</SignInStrip>}
       </ReviewSummary>
-      <div
-        className={result.timed ? cn(reviewColumns, "items-start") : undefined}
-      >
-        <ReviewRows
-          review={result}
-          comparisons={comparisonsOf(found.attempts)}
-          testSessionId={found.test.id}
-        />
-        {result.timed && <TimeSpent review={result} />}
-      </div>
+      <ReviewTasks
+        tasks={entries}
+        timed={result.timed}
+        testSessionId={found.test.id}
+      />
     </div>
   );
 }

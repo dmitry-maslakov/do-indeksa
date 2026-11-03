@@ -1,18 +1,13 @@
-import { cn } from "cn";
-import { ArrowUpRightIcon } from "lucide-react";
+import { ArrowUpRightIcon, RotateCcwIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
+import { Estimate } from "./estimate";
 import { ShareButton } from "./share-button";
-import { SimilarButton } from "./similar-button";
-
-export const reviewColumns =
-  "grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:gap-14";
 
 interface ReviewSummaryProps {
   review: Review;
@@ -24,7 +19,7 @@ interface ReviewSummaryProps {
   children?: ReactNode;
 }
 
-const action = "h-12 rounded-xl px-6 text-base max-md:w-full";
+const action = "h-10 rounded-full px-4 text-sm max-md:flex-1";
 
 export function ReviewSummary({
   review,
@@ -39,14 +34,9 @@ export function ReviewSummary({
   const variants = useTranslations("Variants");
   const format = useFormatter();
   const minutes = toMinutes(review.spentMs);
-  const missed = [
-    ...new Set(
-      review.rows.filter((r) => r.earned < r.points).map((r) => r.topic),
-    ),
-  ];
 
   return (
-    <section className="flex flex-col gap-5.5 md:gap-7">
+    <section className="flex flex-col gap-4 md:gap-5">
       <p className="flex flex-wrap gap-x-1.5 text-[13px] text-muted-foreground md:text-sm">
         <Link href="/variants" className="hover:text-foreground">
           {t("crumb", {
@@ -72,82 +62,46 @@ export function ReviewSummary({
           </>
         )}
       </p>
-      <div className={cn(reviewColumns, "gap-5.5 lg:items-end")}>
-        <div className="flex flex-col gap-5.5 md:gap-6">
-          <div className="flex flex-col gap-1.5">
-            <p className="flex items-baseline gap-3">
-              <span className="font-bold text-6xl leading-none tracking-tighter tabular-nums md:text-7xl">
-                {format.number(review.score)}
-              </span>
-              <span className="text-muted-foreground text-xl">
-                {t("outOf", { max: review.max })}
-              </span>
-            </p>
-            <p className="text-muted-foreground tabular-nums">
-              {t("correctOf", {
-                correct: review.correct,
-                total: review.rows.length,
-              })}
-              {" · "}
-              {t("duration", {
-                hours: Math.floor(minutes / 60),
-                minutes: minutes % 60,
-              })}
-            </p>
-          </div>
-          <div className="flex flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center md:gap-3">
-            {missed.length > 0 && (
-              <SimilarButton topics={missed} className={action}>
-                {t("similar", { count: review.mistakes })}
-              </SimilarButton>
-            )}
-            <Button
-              variant="ghost"
-              className={action}
-              render={
-                <Link
-                  href={href}
-                  data-intent={intentOf({ via: "review", placement: "retry" })}
-                />
-              }
-              nativeButton={false}
-            >
-              {t("retry")}
-            </Button>
-            <ShareButton
-              title={title}
-              variantId={variantId}
-              href={href}
-              className={action}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-3.5">
-          <div
-            role="img"
-            aria-label={t("strip", { score: review.score, max: review.max })}
-            className="flex gap-0.75 md:gap-1"
-          >
-            {review.rows.map((r) => (
-              <span
-                key={r.taskId}
-                className="flex flex-1 flex-col items-center gap-1.5"
-              >
-                <span
-                  className={cn(
-                    "h-2.5 w-full rounded-full",
-                    segmentTone[r.segment].bar,
-                  )}
-                />
-                <span className="text-subtle text-xs tabular-nums">
-                  {r.number}
-                </span>
-              </span>
-            ))}
-          </div>
-          <p className="text-[13px] text-subtle leading-normal">
-            {t("estimate")}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <p className="flex items-baseline gap-2">
+          <span className="font-bold text-4xl leading-none tracking-tight tabular-nums">
+            {format.number(review.score)}
+          </span>
+          <span className="text-lg text-muted-foreground">
+            {t("outOf", { max: review.max })}
+          </span>
+        </p>
+        {review.timed && (
+          <p className="flex items-center gap-4 text-lg text-muted-foreground tabular-nums">
+            <span aria-hidden className="size-1 rounded-full bg-input" />
+            {t("duration", {
+              hours: Math.floor(minutes / 60),
+              minutes: minutes % 60,
+            })}
           </p>
+        )}
+        <Estimate />
+        <div className="flex gap-2 max-md:w-full md:ml-auto">
+          <Button
+            variant="ghost"
+            className={action}
+            render={
+              <Link
+                href={href}
+                data-intent={intentOf({ via: "review", placement: "retry" })}
+              />
+            }
+            nativeButton={false}
+          >
+            <RotateCcwIcon />
+            {t("retry")}
+          </Button>
+          <ShareButton
+            title={title}
+            variantId={variantId}
+            href={href}
+            className={action}
+          />
         </div>
       </div>
       {children}
