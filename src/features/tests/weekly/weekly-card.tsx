@@ -1,6 +1,7 @@
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
 import { segmentTone } from "@/components/segment-tone";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TopicGlyph, TopicIcon } from "@/features/catalog/topic-icon";
 import { topicLook } from "@/features/catalog/topics";
 import type { WeeklyVariant } from "@/features/variants/weekly";
@@ -32,6 +33,7 @@ function ResultChips({ test }: { test: TestSummary }) {
 
 interface WeeklyCardProps extends WeeklyVariant {
   test?: TestSummary;
+  loading?: boolean;
 }
 
 export function WeeklyCard({
@@ -42,6 +44,7 @@ export function WeeklyCard({
   points,
   daysLeft,
   test,
+  loading,
 }: WeeklyCardProps) {
   const home = useTranslations("Home");
   const t = useTranslations("Variants");
@@ -55,7 +58,9 @@ export function WeeklyCard({
           {home("weekly")}
         </h2>
         <div className="relative mt-1 @4xl:col-start-1 @4xl:row-start-2 @4xl:mt-0">
-          {test ? (
+          {loading ? (
+            <Skeleton className="h-14 w-28 rounded-lg bg-card/50" />
+          ) : test ? (
             <>
               <p className="tabular-nums">
                 <b className="font-bold text-4xl tracking-tight">
@@ -84,10 +89,14 @@ export function WeeklyCard({
         <div
           className={cn(
             "relative my-4 flex max-w-50 flex-wrap @4xl:col-start-2 @4xl:row-span-2 @4xl:row-start-1 @4xl:my-0 @4xl:max-w-none @4xl:flex-nowrap @4xl:justify-self-center",
-            test ? "gap-1" : "gap-2",
+            test || loading ? "gap-1" : "gap-2",
           )}
         >
-          {test ? (
+          {loading ? (
+            topics.map(({ id }) => (
+              <Skeleton key={id} className="size-9 rounded-lg bg-card/50" />
+            ))
+          ) : test ? (
             <ResultChips test={test} />
           ) : (
             topics.map(({ id, topic }) => (
@@ -95,13 +104,17 @@ export function WeeklyCard({
             ))
           )}
         </div>
-        <Link
-          href={test ? reviewHref(test.id) : `/variants/${id}`}
-          data-intent={test ? undefined : intentOf({ via: "weekly" })}
-          className="relative mt-1 inline-flex h-13 w-full items-center justify-center rounded-lg bg-card px-4 font-semibold text-sm focus-visible:outline-2 focus-visible:outline-ring @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-auto"
-        >
-          {test ? t("weeklyReview") : home("startWeekly")}
-        </Link>
+        {loading ? (
+          <Skeleton className="relative mt-1 h-13 w-full rounded-lg bg-card/50 @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-36" />
+        ) : (
+          <Link
+            href={test ? reviewHref(test.id) : `/variants/${id}`}
+            data-intent={test ? undefined : intentOf({ via: "weekly" })}
+            className="relative mt-1 inline-flex h-13 w-full items-center justify-center rounded-lg bg-card px-4 font-semibold text-sm focus-visible:outline-2 focus-visible:outline-ring @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-auto"
+          >
+            {test ? t("weeklyReview") : home("startWeekly")}
+          </Link>
+        )}
       </section>
     </div>
   );
