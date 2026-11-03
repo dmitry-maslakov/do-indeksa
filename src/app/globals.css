@@ -287,6 +287,9 @@
 
   math-field {
     font-size: 1.125rem;
+    &::part(container) {
+      touch-action: pan-x pan-y;
+    }
     &::part(menu-toggle),
     &::part(virtual-keyboard-toggle) {
       display: none;
