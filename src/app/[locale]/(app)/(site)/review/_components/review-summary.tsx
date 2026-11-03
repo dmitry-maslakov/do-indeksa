@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon, RotateCcwIcon } from "lucide-react";
+import { ArrowUpRightIcon, InfoIcon, RotateCcwIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -105,9 +105,15 @@ export function ReviewSummary({
           />
         </div>
       </div>
-      <p className="-mt-1 text-[13px] text-subtle leading-normal md:-mt-2">
-        {t("estimate")}
-      </p>
+      <details className="group/estimate -mt-1 md:-mt-2">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded-sm text-[13px] text-subtle outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <InfoIcon aria-hidden className="size-3.5" />
+          {t("estimateLink")}
+        </summary>
+        <p className="mt-2 max-w-xl text-[13px] text-muted-foreground leading-normal">
+          {t("estimate")}
+        </p>
+      </details>
       {children}
     </section>
   );

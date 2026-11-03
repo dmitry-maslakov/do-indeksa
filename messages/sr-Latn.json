@@ -225,7 +225,7 @@
     "outOf": "od {max, plural, one {# boda} few {# boda} other {# bodova}}",
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Reši ponovo",
-    "estimate": "Ovo je procena: proveravamo samo konačan odgovor, a FTN boduje i postupak.",
+    "estimate": "Proveravamo samo konačan odgovor svakog dela i zato je ovo procena, a ne zvaničan rezultat. FTN na prijemnom boduje i postupak i može dati delimične bodove.",
     "tasks": "Zadaci",
     "skipped": "bez odgovora",
     "minutes": "{minutes, plural, =0 {manje od minuta} other {# min}}",
@@ -240,7 +240,8 @@
     "given": "Tvoj odgovor",
     "correct": "Tačan odgovor",
     "unread": "nije pročitano",
-    "toBank": "Otvori u banci"
+    "toBank": "Otvori u banci",
+    "estimateLink": "Ovo je procena — kako bodujemo?"
   },
   "Home": {
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",
