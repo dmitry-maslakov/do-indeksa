@@ -222,7 +222,11 @@ test("a test records its answers, controls and where it was started", async ({
   await finish(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
 
-  const row = page.getByRole("main").locator("details > summary").first();
+  const row = page
+    .getByRole("region", { name: "Zadaci" })
+    .getByRole("button")
+    .filter({ visible: true })
+    .nth(1);
   await row.click();
   await row.click();
   await page.getByRole("button", { name: "Reši ponovo" }).click();
@@ -256,7 +260,7 @@ test("a test records its answers, controls and where it was started", async ({
         "finish_dialog opened",
         "finish_dialog cancelled",
         "finish_dialog opened",
-        "review_row 1",
+        "review_row 2",
       ].toSorted(),
     );
 

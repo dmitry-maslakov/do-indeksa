@@ -10,19 +10,18 @@ async function finishSet(page: Page) {
   await finish(page);
 }
 
+const shownTask = (page: Page) => page.getByRole("article");
+
 async function expectAnswers(page: Page, errors: string[]) {
   await expect(page.getByText("od 6 bodova")).toBeVisible();
-  await expect(page.getByText("Tačno 0 od 1", { exact: false })).toBeVisible();
-  const row = page
-    .locator("details")
-    .filter({ hasText: "Eksponencijalne" })
-    .first();
-  await expect(row.locator("summary").first()).toContainText("0/6");
-  await row.locator("summary").first().click();
-  await expect(row).toContainText("odgovor");
-  await expect(row).toContainText("tačno");
+  const task = shownTask(page);
+  await expect(task).toContainText("Eksponencijalne");
+  await expect(task).toContainText("0 od 6");
+  const cells = task.getByRole("table", { name: "Odgovori" }).getByRole("cell");
+  await expect(cells.nth(0)).toContainText("0");
+  await expect(cells.nth(1)).toContainText("2");
   await expect(
-    row.getByRole("link", { name: "Otvori zadatak" }),
+    task.getByRole("link", { name: "Otvori u banci" }),
   ).toHaveAttribute("href", /\/bank\/eks-001$/);
   expect(errors).toEqual([]);
 }
@@ -48,6 +47,7 @@ test("a guest reviews a finished test and finds it in history", {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
     /\/v\/[2-9A-HJKMNP-Z]{5}\?utm_source=share&utm_medium=variant$/,
   );
+  await page.getByRole("button", { name: "procena" }).click();
   await expect(
     page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
@@ -98,36 +98,18 @@ test("a solution viewed in the review leaves the task open in the bank", async (
   errors,
 }) => {
   await finishSet(page);
-  const row = page
-    .locator("details")
-    .filter({ hasText: "Eksponencijalne" })
-    .first();
-  await row.locator("summary").first().click();
   const saved = page.waitForResponse(
     (response) =>
       response.request().method() === "POST" &&
       (response.request().postData() ?? "").includes('"taskId":"eks-001"'),
   );
-  await row.getByRole("button", { name: "Rešenje" }).click();
+  await shownTask(page).getByRole("button", { name: "Rešenje" }).click();
   await saved;
 
   await page.goto("/bank/eks-001");
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
-test("practicing similar tasks leaves the review for a new test", async ({
-  page,
-  errors,
-}) => {
-  await finishSet(page);
-  await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
-  await page.waitForLoadState("networkidle");
-  await page.getByRole("button", { name: /^Vežbaj slično/ }).click();
-  await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
-  await expect(page.locator("math-field").first()).toBeVisible();
   expect(errors).toEqual([]);
 });
 

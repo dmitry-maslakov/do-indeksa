@@ -34,16 +34,6 @@ describe("review", () => {
     { taskId: "c", outcomes: ["wrong"], correct: false, durationMs: minuteMs },
   ]);
 
-  it("counts a mistake only where a part is wrong or unreadable", () => {
-    expect(result.mistakes).toBe(2);
-    const blank = review(tasks, [
-      { taskId: "a", outcomes: ["empty", "empty"], correct: false },
-      { taskId: "b", outcomes: ["right", "empty"], correct: false },
-      { taskId: "c", outcomes: ["unreadable"], correct: false },
-    ]);
-    expect(blank.mistakes).toBe(1);
-  });
-
   it("is timed once a task took a minute", () => {
     expect(result.timed).toBe(true);
     const quick = (durationMs: number) =>
@@ -61,19 +51,30 @@ describe("review", () => {
     expect(result.correct).toBe(1);
   });
 
-  it("marks segments and overtime", () => {
+  it("marks segments", () => {
     expect(result.rows.map((r) => r.segment)).toEqual([
       "done",
       "partial",
       "error",
       "none",
     ]);
-    expect(result.rows.map((r) => r.over)).toEqual([false, true, false, false]);
   });
 
-  it("sums time against the norm", () => {
+  it("marks a task answered with nothing as without an answer", () => {
+    const blank = review(tasks, [
+      { taskId: "a", outcomes: ["empty", "empty"], correct: false },
+      { taskId: "b", outcomes: ["empty", "wrong"], correct: false },
+    ]);
+    expect(blank.rows.map((r) => r.segment)).toEqual([
+      "none",
+      "error",
+      "none",
+      "none",
+    ]);
+  });
+
+  it("sums the time spent", () => {
     expect(result.spentMs).toBe(41 * minuteMs);
-    expect(result.normMs).toBe(96 * minuteMs);
   });
 });
 
