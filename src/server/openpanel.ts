@@ -23,7 +23,7 @@ export function toOpenPanel({ row, page, profileId, visitor }: Tracked) {
     type: "track",
     payload: {
       name: row.name === "page_view" ? "screen_view" : row.name,
-      profileId: profileId ?? visitor.aid,
+      profileId: visitor.aid ?? profileId,
       properties: {
         ...mapValues(
           omitBy(row.props, (_, key) => key.endsWith("profile_id")),
@@ -40,10 +40,16 @@ export function toOpenPanel({ row, page, profileId, visitor }: Tracked) {
   };
 }
 
-export function identifyOf({ row, profileId }: Tracked) {
-  if (!profileId || !identifying.has(row.name)) return;
+export function identifyOf({ row, profileId, visitor }: Tracked) {
+  if (!profileId || !visitor.aid || !identifying.has(row.name)) return;
   const kind = row.name === "profile_created" ? row.props.kind : "account";
-  return { type: "identify", payload: { profileId, properties: { kind } } };
+  return {
+    type: "identify",
+    payload: {
+      profileId: visitor.aid,
+      properties: { kind, profile_id: profileId },
+    },
+  };
 }
 
 async function post(

@@ -76,10 +76,16 @@ describe("toOpenPanel", () => {
     expect(payload.properties).not.toHaveProperty("__deviceId");
   });
 
-  it("prefers the profile id", () => {
+  it("keys an event by the aid after the profile is created", () => {
     expect(toOpenPanel(tracked({ profileId: "p1" })).payload.profileId).toBe(
-      "p1",
+      aid,
     );
+  });
+
+  it("keys an event without an aid by the profile", () => {
+    const item = tracked({ profileId: "p1", source: "server" });
+    item.visitor.aid = undefined;
+    expect(toOpenPanel(item).payload.profileId).toBe("p1");
   });
 
   it("points an event without a page at the site", () => {
@@ -111,24 +117,30 @@ describe("identifyOf", () => {
     return item;
   };
 
-  it("names the kind of a new profile", () => {
+  it("names the kind and the profile of the visitor", () => {
     expect(identifyOf(event("profile_created", { kind: "guest" }))).toEqual({
       type: "identify",
-      payload: { profileId: "p1", properties: { kind: "guest" } },
+      payload: {
+        profileId: aid,
+        properties: { kind: "guest", profile_id: "p1" },
+      },
     });
   });
 
   it("marks a signed-in profile as an account", () => {
     expect(
       identifyOf(event("signed_in", { method: "google" }))?.payload.properties,
-    ).toEqual({ kind: "account" });
+    ).toEqual({ kind: "account", profile_id: "p1" });
   });
 
-  it("identifies nobody for other events or without a profile", () => {
+  it("identifies nobody for other events, without a profile or an aid", () => {
     const anonymous = event("profile_created", { kind: "guest" });
     anonymous.profileId = undefined;
+    const cookieless = event("profile_created", { kind: "guest" });
+    cookieless.visitor.aid = undefined;
     expect(identifyOf(event("page_view", {}))).toBeUndefined();
     expect(identifyOf(anonymous)).toBeUndefined();
+    expect(identifyOf(cookieless)).toBeUndefined();
   });
 });
 
