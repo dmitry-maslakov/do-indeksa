@@ -168,6 +168,11 @@ test("a task page shown again from history takes its next task from a fresh queu
     .selectOption({ label: "Eksponencijalne jednačine i nejednačine" });
   await expect(page).toHaveURL(/\/bank\/(?!log-001$)[\w-]+$/);
   const first = new URL(page.url()).pathname;
+  await expect(
+    page
+      .getByRole("complementary")
+      .locator(`a[aria-current=page][data-id="${first.split("/").at(-1)}"]`),
+  ).toBeVisible();
   const skip = page.getByRole("link", { name: "Preskoči" });
   const next = (await skip.getAttribute("href")) ?? "";
   await skip.click();
