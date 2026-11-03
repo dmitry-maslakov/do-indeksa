@@ -133,17 +133,34 @@ function Mark({ state }: { state: FieldState }) {
   return null;
 }
 
+function emptyBox(frame: HTMLElement) {
+  const boxes = [
+    ...frame.querySelectorAll<MathfieldElement>("math-field:not([read-only])"),
+  ];
+  return boxes.find((box) => box.value === "") ?? boxes.at(-1);
+}
+
+function holdTouch(event: PointerEvent<HTMLDivElement>) {
+  if (event.pointerType !== "mouse") event.stopPropagation();
+}
+
 function focusEmpty(event: PointerEvent<HTMLDivElement>) {
   if ((event.target as Element).closest("math-field, button")) return;
-  const boxes = [
-    ...event.currentTarget.querySelectorAll<MathfieldElement>(
-      "math-field:not([read-only])",
-    ),
-  ];
-  const target = boxes.find((box) => box.value === "") ?? boxes.at(-1);
+  const target = emptyBox(event.currentTarget);
   if (!target) return;
   event.preventDefault();
   focusBox(target);
+}
+
+function focusTapped(event: PointerEvent<HTMLDivElement>) {
+  const element = event.target as Element;
+  if (event.pointerType === "mouse" || element.closest("button")) return;
+  const tapped = element.closest<MathfieldElement>("math-field");
+  const target = tapped ?? emptyBox(event.currentTarget);
+  if (!target || target.readOnly) return;
+  focusBox(target);
+  const offset = tapped?.getOffsetFromPoint(event.clientX, event.clientY) ?? -1;
+  if (offset >= 0) target.position = offset;
 }
 
 const reasonKeys = {
@@ -185,7 +202,9 @@ export function Frame({
     <>
       <div
         data-field={part.kind ?? "value"}
+        onPointerDownCapture={holdTouch}
         onPointerDown={focusEmpty}
+        onPointerUp={focusTapped}
         className={cn(
           frame({
             variant,
