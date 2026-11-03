@@ -20,14 +20,19 @@ const firstToReview = (tasks: ReviewEntry[]) =>
     tasks.findIndex((task) => task.segment !== "done"),
   );
 
-const toneOf = (ms: number, longest: number) => {
-  if (ms === 0 || longest === 0) return "text-subtle";
-  const share = ms / longest;
-  if (share < 0.25) return "bg-foreground/5";
-  if (share < 0.5) return "bg-foreground/10";
-  if (share < 0.75) return "bg-foreground/15";
-  return "bg-foreground/25";
-};
+const shades = [
+  "bg-foreground/5",
+  "bg-foreground/10",
+  "bg-foreground/15",
+  "bg-foreground/25",
+];
+
+const toneOf = (ms: number, longest: number) =>
+  ms === 0 || longest === 0
+    ? "text-subtle"
+    : shades[
+        Math.min(shades.length - 1, Math.floor((ms / longest) * shades.length))
+      ];
 
 export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
   const t = useTranslations("Review");
@@ -37,10 +42,17 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
   const longest = Math.max(0, ...tasks.map((x) => x.ms));
   if (!task) return null;
 
+  const choose = (i: number, x: ReviewEntry) => ({
+    "aria-current": i === index || undefined,
+    "data-control":
+      i === index
+        ? undefined
+        : controlOf({ control: "review_row", value: String(x.number) }),
+    onClick: () => setIndex(i),
+  });
+
   const score = (x: ReviewEntry) =>
-    x.segment === "none" && x.earned === 0
-      ? "—"
-      : `${format.number(x.earned)}/${x.points}`;
+    x.segment === "none" ? "—" : `${format.number(x.earned)}/${x.points}`;
 
   return (
     <section
@@ -52,16 +64,7 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
           <li key={x.taskId}>
             <button
               type="button"
-              aria-current={i === index || undefined}
-              data-control={
-                i === index
-                  ? undefined
-                  : controlOf({
-                      control: "review_row",
-                      value: String(x.number),
-                    })
-              }
-              onClick={() => setIndex(i)}
+              {...choose(i, x)}
               className={cn(
                 "grid h-10.5 w-full items-center gap-2.5 rounded-xl px-2.5 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current]:bg-card aria-[current]:shadow-raised",
                 timed
@@ -99,17 +102,8 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
           <li key={x.taskId}>
             <button
               type="button"
-              aria-current={i === index || undefined}
+              {...choose(i, x)}
               aria-label={`${t("task", { number: x.number })} · ${t("status", { segment: x.segment })}`}
-              data-control={
-                i === index
-                  ? undefined
-                  : controlOf({
-                      control: "review_row",
-                      value: String(x.number),
-                    })
-              }
-              onClick={() => setIndex(i)}
               className={cn(
                 "flex w-full flex-col items-center rounded-[10px] py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current]:outline-2 aria-[current]:outline-foreground aria-[current]:outline-offset-2 aria-[current]:outline-solid",
                 segmentTone[x.segment].chip,
