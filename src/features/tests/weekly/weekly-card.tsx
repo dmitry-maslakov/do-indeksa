@@ -1,5 +1,7 @@
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
+import { Suspense } from "react";
+import { Await } from "@/components/await";
 import { segmentTone } from "@/components/segment-tone";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TopicGlyph, TopicIcon } from "@/features/catalog/topic-icon";
@@ -34,12 +36,12 @@ function ResultChips({ test }: { test: TestSummary }) {
 const actionSlot =
   "relative mt-1 h-13 w-full rounded-lg @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9";
 
-interface WeeklyCardProps extends WeeklyVariant {
+interface CardProps extends WeeklyVariant {
   test?: TestSummary;
   loading?: boolean;
 }
 
-export function WeeklyCard({
+function Card({
   id,
   tasks,
   topics,
@@ -48,7 +50,7 @@ export function WeeklyCard({
   daysLeft,
   test,
   loading,
-}: WeeklyCardProps) {
+}: CardProps) {
   const home = useTranslations("Home");
   const t = useTranslations("Variants");
   const format = useFormatter();
@@ -123,5 +125,19 @@ export function WeeklyCard({
         )}
       </section>
     </div>
+  );
+}
+
+interface WeeklyCardProps extends WeeklyVariant {
+  test: Promise<TestSummary | undefined>;
+}
+
+export function WeeklyCard({ test, ...weekly }: WeeklyCardProps) {
+  return (
+    <Suspense fallback={<Card {...weekly} loading />}>
+      <Await promise={test}>
+        {(found) => <Card {...weekly} test={found} />}
+      </Await>
+    </Suspense>
   );
 }
