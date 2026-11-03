@@ -3,20 +3,21 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { examTopics, positions } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
+import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import {
   curatedVariants,
   officialVariants,
 } from "@/features/variants/variants";
+import { currentWeekly } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
 import { getProfileId } from "@/server/profile";
 import { CatalogTab, tabs, VariantTable } from "./_components/catalog-tab";
 import { ComposeCard } from "./_components/compose-card";
-import { Weekly } from "./_components/weekly";
+import { loadWeeklyTest } from "./_components/weekly-test";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -36,6 +37,7 @@ export default async function VariantsPage({
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
+  const weekly = await currentWeekly();
   const topics = examTopics.map((topic) => ({
     id: topic,
     name: topicName(topic, locale),
@@ -66,11 +68,11 @@ export default async function VariantsPage({
           </Suspense>
         </section>
         <aside className="contents lg:flex lg:flex-col lg:gap-5">
-          <div className="max-lg:order-first">
-            <Suspense fallback={<Skeleton className="h-77 rounded-xl" />}>
-              <Weekly />
-            </Suspense>
-          </div>
+          {weekly && (
+            <div className="max-lg:order-first">
+              <WeeklyCard {...weekly} test={loadWeeklyTest(weekly)} />
+            </div>
+          )}
           <ComposeCard
             size={positions.length}
             topics={topics}
