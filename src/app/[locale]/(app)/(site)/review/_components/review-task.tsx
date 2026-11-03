@@ -3,24 +3,19 @@
 import { cn } from "cn";
 import {
   ArrowUpRightIcon,
-  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  XIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useLayoutEffect, useRef, useState } from "react";
-import { MathHtml } from "@/components/math-html";
 import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
-import type { PartOutcome } from "@/db/columns";
-import type { PartLabel } from "@/features/catalog/parts";
 import { ReportTask } from "@/features/practice/report-task";
 import { RevealSwitch } from "@/features/practice/reveal/reveal";
-import type { PartAnswer, Shown } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
+import { Answers } from "./review-answers";
 import type { ReviewEntry } from "./review-entry";
+import { Statement } from "./review-statement";
 
 export function TaskBadge({
   entry,
@@ -39,158 +34,6 @@ export function TaskBadge({
     >
       {entry.number}
     </span>
-  );
-}
-
-function Statement({ html }: { html: string }) {
-  const t = useTranslations("Review");
-  const box = useRef<HTMLDivElement>(null);
-  const [long, setLong] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  useLayoutEffect(() => {
-    const el = box.current;
-    if (el) setLong(el.scrollHeight > el.clientHeight + 1);
-  }, []);
-
-  return (
-    <div className="flex flex-col items-start gap-1">
-      <div
-        ref={box}
-        className={cn(
-          "w-full overflow-hidden",
-          !open && "max-h-[8em]",
-          !open && long && "mask-b-from-60%",
-        )}
-      >
-        <MathHtml
-          html={html}
-          className="text-base leading-relaxed md:text-[17px] [&_.katex-display]:overflow-hidden [&_strong]:font-semibold"
-        />
-      </div>
-      {long && (
-        <button
-          type="button"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-          className="rounded-sm text-muted-foreground text-sm underline underline-offset-3 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {open ? t("showLess") : t("showAll")}
-        </button>
-      )}
-    </div>
-  );
-}
-
-function Value({ shown, part }: { shown: Shown; part?: PartLabel }) {
-  const field = useTranslations("Field");
-  const prefix = part ? part.prefix : null;
-  const suffix = part ? part.suffix : null;
-  if ("yesno" in shown) return field(shown.yesno);
-  return (
-    <span className="inline-flex flex-wrap items-baseline gap-1.5">
-      {prefix && (
-        <MathHtml
-          as="span"
-          html={prefix}
-          className="text-muted-foreground [&_p]:inline"
-        />
-      )}
-      <MathHtml as="span" html={shown.html} />
-      {suffix && (
-        <MathHtml
-          as="span"
-          html={suffix}
-          className="text-muted-foreground [&_p]:inline"
-        />
-      )}
-    </span>
-  );
-}
-
-const givenTone: Partial<Record<PartOutcome, string>> = {
-  right: "bg-success-tint",
-  wrong: "bg-error-tint",
-  unreadable: "bg-overtime-tint",
-};
-
-function Given({
-  answer,
-  outcome,
-  part,
-}: {
-  answer: PartAnswer;
-  outcome?: PartOutcome;
-  part?: PartLabel;
-}) {
-  const t = useTranslations("Review");
-  if (outcome === "unreadable")
-    return <span className="text-overtime-text">{t("unread")}</span>;
-  if (!answer.given || !outcome || outcome === "empty")
-    return <span className="text-subtle">{t("skipped")}</span>;
-  return (
-    <span className="flex items-center gap-2">
-      {outcome === "right" ? (
-        <CheckIcon aria-hidden className="size-4 shrink-0 text-success-text" />
-      ) : (
-        <XIcon aria-hidden className="size-4 shrink-0 text-error-text" />
-      )}
-      <span className="sr-only">
-        {t("status", { segment: outcome === "right" ? "done" : "error" })}
-      </span>
-      <Value shown={answer.given} part={part} />
-    </span>
-  );
-}
-
-function Answers({ entry }: { entry: ReviewEntry }) {
-  const t = useTranslations("Review");
-  const lettered = entry.answers.length > 1;
-  const letters = entry.parts.map((part) => part.letter);
-  const cell = "px-3.5 py-2.5 text-left align-middle";
-
-  return (
-    <div className="overflow-hidden rounded-[14px] border">
-      <table className="w-full border-collapse text-sm [&_.katex]:text-[1.05em]">
-        <caption className="sr-only">{t("answers")}</caption>
-        <thead className="bg-muted text-subtle text-xs">
-          <tr>
-            {lettered && <th className={cn(cell, "w-11 py-2")} />}
-            <th scope="col" className={cn(cell, "py-2 font-normal")}>
-              {t("given")}
-            </th>
-            <th scope="col" className={cn(cell, "py-2 font-normal")}>
-              {t("correct")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {entry.answers.map((answer, i) => {
-            const part = entry.parts[i];
-            const outcome = entry.outcomes[i];
-            const repeated = i > 0 && letters[i] === letters[i - 1];
-            return (
-              <tr
-                key={`${part?.letter}${part?.prefix}${part?.caption}`}
-                className={cn("border-t", repeated && "border-t-border/40")}
-              >
-                {lettered && (
-                  <th scope="row" className={cn(cell, "font-semibold")}>
-                    {!repeated && letters[i]}
-                  </th>
-                )}
-                <td className={cn(cell, outcome && givenTone[outcome])}>
-                  <Given answer={answer} outcome={outcome} part={part} />
-                </td>
-                <td className={cell}>
-                  <Value shown={answer.key} part={part} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
   );
 }
 
