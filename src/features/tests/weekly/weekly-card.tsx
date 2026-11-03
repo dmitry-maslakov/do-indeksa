@@ -31,6 +31,9 @@ function ResultChips({ test }: { test: TestSummary }) {
     ));
 }
 
+const actionSlot =
+  "relative mt-1 h-13 w-full rounded-lg @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9";
+
 interface WeeklyCardProps extends WeeklyVariant {
   test?: TestSummary;
   loading?: boolean;
@@ -105,12 +108,15 @@ export function WeeklyCard({
           )}
         </div>
         {loading ? (
-          <Skeleton className="relative mt-1 h-13 w-full rounded-lg bg-card/50 @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-36" />
+          <Skeleton className={cn(actionSlot, "bg-card/50 @4xl:w-36")} />
         ) : (
           <Link
             href={test ? reviewHref(test.id) : `/variants/${id}`}
             data-intent={test ? undefined : intentOf({ via: "weekly" })}
-            className="relative mt-1 inline-flex h-13 w-full items-center justify-center rounded-lg bg-card px-4 font-semibold text-sm focus-visible:outline-2 focus-visible:outline-ring @4xl:col-start-3 @4xl:row-span-2 @4xl:row-start-1 @4xl:mt-0 @4xl:h-9 @4xl:w-auto"
+            className={cn(
+              actionSlot,
+              "inline-flex items-center justify-center bg-card px-4 font-semibold text-sm focus-visible:outline-2 focus-visible:outline-ring @4xl:w-auto",
+            )}
           >
             {test ? t("weeklyReview") : home("startWeekly")}
           </Link>
