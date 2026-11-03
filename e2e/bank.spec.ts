@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
 const at = (page: Page) => {
@@ -210,6 +210,43 @@ test("Svi zadaci from Preporučeno goes back to the list the student left", asyn
   );
   await all.click();
   await expect(page).toHaveURL(/\/bank\/topic\/logarithms\?level=easy$/);
+  expect(errors).toEqual([]);
+});
+
+test("Zadaci and Svi zadaci keep the student's filters", async ({
+  page,
+  errors,
+}) => {
+  const { topic, level, links } = bank(page);
+  const list = /\/bank\/topic\/logarithms\?level=easy$/;
+  const zadaci = page
+    .getByRole("navigation", { name: "Glavna navigacija" })
+    .getByRole("link", { name: "Zadaci" });
+  const backToList = async (link: Locator) => {
+    await expect(link).toHaveAttribute("href", list);
+    await link.click();
+    await expect(page).toHaveURL(list);
+  };
+
+  await open(page);
+  await topic.selectOption({ label: "Logaritmi" });
+  await expect(page).toHaveURL(/\/bank\/topic\/logarithms$/);
+  await level.selectOption({ label: "lako" });
+  await backToList(zadaci);
+  await backToList(
+    page.getByRole("complementary").getByRole("link", { name: "Svi zadaci" }),
+  );
+
+  await links.first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!topic\/)[\w-]+$/);
+  await backToList(zadaci);
+
+  await page.getByRole("link", { name: "Preporučeno" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/(?!start\/|topic\/)[\w-]+$/);
+  await backToList(zadaci);
+
+  await page.goto("/");
+  await backToList(zadaci);
   expect(errors).toEqual([]);
 });
 

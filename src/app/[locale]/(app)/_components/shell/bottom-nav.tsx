@@ -4,10 +4,11 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { WithPathname } from "@/components/with-url";
 import { Link } from "@/i18n/navigation";
-import { isActive, sections } from "./sections";
+import { isActive, useSectionLinks } from "./sections";
 
 export function BottomNav({ className }: { className?: string }) {
   const t = useTranslations("Nav");
+  const links = useSectionLinks();
 
   return (
     <nav
@@ -19,13 +20,13 @@ export function BottomNav({ className }: { className?: string }) {
     >
       <WithPathname>
         {(pathname) =>
-          sections.map((section) => {
-            const { href, key, icon: Icon } = section;
+          links.map((section) => {
+            const { link, key, icon: Icon } = section;
             const active = isActive(pathname, section);
             return (
               <Link
                 key={key}
-                href={href}
+                href={link}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex h-(--nav-bottom) flex-1 flex-col items-center justify-center gap-1 text-xs text-subtle outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
