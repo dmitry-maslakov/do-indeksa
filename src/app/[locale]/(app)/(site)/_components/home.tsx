@@ -22,7 +22,7 @@ export function Home({ weekly, personal }: HomeProps) {
     <main className="flex flex-col gap-4 px-4 pt-4 pb-6 md:gap-5 md:px-10 md:pt-6 md:pb-8">
       <TodayHero suggestion={personal.then((p) => p.hero)} />
       {weekly && (
-        <Suspense fallback={<WeeklyCard {...weekly} />}>
+        <Suspense fallback={<WeeklyCard {...weekly} loading />}>
           <Await promise={personal.then((p) => p.weeklyTest)}>
             {(test) => <WeeklyCard {...weekly} test={test} />}
           </Await>
