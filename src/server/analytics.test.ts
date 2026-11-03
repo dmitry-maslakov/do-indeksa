@@ -74,6 +74,10 @@ describe("visitorOf", () => {
   ])("marks %s as a bot", (_, userAgent) => {
     expect(visitor({ "user-agent": userAgent }).bot).toBe(true);
   });
+
+  it("marks an automated browser as a bot", () => {
+    expect(visitor({}, `aid=${aid}; automated=1`).bot).toBe(true);
+  });
 });
 
 describe("rowOf", () => {

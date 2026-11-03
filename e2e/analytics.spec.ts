@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
 import type { BrowserContext } from "@playwright/test";
-import { expect, flush, needsRecorder, noId, rows, test } from "./fixtures";
+import {
+  answer,
+  expect,
+  flush,
+  needsRecorder,
+  noId,
+  rows,
+  test,
+} from "./fixtures";
 
 needsRecorder();
 
@@ -35,7 +43,6 @@ test("a first visit records the visit and the page", async ({ page }) => {
     aid,
     route: "/bank",
     locale: "sr-Latn",
-    bot: false,
     props: { first_visit: true },
   });
   await expect(page).toHaveURL(/\/bank$/);
@@ -87,6 +94,24 @@ test("a crawler is marked as a bot", async ({ browser }) => {
   const recorded = await rows((row) => row.utm_campaign === campaign);
   expect(recorded.every(({ bot }) => bot)).toBe(true);
   await context.close();
+});
+
+test("an automated browser is a bot on browser and server events", async ({
+  page,
+}) => {
+  await page.goto("/bank/eks-001");
+  await answer(page, "3");
+  await page.getByRole("button", { name: "Proveri" }).click();
+  await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
+  await flush(page);
+  const aid = await cookie(page.context(), "aid");
+  await expect
+    .poll(async () =>
+      (await rows((row) => row.aid === aid)).map(({ source }) => source),
+    )
+    .toEqual(expect.arrayContaining(["browser", "server"]));
+  const recorded = await rows((row) => row.aid === aid);
+  expect(recorded.every(({ bot }) => bot)).toBe(true);
 });
 
 test("after opting out nothing is recorded", async ({ page, browser }) => {
