@@ -278,7 +278,7 @@ test("a guest finishes a test", { tag: "@mobile" }, async ({ page }) => {
   await expect(bar).toBeVisible();
   await page.getByText("Ovo je procena — kako bodujemo?").click();
   await expect(
-    page.getByText("ovo je procena, a ne zvaničan rezultat", { exact: false }),
+    page.getByText("ovo procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
 });
 

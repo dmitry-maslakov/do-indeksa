@@ -49,7 +49,7 @@ test("a guest reviews a finished test and finds it in history", {
   );
   await page.getByText("Ovo je procena — kako bodujemo?").click();
   await expect(
-    page.getByText("ovo je procena, a ne zvaničan rezultat", { exact: false }),
+    page.getByText("ovo procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
   await expectAnswers(page, errors);
   await page.goto("/variants?tab=history");
