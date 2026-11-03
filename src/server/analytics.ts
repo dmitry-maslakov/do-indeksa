@@ -13,6 +13,7 @@ import { z } from "zod";
 import {
   aidCookie,
   analyticsCookieAge,
+  automatedCookie,
   consentCookie,
   utmOnly,
 } from "@/lib/analytics-browser";
@@ -74,7 +75,7 @@ export function visitorOf(
     device: device.type ?? "desktop",
     os: os.name ?? "",
     browser: browser.name ?? "",
-    bot: !ua || isbot(ua),
+    bot: !ua || isbot(ua) || jar.get(automatedCookie)?.value === "1",
     ip: headers.get("cf-connecting-ip") ?? undefined,
     country: /^[A-Z]{2}$/.exec(headers.get("cf-ipcountry") ?? "")?.[0] ?? "",
   };

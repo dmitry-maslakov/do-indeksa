@@ -6,6 +6,7 @@ import { type RouteTemplate, routeOf } from "./routes";
 import type { clientEvents } from "./site-events";
 
 export const aidCookie = "aid";
+export const automatedCookie = "automated";
 export const consentCookie = "analytics";
 export const analyticsCookieAge = 400 * daySeconds;
 export const batchBytes = 32 * 1024;
@@ -135,6 +136,8 @@ function startVisit() {
   const firstVisit = !readCookie(aidCookie);
   if (firstVisit)
     document.cookie = `${aidCookie}=${crypto.randomUUID()}; Max-Age=${analyticsCookieAge}; Path=/; SameSite=Lax; Secure`;
+  if (navigator.webdriver)
+    document.cookie = `${automatedCookie}=1; Path=/; SameSite=Lax; Secure`;
   if (attempt(() => sessionStorage.getItem(visitKey))[1]) return;
   attempt(() => sessionStorage.setItem(visitKey, "1"));
   const { connection, language } = browser();
