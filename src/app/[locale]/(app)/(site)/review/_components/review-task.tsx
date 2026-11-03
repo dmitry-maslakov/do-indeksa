@@ -65,7 +65,7 @@ function Statement({ html }: { html: string }) {
       >
         <MathHtml
           html={html}
-          className="overflow-x-auto text-base leading-relaxed md:text-[17px] [&_strong]:font-semibold"
+          className="text-base leading-relaxed md:text-[17px] [&_.katex-display]:overflow-hidden [&_strong]:font-semibold"
         />
       </div>
       {long && (
@@ -150,7 +150,7 @@ function Answers({ entry }: { entry: ReviewEntry }) {
   const cell = "px-3.5 py-2.5 text-left align-middle";
 
   return (
-    <div className="overflow-x-auto rounded-[14px] border">
+    <div className="overflow-hidden rounded-[14px] border">
       <table className="w-full border-collapse text-sm [&_.katex]:text-[1.05em]">
         <caption className="sr-only">{t("answers")}</caption>
         <thead className="bg-muted text-subtle text-xs">
@@ -200,6 +200,8 @@ interface ReviewTaskProps {
   testSessionId: string;
   prev?: number;
   next?: number;
+  position: number;
+  total: number;
   onPrev: () => void;
   onNext: () => void;
 }
@@ -210,6 +212,8 @@ export function ReviewTask({
   testSessionId,
   prev,
   next,
+  position,
+  total,
   onPrev,
   onNext,
 }: ReviewTaskProps) {
@@ -283,28 +287,34 @@ export function ReviewTask({
         </Link>
       </RevealSwitch>
       <ReportTask taskId={entry.taskId} />
-      <div className="mt-auto grid grid-cols-2 gap-2 lg:hidden">
+      <nav
+        aria-label={t("tasks")}
+        className="mt-auto flex items-center justify-center gap-5 pt-1 lg:hidden"
+      >
         <Button
-          variant="ghost"
-          className="h-11 rounded-xl"
+          variant="lime"
+          size="icon"
+          className="rounded-full"
+          aria-label={t("prev")}
           disabled={prev === undefined}
           onClick={onPrev}
         >
-          <ChevronLeftIcon />
-          {prev ?? ""}
-          <span className="sr-only">{t("prev")}</span>
+          <ChevronLeftIcon className="size-5" />
         </Button>
+        <span className="min-w-12 text-center text-muted-foreground text-sm tabular-nums">
+          {position} / {total}
+        </span>
         <Button
-          variant="ghost"
-          className="h-11 rounded-xl"
+          variant="lime"
+          size="icon"
+          className="rounded-full"
+          aria-label={t("next")}
           disabled={next === undefined}
           onClick={onNext}
         >
-          <span className="sr-only">{t("next")}</span>
-          {next ?? ""}
-          <ChevronRightIcon />
+          <ChevronRightIcon className="size-5" />
         </Button>
-      </div>
+      </nav>
     </article>
   );
 }
