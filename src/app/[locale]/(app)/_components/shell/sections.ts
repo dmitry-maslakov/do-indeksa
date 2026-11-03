@@ -4,6 +4,7 @@ import {
   HomeIcon,
   LibraryBigIcon,
 } from "lucide-react";
+import { useListHref } from "@/features/bank/last-list";
 
 export const sections = [
   { href: "/", key: "home", icon: HomeIcon },
@@ -16,6 +17,14 @@ export const sections = [
   },
   { href: "/theory", key: "theory", icon: BookOpenIcon },
 ] as const;
+
+export function useSectionLinks() {
+  const bank = useListHref("/bank");
+  return sections.map((section) => ({
+    ...section,
+    link: section.href === "/bank" ? bank : section.href,
+  }));
+}
 
 export function isActive(
   pathname: string | undefined,
