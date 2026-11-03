@@ -19,9 +19,13 @@ export function routerTransitionStart(href: string, type: string) {
 }
 
 export async function startSentry() {
-  const loaded = await import("@sentry/nextjs");
+  const [loaded, { isbot }] = await Promise.all([
+    import("@sentry/nextjs"),
+    import("isbot"),
+  ]);
   loaded.init({
     ...sentryOptions,
+    ...(isbot(navigator.userAgent) && { tracesSampleRate: 0 }),
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     integrations: [
       loaded.browserTracingIntegration({

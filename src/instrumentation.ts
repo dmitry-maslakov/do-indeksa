@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { isbot } from "isbot";
 import { sentryOptions } from "@/lib/sentry";
 
 export async function register() {
@@ -13,8 +14,10 @@ export async function register() {
         sessions: false,
       }),
     ],
-    tracesSampler: ({ normalizedRequest, inheritOrSampleWith }) =>
-      /\/api\/(healthz|events)$/.test(normalizedRequest?.url ?? "")
+    tracesSampler: ({ normalizedRequest: request, inheritOrSampleWith }) =>
+      request?.method === "HEAD" ||
+      isbot(request?.headers?.["user-agent"]) ||
+      /\/api\/(healthz|events)$/.test(request?.url ?? "")
         ? 0
         : inheritOrSampleWith(1),
   });
