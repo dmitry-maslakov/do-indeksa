@@ -35,7 +35,10 @@ function Screen({ className, sync }: { className: string; sync?: boolean }) {
 
 function DevicesIcon() {
   return (
-    <span aria-hidden="true" className="relative h-11 w-16 shrink-0">
+    <span
+      aria-hidden="true"
+      className="relative h-11 w-16 shrink-0 max-md:hidden"
+    >
       <Screen className="top-0.5 left-0 h-7.5 w-11.5 px-1.5" />
       <span className="absolute top-8.25 -left-0.5 h-1 w-12.5 rounded-xs bg-foreground" />
       <Screen className="top-2.75 left-10.5 h-8 w-5 px-0.75" sync />
@@ -64,17 +67,17 @@ export function SignInStrip({ from, solved, children }: SignInStripProps) {
   return (
     <section
       aria-label={t("label")}
-      className="flex max-w-full animate-in flex-wrap items-center gap-x-4 gap-y-3 self-start rounded-[18px] bg-muted py-2.5 pr-2 pl-4 fade-in slide-in-from-bottom-2.5 delay-400 duration-500 ease-[cubic-bezier(.2,.8,.2,1)] fill-mode-both motion-reduce:animate-none"
+      className="flex max-w-full animate-in items-center gap-3 rounded-[18px] bg-muted py-2 pr-1.5 pl-4 md:gap-4 md:self-start md:py-2.5 md:pr-2 fade-in slide-in-from-bottom-2.5 delay-400 duration-500 ease-[cubic-bezier(.2,.8,.2,1)] fill-mode-both motion-reduce:animate-none"
     >
       <DevicesIcon />
-      <p className="flex-[1_1_10rem] font-medium text-[15px] leading-[1.4] md:flex-[0_1_auto]">
+      <p className="min-w-0 flex-1 font-medium text-sm leading-[1.35] md:flex-[0_1_auto] md:text-[15px] md:leading-[1.4]">
         {children}
       </p>
-      <span className="flex items-center gap-1">
+      <span className="flex shrink-0 items-center gap-1">
         <GoogleSignInButton
           from={from}
           variant="google"
-          className="h-10 gap-2 rounded-[11px] px-4 text-sm"
+          className="h-10 gap-2 rounded-[11px] px-3 text-sm md:px-4"
         >
           <GoogleLogo />
           {t("save")}

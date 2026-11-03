@@ -111,7 +111,7 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
               }
               onClick={() => setIndex(i)}
               className={cn(
-                "flex w-full flex-col items-center rounded-[10px] py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current]:outline-2 aria-[current]:outline-foreground aria-[current]:outline-offset-2",
+                "flex w-full flex-col items-center rounded-[10px] py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[current]:outline-2 aria-[current]:outline-foreground aria-[current]:outline-offset-2 aria-[current]:outline-solid",
                 segmentTone[x.segment].chip,
               )}
             >
@@ -132,6 +132,8 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
         testSessionId={testSessionId}
         prev={tasks[index - 1]?.number}
         next={tasks[index + 1]?.number}
+        total={tasks.length}
+        position={index + 1}
         onPrev={() => setIndex(index - 1)}
         onNext={() => setIndex(index + 1)}
       />

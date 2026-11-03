@@ -62,7 +62,7 @@ export function ReviewSummary({
           </>
         )}
       </p>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+      <div className="relative flex flex-wrap items-baseline gap-x-4 gap-y-3">
         <p className="flex items-baseline gap-2">
           <span className="font-bold text-4xl leading-none tracking-tight tabular-nums">
             {format.number(review.score)}
@@ -72,8 +72,11 @@ export function ReviewSummary({
           </span>
         </p>
         {review.timed && (
-          <p className="flex items-center gap-4 text-lg text-muted-foreground tabular-nums">
-            <span aria-hidden className="size-1 rounded-full bg-input" />
+          <p className="flex items-baseline gap-4 text-lg text-muted-foreground tabular-nums">
+            <span
+              aria-hidden
+              className="size-1 self-center rounded-full bg-input"
+            />
             {t("duration", {
               hours: Math.floor(minutes / 60),
               minutes: minutes % 60,
@@ -81,7 +84,7 @@ export function ReviewSummary({
           </p>
         )}
         <Estimate />
-        <div className="flex gap-2 max-md:w-full md:ml-auto">
+        <div className="flex gap-2 self-center max-md:w-full md:ml-auto">
           <Button
             variant="ghost"
             className={action}

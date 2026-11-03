@@ -9,7 +9,7 @@ export function Estimate() {
   const [open, setOpen] = useState(false);
 
   return (
-    <span className="relative">
+    <span className="md:relative">
       <button
         type="button"
         aria-expanded={open}
@@ -20,7 +20,7 @@ export function Estimate() {
         {t("estimateLabel")}
       </button>
       {open && (
-        <span className="absolute top-full left-0 z-10 mt-2 block w-72 rounded-xl bg-card p-3 text-[13px] text-muted-foreground leading-normal shadow-card">
+        <span className="absolute inset-x-0 top-full z-10 mt-2 block rounded-xl bg-card p-3 text-[13px] text-muted-foreground leading-normal shadow-card md:right-auto md:w-80">
           {t("estimate")}
         </span>
       )}
