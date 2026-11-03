@@ -47,9 +47,8 @@ test("a guest reviews a finished test and finds it in history", {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
     /\/v\/[2-9A-HJKMNP-Z]{5}\?utm_source=share&utm_medium=variant$/,
   );
-  await page.getByRole("button", { name: "procena" }).click();
   await expect(
-    page.getByText("Ovo je procena, a ne zvaničan rezultat", { exact: false }),
+    page.getByText("Ovo je procena", { exact: false }),
   ).toBeVisible();
   await expectAnswers(page, errors);
   await page.goto("/variants?tab=history");

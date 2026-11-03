@@ -6,7 +6,6 @@ import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
 import { toMinutes } from "@/lib/dates";
-import { Estimate } from "./estimate";
 import { ShareButton } from "./share-button";
 
 interface ReviewSummaryProps {
@@ -62,7 +61,7 @@ export function ReviewSummary({
           </>
         )}
       </p>
-      <div className="relative flex flex-wrap items-baseline gap-x-4 gap-y-3">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-3">
         <p className="flex items-baseline gap-2">
           <span className="font-bold text-4xl leading-none tracking-tight tabular-nums">
             {format.number(review.score)}
@@ -83,7 +82,6 @@ export function ReviewSummary({
             })}
           </p>
         )}
-        <Estimate />
         <div className="flex gap-2 self-center max-md:w-full md:ml-auto">
           <Button
             variant="ghost"
@@ -107,6 +105,9 @@ export function ReviewSummary({
           />
         </div>
       </div>
+      <p className="-mt-1 text-[13px] text-subtle leading-normal md:-mt-2">
+        {t("estimate")}
+      </p>
       {children}
     </section>
   );
