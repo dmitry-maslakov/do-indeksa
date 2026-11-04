@@ -12,6 +12,7 @@ import {
   renderParts,
   renderStatement,
   summarize,
+  taskDescription,
   taskIdSchema,
   tasks,
   taskTitle,
@@ -24,6 +25,18 @@ vi.mock("@/lib/markdown", async (importOriginal) => {
 });
 
 const messages = { "sr-Latn": sr, ru, en };
+
+const metaIn = (locale: (typeof routing.locales)[number]) =>
+  createTranslator({
+    locale,
+    messages: messages[locale],
+    namespace: "Metadata",
+  });
+
+const fromExam = {
+  ...getTask("eks-001"),
+  source: "FTN prijemni 2019, zadatak 4",
+} as Task;
 
 const byId = (pick: (t: (typeof tasks)[number]) => string) =>
   Object.fromEntries(tasks.map((t) => [t.id, pick(t)]));
@@ -135,18 +148,49 @@ describe("task titles", () => {
     });
   });
 
+  it("name the topic and the task's number in it", () => {
+    const meta = metaIn("sr-Latn");
+    expect(taskTitle(getTask("log-001") as Task, "sr-Latn", meta)).toBe(
+      "Logaritmi, zadatak 1: Rešiti jednačinu",
+    );
+    expect(taskTitle(getTask("eks-003") as Task, "en", metaIn("en"))).toMatch(
+      /^Exponential equations and inequalities, task 3: /,
+    );
+  });
+
+  it("name the year and the position of an exam task", () => {
+    expect(taskTitle(fromExam, "sr-Latn", metaIn("sr-Latn"))).toBe(
+      "FTN prijemni 2019, zadatak 4: Eksponencijalne jednačine i…",
+    );
+  });
+
   it.each(routing.locales)("are short and unique in %s", (locale) => {
-    const meta = createTranslator({
-      locale,
-      messages: messages[locale],
-      namespace: "Metadata",
-    });
+    const meta = metaIn(locale);
     const titles = tasks.map((t) => taskTitle(t, locale, meta));
     for (const title of titles) {
       expect(title.length).toBeLessThanOrEqual(60);
       expect(title).not.toMatch(/[\\$^_{}]/);
     }
     expect(new Set(titles).size).toBe(tasks.length);
+  });
+});
+
+describe("task descriptions", () => {
+  it("put the task's place before the statement", () => {
+    expect(
+      taskDescription(getTask("log-001") as Task, "sr-Latn", metaIn("sr-Latn")),
+    ).toBe(
+      "Logaritmi, zadatak 1. Rešiti jednačinu… Sa nagoveštajima i rešenjem.",
+    );
+  });
+
+  it.each(routing.locales)("are short and unique in %s", (locale) => {
+    const meta = metaIn(locale);
+    const descriptions = tasks.map((t) => taskDescription(t, locale, meta));
+    for (const description of descriptions) {
+      expect(description.length).toBeLessThanOrEqual(160);
+    }
+    expect(new Set(descriptions).size).toBe(tasks.length);
   });
 });
 

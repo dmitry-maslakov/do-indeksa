@@ -46,6 +46,15 @@ export const tasks = allTasks.filter((t) => !unreleased.has(t.id));
 
 const byId = new Map(allTasks.map((t) => [t.id, t]));
 
+const ordinals = new Map(
+  Array.from(
+    Map.groupBy(
+      allTasks.filter((t) => !examSource(t.source)),
+      (t) => t.topic,
+    ).values(),
+  ).flatMap((group) => group.map((t, i) => [t.id, i + 1] as const)),
+);
+
 const byTopic = Map.groupBy(tasks, (t) => t.topic);
 
 export const idsByTopic = new Map(
@@ -186,15 +195,48 @@ export async function renderTask(id: string) {
   return html;
 }
 
-export function taskTitle(
+const titleLength = 60;
+const descriptionLength = 160;
+
+const cut = (text: string, length: number) =>
+  truncate(text, { length, separator: " ", omission: "…" });
+
+function heading(
   task: Task,
   locale: Locale,
   meta: ReturnType<typeof useTranslations<"Metadata">>,
 ) {
   const topic = topicName(task.topic, locale);
-  return truncate(meta("task", { topic, headline: task.headline }), {
-    length: 60,
-    separator: " ",
-    omission: "…",
-  });
+  const exam = examSource(task.source);
+  if (exam) {
+    const year = String(exam.year);
+    const place = meta("examTaskPlace", { year, position: exam.position });
+    return { place, subject: topic };
+  }
+  const number = ordinals.get(task.id);
+  if (number === undefined) throw new Error(`unknown task ${task.id}`);
+  return {
+    place: meta("taskPlace", { topic, number }),
+    subject: task.headline,
+  };
+}
+
+export function taskTitle(
+  task: Task,
+  locale: Locale,
+  meta: ReturnType<typeof useTranslations<"Metadata">>,
+) {
+  return cut(meta("task", heading(task, locale, meta)), titleLength);
+}
+
+export function taskDescription(
+  task: Task,
+  locale: Locale,
+  meta: ReturnType<typeof useTranslations<"Metadata">>,
+) {
+  const { place } = heading(task, locale, meta);
+  return cut(
+    meta("taskDescription", { place, excerpt: task.excerpt }),
+    descriptionLength,
+  );
 }

@@ -74,7 +74,7 @@ const screens = [
   [
     "/bank/eks-001",
     "Proveri",
-    "Eksponencijalne jednačine i nejednačine: Rešiti jednačinu · Do indeksa",
+    "Eksponencijalne jednačine i nejednačine, zadatak 1: Rešiti… · Do indeksa",
   ],
   [
     "/variants",

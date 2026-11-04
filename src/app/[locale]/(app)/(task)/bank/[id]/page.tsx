@@ -11,6 +11,7 @@ import { examSource } from "@/features/catalog/source";
 import {
   getTask,
   renderTask,
+  taskDescription,
   tasks,
   taskTitle,
 } from "@/features/catalog/tasks";
@@ -47,7 +48,7 @@ export async function generateMetadata({
   const locale = await getLocale();
   return {
     title: taskTitle(task, locale, meta),
-    description: task.excerpt,
+    description: taskDescription(task, locale, meta),
     alternates: alternates(`/bank/${task.id}`, locale),
   };
 }
