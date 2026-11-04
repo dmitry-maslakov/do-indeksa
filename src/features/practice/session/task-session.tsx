@@ -46,6 +46,7 @@ type Exit = BrowserEvents["task_left"]["exit"];
 
 interface TaskSession {
   track: (send: Send) => Promise<string | undefined>;
+  recorded: () => boolean;
   note: (
     change: Partial<Pick<Visit, "typed" | "verdict" | "revealed">>,
   ) => void;
@@ -174,6 +175,7 @@ export function TaskSessionProvider({
     <TaskSessionContext
       value={{
         track,
+        recorded: () => sessionId.current !== undefined,
         note: (change) => Object.assign(visit.current, change),
         opened,
         ...helpOf(opened),

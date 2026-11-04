@@ -167,6 +167,7 @@ export const saveSkip = actionClient
         () => factsAt(profileId, taskId, session.id, createdAt),
         { profileId },
       );
+      refresh();
       return session.id;
     },
   );

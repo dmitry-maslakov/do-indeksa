@@ -1,7 +1,9 @@
 import type { Locator, Page } from "@playwright/test";
+import { secondMs } from "@/lib/dates";
 import {
   answer,
   expect,
+  hydrated,
   seedAttempt,
   seedReveal,
   seedSkip,
@@ -66,6 +68,13 @@ async function settled(page: Page, list: Locator) {
     .toBe(true);
 }
 
+const slowActions = (page: Page) =>
+  page.route(/\/bank\//, async (route) => {
+    if (route.request().headers()["next-action"])
+      await new Promise((resolve) => setTimeout(resolve, secondMs));
+    return route.continue();
+  });
+
 async function skip(page: Page) {
   const from = page.url();
   await page.getByRole("link", { name: "Preskoči" }).click();
@@ -92,12 +101,24 @@ test("a skipped task is named in words", async ({ page }) => {
   await expect(rows.first()).toBeVisible();
   await opened;
 
-  const skipped = recorded(page, "eks-001");
+  await slowActions(page);
   await skip(page);
-  await skipped;
-  await page.reload();
   await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
     "preskočen",
+  );
+});
+
+test("a task skipped before its opening is saved is skipped on the next page", async ({
+  page,
+}) => {
+  await slowActions(page);
+  await page.goto("/bank/eks-001");
+  const { rows } = rail(page);
+  await hydrated(page);
+  await skip(page);
+  await expect(rows.and(page.locator('[data-id="eks-001"]'))).toContainText(
+    "preskočen",
+    { timeout: secondMs / 2 },
   );
 });
 

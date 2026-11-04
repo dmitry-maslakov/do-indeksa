@@ -1,9 +1,9 @@
 import { cn } from "cn";
 import { ArrowRightIcon, ClockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { createContext, type ReactNode, use } from "react";
+import { createContext, type ReactNode, use, useTransition } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { type BrowserEvents, intentOf } from "@/lib/analytics-browser";
 import { useExposure } from "@/lib/use-exposure";
 
@@ -20,7 +20,7 @@ interface ActionBarProps {
   go: boolean;
   next?: Promise<NextTask>;
   fallback: string;
-  onSkip: () => void;
+  onSkip: () => Promise<unknown> | undefined;
   checked: boolean;
   disabled: boolean;
 }
@@ -50,9 +50,11 @@ function Skip({
   href?: string;
   checked: boolean;
   recommendation?: Recommendation;
-  onClick: () => void;
+  onClick: () => Promise<unknown> | undefined;
 }) {
   const t = useTranslations("Solve");
+  const router = useRouter();
+  const [leaving, startLeaving] = useTransition();
   const seen = useExposure(
     "recommendation_made",
     recommendation && { ...recommendation, surface: "skip" },
@@ -83,7 +85,16 @@ function Skip({
     <Link
       ref={seen}
       href={href}
-      onClick={onClick}
+      onClick={(event) => {
+        if (leaving) return event.preventDefault();
+        const saving = onClick();
+        if (!saving) return;
+        event.preventDefault();
+        startLeaving(async () => {
+          await saving;
+          router.push(href);
+        });
+      }}
       data-intent={intentOf({ via: "picker", placement: "skip" })}
       className={cn(buttonVariants({ variant: "ghost", size: "pill" }), look)}
     >
