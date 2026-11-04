@@ -16,6 +16,11 @@ test("a fresh guest sees empty statistics without the save strip", {
   await expect(
     page.getByRole("region", { name: "Sačuvaj napredak" }),
   ).toHaveCount(0);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Mapa tema" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Statistika →$/ })).toHaveCount(
+    0,
+  );
   expect(errors).toEqual([]);
 });
 
@@ -35,7 +40,9 @@ test("a guest sees a finished test, today's practice and the mistakes", {
   const review = new URL(page.url()).pathname;
 
   await page.goto("/");
-  await page.getByRole("link", { name: "Statistika →" }).click();
+  const line = page.getByRole("link", { name: /Statistika →$/ });
+  await expect(line).toContainText("1 dan zaredom · poslednji test 0 od 6");
+  await line.click();
   await expect(page).toHaveURL(/\/stats$/);
 
   const tests = page.getByRole("region", { name: "Testovi" });

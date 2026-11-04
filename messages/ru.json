@@ -409,6 +409,7 @@
     "fewerTopics": "Меньше тем",
     "mistakesEmpty": "За последние 30 дней ещё нет решённых задач.",
     "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
-    "minutes": "{minutes, plural, =0 {<1 мин} other {# мин}}"
+    "minutes": "{minutes, plural, =0 {<1 мин} other {# мин}}",
+    "lastTest": "последний тест {score, number} из {max, number}"
   }
 }

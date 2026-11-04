@@ -409,6 +409,7 @@
     "fewerTopics": "Manje tema",
     "mistakesEmpty": "U poslednjih 30 dana još nema rešenih zadataka.",
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
-    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}"
+    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
+    "lastTest": "poslednji test {score, number} od {max, number}"
   }
 }

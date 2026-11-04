@@ -409,6 +409,7 @@
     "fewerTopics": "Fewer topics",
     "mistakesEmpty": "No solved tasks in the last 30 days yet.",
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
-    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}"
+    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
+    "lastTest": "latest test {score, number} of {max, number}"
   }
 }
