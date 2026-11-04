@@ -58,14 +58,16 @@
     "signOut": "Odjavi se",
     "account": "Nalog",
     "privacy": "Privatnost",
-    "merged": "Napredak sa ovog uređaja je spojen sa nalogom."
+    "merged": "Napredak sa ovog uređaja je spojen sa nalogom.",
+    "stats": "Statistika"
   },
   "SignInStrip": {
     "label": "Sačuvaj napredak",
     "save": "Sačuvaj",
     "close": "Zatvori",
     "result": "Rezultat testa je samo na ovom uređaju",
-    "task": "{count, plural, one {# rešen zadatak je} few {# rešena zadatka su} other {# rešenih zadataka je}} samo na ovom uređaju"
+    "task": "{count, plural, one {# rešen zadatak je} few {# rešena zadatka su} other {# rešenih zadataka je}} samo na ovom uređaju",
+    "stats": "Statistika je samo na ovom uređaju"
   },
   "Bank": {
     "title": "Banka zadataka",
@@ -274,7 +276,8 @@
       "notStarted": "Nije početo"
     },
     "exams": "Prijemni ispiti",
-    "allExams": "Svi ispiti →"
+    "allExams": "Svi ispiti →",
+    "stats": "Statistika →"
   },
   "Account": {
     "signIn": "Prijavi se preko Google-a"
@@ -375,5 +378,37 @@
     "remember": "Zapamti",
     "example": "Primer",
     "mistake": "Česta greška"
+  },
+  "Stats": {
+    "title": "Statistika",
+    "period": "poslednjih 8 nedelja",
+    "tests": "Testovi",
+    "last": "poslednji <b>{score, number} od {max, number}</b>",
+    "delta": "{sign, select, up {<b>+{delta, number}</b> od prethodnog} down {<b>−{delta, number}</b> od prethodnog} other {isto kao prethodni}}",
+    "chart": "Bodovi po testu, poslednjih 8 nedelja",
+    "recent": "Poslednji testovi",
+    "allTests": "Svi testovi",
+    "testsEmpty": "U poslednjih 8 nedelja nema završenih testova.",
+    "toTests": "Na testove",
+    "regularity": "Redovnost",
+    "streak": "{count, plural, one {# dan zaredom} few {# dana zaredom} other {# dana zaredom}}",
+    "thisWeek": "Ova nedelja",
+    "weekSummary": "{days, plural, one {# dan} few {# dana} other {# dana}} · {time}",
+    "days": "Dani ove nedelje",
+    "today": "danas",
+    "perWeek": "Po nedeljama",
+    "perWeekNote": "minuta vežbanja",
+    "weeks": "Minuta po nedelji, poslednjih 8 nedelja",
+    "mistakes": "Gde grešim",
+    "mistakesPeriod": "poslednjih 30 dana",
+    "topic": "Tema",
+    "solved": "Rešeno",
+    "wrong": "Greške",
+    "mean": "Prosečno",
+    "allTopics": "Greške po svim temama",
+    "fewerTopics": "Manje tema",
+    "mistakesEmpty": "U poslednjih 30 dana još nema rešenih zadataka.",
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}"
   }
 }

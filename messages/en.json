@@ -58,14 +58,16 @@
     "signOut": "Sign out",
     "account": "Account",
     "privacy": "Privacy",
-    "merged": "Progress from this device was merged into your account."
+    "merged": "Progress from this device was merged into your account.",
+    "stats": "Statistics"
   },
   "SignInStrip": {
     "label": "Save your progress",
     "save": "Save",
     "close": "Close",
     "result": "This test result is only on this device",
-    "task": "{count, plural, one {# solved task is} other {# solved tasks are}} only on this device"
+    "task": "{count, plural, one {# solved task is} other {# solved tasks are}} only on this device",
+    "stats": "Your statistics live on this device only"
   },
   "Bank": {
     "title": "Task bank",
@@ -274,7 +276,8 @@
       "notStarted": "Not started"
     },
     "exams": "Entrance exams",
-    "allExams": "All exams →"
+    "allExams": "All exams →",
+    "stats": "Statistics →"
   },
   "Account": {
     "signIn": "Sign in with Google"
@@ -375,5 +378,37 @@
     "remember": "Remember",
     "example": "Example",
     "mistake": "Common mistake"
+  },
+  "Stats": {
+    "title": "Statistics",
+    "period": "last 8 weeks",
+    "tests": "Tests",
+    "last": "latest <b>{score, number} of {max, number}</b>",
+    "delta": "{sign, select, up {<b>+{delta, number}</b> on the previous} down {<b>−{delta, number}</b> on the previous} other {same as the previous}}",
+    "chart": "Points per test, last 8 weeks",
+    "recent": "Latest tests",
+    "allTests": "All tests",
+    "testsEmpty": "No finished tests in the last 8 weeks.",
+    "toTests": "To tests",
+    "regularity": "Regularity",
+    "streak": "{count, plural, one {# day in a row} other {# days in a row}}",
+    "thisWeek": "This week",
+    "weekSummary": "{days, plural, one {# day} other {# days}} · {time}",
+    "days": "Days of this week",
+    "today": "today",
+    "perWeek": "By week",
+    "perWeekNote": "minutes of practice",
+    "weeks": "Minutes per week, last 8 weeks",
+    "mistakes": "Where I go wrong",
+    "mistakesPeriod": "last 30 days",
+    "topic": "Topic",
+    "solved": "Solved",
+    "wrong": "Mistakes",
+    "mean": "Average",
+    "allTopics": "Mistakes in every topic",
+    "fewerTopics": "Fewer topics",
+    "mistakesEmpty": "No solved tasks in the last 30 days yet.",
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "minutes": "{minutes, plural, =0 {<1 min} other {# min}}"
   }
 }

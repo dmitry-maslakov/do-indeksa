@@ -36,6 +36,7 @@ export interface TestSummary {
   misses: number[];
   score: number;
   max: number;
+  spentMs: number;
 }
 
 export async function summarizeTests(
@@ -67,6 +68,7 @@ export async function summarizeTests(
           .map((r) => r.number),
         score: result.score,
         max: result.max,
+        spentMs: result.spentMs,
       };
     }),
   );
