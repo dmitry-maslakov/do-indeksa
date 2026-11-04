@@ -275,8 +275,7 @@
       "notStarted": "Nije početo"
     },
     "exams": "Prijemni ispiti",
-    "allExams": "Svi ispiti →",
-    "stats": "Statistika →"
+    "allExams": "Svi ispiti →"
   },
   "Account": {
     "signIn": "Prijavi se preko Google-a"
@@ -408,7 +407,6 @@
     "fewerTopics": "Manje tema",
     "mistakesEmpty": "U ovom periodu još nema rešenih zadataka.",
     "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
-    "lastTest": "poslednji test {score, number} od {max, number}",
     "weekEmpty": "još bez vežbanja"
   },
   "Time": {
