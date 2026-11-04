@@ -29,6 +29,21 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
     return [
+      {
+        source: "/tasks/:topic/:id",
+        destination: "/bank/:id",
+        statusCode: 301,
+      },
+      {
+        source: "/sr-Latn/tasks/:topic/:id",
+        destination: "/bank/:id",
+        statusCode: 301,
+      },
+      {
+        source: "/:locale(ru|en)/tasks/:topic/:id",
+        destination: "/:locale/bank/:id",
+        statusCode: 301,
+      },
       { source: `/${legacyPath}`, destination: "/", statusCode: 301 },
       { source: `/sr-Latn/${legacyPath}`, destination: "/", statusCode: 301 },
       {
