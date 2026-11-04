@@ -1,7 +1,6 @@
 import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { repoUrl } from "@/lib/site";
 
 const linkClass = "underline-offset-4 hover:text-foreground hover:underline";
 
@@ -21,9 +20,6 @@ export function Footer({ className }: { className?: string }) {
       <Link href="/terms" className={linkClass}>
         {t("terms")}
       </Link>
-      <a href={repoUrl} className={linkClass}>
-        {t("source")}
-      </a>
       <span>{t("unofficial")}</span>
     </footer>
   );
