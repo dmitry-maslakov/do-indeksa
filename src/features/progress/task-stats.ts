@@ -13,7 +13,7 @@ import {
 import { attempts, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
-import { dayMs } from "@/lib/dates";
+import { dayMs, timeZone } from "@/lib/dates";
 import { db } from "@/server/db";
 import { getAfterShown } from "./sitting";
 import { accuracyDays, type TaskStat } from "./stats";
@@ -117,4 +117,13 @@ export async function getTaskOutcomes(
       ? { ...row, topic: task.topic, ms: ms.get(row.taskId) ?? 0 }
       : [];
   });
+}
+
+export async function getPracticeDays(profileId: string) {
+  const day = sql<string>`to_char(${taskSessions.startedAt} at time zone coalesce(${taskSessions.tz}, ${timeZone}), 'YYYY-MM-DD')`;
+  const rows = await db
+    .selectDistinct({ day })
+    .from(taskSessions)
+    .where(eq(taskSessions.profileId, profileId));
+  return new Set(rows.map((row) => row.day));
 }

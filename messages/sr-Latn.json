@@ -227,7 +227,6 @@
     "toVariants": "Na testove",
     "crumb": "‹ Probni testovi · {title} · rešen {date}",
     "outOf": "od {max, plural, one {# boda} few {# boda} other {# bodova}}",
-    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Reši ponovo",
     "estimate": "Proveravamo samo konačan odgovor svakog dela i zato je ovo procena, a ne zvaničan rezultat. FTN na prijemnom boduje i postupak i može dati delimične bodove.",
     "tasks": "Zadaci",
@@ -381,14 +380,14 @@
   },
   "Stats": {
     "title": "Statistika",
-    "period": "poslednjih 8 nedelja",
+    "period": "{weeks, plural, one {poslednja # nedelja} few {poslednje # nedelje} other {poslednjih # nedelja}}",
     "tests": "Testovi",
     "last": "poslednji <b>{score, number} od {max, number}</b>",
     "delta": "{sign, select, up {<b>+{delta, number}</b> od prethodnog} down {<b>−{delta, number}</b> od prethodnog} other {isto kao prethodni}}",
-    "chart": "Bodovi po testu, poslednjih 8 nedelja",
+    "chart": "Bodovi po testu",
     "recent": "Poslednji testovi",
     "allTests": "Svi testovi",
-    "testsEmpty": "U poslednjih 8 nedelja nema završenih testova.",
+    "testsEmpty": "U ovom periodu nema završenih testova.",
     "toTests": "Na testove",
     "regularity": "Redovnost",
     "streak": "{count, plural, one {# dan zaredom} few {# dana zaredom} other {# dana zaredom}}",
@@ -398,18 +397,21 @@
     "today": "danas",
     "perWeek": "Po nedeljama",
     "perWeekNote": "minuta vežbanja",
-    "weeks": "Minuta po nedelji, poslednjih 8 nedelja",
+    "weeks": "Minuta po nedelji",
     "mistakes": "Gde grešim",
-    "mistakesPeriod": "poslednjih 30 dana",
+    "mistakesPeriod": "{days, plural, one {poslednji # dan} few {poslednja # dana} other {poslednjih # dana}}",
     "topic": "Tema",
-    "solved": "Rešeno",
+    "solved": "Zadataka",
     "wrong": "Greške",
     "mean": "Prosečno",
     "allTopics": "Greške po svim temama",
     "fewerTopics": "Manje tema",
-    "mistakesEmpty": "U poslednjih 30 dana još nema rešenih zadataka.",
-    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "mistakesEmpty": "U ovom periodu još nema rešenih zadataka.",
     "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
-    "lastTest": "poslednji test {score, number} od {max, number}"
+    "lastTest": "poslednji test {score, number} od {max, number}",
+    "weekEmpty": "još bez vežbanja"
+  },
+  "Time": {
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min"
   }
 }

@@ -1,10 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { regularity } from "@/features/progress/practice-days";
-import { getPracticeSpans } from "@/features/progress/task-stats";
+import { streakOf } from "@/features/progress/practice-days";
+import { getZone } from "@/features/progress/progress";
+import { getPracticeDays } from "@/features/progress/task-stats";
 import { getTests } from "@/features/tests/finished-tests";
 import { summarizeTests } from "@/features/tests/summaries";
 import { Link } from "@/i18n/navigation";
-import { dateIn, dayMs } from "@/lib/dates";
+import { dateIn } from "@/lib/dates";
 import { getProfileId } from "@/server/profile";
 
 export async function StatsLine() {
@@ -14,14 +15,13 @@ export async function StatsLine() {
     getTranslations("Stats"),
     getTranslations("Home"),
   ]);
-  const now = Date.now();
-  const [spans, tests] = await Promise.all([
-    getPracticeSpans(profileId, new Date(now - 8 * dayMs)),
+  const [days, zone, tests] = await Promise.all([
+    getPracticeDays(profileId),
+    getZone(profileId),
     getTests(profileId, 1),
   ]);
   const [last] = await summarizeTests(profileId, tests, locale);
-  const tz = spans.at(-1)?.tz ?? null;
-  const { streak } = regularity(spans, dateIn(now, tz), 1);
+  const streak = streakOf(days, dateIn(Date.now(), zone));
   const parts = [
     streak > 0 && t("streak", { count: streak }),
     last && t("lastTest", { score: last.score, max: last.max }),

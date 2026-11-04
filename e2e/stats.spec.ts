@@ -8,10 +8,10 @@ test("a fresh guest sees empty statistics without the save strip", {
     page.getByRole("heading", { level: 1, name: "Statistika" }),
   ).toBeVisible();
   await expect(
-    page.getByText("U poslednjih 8 nedelja nema završenih testova."),
+    page.getByText("U ovom periodu nema završenih testova."),
   ).toBeVisible();
   await expect(
-    page.getByText("U poslednjih 30 dana još nema rešenih zadataka."),
+    page.getByText("U ovom periodu još nema rešenih zadataka."),
   ).toBeVisible();
   await expect(
     page.getByRole("region", { name: "Sačuvaj napredak" }),

@@ -6,6 +6,7 @@ import type {
   Regularity,
 } from "@/features/progress/practice-days";
 import { toMinutes } from "@/lib/dates";
+import { useDuration } from "@/lib/use-duration";
 
 const noon = (day: string) => new Date(`${day}T12:00:00Z`);
 
@@ -43,9 +44,15 @@ function Day({ day, today }: { day: PracticeDay; today: boolean }) {
   );
 }
 
-export function RegularityCard({ regularity }: { regularity: Regularity }) {
+interface RegularityCardProps {
+  regularity: Regularity;
+  streak: number;
+}
+
+export function RegularityCard({ regularity, streak }: RegularityCardProps) {
   const t = useTranslations("Stats");
   const format = useFormatter();
+  const duration = useDuration();
   const minutes = toMinutes(regularity.weekMs);
   const weeks = regularity.weeks.map((week) => ({
     start: week.start,
@@ -63,9 +70,9 @@ export function RegularityCard({ regularity }: { regularity: Regularity }) {
         <h2 id="stats-regularity" className="font-semibold text-[17px]">
           {t("regularity")}
         </h2>
-        {regularity.streak > 0 && (
+        {streak > 0 && (
           <span className="rounded-full bg-overtime-tint px-2.5 py-0.5 font-semibold text-[13px] text-overtime-text">
-            {t("streak", { count: regularity.streak })}
+            {t("streak", { count: streak })}
           </span>
         )}
       </div>
@@ -73,16 +80,15 @@ export function RegularityCard({ regularity }: { regularity: Regularity }) {
         <p className="flex justify-between gap-3 text-[13px]">
           <span className="font-semibold">{t("thisWeek")}</span>
           <span className="font-semibold tabular-nums">
-            {t("weekSummary", {
-              days: regularity.weekDays,
-              time:
-                minutes > 0
-                  ? t("duration", {
-                      hours: Math.floor(minutes / 60),
-                      minutes: minutes % 60,
-                    })
-                  : t("minutes", { minutes }),
-            })}
+            {regularity.weekDays === 0
+              ? t("weekEmpty")
+              : t("weekSummary", {
+                  days: regularity.weekDays,
+                  time:
+                    minutes > 0
+                      ? duration(regularity.weekMs)
+                      : t("minutes", { minutes }),
+                })}
           </span>
         </p>
         <ol
