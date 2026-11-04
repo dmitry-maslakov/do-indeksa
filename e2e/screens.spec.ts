@@ -82,6 +82,7 @@ const screens = [
     "Probni prijemni iz matematike za FTN · Do indeksa",
   ],
   ["/review", "Analiza", "Analiza · Do indeksa"],
+  ["/stats", "Statistika", "Statistika · Do indeksa"],
   ["/privacy", "Šta čuvamo", "Politika privatnosti · Do indeksa"],
   ["/terms", "Do indeksa ne garantuje upis", "Uslovi korišćenja · Do indeksa"],
   [

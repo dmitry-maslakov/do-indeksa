@@ -9,6 +9,7 @@ export const routeTemplates = [
   "/privacy",
   "/review",
   "/review/[code]",
+  "/stats",
   "/terms",
   "/theory",
   "/theory/[topic]",

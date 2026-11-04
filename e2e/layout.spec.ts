@@ -42,6 +42,7 @@ const routes = [
   "/variants",
   "/variants/set-eks-001",
   "/review",
+  "/stats",
   "/privacy",
   "/terms",
   "/theory",

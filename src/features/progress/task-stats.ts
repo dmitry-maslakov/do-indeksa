@@ -11,11 +11,13 @@ import {
   sql,
 } from "drizzle-orm";
 import { attempts, taskSessions } from "@/db/schema";
+import { epochMs } from "@/db/sql";
 import { getTask } from "@/features/catalog/tasks";
 import { dayMs } from "@/lib/dates";
 import { db } from "@/server/db";
 import { getAfterShown } from "./sitting";
 import { accuracyDays, type TaskStat } from "./stats";
+import type { TaskOutcome } from "./topic-mistakes";
 
 const decidesStatus = or(
   eq(attempts.correct, true),
@@ -61,4 +63,58 @@ export async function getTaskStats(profileId: string) {
     .where(and(await decisiveAttempts(profileId), recent))
     .groupBy(attempts.taskId);
   return taskStats(rows);
+}
+
+export async function getPracticeSpans(profileId: string, since: Date) {
+  return db
+    .select({
+      at: epochMs(taskSessions.startedAt),
+      tz: taskSessions.tz,
+      ms: sql<number>`${sessionMs}`.mapWith(Number),
+    })
+    .from(taskSessions)
+    .where(
+      and(
+        eq(taskSessions.profileId, profileId),
+        gte(taskSessions.startedAt, since),
+      ),
+    );
+}
+
+export async function getTaskOutcomes(
+  profileId: string,
+  since: Date,
+): Promise<TaskOutcome[]> {
+  const [rows, times] = await Promise.all([
+    db
+      .select({
+        taskId: attempts.taskId,
+        wrong: sql<boolean>`bool_or(not ${attempts.correct})`,
+      })
+      .from(attempts)
+      .where(
+        and(await decisiveAttempts(profileId), gte(attempts.createdAt, since)),
+      )
+      .groupBy(attempts.taskId),
+    db
+      .select({
+        taskId: taskSessions.taskId,
+        ms: sql<number>`sum(${sessionMs})`.mapWith(Number),
+      })
+      .from(taskSessions)
+      .where(
+        and(
+          eq(taskSessions.profileId, profileId),
+          gte(taskSessions.startedAt, since),
+        ),
+      )
+      .groupBy(taskSessions.taskId),
+  ]);
+  const ms = new Map(times.map((t) => [t.taskId, t.ms]));
+  return rows.flatMap((row) => {
+    const task = getTask(row.taskId);
+    return task
+      ? { ...row, topic: task.topic, ms: ms.get(row.taskId) ?? 0 }
+      : [];
+  });
 }

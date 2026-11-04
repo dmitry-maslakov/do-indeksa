@@ -55,7 +55,17 @@ export function TopicMap({ topics, progress }: Omit<TopicRowsProps, "filter">) {
 
   return (
     <section id="topic-map" className="flex scroll-mt-4 flex-col gap-3">
-      <h2 className="font-semibold text-lg tracking-tight">{t("topicMap")}</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-semibold text-lg tracking-tight">
+          {t("topicMap")}
+        </h2>
+        <Link
+          href="/stats"
+          className="whitespace-nowrap font-semibold text-data text-xs"
+        >
+          {t("stats")}
+        </Link>
+      </div>
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 scrollbar-none md:mx-0 md:flex-wrap md:px-0">
         {[undefined, ...topicStates].map((state) => (
           <button
