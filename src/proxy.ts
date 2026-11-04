@@ -84,5 +84,5 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!api|_next|.*\\.[a-zA-Z0-9]+$).*)",
+  matcher: "/((?!api|_next|.*/opengraph-image$|.*\\.[a-zA-Z0-9]+$).*)",
 };
