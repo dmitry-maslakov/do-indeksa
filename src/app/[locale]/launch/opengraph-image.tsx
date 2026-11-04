@@ -14,7 +14,7 @@ export function generateStaticParams() {
 }
 
 const golos = readFile(
-  join(process.cwd(), "src/app/[locale]/launch/golos-text-bold.ttf"),
+  join(process.cwd(), "src/app/[locale]/_components/golos-text-bold.ttf"),
 );
 
 export default async function Image({
