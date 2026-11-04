@@ -8,7 +8,10 @@ test("healthz answers without a redirect", async ({ request }) => {
 
 for (const [from, to] of [
   ["/prep", "/"],
-  ["/tasks/x/y", "/"],
+  ["/tasks", "/"],
+  ["/tasks/x/log-002", "/bank/log-002"],
+  ["/sr-Latn/tasks/x/eks-001", "/bank/eks-001"],
+  ["/ru/tasks/x/komb-001", "/ru/bank/komb-001"],
   ["/sr-Latn/cabinet", "/"],
   ["/ru/exams/1", "/ru"],
   ["/en/faculties/ftn", "/en"],
