@@ -1,6 +1,7 @@
+import { unstable_doesMiddlewareMatch } from "next/experimental/testing/server";
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
-import proxy from "./proxy";
+import proxy, { config } from "./proxy";
 
 const rewrite = async (path: string) => {
   const response = await proxy(
@@ -75,5 +76,14 @@ describe("proxy", () => {
       308,
       `https://doindeksa.rs${location}`,
     ]);
+  });
+
+  it.each([
+    ["/sr-Latn/opengraph-image", false],
+    ["/ru/launch/opengraph-image", false],
+    ["/", true],
+    ["/bank/eks-001", true],
+  ])("runs on %s: %s", (url, runs) => {
+    expect(unstable_doesMiddlewareMatch({ config, url })).toBe(runs);
   });
 });
