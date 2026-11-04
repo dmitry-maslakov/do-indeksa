@@ -18,9 +18,10 @@ export interface Regularity {
   week: PracticeDay[];
   weekDays: number;
   weekMs: number;
-  streak: number;
   weeks: { start: string; ms: number }[];
 }
+
+export const practiceWeeks = 8;
 
 const dayNumber = (day: string) => Date.parse(`${day}T00:00:00Z`) / dayMs;
 
@@ -56,12 +57,6 @@ export function regularity(
       future: day > today,
     };
   });
-  let streak = 0;
-  let cursor = days.has(today) ? today : shift(today, -1);
-  while (days.has(cursor)) {
-    streak++;
-    cursor = shift(cursor, -1);
-  }
   const weeks = Array.from({ length: weekCount }, (_, i) => {
     const start = shift(monday, (i - weekCount + 1) * 7);
     const ms = sum(
@@ -73,7 +68,16 @@ export function regularity(
     week,
     weekDays: week.filter((d) => d.active).length,
     weekMs: sumBy(week, (d) => d.ms),
-    streak,
     weeks,
   };
+}
+
+export function streakOf(days: Set<string>, today: string) {
+  let streak = 0;
+  let cursor = days.has(today) ? today : shift(today, -1);
+  while (days.has(cursor)) {
+    streak++;
+    cursor = shift(cursor, -1);
+  }
+  return streak;
 }

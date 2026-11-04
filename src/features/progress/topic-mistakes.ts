@@ -9,7 +9,7 @@ export interface TaskOutcome {
 
 export interface TopicMistakes {
   topic: string;
-  solved: number;
+  tasks: number;
   wrong: number;
   meanMs: number;
 }
@@ -20,14 +20,14 @@ export function topicMistakes(rows: TaskOutcome[]): TopicMistakes[] {
   return [...Map.groupBy(rows, (row) => row.topic)]
     .map(([topic, tasks]) => ({
       topic,
-      solved: tasks.length,
+      tasks: tasks.length,
       wrong: tasks.filter((task) => task.wrong).length,
       meanMs: sumBy(tasks, (task) => task.ms) / tasks.length,
     }))
     .sort(
       (a, b) =>
         b.wrong - a.wrong ||
-        b.wrong / b.solved - a.wrong / a.solved ||
-        b.solved - a.solved,
+        b.wrong / b.tasks - a.wrong / a.tasks ||
+        b.tasks - a.tasks,
     );
 }

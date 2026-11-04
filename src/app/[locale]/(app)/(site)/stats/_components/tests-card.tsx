@@ -6,7 +6,8 @@ import { EmptyNote } from "@/components/empty-note";
 import { reviewHref } from "@/features/tests/review";
 import type { TestSummary } from "@/features/tests/summaries";
 import { Link } from "@/i18n/navigation";
-import { toMinutes } from "@/lib/dates";
+import { minuteMs } from "@/lib/dates";
+import { useDuration } from "@/lib/use-duration";
 
 const tags = {
   b: (chunks: ReactNode) => <b className="text-foreground">{chunks}</b>,
@@ -79,10 +80,9 @@ function Chart({ tests }: { tests: TestSummary[] }) {
 }
 
 function TestRow({ test }: { test: TestSummary }) {
-  const t = useTranslations("Stats");
   const variants = useTranslations("Variants");
   const format = useFormatter();
-  const minutes = toMinutes(test.spentMs);
+  const duration = useDuration();
 
   return (
     <Link
@@ -95,8 +95,7 @@ function TestRow({ test }: { test: TestSummary }) {
         </span>
         <span className="text-subtle text-xs">
           {format.dateTime(test.finishedAt, { day: "numeric", month: "short" })}
-          {minutes > 0 &&
-            ` · ${t("duration", { hours: Math.floor(minutes / 60), minutes: minutes % 60 })}`}
+          {test.spentMs >= minuteMs && ` · ${duration(test.spentMs)}`}
         </span>
       </span>
       <span className="font-bold text-[15px] tabular-nums">

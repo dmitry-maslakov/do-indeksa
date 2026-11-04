@@ -3,12 +3,13 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { mistakeDays } from "@/features/progress/topic-mistakes";
 import { Link } from "@/i18n/navigation";
 
 interface MistakeRow {
   topic: string;
   name: string;
-  solved: number;
+  tasks: number;
   wrong: number;
   minutes: number;
 }
@@ -30,7 +31,9 @@ export function MistakesCard({ rows }: { rows: MistakeRow[] }) {
         <h2 id="stats-mistakes" className="font-semibold text-[17px]">
           {t("mistakes")}
         </h2>
-        <span className="text-[13px] text-subtle">{t("mistakesPeriod")}</span>
+        <span className="text-[13px] text-subtle">
+          {t("mistakesPeriod", { days: mistakeDays })}
+        </span>
       </div>
       {rows.length === 0 ? (
         <p className="rounded-2xl bg-muted px-5 py-4 text-sm text-subtle">
@@ -67,7 +70,7 @@ export function MistakesCard({ rows }: { rows: MistakeRow[] }) {
                     </Link>
                   </th>
                   <td className={`${cell} text-muted-foreground`}>
-                    {row.solved}
+                    {row.tasks}
                   </td>
                   <td className={`${cell} pl-3 font-bold text-error-text`}>
                     {row.wrong}

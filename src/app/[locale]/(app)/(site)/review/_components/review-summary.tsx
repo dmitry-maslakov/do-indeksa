@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
-import { toMinutes } from "@/lib/dates";
+import { useDuration } from "@/lib/use-duration";
 import { ShareButton } from "./share-button";
 
 interface ReviewSummaryProps {
@@ -32,7 +32,7 @@ export function ReviewSummary({
   const t = useTranslations("Review");
   const variants = useTranslations("Variants");
   const format = useFormatter();
-  const minutes = toMinutes(review.spentMs);
+  const duration = useDuration();
 
   return (
     <section className="flex flex-col gap-4 md:gap-5">
@@ -76,10 +76,7 @@ export function ReviewSummary({
               aria-hidden
               className="size-1 self-center rounded-full bg-input"
             />
-            {t("duration", {
-              hours: Math.floor(minutes / 60),
-              minutes: minutes % 60,
-            })}
+            {duration(review.spentMs)}
           </p>
         )}
         <div className="flex gap-2 self-center max-md:w-full md:ml-auto">

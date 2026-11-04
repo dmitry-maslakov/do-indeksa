@@ -10,7 +10,7 @@ const task = (topic: string, wrong: boolean, minutes: number) => ({
 });
 
 describe("topicMistakes", () => {
-  it("counts solved tasks, mistakes and the mean time per topic", () => {
+  it("counts the tasks, mistakes and the mean time per topic", () => {
     const [logs] = topicMistakes([
       task("logs", true, 10),
       task("logs", false, 20),
@@ -18,7 +18,7 @@ describe("topicMistakes", () => {
     ]);
     expect(logs).toEqual({
       topic: "logs",
-      solved: 3,
+      tasks: 3,
       wrong: 2,
       meanMs: 20 * minuteMs,
     });

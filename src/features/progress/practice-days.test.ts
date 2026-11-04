@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { minuteMs } from "@/lib/dates";
-import { mondayOf, regularity } from "./practice-days";
+import { mondayOf, regularity, streakOf } from "./practice-days";
 
 const at = (day: string, hour = 12) =>
   Date.parse(`${day}T${String(hour).padStart(2, "0")}:00:00Z`);
@@ -53,15 +53,6 @@ describe("regularity", () => {
     expect(weekMs).toBe(65 * minuteMs);
   });
 
-  it("counts the days in a row up to today", () => {
-    expect(regularity(spans, "2026-11-04", 8).streak).toBe(3);
-  });
-
-  it("keeps the streak from yesterday until today is practised", () => {
-    expect(regularity(spans, "2026-11-05", 8).streak).toBe(3);
-    expect(regularity(spans, "2026-11-06", 8).streak).toBe(0);
-  });
-
   it("sums the minutes of each week, oldest first", () => {
     const { weeks } = regularity(spans, "2026-11-04", 3);
     expect(weeks).toEqual([
@@ -74,5 +65,32 @@ describe("regularity", () => {
   it("puts a session on the day of its own time zone", () => {
     const late = { at: at("2026-11-03", 23), tz: "Europe/Belgrade", ms: 0 };
     expect(regularity([late], "2026-11-04", 1).week[2]?.active).toBe(true);
+  });
+});
+
+describe("streakOf", () => {
+  const days = new Set([
+    "2026-11-02",
+    "2026-11-03",
+    "2026-11-04",
+    "2026-10-28",
+  ]);
+
+  it("counts the days in a row up to today", () => {
+    expect(streakOf(days, "2026-11-04")).toBe(3);
+  });
+
+  it("keeps the streak from yesterday until today is practised", () => {
+    expect(streakOf(days, "2026-11-05")).toBe(3);
+    expect(streakOf(days, "2026-11-06")).toBe(0);
+  });
+
+  it("is not capped by any window", () => {
+    const month = new Set(
+      Array.from({ length: 40 }, (_, i) =>
+        new Date(Date.UTC(2026, 9, 1 + i)).toISOString().slice(0, 10),
+      ),
+    );
+    expect(streakOf(month, "2026-11-09")).toBe(40);
   });
 });

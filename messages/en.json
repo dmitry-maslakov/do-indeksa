@@ -227,7 +227,6 @@
     "toVariants": "To tests",
     "crumb": "‹ Tests · {title} · solved {date}",
     "outOf": "of {max, plural, one {# point} other {# points}}",
-    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
     "retry": "Solve again",
     "estimate": "We only check the final answer of each part, so this is an estimate, not an official result. At the exam FTN also grades the method and can give partial credit.",
     "tasks": "Tasks",
@@ -381,14 +380,14 @@
   },
   "Stats": {
     "title": "Statistics",
-    "period": "last 8 weeks",
+    "period": "last {weeks, plural, one {# week} other {# weeks}}",
     "tests": "Tests",
     "last": "latest <b>{score, number} of {max, number}</b>",
     "delta": "{sign, select, up {<b>+{delta, number}</b> on the previous} down {<b>−{delta, number}</b> on the previous} other {same as the previous}}",
-    "chart": "Points per test, last 8 weeks",
+    "chart": "Points per test",
     "recent": "Latest tests",
     "allTests": "All tests",
-    "testsEmpty": "No finished tests in the last 8 weeks.",
+    "testsEmpty": "No finished tests in this period.",
     "toTests": "To tests",
     "regularity": "Regularity",
     "streak": "{count, plural, one {# day in a row} other {# days in a row}}",
@@ -398,18 +397,21 @@
     "today": "today",
     "perWeek": "By week",
     "perWeekNote": "minutes of practice",
-    "weeks": "Minutes per week, last 8 weeks",
+    "weeks": "Minutes per week",
     "mistakes": "Where I go wrong",
-    "mistakesPeriod": "last 30 days",
+    "mistakesPeriod": "last {days, plural, one {# day} other {# days}}",
     "topic": "Topic",
-    "solved": "Solved",
+    "solved": "Tasks",
     "wrong": "Mistakes",
     "mean": "Average",
     "allTopics": "Mistakes in every topic",
     "fewerTopics": "Fewer topics",
-    "mistakesEmpty": "No solved tasks in the last 30 days yet.",
-    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min",
+    "mistakesEmpty": "No solved tasks in this period yet.",
     "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
-    "lastTest": "latest test {score, number} of {max, number}"
+    "lastTest": "latest test {score, number} of {max, number}",
+    "weekEmpty": "no practice yet"
+  },
+  "Time": {
+    "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min"
   }
 }

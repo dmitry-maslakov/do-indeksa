@@ -227,7 +227,6 @@
     "toVariants": "К вариантам",
     "crumb": "‹ Варианты · {title} · решён {date}",
     "outOf": "из {max, plural, one {# балла} few {# баллов} many {# баллов} other {# балла}}",
-    "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
     "retry": "Решить заново",
     "estimate": "Мы проверяем только итоговый ответ каждого пункта, поэтому это оценка, а не официальный результат. FTN на вступительном оценивает и ход решения и может дать частичные баллы.",
     "tasks": "Задачи",
@@ -381,14 +380,14 @@
   },
   "Stats": {
     "title": "Статистика",
-    "period": "последние 8 недель",
+    "period": "{weeks, plural, one {последняя # неделя} few {последние # недели} many {последние # недель} other {последние # недели}}",
     "tests": "Тесты",
     "last": "последний <b>{score, number} из {max, number}</b>",
     "delta": "{sign, select, up {<b>+{delta, number}</b> к предыдущему} down {<b>−{delta, number}</b> к предыдущему} other {как предыдущий}}",
-    "chart": "Баллы по тестам за последние 8 недель",
+    "chart": "Баллы по тестам",
     "recent": "Последние тесты",
     "allTests": "Все тесты",
-    "testsEmpty": "За последние 8 недель нет завершённых тестов.",
+    "testsEmpty": "За этот период нет завершённых тестов.",
     "toTests": "К тестам",
     "regularity": "Регулярность",
     "streak": "{count, plural, one {# день подряд} few {# дня подряд} many {# дней подряд} other {# дня подряд}}",
@@ -398,18 +397,21 @@
     "today": "сегодня",
     "perWeek": "По неделям",
     "perWeekNote": "минут занятий",
-    "weeks": "Минут в неделю за последние 8 недель",
+    "weeks": "Минут в неделю",
     "mistakes": "Где я ошибаюсь",
-    "mistakesPeriod": "последние 30 дней",
+    "mistakesPeriod": "{days, plural, one {последний # день} few {последние # дня} many {последние # дней} other {последние # дня}}",
     "topic": "Тема",
-    "solved": "Решено",
+    "solved": "Задач",
     "wrong": "Ошибки",
     "mean": "В среднем",
     "allTopics": "Ошибки по всем темам",
     "fewerTopics": "Меньше тем",
-    "mistakesEmpty": "За последние 30 дней ещё нет решённых задач.",
-    "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин",
+    "mistakesEmpty": "За этот период ещё нет решённых задач.",
     "minutes": "{minutes, plural, =0 {<1 мин} other {# мин}}",
-    "lastTest": "последний тест {score, number} из {max, number}"
+    "lastTest": "последний тест {score, number} из {max, number}",
+    "weekEmpty": "пока без занятий"
+  },
+  "Time": {
+    "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин"
   }
 }
