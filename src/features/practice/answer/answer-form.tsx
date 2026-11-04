@@ -71,10 +71,13 @@ export function AnswerForm({
   const bar = {
     go: help.correct || filled,
     fallback,
-    onSkip: () =>
-      help.track(
+    onSkip: () => {
+      const recorded = help.recorded();
+      const skip = help.track(
         async (sessionId) => (await saveSkip({ taskId, sessionId }))?.data,
-      ),
+      );
+      return recorded ? undefined : skip;
+    },
     checked: Boolean(checked),
     disabled:
       isPending || values.every((v) => !v.trim()) || checked?.correct === false,
