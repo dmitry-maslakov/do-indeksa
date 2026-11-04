@@ -1,12 +1,10 @@
 import { useLocale } from "next-intl";
-import { Suspense } from "react";
 import { examTopics } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import type { WeeklyVariant } from "@/features/variants/weekly";
 import { ExamYears } from "./exam-years";
 import type { HomeData } from "./personal";
-import { StatsLine } from "./stats-line";
 import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
 
@@ -24,9 +22,6 @@ export function Home({ weekly, personal }: HomeProps) {
       {weekly && (
         <WeeklyCard {...weekly} test={personal.then((p) => p.weeklyTest)} />
       )}
-      <Suspense>
-        <StatsLine />
-      </Suspense>
       <TopicMap
         topics={examTopics.map((topic) => ({
           topic,

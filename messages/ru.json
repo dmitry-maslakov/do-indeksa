@@ -275,8 +275,7 @@
       "notStarted": "Не начато"
     },
     "exams": "Вступительные экзамены",
-    "allExams": "Все экзамены →",
-    "stats": "Статистика →"
+    "allExams": "Все экзамены →"
   },
   "Account": {
     "signIn": "Войти через Google"
@@ -408,7 +407,6 @@
     "fewerTopics": "Меньше тем",
     "mistakesEmpty": "За этот период ещё нет решённых задач.",
     "minutes": "{minutes, plural, =0 {<1 мин} other {# мин}}",
-    "lastTest": "последний тест {score, number} из {max, number}",
     "weekEmpty": "пока без занятий"
   },
   "Time": {

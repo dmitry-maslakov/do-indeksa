@@ -275,8 +275,7 @@
       "notStarted": "Not started"
     },
     "exams": "Entrance exams",
-    "allExams": "All exams →",
-    "stats": "Statistics →"
+    "allExams": "All exams →"
   },
   "Account": {
     "signIn": "Sign in with Google"
@@ -408,7 +407,6 @@
     "fewerTopics": "Fewer topics",
     "mistakesEmpty": "No solved tasks in this period yet.",
     "minutes": "{minutes, plural, =0 {<1 min} other {# min}}",
-    "lastTest": "latest test {score, number} of {max, number}",
     "weekEmpty": "no practice yet"
   },
   "Time": {
