@@ -161,6 +161,28 @@ test("describes the launch page for search", async ({ page, request }) => {
   expect(res.headers()["content-type"]).toBe("image/png");
 });
 
+test("shares every page with the site image", async ({ page, request }) => {
+  for (const [path, locale] of [
+    ["/", "sr-Latn"],
+    ["/bank/eks-001", "sr-Latn"],
+    ["/ru/theory", "ru"],
+  ] as const) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+    const image = new URL(
+      (await page
+        .locator('meta[property="og:image"]')
+        .getAttribute("content")) ?? "",
+    ).pathname;
+    expect(image, path).toBe(`/${locale}/opengraph-image`);
+    const res = await request.get(image);
+    expect(res.headers()["content-type"], path).toBe("image/png");
+  }
+});
+
 test("switches the locale", async ({ page }) => {
   await page.goto("/bank");
   await page.getByRole("button", { name: /jezik/i }).click();
