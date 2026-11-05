@@ -87,8 +87,6 @@ export function preview(source: string) {
   return kept;
 }
 
-export const plain = (source: string) => flat(source, (value) => value);
-
 const sentences = new Intl.Segmenter("sr", { granularity: "sentence" });
 
 export function headline(source: string) {

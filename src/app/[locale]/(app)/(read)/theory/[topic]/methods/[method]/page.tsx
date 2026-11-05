@@ -10,7 +10,7 @@ import {
 } from "@/features/theory/theory-markdown";
 import { untranslated } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import { plain } from "@/lib/markdown";
+import { headline } from "@/lib/markdown";
 import { Hero } from "../../_components/hero";
 import { BackBar } from "../../_components/phone-nav";
 import { TheoryArticle } from "../../_components/theory-article";
@@ -29,12 +29,13 @@ export async function generateMetadata({
     getTranslations("Metadata"),
     getLocale(),
   ]);
+  const names = {
+    method: headline(method.name),
+    topic: topicName(topic, locale),
+  };
   return {
-    title: meta("theoryMethod", {
-      method: plain(method.name),
-      topic: topicName(topic, locale),
-    }),
-    description: meta("theoryMethodDescription", { when: plain(method.when) }),
+    title: meta("theoryMethod", names),
+    description: meta("theoryMethodDescription", names),
     ...untranslated(`/theory/${topic}/methods/${slug}`, locale),
   };
 }
