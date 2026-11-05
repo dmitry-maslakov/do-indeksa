@@ -72,7 +72,9 @@ export function MistakesCard({ rows }: { rows: MistakeRow[] }) {
                   <td className={`${cell} text-muted-foreground`}>
                     {row.tasks}
                   </td>
-                  <td className={`${cell} pl-3 font-bold text-error-text`}>
+                  <td
+                    className={`${cell} pl-3 ${row.wrong > 0 ? "font-bold text-error-text" : "text-muted-foreground"}`}
+                  >
                     {row.wrong}
                   </td>
                   <td
