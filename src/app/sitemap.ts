@@ -15,7 +15,7 @@ import { env } from "@/server/env";
 
 const urlsPerSitemap = 10_000;
 
-const pages = [
+const translatedPages = [
   "/",
   "/bank",
   ...topics.map((t) => bankHref({ topic: t.id })),
@@ -24,6 +24,9 @@ const pages = [
   "/terms",
   ...contentVariants.map((v) => `/variants/${v.id}`),
   "/theory",
+];
+
+const untranslatedPages = [
   ...theories.flatMap((t) => [
     `/theory/${t.topic}`,
     `/theory/${t.topic}/methods`,
@@ -31,15 +34,35 @@ const pages = [
   ...theoryMethods.map((m) => `/theory/${m.topic}/methods/${m.slug}`),
 ];
 
-const taskPages = chunk(
-  tasks.map((t) => `/bank/${t.id}`),
-  Math.floor(urlsPerSitemap / routing.locales.length),
-);
-
-const sitemaps = () =>
-  env.LAUNCH_ACCESS ? [launchPages] : [pages, ...taskPages];
-
 const url = (path: string) => new URL(path, siteUrl).href;
+
+const withLanguages = (href: string) =>
+  routing.locales.map((locale) => ({
+    url: url(getPathname({ href, locale })),
+    alternates: {
+      languages: Object.fromEntries(
+        Object.entries(languages(href)).map(([l, path]) => [l, url(path)]),
+      ),
+    },
+  }));
+
+const inDefaultLocale = (href: string) => ({
+  url: url(getPathname({ href, locale: routing.defaultLocale })),
+});
+
+const sitemaps = (): MetadataRoute.Sitemap[] =>
+  env.LAUNCH_ACCESS
+    ? [launchPages.flatMap(withLanguages)]
+    : [
+        [
+          ...translatedPages.flatMap(withLanguages),
+          ...untranslatedPages.map(inDefaultLocale),
+        ],
+        ...chunk(
+          tasks.map((t) => inDefaultLocale(`/bank/${t.id}`)),
+          urlsPerSitemap,
+        ),
+      ];
 
 export async function generateSitemaps() {
   return sitemaps().map((_, id) => ({ id }));
@@ -51,14 +74,5 @@ export default async function sitemap({
   id: Promise<string>;
 }): Promise<MetadataRoute.Sitemap> {
   await connection();
-  return (sitemaps()[Number(await id)] ?? []).flatMap((href) =>
-    routing.locales.map((locale) => ({
-      url: url(getPathname({ href, locale })),
-      alternates: {
-        languages: Object.fromEntries(
-          Object.entries(languages(href)).map(([l, path]) => [l, url(path)]),
-        ),
-      },
-    })),
-  );
+  return sitemaps()[Number(await id)] ?? [];
 }

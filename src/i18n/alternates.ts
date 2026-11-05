@@ -17,3 +17,8 @@ export const alternates = (
   canonical: getPathname({ href, locale }),
   languages: languages(href),
 });
+
+export const untranslated = (href: string, locale: Locale): Metadata => ({
+  alternates: { canonical: getPathname({ href, locale }) },
+  robots: locale === routing.defaultLocale ? undefined : { index: false },
+});

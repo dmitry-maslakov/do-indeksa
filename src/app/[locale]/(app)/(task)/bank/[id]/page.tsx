@@ -21,7 +21,7 @@ import { ReportTask } from "@/features/practice/report-task";
 import { HelpPanel } from "@/features/practice/reveal/help-panel";
 import { SittingFeed } from "@/features/practice/session/sitting-feed";
 import { TaskSessionProvider } from "@/features/practice/session/task-session";
-import { alternates } from "@/i18n/alternates";
+import { untranslated } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import { LiveNextTask, QueueFeed } from "../_components/queue-store";
 import { firstTasks } from "./_components/first-tasks";
@@ -49,7 +49,7 @@ export async function generateMetadata({
   return {
     title: taskTitle(task, locale, meta),
     description: taskDescription(task, locale, meta),
-    alternates: alternates(`/bank/${task.id}`, locale),
+    ...untranslated(`/bank/${task.id}`, locale),
   };
 }
 

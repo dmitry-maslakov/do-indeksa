@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theories } from "@/features/theory/theory";
 import { TheoryMarkdown } from "@/features/theory/theory-markdown";
-import { alternates } from "@/i18n/alternates";
+import { untranslated } from "@/i18n/alternates";
 import { TopicHero } from "./_components/hero";
 import { BackBar, PhoneTabs } from "./_components/phone-nav";
 import { TheoryArticle } from "./_components/theory-article";
@@ -30,7 +30,7 @@ export async function generateMetadata({
       topic: name,
       sections: theory.sections.map((s) => s.title).join(", "),
     }),
-    alternates: alternates(`/theory/${topic}`, locale),
+    ...untranslated(`/theory/${topic}`, locale),
   };
 }
 

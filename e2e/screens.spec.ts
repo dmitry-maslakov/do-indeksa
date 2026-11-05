@@ -59,10 +59,15 @@ test("serves robots and sitemap", async ({ request }) => {
   }
   const [pages = "", ...tasks] = sitemaps;
   expect(pages).toContain("<loc>https://doindeksa.rs/bank</loc>");
+  expect(pages).toContain("<loc>https://doindeksa.rs/ru/bank</loc>");
+  expect(pages).toContain(
+    "<loc>https://doindeksa.rs/theory/exponential-equations</loc>",
+  );
+  expect(pages).not.toContain("/ru/theory/exponential-equations");
   expect(pages).not.toContain("/bank/eks-001");
   const urls = tasks.join();
   expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
-  expect(urls).toContain("https://doindeksa.rs/ru/bank/eks-001");
+  expect(urls).not.toContain("/ru/bank/eks-001");
   expect(urls).not.toContain("<loc>https://doindeksa.rs/bank</loc>");
   expect(sitemaps.join()).not.toContain("/launch");
 });
@@ -122,6 +127,26 @@ for (const path of missing) {
     await expect(page.getByRole("banner")).toBeVisible();
   });
 }
+
+test("keeps other locales of Serbian content out of search", async ({
+  request,
+}) => {
+  const noindex = '<meta name="robots" content="noindex"/>';
+  for (const path of [
+    "/ru/bank/eks-001",
+    "/en/theory/exponential-equations",
+    "/ru/theory/exponential-equations/methods",
+  ]) {
+    expect(await (await request.get(path)).text(), path).toContain(noindex);
+  }
+  for (const path of [
+    "/bank/eks-001",
+    "/theory/exponential-equations",
+    "/ru/bank",
+  ]) {
+    expect(await (await request.get(path)).text(), path).not.toContain(noindex);
+  }
+});
 
 test("keeps missing pages out of search before scripts run", async ({
   request,
