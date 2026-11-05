@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theories } from "@/features/theory/theory";
 import { InlineMarkdown } from "@/features/theory/theory-markdown";
-import { alternates } from "@/i18n/alternates";
+import { untranslated } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { plain } from "@/lib/markdown";
 import { TopicHero } from "../_components/hero";
@@ -33,7 +33,7 @@ export async function generateMetadata({
         .map((m) => plain(m.name))
         .join(", "),
     }),
-    alternates: alternates(`/theory/${topic}/methods`, locale),
+    ...untranslated(`/theory/${topic}/methods`, locale),
   };
 }
 

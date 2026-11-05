@@ -8,7 +8,7 @@ import {
   InlineMarkdown,
   TheoryMarkdown,
 } from "@/features/theory/theory-markdown";
-import { alternates } from "@/i18n/alternates";
+import { untranslated } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { plain } from "@/lib/markdown";
 import { Hero } from "../../_components/hero";
@@ -35,7 +35,7 @@ export async function generateMetadata({
       topic: topicName(topic, locale),
     }),
     description: meta("theoryMethodDescription", { when: plain(method.when) }),
-    alternates: alternates(`/theory/${topic}/methods/${slug}`, locale),
+    ...untranslated(`/theory/${topic}/methods/${slug}`, locale),
   };
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { alternates } from "./alternates";
+import { alternates, untranslated } from "./alternates";
 
 describe("alternates", () => {
   it("links every locale of a page", () => {
@@ -18,5 +18,20 @@ describe("alternates", () => {
     const { canonical, languages } = alternates("/", "en") ?? {};
     expect(canonical).toBe("/en");
     expect(languages).toMatchObject({ "sr-Latn": "/" });
+  });
+});
+
+describe("untranslated", () => {
+  it("indexes a page with Serbian content in Serbian alone", () => {
+    expect(untranslated("/bank/eks-001", "sr-Latn")).toEqual({
+      alternates: { canonical: "/bank/eks-001" },
+    });
+  });
+
+  it("keeps the other locales of the page out of search", () => {
+    expect(untranslated("/bank/eks-001", "en")).toEqual({
+      alternates: { canonical: "/en/bank/eks-001" },
+      robots: { index: false },
+    });
   });
 });
