@@ -24,7 +24,7 @@
     "theoryMethods": "{topic}: solving methods",
     "theoryMethodsDescription": "Solving methods for {topic}: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "When the equation has {when}: steps, an example and a common mistake."
+    "theoryMethodDescription": "{method}, a solving method for {topic}: when to use it, the steps, an example and a common mistake."
   },
   "NotFound": {
     "title": "Page not found",

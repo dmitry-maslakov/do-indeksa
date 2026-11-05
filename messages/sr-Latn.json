@@ -24,7 +24,7 @@
     "theoryMethods": "{topic}: metodi rešavanja",
     "theoryMethodsDescription": "Metodi rešavanja za temu {topic}: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "Kad u jednačini vidiš {when}: postupak, primer i česta greška."
+    "theoryMethodDescription": "{method}, metod rešavanja za temu {topic}: kada se primenjuje, postupak, primer i česta greška."
   },
   "NotFound": {
     "title": "Stranica nije pronađena",

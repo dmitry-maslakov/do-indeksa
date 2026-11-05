@@ -6,7 +6,7 @@ import { getTheory, methodsOf, theories } from "@/features/theory/theory";
 import { InlineMarkdown } from "@/features/theory/theory-markdown";
 import { untranslated } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import { plain } from "@/lib/markdown";
+import { headline } from "@/lib/markdown";
 import { TopicHero } from "../_components/hero";
 import { BackBar, PhoneTabs } from "../_components/phone-nav";
 import { TheoryArticle } from "../_components/theory-article";
@@ -30,7 +30,7 @@ export async function generateMetadata({
     description: meta("theoryMethodsDescription", {
       topic: name,
       methods: methodsOf(topic)
-        .map((m) => plain(m.name))
+        .map((m) => headline(m.name))
         .join(", "),
     }),
     ...untranslated(`/theory/${topic}/methods`, locale),

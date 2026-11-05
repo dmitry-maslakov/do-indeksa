@@ -57,6 +57,13 @@ describe("headline", () => {
   it("is empty when the statement opens with a formula", () => {
     expect(headline("$x^2=1$ je jednačina.")).toBe("");
   });
+
+  it("names a method by its words", () => {
+    expect(headline("Smena $t = \\log_a f(x)$")).toBe("Smena…");
+    expect(headline("Površina ispod grafika i $x$-ose")).toBe(
+      "Površina ispod grafika i x-ose",
+    );
+  });
 });
 
 describe("preview", () => {

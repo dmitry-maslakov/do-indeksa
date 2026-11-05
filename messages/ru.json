@@ -24,7 +24,7 @@
     "theoryMethods": "{topic}: методы решения",
     "theoryMethodsDescription": "Методы решения по теме «{topic}»: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "Когда в уравнении видишь {when}: порядок решения, пример и частая ошибка."
+    "theoryMethodDescription": "{method}, метод решения по теме «{topic}»: когда применять, порядок решения, пример и частая ошибка."
   },
   "NotFound": {
     "title": "Страница не найдена",
