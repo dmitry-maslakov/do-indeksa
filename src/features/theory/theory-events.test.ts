@@ -12,6 +12,7 @@ const read = {
   sections: 4,
   sections_reached: 2,
   last_section: "jednacine",
+  section_ms: [12000, 9000, 0, 0],
   max_scroll_pct: 55,
   visible_ms: 48000,
   active_ms: 31000,
@@ -29,6 +30,7 @@ describe("theory_read", () => {
     ["an unknown method", { ...read, page: "method", method: "guessing" }],
     ["no read id", { ...read, read_id: undefined }],
     ["a scroll past the end", { ...read, max_scroll_pct: 120 }],
+    ["negative time in a section", { ...read, section_ms: [-1, 0, 0, 0] }],
     ["no sequence number", { ...read, seq: 0 }],
     ["an unknown exit", { ...read, exit: "crash" }],
   ])("rejects %s", (_, props) => {
