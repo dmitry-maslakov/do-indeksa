@@ -13,6 +13,7 @@ import { minutesOf, slotsOf } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 import { controlOf, intentOf } from "@/lib/analytics-browser";
 import { type Solution, SolutionTask } from "./solution-task";
+import { SolutionsReading } from "./solutions-reading";
 
 async function loadSolutions(taskIds: string[], locale: Locale) {
   const solutions = await Promise.all(
@@ -122,7 +123,10 @@ export async function SolutionsView({ variant }: { variant: Variant }) {
             ))}
           </ol>
         </nav>
-        <ol className="flex flex-col divide-y md:gap-6 md:divide-y-0">
+        <SolutionsReading
+          variantId={variant.id}
+          className="flex flex-col divide-y md:gap-6 md:divide-y-0"
+        >
           {solutions.map((s) => (
             <li
               key={s.taskId}
@@ -132,7 +136,7 @@ export async function SolutionsView({ variant }: { variant: Variant }) {
               <SolutionTask solution={s} />
             </li>
           ))}
-        </ol>
+        </SolutionsReading>
       </div>
     </div>
   );
