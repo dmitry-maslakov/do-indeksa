@@ -58,7 +58,7 @@ export function TestTask({
       </div>
       <MathHtml
         html={task.statement}
-        className="mt-3 overflow-x-auto text-task md:mt-5.5 md:text-xl md:leading-relaxed [&_strong]:font-semibold"
+        className="mt-3 text-task md:mt-5.5 md:text-xl md:leading-relaxed [&_strong]:font-semibold"
       />
       <div className="mt-5.5 grid gap-3.5 md:mt-8 md:grid-cols-2 md:gap-x-4 md:gap-y-4.5">
         {task.parts.map((part, i) => (

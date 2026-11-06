@@ -15,7 +15,7 @@ export interface Solution extends Slot {
 }
 
 const label = "font-semibold text-subtle text-xs";
-const math = "overflow-x-auto leading-relaxed [&_strong]:font-semibold";
+const math = "leading-relaxed [&_strong]:font-semibold";
 
 export function SolutionTask({ solution }: { solution: Solution }) {
   const t = useTranslations("Solutions");
