@@ -238,6 +238,9 @@
 @layer components {
   .math-text {
     @apply text-pretty leading-relaxed;
+    &:where(div) {
+      @apply overflow-x-auto overflow-y-hidden;
+    }
     & p + p {
       @apply mt-2;
     }

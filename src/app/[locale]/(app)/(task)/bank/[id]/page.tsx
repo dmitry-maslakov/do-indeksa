@@ -100,7 +100,7 @@ export default async function SolvePage({
         </div>
         <MathHtml
           html={html.statement}
-          className="mt-3 overflow-x-auto text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
+          className="mt-3 text-task md:mt-6 md:text-task-lg [&_strong]:font-semibold"
         />
         <LiveNextTask id={id}>
           <AnswerForm

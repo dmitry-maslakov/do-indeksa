@@ -35,12 +35,24 @@ test(
   },
 );
 
+for (const path of ["/variants/ftn-p1-2025/solutions", "/bank/eks-001"])
+  test(`${path} scrolls its formulas only sideways`, async ({ page }) => {
+    await page.goto(path);
+    const texts = page.locator("main div.math-text");
+    await expect(texts.first()).toBeVisible();
+    const scrolls = await texts.evaluateAll((all) =>
+      all.map((text) => getComputedStyle(text).overflowY),
+    );
+    expect(new Set(scrolls)).toEqual(new Set(["hidden"]));
+  });
+
 const routes = [
   "/",
   "/bank",
   "/bank/eks-001",
   "/variants",
   "/variants/set-eks-001",
+  "/variants/ftn-p1-2025/solutions",
   "/review",
   "/stats",
   "/privacy",
