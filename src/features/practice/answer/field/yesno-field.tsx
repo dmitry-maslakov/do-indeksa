@@ -43,7 +43,11 @@ export function YesNoField({
   const verdict = variant === "solve" ? state : "empty";
   return (
     <div
-      className={cn("flex items-center gap-3", !locked && "pointer-fine:mb-10")}
+      className={cn(
+        "flex items-center gap-3",
+        !locked &&
+          "group-last/field:pointer-fine:mb-10 group-not-last/field:pointer-fine:mb-8",
+      )}
     >
       {variant === "solve" && !part.caption && part.letter && (
         <b className="font-semibold text-foreground text-sm">{part.letter}</b>

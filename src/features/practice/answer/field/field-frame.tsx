@@ -74,11 +74,12 @@ const affix = cva(
 const letterOf = ({ part, variant }: Pick<FieldProps, "part" | "variant">) =>
   variant === "solve" && !part.caption && part.letter;
 
-function Prefix({
-  part,
-  variant,
-  shown,
-}: Pick<FieldProps, "part" | "variant"> & { shown: boolean }) {
+interface AffixProps extends Pick<FieldProps, "part" | "variant"> {
+  shown: boolean;
+  wrap: boolean;
+}
+
+function Prefix({ part, variant, shown, wrap }: AffixProps) {
   const letter = letterOf({ part, variant });
   if (!letter && !part.prefix) return null;
   return (
@@ -86,7 +87,7 @@ function Prefix({
       className={cn(
         affix({ variant, shown }),
         "max-w-1/2",
-        variant === "solve" ? "pl-4" : "pr-2",
+        variant === "solve" ? !wrap && "pl-4" : "pr-2",
       )}
     >
       {letter && (
@@ -101,18 +102,14 @@ function Prefix({
   );
 }
 
-function Suffix({
-  part,
-  variant,
-  shown,
-}: Pick<FieldProps, "part" | "variant"> & { shown: boolean }) {
+function Suffix({ part, variant, shown, wrap }: AffixProps) {
   if (!part.suffix) return null;
   return (
     <span
       className={cn(
         affix({ variant, shown }),
         "max-w-1/3",
-        variant === "solve" ? "pr-4 pl-1" : "pl-2",
+        variant === "solve" ? ["pl-1", !wrap && "pr-4"] : "pl-2",
       )}
     >
       <MathHtml as="span" html={part.suffix} className={inline} />
@@ -120,10 +117,10 @@ function Suffix({
   );
 }
 
-function Mark({ state }: { state: FieldState }) {
+function Mark({ state, wrap }: { state: FieldState; wrap: boolean }) {
   if (state === "right" || state === "wrong")
     return (
-      <span className="ml-auto flex pr-4">
+      <span className={cn("ml-auto flex", !wrap && "pr-4")}>
         <StatusIcon
           status={state === "right" ? "solved" : "wrong"}
           className="size-5"
@@ -198,6 +195,7 @@ export function Frame({
 }: FrameProps) {
   const shown = state === "shown";
   const bare = !letterOf({ part, variant }) && !part.prefix;
+  const solve = variant === "solve";
   return (
     <>
       <div
@@ -208,16 +206,16 @@ export function Frame({
         className={cn(
           frame({
             variant,
-            state: variant === "solve" ? state : "empty",
+            state: solve ? state : "empty",
             wrap,
           }),
-          variant === "solve" && bare && "pl-4",
+          solve && (wrap ? "px-4" : bare && "pl-4"),
         )}
       >
-        <Prefix part={part} variant={variant} shown={shown} />
+        <Prefix part={part} variant={variant} shown={shown} wrap={wrap} />
         {children}
-        <Suffix part={part} variant={variant} shown={shown} />
-        <Mark state={state} />
+        <Suffix part={part} variant={variant} shown={shown} wrap={wrap} />
+        <Mark state={state} wrap={wrap} />
       </div>
       {reason && <Reading reason={reason} />}
     </>
