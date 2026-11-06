@@ -15,8 +15,33 @@ const withNextIntl = createNextIntlPlugin({
   },
 });
 
-const legacyPath =
-  "(prep|tasks|calculator|diagnostic|cabinet|simulation|history|exams|faculties|training)/:path*";
+const legacyTopics = {
+  "kompleksni-brojevi": "complex-numbers",
+  "kvadratna-jednacina": "quadratic-equations",
+  logaritmi: "logarithms",
+  eksponencijalne: "exponential-equations",
+  trigonometrija: "trigonometry",
+  "vektori-analitika": "vectors-analytic-geometry",
+  planimetrija: "plane-geometry",
+  stereometrija: "solid-geometry",
+  "analiza-funkcije": "functions-integrals",
+  kombinatorika: "combinatorics",
+};
+
+const legacyPages = [
+  { source: "/tasks/:topic/:id", destination: "/bank/:id" },
+  ...Object.entries(legacyTopics).map(([slug, topic]) => ({
+    source: "/tasks",
+    has: [{ type: "query" as const, key: "topic", value: slug }],
+    destination: `/bank/topic/${topic}`,
+  })),
+  { source: "/(tasks|training)/:path*", destination: "/bank" },
+  { source: "/exams/:exam(ftn-p1)?", destination: "/variants" },
+  { source: "/(diagnostic|simulation)/:path*", destination: "/variants" },
+  { source: "/history/:path*", destination: "/variants?tab=history" },
+  { source: "/cabinet", destination: "/stats" },
+  { source: "/prep", destination: "/" },
+];
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -28,30 +53,16 @@ const nextConfig: NextConfig = {
   experimental: { isrFlushToDisk: false },
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
-    return [
+    return legacyPages.flatMap(({ source, destination, ...match }) => [
+      { ...match, source, destination, statusCode: 301 },
+      { ...match, source: `/sr-Latn${source}`, destination, statusCode: 301 },
       {
-        source: "/tasks/:topic/:id",
-        destination: "/bank/:id",
+        ...match,
+        source: `/:locale(ru|en)${source}`,
+        destination: `/:locale${destination}`.replace(/\/$/, ""),
         statusCode: 301,
       },
-      {
-        source: "/sr-Latn/tasks/:topic/:id",
-        destination: "/bank/:id",
-        statusCode: 301,
-      },
-      {
-        source: "/:locale(ru|en)/tasks/:topic/:id",
-        destination: "/:locale/bank/:id",
-        statusCode: 301,
-      },
-      { source: `/${legacyPath}`, destination: "/", statusCode: 301 },
-      { source: `/sr-Latn/${legacyPath}`, destination: "/", statusCode: 301 },
-      {
-        source: `/:locale(ru|en)/${legacyPath}`,
-        destination: "/:locale",
-        statusCode: 301,
-      },
-    ];
+    ]);
   },
 };
 
