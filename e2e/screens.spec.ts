@@ -7,14 +7,25 @@ test("healthz answers without a redirect", async ({ request }) => {
 });
 
 for (const [from, to] of [
-  ["/prep", "/"],
-  ["/tasks", "/"],
+  ["/ru/prep", "/ru"],
+  ["/tasks", "/bank"],
   ["/tasks/x/log-002", "/bank/log-002"],
   ["/sr-Latn/tasks/x/eks-001", "/bank/eks-001"],
   ["/ru/tasks/x/komb-001", "/ru/bank/komb-001"],
-  ["/sr-Latn/cabinet", "/"],
-  ["/ru/exams/1", "/ru"],
-  ["/en/faculties/ftn", "/en"],
+  [
+    "/tasks?topic=stereometrija",
+    "/bank/topic/solid-geometry?topic=stereometrija",
+  ],
+  [
+    "/en/tasks?topic=kombinatorika",
+    "/en/bank/topic/combinatorics?topic=kombinatorika",
+  ],
+  ["/ru/training/new", "/ru/bank"],
+  ["/exams?q=P1", "/variants?q=P1"],
+  ["/en/exams/ftn-p1", "/en/variants"],
+  ["/ru/simulation/new", "/ru/variants"],
+  ["/sr-Latn/cabinet", "/stats"],
+  ["/ru/history", "/ru/variants?tab=history"],
 ] as const) {
   test(`redirects ${from}`, async ({ request }) => {
     const res = await request.get(from, { maxRedirects: 0 });
@@ -117,6 +128,8 @@ const missing = [
   "/theory/exponential-equations/methods/nema-metode",
   "/variants/nema-varijante",
   "/variants/set-nema-zadatka",
+  "/exams/ftn-p3",
+  "/faculties/ftn",
 ];
 
 for (const path of missing) {
@@ -155,6 +168,7 @@ test("keeps missing pages out of search before scripts run", async ({
     ...missing,
     "/ru/theory/nema-teme",
     "/en/variants/nema-varijante",
+    "/ru/exams/ftn-p7",
   ]) {
     const res = await request.get(path);
     expect(res.status(), path).toBe(404);
