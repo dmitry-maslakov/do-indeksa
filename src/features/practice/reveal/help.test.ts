@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { openSitting } from "@/features/progress/learning/sitting-state";
-import { cardsOf, helpOf, offered, openedOf } from "./help";
+import { blocksOf, cardsOf, helpOf, offered, openedOf } from "./help";
 
 describe("openedOf", () => {
   it("opens the hints, then the result, then the solution", () => {
@@ -75,5 +75,26 @@ describe("cardsOf", () => {
 
   it("drops the answer card next to an open solution", () => {
     expect(cardsOf(["answer", "solution"], true)).toEqual(["solution"]);
+  });
+});
+
+describe("blocksOf", () => {
+  const help = { hints: ["h1", "h2"], answer: "a", solution: "s" };
+
+  it("lists the hints, the answer text and the solution in ladder order", () => {
+    expect(blocksOf(help, true)).toEqual([
+      { part: 0, html: "h1" },
+      { part: 1, html: "h2" },
+      { part: "answer", html: "a" },
+      { part: "solution", html: "s" },
+    ]);
+  });
+
+  it("leaves out the answer when the fields say all of it", () => {
+    expect(blocksOf(help, false).map((b) => b.part)).toEqual([
+      0,
+      1,
+      "solution",
+    ]);
   });
 });

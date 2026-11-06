@@ -125,7 +125,12 @@ test("Rezultat keeps the answer text when it says more than the fields", async (
   await chip(page, "Rezultat").click();
   await expect(fields(page).first()).toHaveJSProperty("readOnly", true);
   await expect(page.getByRole("heading", { name: "Rezultat" })).toBeVisible();
-  await expect(page.getByText(/d_1|24/).first()).toBeVisible();
+  await expect(
+    page
+      .getByText(/d_1|24/)
+      .filter({ visible: true })
+      .first(),
+  ).toBeVisible();
 });
 
 test("Rešenje after Rezultat opens the solution without a second answer block", async ({
@@ -257,14 +262,22 @@ test("the help ladder fits a phone", { tag: "@mobile" }, async ({ page }) => {
   expect(width).toBeLessThanOrEqual(0);
 });
 
-test("only the result and the solution carry the expected values", async ({
-  request,
-}) => {
-  const valuesOf = async (part: string) =>
-    (await (await request.get(`/api/tasks/eks-001/reveal?part=${part}`)).json())
-      .values;
-  expect(await valuesOf("0")).toEqual([]);
-  expect(await valuesOf("1")).toEqual([]);
-  expect(await valuesOf("answer")).toEqual(["2"]);
-  expect(await valuesOf("solution")).toEqual(["2"]);
+test.describe("before scripts run", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the hints and the solution are in the page but closed", async ({
+    page,
+  }) => {
+    await page.goto("/bank/eks-001");
+    const headings = page
+      .locator("article")
+      .getByRole("heading", { level: 2, includeHidden: true });
+    await expect(headings).toHaveText([
+      "Nagoveštaj 1 od 2",
+      "Nagoveštaj 2 od 2",
+      "Rešenje",
+    ]);
+    for (const heading of await headings.all())
+      await expect(heading).toBeHidden();
+  });
 });

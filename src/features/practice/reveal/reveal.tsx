@@ -19,7 +19,7 @@ interface RevealContentProps {
   className?: string;
 }
 
-export function RevealError({ onRetry }: { onRetry: () => void }) {
+function RevealError({ onRetry }: { onRetry: () => void }) {
   const t = useTranslations("Errors");
   const errorText = useErrorText();
   return (

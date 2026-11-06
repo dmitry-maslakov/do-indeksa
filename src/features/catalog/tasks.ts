@@ -6,6 +6,7 @@ import { LRUCache } from "lru-cache";
 import type { Locale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { renderMarkdown } from "@/lib/markdown";
+import { sentForm } from "./boxes";
 import { numberOf } from "./exams";
 import { type Level, levelOf } from "./level";
 import {
@@ -97,6 +98,7 @@ type RenderedTask = {
   answer: string;
   hints: string[];
   solution: string;
+  answerValues: string[];
   parts: PartLabel[];
   unchecked: string[];
   answerText: boolean;
@@ -181,6 +183,7 @@ export async function renderTask(id: string) {
     answer: await render(task.answer ?? resultOf(task.check)),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
+    answerValues: task.check.map((c) => sentForm(c) ?? c.expected),
     parts: await renderParts(task),
     unchecked,
     answerText:

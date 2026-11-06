@@ -6,7 +6,6 @@ import { useAction } from "next-safe-action/hooks";
 import { type ReactNode, Suspense, useRef, useState } from "react";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
-import { useReveal } from "@/features/practice/reveal/use-reveal";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import { queueEvent } from "@/lib/analytics-browser";
 import { useErrorText } from "@/lib/use-error-text";
@@ -21,7 +20,7 @@ interface AnswerFormProps {
   taskId: string;
   parts: PartLabel[];
   unchecked: string[];
-  answerText: boolean;
+  answerValues: string[];
   next: Promise<NextTask>;
   fallback: string;
   afterCorrect?: ReactNode;
@@ -31,7 +30,7 @@ export function AnswerForm({
   taskId,
   parts,
   unchecked,
-  answerText,
+  answerValues,
   next,
   fallback,
   afterCorrect,
@@ -41,7 +40,6 @@ export function AnswerForm({
     useAction(checkAnswer);
   const errorText = useErrorText();
   const help = useTaskSession();
-  const { data: reveal } = useReveal(taskId, help.shown);
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
   const stats = useRef(freshInput());
@@ -62,7 +60,8 @@ export function AnswerForm({
   const grid = parts.length >= 2 && parts.every((p) => !p.caption);
   const filled = help.shown !== undefined;
   const { solved } = help;
-  const fillOf = (i: number) => solved[i] ?? reveal?.values[i];
+  const fillOf = (i: number) =>
+    solved[i] ?? (filled ? answerValues[i] : undefined);
   const stateOf = (i: number): FieldState => {
     if (solved[i] !== undefined) return "right";
     if (fillOf(i) !== undefined) return "shown";
@@ -153,8 +152,6 @@ export function AnswerForm({
         </p>
       )}
       <AnswerStatus
-        taskId={taskId}
-        answerText={answerText}
         outcomes={checked?.outcomes}
         solved={solved.filter((text) => text !== undefined).length}
         total={parts.length}
