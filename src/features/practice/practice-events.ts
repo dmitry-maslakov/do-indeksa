@@ -31,7 +31,7 @@ export const placements = [
 ] as const;
 
 export const taskIntent = z.object({
-  via: z.enum(["picker", "list", "search", "review", "history"]),
+  via: z.enum(["picker", "list", "search", "review", "history", "solutions"]),
   placement: z.enum(placements).optional(),
   rank: z.int().min(1).max(10_000).optional(),
 });

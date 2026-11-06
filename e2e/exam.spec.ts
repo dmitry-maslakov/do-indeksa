@@ -22,6 +22,33 @@ test("the test rail tracks answers and hides the time", async ({ page }) => {
   await expect(page.getByRole("timer")).toBeVisible();
 });
 
+test("the solutions of an exam are in its HTML and lead to the test", async ({
+  page,
+  request,
+}) => {
+  const html = await request.get("/variants/ftn-p1-2025/solutions");
+  expect(await html.text()).toContain("Pri deljenju se moduli dele");
+  await page.goto("/variants");
+  await page
+    .getByRole("listitem")
+    .filter({ hasText: "2025" })
+    .getByRole("link", { name: "Rešenja" })
+    .click();
+  await expect(page).toHaveURL(/\/variants\/ftn-p1-2025\/solutions$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "FTN prijemni 2025: zadaci sa rešenjima",
+  );
+  const main = page.getByRole("main");
+  await expect(main.getByRole("heading", { level: 2 })).toHaveCount(10);
+  const rail = page.getByRole("complementary", { name: "Zadaci" });
+  const logarithms = rail.getByRole("link", { name: "3 Logaritmi" });
+  await logarithms.click();
+  await expect(page).toHaveURL(/#task-3$/);
+  await expect(logarithms).toHaveAttribute("aria-current", "page");
+  await main.getByRole("button", { name: "Reši kao test" }).click();
+  await expect(page).toHaveURL(/\/variants\/ftn-p1-2025$/);
+});
+
 test("the phone test bar switches tasks", { tag: "@mobile" }, async ({
   page,
 }) => {

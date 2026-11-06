@@ -28,6 +28,7 @@ const testStarted = defineEvent("test_started", {
       "review",
       "history",
       "share",
+      "solutions",
       "direct",
     ])
     .catch("direct"),

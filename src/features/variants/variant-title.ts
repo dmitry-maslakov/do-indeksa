@@ -1,7 +1,9 @@
 import "server-only";
+import type { Variant } from "content-collections";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { examOptions } from "@/features/catalog/exams";
 import { type ExamVariant, minutesOf } from "./variants";
 
 export async function variantTitle(variant: ExamVariant, locale: Locale) {
@@ -22,5 +24,28 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
       tasks: variant.taskIds.length,
       minutes: minutesOf(variant),
     }),
+  };
+}
+
+const solutionsFacts = (variant: Variant) => ({
+  kind: variant.kind,
+  faculty:
+    examOptions.find((e) => e.id === variant.exam)?.faculty ?? variant.exam,
+  year: String(variant.year ?? ""),
+  title: variant.title,
+  tasks: variant.taskIds.length,
+});
+
+export async function solutionsTitle(variant: Variant, locale: Locale) {
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return t("solutionsTitle", solutionsFacts(variant));
+}
+
+export async function solutionsMetadata(variant: Variant): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    title: await solutionsTitle(variant, locale),
+    description: t("solutionsDescription", solutionsFacts(variant)),
   };
 }

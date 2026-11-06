@@ -328,3 +328,40 @@ test("tests started from home record the year or the weekly card", async ({
       [href?.split("/").at(-1), "weekly"],
     ]);
 });
+
+test("the solutions of an exam record their links and the starts they lead to", async ({
+  page,
+}) => {
+  await page.goto("/variants/ftn-p1-2025/solutions");
+  await hydrated(page);
+  await page
+    .getByRole("complementary", { name: "Zadaci" })
+    .getByRole("link", { name: "3 Logaritmi" })
+    .click();
+  await page.getByRole("button", { name: "Reši kao test" }).click();
+  await expect(page).toHaveURL(/\/variants\/ftn-p1-2025$/);
+  await expect(shown(page, /^Zadatak 1 · /)).toBeVisible();
+  await page.goBack();
+  await hydrated(page);
+  await page.getByRole("link", { name: "Reši u banci" }).first().click();
+  await expect(page).toHaveURL(/\/bank\/kb-003$/);
+  await flush(page);
+
+  await expect
+    .poll(async () =>
+      (await propsOf(page, "test_started")).map(({ variant_id, via }) => [
+        variant_id,
+        via,
+      ]),
+    )
+    .toEqual([["ftn-p1-2025", "solutions"]]);
+  await expect
+    .poll(() => propsOf(page, "task_opened"))
+    .toEqual([
+      expect.objectContaining({ task_id: "kb-003", via: "solutions" }),
+    ]);
+  expect(await propsOf(page, "control_used")).toContainEqual({
+    control: "solutions_task_link",
+    value: "task-3",
+  });
+});

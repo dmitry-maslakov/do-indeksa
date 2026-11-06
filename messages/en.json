@@ -24,7 +24,9 @@
     "theoryMethods": "{topic}: solving methods",
     "theoryMethodsDescription": "Solving methods for {topic}: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "{method}, a solving method for {topic}: when to use it, the steps, an example and a common mistake."
+    "theoryMethodDescription": "{method}, a solving method for {topic}: when to use it, the steps, an example and a common mistake.",
+    "solutionsTitle": "{kind, select, official {{faculty} entrance exam {year}: tasks with solutions} other {{title}: tasks with solutions}}",
+    "solutionsDescription": "{kind, select, official {{tasks, plural, one {# task} other {# tasks}} from the {year} {faculty} maths entrance exam} other {{title}: {tasks, plural, one {# task} other {# tasks}} in the {faculty} maths entrance exam format}}, with answers and full solutions. You can also take them as a timed practice test."
   },
   "NotFound": {
     "title": "Page not found",
@@ -199,7 +201,8 @@
     "weeklyReview": "Review →",
     "weeklyNext": "New variant in {days, plural, one {# day} other {# days}}",
     "testTitle": "{kind, select, weekly {Variant of the week} custom {Own test} other {{title}}}",
-    "testKind": "{kind, select, official {Entrance exam} curated {Our test} weekly {Weekly challenge} other {{count, plural, one {# task} other {# tasks}}}}"
+    "testKind": "{kind, select, official {Entrance exam} curated {Our test} weekly {Weekly challenge} other {{count, plural, one {# task} other {# tasks}}}}",
+    "solutions": "Solutions"
   },
   "Exam": {
     "timeLeft": "Time left",
@@ -248,6 +251,14 @@
     "unread": "couldn't be read",
     "toBank": "Open in the bank",
     "estimateLink": "This is an estimate — how do we score?"
+  },
+  "Solutions": {
+    "back": "‹ Practice tests",
+    "solve": "Take as a test",
+    "tasks": "Tasks",
+    "task": "Task {number, number}",
+    "points": "{points, plural, one {# point} other {# points}}",
+    "toBank": "Solve in the bank"
   },
   "Home": {
     "timeEmpty": "Finish your first test to see which tasks take the most time.",

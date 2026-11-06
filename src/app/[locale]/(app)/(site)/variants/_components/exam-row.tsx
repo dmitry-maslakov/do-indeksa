@@ -11,7 +11,7 @@ import { intentOf } from "@/lib/analytics-browser";
 import { belgradeDate } from "@/lib/dates";
 
 export const tableGrid =
-  "md:grid-cols-[--spacing(37)_minmax(0,1fr)_--spacing(18)_--spacing(24)] md:gap-5 md:px-6";
+  "md:grid-cols-[--spacing(40)_minmax(0,1fr)_--spacing(18)_--spacing(24)] md:gap-5 md:px-6";
 
 const thisYear = (at: number) =>
   belgradeDate(new Date(at)).slice(0, 4) === belgradeDate().slice(0, 4);
@@ -21,6 +21,7 @@ interface ExamRowProps {
   href: string;
   kind?: string;
   original?: string;
+  solutions?: string;
   test?: TestSummary;
   pending?: boolean;
 }
@@ -30,6 +31,7 @@ export function ExamRow({
   href,
   kind,
   original,
+  solutions,
   test,
   pending,
 }: ExamRowProps) {
@@ -71,16 +73,22 @@ export function ExamRow({
                 : t("notSolved")}
           </small>
         )}
-        {original && (
-          <a
-            href={original}
-            target="_blank"
-            rel="noopener"
-            className="relative flex w-fit items-center gap-0.5 text-subtle text-xs underline underline-offset-3 hover:text-foreground"
-          >
-            {t("original")}
-            <ArrowUpRightIcon aria-hidden className="size-3" />
-          </a>
+        {(original || solutions) && (
+          <span className="relative flex w-fit items-center gap-1.5 whitespace-nowrap text-subtle text-xs [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground">
+            {original && (
+              <a
+                href={original}
+                target="_blank"
+                rel="noopener"
+                className="flex items-center gap-0.5"
+              >
+                {t("original")}
+                <ArrowUpRightIcon aria-hidden className="size-3" />
+              </a>
+            )}
+            {solutions && original && <span aria-hidden="true">·</span>}
+            {solutions && <Link href={solutions}>{t("solutions")}</Link>}
+          </span>
         )}
       </div>
       {test ? (
