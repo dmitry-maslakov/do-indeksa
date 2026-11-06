@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { positions } from "@/features/catalog/exams";
+import { maxPlaces } from "@/features/catalog/exams";
 import { levels } from "@/features/catalog/level";
 import { taskIdSchema } from "@/features/catalog/tasks";
 import { topicIdSchema } from "@/features/catalog/topics";
@@ -9,7 +9,7 @@ import { sorts, sources, statusFilters } from "./params";
 import { algoVersion, pickReasons } from "./queue/recommendation";
 import type { BankQuery } from "./search";
 
-const position = z.int().min(1).max(positions.length);
+const position = z.int().min(1).max(maxPlaces);
 
 const recommendationMade = defineEvent("recommendation_made", {
   surface: z.enum(placements),

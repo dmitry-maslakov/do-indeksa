@@ -1,5 +1,5 @@
 import { memoize } from "es-toolkit";
-import { examTopics } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { typesByTopic } from "@/features/catalog/tasks";
 import { topicAbilities } from "./ability/starting";
 import { observe } from "./observation";
@@ -39,7 +39,7 @@ function buildLearning({ logs, activity }: Evidence, now: number): Learning {
     logs.firstAttempts.flatMap((attempt) => observe(attempt, now) ?? []),
     (o) => o.topic,
   );
-  const abilities = topicAbilities(examTopics, observations);
+  const abilities = topicAbilities(examOf().topics, observations);
   const topics = [...abilities].map(([topic, ability]) => {
     const mine = observations.get(topic) ?? [];
     const done = activityOf.get(topic) ?? [];

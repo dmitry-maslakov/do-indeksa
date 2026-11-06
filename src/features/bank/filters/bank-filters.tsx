@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 import type { NativeSelect } from "@/components/ui/native-select";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { sources, statusFilters } from "@/features/bank/params";
-import { positions } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { levels } from "@/features/catalog/level";
 import { topics } from "@/features/catalog/topics";
 import { FilterSelect } from "./filter-select";
@@ -31,7 +31,7 @@ export function BankFilters({ variant, children }: BankFiltersProps) {
       {children}
       <FilterSelect name="number" label={t("number")} variant={variant}>
         <NativeSelectOption value="">{t("any")}</NativeSelectOption>
-        {positions.map((p) => (
+        {examOf().positions.map((p) => (
           <NativeSelectOption key={p.number} value={p.number}>
             {t("position", { number: p.number })}
           </NativeSelectOption>

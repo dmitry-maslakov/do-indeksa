@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { examTopics, positions } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
@@ -38,7 +38,8 @@ export default async function VariantsPage({
   const t = await getTranslations("Variants");
   const locale = await getLocale();
   const weekly = await currentWeekly();
-  const topics = examTopics.map((topic) => ({
+  const exam = examOf();
+  const topics = exam.topics.map((topic) => ({
     id: topic,
     name: topicName(topic, locale),
     look: topicLook(topic),
@@ -74,7 +75,7 @@ export default async function VariantsPage({
             </div>
           )}
           <ComposeCard
-            size={positions.length}
+            size={exam.positions.length}
             topics={topics}
             weak={loadWeak()}
           />

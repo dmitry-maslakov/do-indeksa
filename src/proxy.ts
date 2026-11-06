@@ -9,7 +9,7 @@ import {
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { bankHref, pageOf } from "@/features/bank/params";
-import { positions } from "@/features/catalog/exams";
+import { maxPlaces } from "@/features/catalog/exams";
 import { launchCookie, launchGate } from "@/features/launch/launch";
 import { customTaskIds } from "@/features/variants/variant-id";
 import { daySeconds } from "@/lib/dates";
@@ -37,8 +37,7 @@ const contentPages: Partial<
     allMethodSlugs.some((m) => m.topic === topic && m.slug === slug),
   "/variants/[id]": (id) =>
     variantIds.has(id) ||
-    customTaskIds(id, positions.length, (taskId) => taskIds.has(taskId)) !==
-      undefined,
+    customTaskIds(id, maxPlaces, (taskId) => taskIds.has(taskId)) !== undefined,
   "/variants/[id]/solutions": (id) => variantIds.has(id),
 };
 
