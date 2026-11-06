@@ -8,7 +8,7 @@ import {
 } from "content-collections";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { bankHref } from "@/features/bank/params";
+import { bankHref, pageOf } from "@/features/bank/params";
 import { positions } from "@/features/catalog/exams";
 import { launchCookie, launchGate } from "@/features/launch/launch";
 import { customTaskIds } from "@/features/variants/variant-id";
@@ -29,6 +29,8 @@ const contentPages: Partial<
 > = {
   "/bank/[id]": (id) => taskIds.has(id),
   "/bank/topic/[topic]": (topic) => bankTopicIds.has(topic),
+  "/bank/topic/[topic]/[page]": (topic, page) =>
+    bankTopicIds.has(topic) && pageOf(page) !== undefined,
   "/theory/[topic]": topicExists,
   "/theory/[topic]/methods": topicExists,
   "/theory/[topic]/methods/[method]": (topic, slug) =>

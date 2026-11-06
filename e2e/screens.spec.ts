@@ -138,6 +138,8 @@ const missing = [
   "/variants/nema-varijante",
   "/variants/set-nema-zadatka",
   "/variants/nema-varijante/solutions",
+  "/bank/topic/logarithms/1",
+  "/bank/topic/logarithms/999",
   "/exams/ftn-p3",
   "/faculties/ftn",
 ];

@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { bankHref, loadBankFilters as load } from "./params";
+import {
+  bankHref,
+  bankPageHref,
+  loadBankFilters as load,
+  pageAt,
+  pageCount,
+  pagedTopic,
+  pageOf,
+  pageOffset,
+} from "./params";
 
 const none = {
   q: null,
@@ -66,5 +75,31 @@ describe("bankHref", () => {
     [{ topic: "", status: "wrong" as const }, "/bank?status=wrong"],
   ])("links %o to %s", (filters, href) => {
     expect(bankHref(filters)).toBe(href);
+  });
+});
+
+describe("pages of a topic", () => {
+  it("continues each page where the feed loads the next one", () => {
+    expect([2, 3, 4].map(pageOffset)).toEqual([3, 13, 23]);
+    expect([3, 13, 23].map(pageAt)).toEqual([2, 3, 4]);
+  });
+
+  it("counts the first page and the pages after it", () => {
+    expect([0, 3, 4, 13, 14, 131].map(pageCount)).toEqual([1, 1, 2, 2, 3, 14]);
+  });
+
+  it("reads only the canonical form of a page after the first", () => {
+    expect(["2", "14"].map(pageOf)).toEqual([2, 14]);
+    expect(["1", "0", "02", "2.0", "1e1", "-2", "", "dva"].map(pageOf)).toEqual(
+      Array(8).fill(undefined),
+    );
+  });
+
+  it("pages only a whole topic without other filters", () => {
+    expect(pagedTopic({ topic: "logarithms" })).toBe("logarithms");
+    expect(pagedTopic({ ...none, topic: "logarithms" })).toBe("logarithms");
+    expect(pagedTopic({ topic: "logarithms", level: "easy" })).toBeUndefined();
+    expect(pagedTopic({ q: "log" })).toBeUndefined();
+    expect(bankPageHref("logarithms", 2)).toBe("/bank/topic/logarithms/2");
   });
 });

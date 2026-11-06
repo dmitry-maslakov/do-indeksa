@@ -270,6 +270,73 @@ test.describe("before scripts run", () => {
     await expect(cards.filter({ hasNotText: "Logaritmi" })).toHaveCount(0);
     await expect(bank(page).topic.first()).toHaveValue("logarithms");
   });
+
+  test("a topic links every one of its tasks through its pages", async ({
+    page,
+  }) => {
+    const { long, more } = await longTopic(page);
+    test.skip(!long, "every topic fits on its first page");
+    const total = Number(
+      (await bank(page).count.first().textContent())?.replace(/\D/g, ""),
+    );
+    const tasks = new Set(await taskLinks(page));
+    for (let n = 2; (await more.count()) > 0; n++) {
+      const path = `/bank/topic/${long}/${n}`;
+      await expect(more).toHaveAttribute("href", path);
+      await more.click();
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      await expect(page).toHaveTitle(new RegExp(`, strana ${n} · `));
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        "href",
+        new RegExp(`${path}$`),
+      );
+      for (const href of await taskLinks(page)) tasks.add(href);
+    }
+    expect(tasks.size).toBe(total);
+  });
+});
+
+async function longTopic(page: Page) {
+  await page.goto("/bank");
+  const topics = await bank(page)
+    .topic.first()
+    .locator("option")
+    .evaluateAll((options) =>
+      options.map((option) => option.getAttribute("value")).filter(Boolean),
+    );
+  const more = page.getByRole("button", { name: "Prikaži još" });
+  for (const topic of topics) {
+    await page.goto(`/bank/topic/${topic}`);
+    if ((await more.count()) > 0) return { long: topic, more };
+  }
+  return { long: undefined, more };
+}
+
+const taskLinks = (page: Page) =>
+  bank(page).links.evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href") ?? ""),
+  );
+
+test("the next page of a topic loads in place and keeps the filters on its topic", async ({
+  page,
+  errors,
+}) => {
+  const { long } = await longTopic(page);
+  test.skip(!long, "every topic fits on its first page");
+  await open(page, `/bank/topic/${long}`);
+  const { cards, level } = bank(page);
+  const shown = await cards.count();
+  await page.getByRole("button", { name: "Prikaži još" }).click();
+  await expect.poll(() => cards.count()).toBeGreaterThan(shown);
+  await expect.poll(() => at(page)).toEqual({ path: `/bank/topic/${long}` });
+
+  await open(page, `/bank/topic/${long}/2`);
+  await expect(cards.first()).toBeVisible();
+  await level.first().selectOption({ label: "lako" });
+  await expect
+    .poll(() => at(page))
+    .toEqual({ path: `/bank/topic/${long}`, level: "easy" });
+  expect(errors).toEqual([]);
 });
 
 test("back and forward restore the bank filters", async ({ page }) => {
