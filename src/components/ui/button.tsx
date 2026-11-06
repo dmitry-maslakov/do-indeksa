@@ -12,6 +12,7 @@ const buttonVariants = cva(
         tint: "bg-data-tint text-data",
         google: "border border-google-border bg-card text-google-text",
         destructive: "bg-error-tint text-error-text",
+        danger: "bg-error text-primary-foreground",
         ghost: "bg-muted text-foreground",
         link: "text-primary underline-offset-4 hover:underline hover:brightness-100",
       },

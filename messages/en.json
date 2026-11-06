@@ -219,14 +219,13 @@
     "finish": "Finish",
     "finishShort": "Finish",
     "finishTitle": "Finish the test?",
-    "finishLeft": "{count, plural, one {# task} other {# tasks}} without an answer. Answers can't be changed after finishing.",
-    "finishAll": "Answers can't be changed after finishing.",
     "finishFailed": "The test wasn't submitted. Your answers are saved.",
     "cancel": "Keep going",
     "timeUp": "Time is up. Finish the test or keep going; the overtime is recorded.",
     "answerHint": "Type / for a fraction, sqrt for a root, pi for π, ^ for a power. Equivalent forms like 1/2 and 0.5 count.",
     "fallback": "No task matches your choice, so this is an exam-like test.",
-    "swap": "Swap task {number, number}"
+    "swap": "Swap task {number, number}",
+    "finishAnswered": "Answered <b>{done, number} of {total, number}</b>. Once you finish, the answers can no longer be changed."
   },
   "Review": {
     "title": "Review",

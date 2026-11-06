@@ -1,5 +1,6 @@
 "use client";
 
+import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
@@ -67,8 +69,11 @@ export function DeleteAccount() {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
+          <AlertDialogMedia className="bg-error-tint text-error-text">
+            <Trash2Icon aria-hidden />
+          </AlertDialogMedia>
           <AlertDialogTitle>{t("confirmTitle")}</AlertDialogTitle>
-          <AlertDialogDescription aria-live="polite" className="text-subtle">
+          <AlertDialogDescription aria-live="polite">
             {status === "stale" || status === "error"
               ? t(status)
               : t("confirm")}
@@ -82,7 +87,7 @@ export function DeleteAccount() {
             </GoogleSignInButton>
           ) : (
             <AlertDialogAction
-              variant="destructive"
+              variant="danger"
               disabled={status === "pending"}
               onClick={remove}
             >
