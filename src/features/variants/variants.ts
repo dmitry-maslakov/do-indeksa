@@ -2,7 +2,7 @@ import "server-only";
 import { allVariants, type Variant } from "content-collections";
 import { sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
-import { examTopics, positions } from "@/features/catalog/exams";
+import { examOf, maxPlaces } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import {
   getTask,
@@ -32,16 +32,19 @@ export interface ExamVariant
   taskIds: string[];
 }
 
-export const byPosition = positions.map((p) => idsByTopic.get(p.topic) ?? []);
+export const byPosition = examOf().positions.map(
+  (p) => idsByTopic.get(p.topic) ?? [],
+);
 
 export function getVariant(id: string): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
-  const taskIds = customTaskIds(id, positions.length, getTask);
+  const taskIds = customTaskIds(id, maxPlaces, getTask);
   if (taskIds) return { id, kind: "custom", taskIds: inExamOrder(taskIds) };
 }
 
-const examRank = (id: string) => examTopics.indexOf(getTask(id)?.topic ?? "");
+const examRank = (id: string) =>
+  examOf().topics.indexOf(getTask(id)?.topic ?? "");
 
 export const inExamOrder = (ids: string[]) =>
   ids.toSorted((a, b) => examRank(a) - examRank(b));
@@ -58,7 +61,7 @@ export const slotsOf = (taskIds: string[]): Slot[] =>
   taskIds
     .flatMap((id) => getTask(id) ?? [])
     .flatMap((task, index) => {
-      const place = positions[index];
+      const place = examOf().positions[index];
       if (!place) return [];
       return {
         taskId: task.id,

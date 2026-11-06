@@ -1,10 +1,30 @@
 import "server-only";
 import { allExams, allTopics } from "content-collections";
 
-export const currentExam = "ftn-p1";
+export const defaultExam = "ftn-p1";
 
-const exam = allExams.find((e) => e.id === currentExam);
-if (!exam) throw new Error(`exam ${currentExam} is missing`);
+const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
+  const byTopic = new Map(positions.map((p) => [p.topic, p]));
+  return {
+    id,
+    positions,
+    topics: [
+      ...positions.map((p) => p.topic),
+      ...allTopics.map((t) => t.id).filter((topic) => !byTopic.has(topic)),
+    ],
+    numberOf: (topic: string) => byTopic.get(topic)?.number ?? null,
+  };
+};
+
+const exams = new Map(allExams.map((e) => [e.id, buildExam(e)]));
+
+export function examOf(id = defaultExam) {
+  const exam = exams.get(id);
+  if (!exam) throw new Error(`exam ${id} is missing`);
+  return exam;
+}
+
+export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
 export const examOptions = allExams.map((e) => ({
   id: e.id,
@@ -13,16 +33,3 @@ export const examOptions = allExams.map((e) => ({
   tasks: e.positions.length,
   hours: e.durationMinutes / 60,
 }));
-
-export const positions = exam.positions;
-
-const byTopic = new Map(positions.map((p) => [p.topic, p]));
-
-export const examTopics = [
-  ...positions.map((p) => p.topic),
-  ...allTopics.map((t) => t.id).filter((id) => !byTopic.has(id)),
-];
-
-export const positionOf = (topic: string) => byTopic.get(topic);
-
-export const numberOf = (topic: string) => positionOf(topic)?.number ?? null;

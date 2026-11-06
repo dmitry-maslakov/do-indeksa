@@ -7,7 +7,7 @@ import type { Locale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { renderMarkdown } from "@/lib/markdown";
 import { sentForm } from "./boxes";
-import { numberOf } from "./exams";
+import { examOf } from "./exams";
 import { type Level, levelOf } from "./level";
 import {
   answerAddsText,
@@ -30,7 +30,7 @@ export interface TaskSummary {
 export function summarize(task: Task): TaskSummary {
   return {
     id: task.id,
-    number: numberOf(task.topic),
+    number: examOf().numberOf(task.topic),
     topic: task.topic,
     difficulty: task.difficulty,
     level: levelOf(task.difficulty),
@@ -82,7 +82,7 @@ export function taskFacts(id: string) {
     difficulty: task.difficulty,
     level: levelOf(task.difficulty),
     exam_year: exam?.year,
-    exam_position: exam?.position ?? numberOf(task.topic) ?? undefined,
+    exam_position: exam?.position ?? examOf().numberOf(task.topic) ?? undefined,
     key_rev: task.keyRev,
     hints_available: task.hints.length,
     parts: task.check.length,

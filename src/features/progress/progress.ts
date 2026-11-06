@@ -3,7 +3,7 @@ import { and, desc, eq, gte, inArray, isNotNull, ne } from "drizzle-orm";
 import { cache } from "react";
 import { attempts, reveals, skips, taskSessions } from "@/db/schema";
 import { epochMs } from "@/db/sql";
-import { examTopics } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { db } from "@/server/db";
 import { noId } from "@/server/profile";
 import { getShownTasks, getTasksWith } from "./attempt-log";
@@ -192,6 +192,6 @@ export async function getTopicPlan(profileId: string) {
 const weakCount = 3;
 
 export const weakTopics = (stats: TaskStat[]) =>
-  weakest(stats, examTopics)
+  weakest(stats, examOf().topics)
     .slice(0, weakCount)
     .map((w) => w.topic);

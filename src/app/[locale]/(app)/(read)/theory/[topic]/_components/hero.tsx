@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { numberOf } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf } from "@/features/theory/theory";
 
@@ -24,7 +24,7 @@ export function Hero({
 export function TopicHero({ topic }: { topic: string }) {
   const t = useTranslations("Theory");
   const locale = useLocale();
-  const number = numberOf(topic);
+  const number = examOf().numberOf(topic);
   const counts = t("counts", {
     sections: getTheory(topic)?.sections.length ?? 0,
     methods: methodsOf(topic).length,

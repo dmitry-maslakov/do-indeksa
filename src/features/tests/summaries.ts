@@ -1,6 +1,6 @@
 import "server-only";
 import type { Locale } from "next-intl";
-import { positions } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import type { TopicLook } from "@/features/catalog/topic-look";
 import { topicLook } from "@/features/catalog/topics";
 import { variantTitle } from "@/features/variants/variant-title";
@@ -60,7 +60,7 @@ export async function summarizeTests(
         kind: weekly ? "weekly" : (variant?.kind ?? "custom"),
         title: variant ? await variantTitle(variant, locale) : test.variantId,
         finishedAt: test.finishedAt.getTime(),
-        examTasks: positions.length,
+        examTasks: examOf().positions.length,
         segments: result.rows.map((r) => r.segment),
         looks: result.rows.map((r) => topicLook(r.topic)),
         misses: result.rows
