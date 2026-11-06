@@ -219,14 +219,13 @@
     "finish": "Završi test",
     "finishShort": "Završi",
     "finishTitle": "Završiti test?",
-    "finishLeft": "Bez odgovora: {count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}. Posle završetka odgovori se ne mogu menjati.",
-    "finishAll": "Posle završetka odgovori se ne mogu menjati.",
     "finishFailed": "Test nije predat. Odgovori su sačuvani.",
     "cancel": "Nastavi",
     "timeUp": "Vreme je isteklo. Završi test ili nastavi van vremena, prekoračenje se beleži.",
     "answerHint": "Kucaj / za razlomak, sqrt za koren, pi za π, ^ za stepen. Ekvivalentni oblici se priznaju, npr. 1/2 i 0,5.",
     "fallback": "Nijedan zadatak ne odgovara izboru, pa je sastavljen test kao na ispitu.",
-    "swap": "Zameni zadatak {number, number}"
+    "swap": "Zameni zadatak {number, number}",
+    "finishAnswered": "Odgovoreno <b>{done, number} od {total, number}</b>. Posle završetka odgovori se više ne mogu menjati."
   },
   "Review": {
     "title": "Analiza",
