@@ -52,6 +52,9 @@
   --color-lime-strong: var(--lime-strong);
   --color-lime-text: var(--lime-text);
   --color-lime-tint: var(--lime-tint);
+  --color-lime-step-1: var(--lime-step-1);
+  --color-lime-step-2: var(--lime-step-2);
+  --color-lime-step-3: var(--lime-step-3);
   --color-tone-blue: var(--tone-blue);
   --color-tone-pink: var(--tone-pink);
   --color-tone-orange: var(--tone-orange);
@@ -168,6 +171,9 @@
   --lime-strong: #c6ec4f;
   --lime-text: #4a5a17;
   --lime-tint: #f3fad8;
+  --lime-step-1: color-mix(in oklab, var(--lime-strong), var(--lime-text) 25%);
+  --lime-step-2: color-mix(in oklab, var(--lime-strong), var(--lime-text) 50%);
+  --lime-step-3: color-mix(in oklab, var(--lime-strong), var(--lime-text) 75%);
   --tone-blue: #9ab8ff;
   --tone-pink: #ffb3df;
   --tone-orange: #ffb882;

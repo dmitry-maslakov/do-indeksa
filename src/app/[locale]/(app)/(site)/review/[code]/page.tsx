@@ -8,7 +8,7 @@ export default function ReviewCodePage({
   params,
 }: PageProps<"/[locale]/review/[code]">) {
   return (
-    <main className="max-w-250 px-4 pb-10 md:px-10 md:pb-14">
+    <main className="px-4 pb-10 md:px-10 md:pb-14">
       <Suspense fallback={<ReviewSkeleton />}>
         <ReviewView params={params} />
       </Suspense>

@@ -25,7 +25,7 @@ export function MistakesCard({ rows }: { rows: MistakeRow[] }) {
   return (
     <section
       aria-labelledby="stats-mistakes"
-      className="flex flex-col gap-3 rounded-[20px] border p-4 md:p-6"
+      className="flex flex-col gap-3 md:rounded-[20px] md:border md:p-6"
     >
       <div className="flex items-baseline gap-2.5">
         <h2 id="stats-mistakes" className="font-semibold text-[17px]">

@@ -37,12 +37,12 @@ test("a guest sees a finished test, today's practice and the mistakes", {
   await page.goto("/stats");
 
   const tests = page.getByRole("region", { name: "Testovi" });
-  await expect(tests).toContainText("poslednji 0 od 6");
+  await expect(tests).toContainText("0/6");
   await expect(tests.locator(`a[href$="${review}"]`)).toBeVisible();
 
   const regularity = page.getByRole("region", { name: "Redovnost" });
   await expect(regularity).toContainText("1 dan zaredom");
-  await expect(regularity).toContainText("1 dan ·");
+  await expect(regularity).toContainText("1 dan vežbanja");
 
   const mistakes = page.getByRole("region", { name: "Gde grešim" });
   const row = mistakes

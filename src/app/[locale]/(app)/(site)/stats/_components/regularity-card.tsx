@@ -1,145 +1,137 @@
 import { cn } from "cn";
-import { CheckIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import type {
-  PracticeDay,
-  Regularity,
+import {
+  type PracticeDay,
+  practiceMonths,
+  type Regularity,
 } from "@/features/progress/practice-days";
-import { toMinutes } from "@/lib/dates";
+import { hourMs, minuteMs } from "@/lib/dates";
 import { useDuration } from "@/lib/use-duration";
 
 const noon = (day: string) => new Date(`${day}T12:00:00Z`);
 
-function Day({ day, today }: { day: PracticeDay; today: boolean }) {
-  const t = useTranslations("Stats");
+const steps = [15 * minuteMs, 30 * minuteMs, hourMs];
+
+const shades = [
+  "bg-muted",
+  "bg-lime",
+  "bg-lime-step-1",
+  "bg-lime-step-2",
+  "bg-lime-step-3",
+];
+
+const shadeOf = (day: PracticeDay) =>
+  day.active
+    ? shades[1 + steps.filter((step) => day.ms >= step).length]
+    : shades[0];
+
+const labelled = new Set([0, 2, 4]);
+
+function Day({ day, today }: { day: PracticeDay; today: string }) {
   const format = useFormatter();
-  const minutes = toMinutes(day.ms);
+  const duration = useDuration();
+  if (day.future) return <span />;
 
   return (
-    <li className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-subtle uppercase">
-        {format.dateTime(noon(day.day), { weekday: "narrow", timeZone: "UTC" })}
-      </span>
-      <span
-        className={cn(
-          "grid size-8 place-items-center rounded-full md:size-8.5",
-          day.active && "bg-lime",
-          !day.active && today && "border-2 border-foreground",
-          !day.active && !today && "border-[1.5px] border-input border-dashed",
-          day.future && !today && "opacity-50",
-        )}
-      >
-        {day.active && <CheckIcon aria-hidden className="size-4 stroke-3" />}
-      </span>
-      <span className="text-[10px] text-muted-foreground tabular-nums md:text-[11px]">
-        {day.active
-          ? t("minutes", { minutes })
-          : today
-            ? t("today")
-            : day.future
-              ? ""
-              : "—"}
-      </span>
-    </li>
+    <span
+      title={`${format.dateTime(noon(day.day), { day: "numeric", month: "short", timeZone: "UTC" })} · ${duration(day.ms)}`}
+      className={cn(
+        "aspect-square rounded-[3px]",
+        shadeOf(day),
+        day.day === today && "outline-2 outline-foreground outline-offset-1",
+      )}
+    />
   );
 }
 
 interface RegularityCardProps {
   regularity: Regularity;
   streak: number;
+  today: string;
 }
 
-export function RegularityCard({ regularity, streak }: RegularityCardProps) {
+export function RegularityCard({
+  regularity,
+  streak,
+  today,
+}: RegularityCardProps) {
   const t = useTranslations("Stats");
   const format = useFormatter();
   const duration = useDuration();
-  const minutes = toMinutes(regularity.weekMs);
-  const weeks = regularity.weeks.map((week) => ({
-    start: week.start,
-    minutes: toMinutes(week.ms),
-  }));
-  const longest = Math.max(1, ...weeks.map((week) => week.minutes));
-  const today = regularity.week.findLast((d) => !d.future)?.day;
+  const { weeks } = regularity;
+  const monthOf = (i: number) => weeks[i]?.[0]?.day.slice(5, 7);
+  const summary =
+    regularity.days === 0
+      ? t("gridEmpty")
+      : t("gridSummary", {
+          days: regularity.days,
+          time: duration(regularity.ms),
+        });
 
   return (
     <section
       aria-labelledby="stats-regularity"
-      className="flex flex-col gap-5 rounded-[20px] border p-4 md:p-6"
+      className="flex flex-col gap-4 md:rounded-[20px] md:border md:p-6"
     >
-      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <h2 id="stats-regularity" className="font-semibold text-[17px]">
-          {t("regularity")}
-        </h2>
-        {streak > 0 && (
-          <span className="rounded-full bg-overtime-tint px-2.5 py-0.5 font-semibold text-[13px] text-overtime-text">
-            {t("streak", { count: streak })}
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2.5">
-        <p className="flex justify-between gap-3 text-[13px]">
-          <span className="font-semibold">{t("thisWeek")}</span>
-          <span className="font-semibold tabular-nums">
-            {regularity.weekDays === 0
-              ? t("weekEmpty")
-              : t("weekSummary", {
-                  days: regularity.weekDays,
-                  time:
-                    minutes > 0
-                      ? duration(regularity.weekMs)
-                      : t("minutes", { minutes }),
-                })}
-          </span>
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+          <h2 id="stats-regularity" className="font-semibold text-[17px]">
+            {t("regularity")}
+          </h2>
+          {streak > 0 && (
+            <span className="rounded-full bg-overtime-tint px-2.5 py-0.5 font-semibold text-[13px] text-overtime-text">
+              {t("streak", { count: streak })}
+            </span>
+          )}
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          {t("gridPeriod", { months: practiceMonths })} · {summary}
         </p>
-        <ol
-          aria-label={t("days")}
-          className="grid grid-cols-7 gap-1 md:gap-1.5"
-        >
-          {regularity.week.map((day) => (
-            <Day key={day.day} day={day} today={day.day === today} />
-          ))}
-        </ol>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="font-semibold text-[13px]">
-          {t("perWeek")}{" "}
-          <span className="font-normal text-subtle">· {t("perWeekNote")}</span>
-        </p>
-        <div role="img" aria-label={t("weeks")} className="flex flex-col gap-1">
-          <div className="flex h-20 items-end gap-1.5 border-b md:gap-2">
-            {weeks.map((week, i) => (
-              <div
-                key={week.start}
-                className="flex h-full flex-1 flex-col items-center justify-end gap-0.5"
-              >
-                <span className="text-[10px] text-muted-foreground tabular-nums">
-                  {week.minutes > 0 ? week.minutes : ""}
-                </span>
-                <span
-                  className={cn(
-                    "w-full rounded-t-md rounded-b-[2px]",
-                    i === weeks.length - 1 ? "bg-progress" : "bg-progress-tint",
-                  )}
-                  style={{ height: `${(week.minutes / longest) * 70}%` }}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-1.5 md:gap-2">
-            {weeks.map((week) => (
-              <span
-                key={week.start}
-                className="flex-1 text-center text-[10px] text-subtle tabular-nums"
-              >
-                {format.dateTime(noon(week.start), {
-                  day: "numeric",
-                  month: "numeric",
+      <div
+        role="img"
+        aria-label={`${t("grid")}: ${summary}`}
+        className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-1.5 gap-y-1"
+      >
+        <span />
+        <div className="grid auto-cols-fr grid-flow-col gap-[3px] text-[11px] text-subtle">
+          {weeks.map((week, i) => (
+            <span key={week[0]?.day} className="whitespace-nowrap">
+              {i > 1 &&
+                monthOf(i) !== monthOf(i - 1) &&
+                format.dateTime(noon(week[0]?.day ?? ""), {
+                  month: "short",
                   timeZone: "UTC",
                 })}
-              </span>
-            ))}
-          </div>
+            </span>
+          ))}
         </div>
+        <div className="grid grid-rows-7 gap-[3px] text-[10px] text-subtle uppercase">
+          {weeks[0]?.map((day, i) => (
+            <span key={day.day} className="flex items-center leading-none">
+              {labelled.has(i) &&
+                format.dateTime(noon(day.day), {
+                  weekday: "narrow",
+                  timeZone: "UTC",
+                })}
+            </span>
+          ))}
+        </div>
+        <div className="grid auto-cols-fr grid-flow-col grid-rows-7 gap-[3px]">
+          {weeks.flat().map((day) => (
+            <Day key={day.day} day={day} today={today} />
+          ))}
+        </div>
+      </div>
+      <div
+        aria-hidden
+        className="flex items-center gap-1.5 self-end text-[11px] text-subtle"
+      >
+        {t("legendNone")}
+        {shades.map((shade) => (
+          <span key={shade} className={cn("size-3 rounded-[3px]", shade)} />
+        ))}
+        {t("legendMost", { hours: (steps.at(-1) ?? 0) / hourMs })}
       </div>
     </section>
   );

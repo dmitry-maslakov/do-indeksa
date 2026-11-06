@@ -1,9 +1,10 @@
 "use client";
 
+import { cn } from "cn";
 import { noop } from "es-toolkit";
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,51 +44,49 @@ export function RevealContent({ taskId, part, className }: RevealContentProps) {
   ) : null;
 }
 
-interface RevealSwitchProps {
+interface RevealSolutionProps {
   taskId: string;
   testSessionId: string;
-  parts: { part: RevealPart; label: string }[];
-  children?: ReactNode;
+  label: string;
+  className?: string;
 }
 
-export function RevealSwitch({
+export function RevealSolution({
   taskId,
   testSessionId,
-  parts,
-  children,
-}: RevealSwitchProps) {
-  const [open, setOpen] = useState<RevealPart | null>(null);
-  const [seen, setSeen] = useState<RevealPart[]>([]);
+  label,
+  className,
+}: RevealSolutionProps) {
+  const [open, setOpen] = useState(false);
+  const [seen, setSeen] = useState(false);
 
-  function toggle(part: RevealPart) {
-    if (!seen.includes(part)) {
-      saveReveal({ taskId, part, owner: { testSessionId } }).catch(noop);
-      setSeen([...seen, part]);
+  function toggle() {
+    if (!seen) {
+      saveReveal({
+        taskId,
+        part: "solution",
+        owner: { testSessionId },
+      }).catch(noop);
+      setSeen(true);
     }
-    setOpen(open === part ? null : part);
+    setOpen(!open);
   }
 
   return (
-    <div className="flex w-full flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        {parts.map(({ part, label }) => (
-          <Button
-            key={part}
-            variant="ghost"
-            size="sm"
-            aria-expanded={open === part}
-            onClick={() => toggle(part)}
-            className="aria-expanded:bg-card aria-expanded:ring-[1.5px] aria-expanded:ring-foreground aria-expanded:ring-inset"
-          >
-            {label}
-            <ChevronDownIcon className="text-subtle transition-transform group-aria-expanded/button:rotate-180" />
-          </Button>
-        ))}
-        {children}
-      </div>
-      {open !== null && (
-        <div className="rounded-xl bg-muted px-4 py-3">
-          <RevealContent taskId={taskId} part={open} />
+    <div className={cn("flex flex-col gap-3", className)}>
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-expanded={open}
+        onClick={toggle}
+        className="self-start aria-expanded:bg-card aria-expanded:ring-[1.5px] aria-expanded:ring-foreground aria-expanded:ring-inset"
+      >
+        {label}
+        <ChevronDownIcon className="text-subtle transition-transform group-aria-expanded/button:rotate-180" />
+      </Button>
+      {open && (
+        <div className="rounded-xl bg-muted px-4 py-3 2xl:bg-transparent 2xl:p-0">
+          <RevealContent taskId={taskId} part="solution" />
         </div>
       )}
     </div>

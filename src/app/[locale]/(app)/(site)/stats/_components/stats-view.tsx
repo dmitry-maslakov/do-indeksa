@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SignInStrip } from "@/features/account/sign-in-strip";
 import { topicName } from "@/features/catalog/topics";
 import {
+  gridWeeks,
   practiceWeeks,
   regularity,
   streakOf,
@@ -22,19 +23,14 @@ import { MistakesCard } from "./mistakes-card";
 import { RegularityCard } from "./regularity-card";
 import { TestsCard } from "./tests-card";
 
-const chartedTests = 8;
-
-const listedTests = 4;
+const listedTests = 6;
 
 async function loadStats() {
   const [profileId, locale] = await Promise.all([getProfileId(), getLocale()]);
   const now = Date.now();
   const [recent, spans, days, zone, outcomes] = await Promise.all([
-    getTests(profileId, chartedTests),
-    getPracticeSpans(
-      profileId,
-      new Date(now - (practiceWeeks + 1) * 7 * dayMs),
-    ),
+    getTests(profileId, listedTests),
+    getPracticeSpans(profileId, new Date(now - (gridWeeks + 1) * 7 * dayMs)),
     getPracticeDays(profileId),
     getZone(profileId),
     getTaskOutcomes(profileId, new Date(now - mistakeDays * dayMs)),
@@ -43,10 +39,10 @@ async function loadStats() {
   const since = now - practiceWeeks * 7 * dayMs;
   const today = dateIn(now, zone);
   return {
-    charted: tests.filter((test) => test.finishedAt >= since).reverse(),
-    listed: tests.slice(0, listedTests),
-    regularity: regularity(spans, today, practiceWeeks),
+    tests: tests.filter((test) => test.finishedAt >= since),
+    regularity: regularity(spans, today, gridWeeks),
     streak: streakOf(days, today),
+    today,
     mistakes: topicMistakes(outcomes).map((row) => ({
       topic: row.topic,
       name: topicName(row.topic, locale),
@@ -66,14 +62,20 @@ export async function StatsView() {
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 md:gap-6">
       {!session && !stats.empty && (
         <SignInStrip from="stats">{strip("stats")}</SignInStrip>
       )}
-      <TestsCard charted={stats.charted} listed={stats.listed} />
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-        <RegularityCard regularity={stats.regularity} streak={stats.streak} />
-        <MistakesCard rows={stats.mistakes} />
+      <div className="grid items-start gap-8 md:gap-6 xl:grid-cols-2">
+        <TestsCard tests={stats.tests} />
+        <div className="flex flex-col gap-8 md:gap-6">
+          <RegularityCard
+            regularity={stats.regularity}
+            streak={stats.streak}
+            today={stats.today}
+          />
+          <MistakesCard rows={stats.mistakes} />
+        </div>
       </div>
     </div>
   );
