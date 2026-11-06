@@ -24,7 +24,9 @@
     "theoryMethods": "{topic}: методы решения",
     "theoryMethodsDescription": "Методы решения по теме «{topic}»: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "{method}, метод решения по теме «{topic}»: когда применять, порядок решения, пример и частая ошибка."
+    "theoryMethodDescription": "{method}, метод решения по теме «{topic}»: когда применять, порядок решения, пример и частая ошибка.",
+    "solutionsTitle": "{kind, select, official {Вступительный {faculty} {year}: задачи с решениями} other {{title}: задачи с решениями}}",
+    "solutionsDescription": "{kind, select, official {{tasks, plural, one {# задача} few {# задачи} other {# задач}} вступительного по математике в {faculty} {year} года} other {{title}: {tasks, plural, one {# задача} few {# задачи} other {# задач}} в формате вступительного по математике в {faculty}}} с ответами и решениями. Их можно решить и как пробный вариант с таймером."
   },
   "NotFound": {
     "title": "Страница не найдена",
@@ -199,7 +201,8 @@
     "weeklyReview": "Разбор →",
     "weeklyNext": "Новый вариант через {days, plural, one {# день} few {# дня} other {# дней}}",
     "testTitle": "{kind, select, weekly {Вариант недели} custom {Свой вариант} other {{title}}}",
-    "testKind": "{kind, select, official {Вступительный экзамен} curated {Наш вариант} weekly {Задание недели} other {{count, plural, one {# задача} few {# задачи} other {# задач}}}}"
+    "testKind": "{kind, select, official {Вступительный экзамен} curated {Наш вариант} weekly {Задание недели} other {{count, plural, one {# задача} few {# задачи} other {# задач}}}}",
+    "solutions": "Решения"
   },
   "Exam": {
     "timeLeft": "Осталось",
@@ -248,6 +251,14 @@
     "unread": "не прочитан",
     "toBank": "Открыть в банке",
     "estimateLink": "Это оценка — как мы считаем баллы?"
+  },
+  "Solutions": {
+    "back": "‹ Варианты",
+    "solve": "Решить как вариант",
+    "tasks": "Задачи",
+    "task": "Задача {number, number}",
+    "points": "{points, plural, one {# балл} few {# балла} other {# баллов}}",
+    "toBank": "Решить в банке"
   },
   "Home": {
     "timeEmpty": "Реши первый вариант, и здесь появится, на каких задачах уходит больше всего времени.",

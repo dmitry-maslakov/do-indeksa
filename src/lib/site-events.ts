@@ -71,6 +71,7 @@ const controlUsed = defineEvent("control_used", {
     "practice_similar",
     "theory_tab",
     "theory_section_link",
+    "solutions_task_link",
   ]),
   value: text.regex(/^[\w-]+$/).optional(),
 });

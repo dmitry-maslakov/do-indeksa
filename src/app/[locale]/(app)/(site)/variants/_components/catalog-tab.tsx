@@ -71,6 +71,7 @@ export function VariantTable({
           title={v.title}
           href={`/variants/${v.id}`}
           original={v.original}
+          solutions={`/variants/${v.id}/solutions`}
           test={tests.find((r) => r.variantId === v.id)}
           pending={pending}
         />

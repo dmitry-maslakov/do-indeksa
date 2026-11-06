@@ -24,7 +24,9 @@
     "theoryMethods": "{topic}: metodi rešavanja",
     "theoryMethodsDescription": "Metodi rešavanja za temu {topic}: {methods}.",
     "theoryMethod": "{method} · {topic}",
-    "theoryMethodDescription": "{method}, metod rešavanja za temu {topic}: kada se primenjuje, postupak, primer i česta greška."
+    "theoryMethodDescription": "{method}, metod rešavanja za temu {topic}: kada se primenjuje, postupak, primer i česta greška.",
+    "solutionsTitle": "{kind, select, official {{faculty} prijemni {year}: zadaci sa rešenjima} other {{title}: zadaci sa rešenjima}}",
+    "solutionsDescription": "{kind, select, official {{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} sa prijemnog iz matematike na {faculty}-u {year}. godine} other {{title}: {tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} po formatu prijemnog iz matematike na {faculty}-u}}, sa rezultatima i rešenjima. Možeš ih rešiti i kao probni test sa merenjem vremena."
   },
   "NotFound": {
     "title": "Stranica nije pronađena",
@@ -199,7 +201,8 @@
     "weeklyReview": "Pregled →",
     "weeklyNext": "Nova varijanta za {days, plural, one {# dan} few {# dana} other {# dana}}",
     "testTitle": "{kind, select, weekly {Varijanta nedelje} custom {Svoj test} other {{title}}}",
-    "testKind": "{kind, select, official {Prijemni ispit} curated {Naš test} weekly {Nedeljni izazov} other {{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}}}"
+    "testKind": "{kind, select, official {Prijemni ispit} curated {Naš test} weekly {Nedeljni izazov} other {{count, plural, one {# zadatak} few {# zadatka} other {# zadataka}}}}",
+    "solutions": "Rešenja"
   },
   "Exam": {
     "timeLeft": "Preostalo vreme",
@@ -248,6 +251,14 @@
     "unread": "nije pročitano",
     "toBank": "Otvori u banci",
     "estimateLink": "Ovo je procena — kako bodujemo?"
+  },
+  "Solutions": {
+    "back": "‹ Probni testovi",
+    "solve": "Reši kao test",
+    "tasks": "Zadaci",
+    "task": "Zadatak {number, number}",
+    "points": "{points, plural, one {# bod} few {# boda} other {# bodova}}",
+    "toBank": "Reši u banci"
   },
   "Home": {
     "timeEmpty": "Kad rešiš prvi test, ovde se vidi na kojim zadacima trošiš najviše vremena.",

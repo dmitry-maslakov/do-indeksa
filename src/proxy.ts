@@ -37,6 +37,7 @@ const contentPages: Partial<
     variantIds.has(id) ||
     customTaskIds(id, positions.length, (taskId) => taskIds.has(taskId)) !==
       undefined,
+  "/variants/[id]/solutions": (id) => variantIds.has(id),
 };
 
 function withTraceTiming(response: NextResponse) {

@@ -18,6 +18,7 @@ export const routeTemplates = [
   "/v/[code]",
   "/variants",
   "/variants/[id]",
+  "/variants/[id]/solutions",
 ] as const;
 
 export type RouteTemplate = (typeof routeTemplates)[number] | "/[...rest]";

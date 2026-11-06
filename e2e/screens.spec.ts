@@ -75,6 +75,10 @@ test("serves robots and sitemap", async ({ request }) => {
     "<loc>https://doindeksa.rs/theory/exponential-equations</loc>",
   );
   expect(pages).not.toContain("/ru/theory/exponential-equations");
+  expect(pages).toContain(
+    "<loc>https://doindeksa.rs/variants/ftn-p1-2025/solutions</loc>",
+  );
+  expect(pages).not.toContain("/ru/variants/ftn-p1-2025/solutions");
   expect(pages).not.toContain("/bank/eks-001");
   const urls = tasks.join();
   expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
@@ -99,6 +103,11 @@ const screens = [
     "/variants",
     "Probni testovi",
     "Probni prijemni iz matematike za FTN · Do indeksa",
+  ],
+  [
+    "/variants/ftn-p1-2025/solutions",
+    "Reši kao test",
+    "FTN prijemni 2025: zadaci sa rešenjima · Do indeksa",
   ],
   ["/review", "Analiza", "Analiza · Do indeksa"],
   ["/stats", "Statistika", "Statistika · Do indeksa"],
@@ -128,6 +137,7 @@ const missing = [
   "/theory/exponential-equations/methods/nema-metode",
   "/variants/nema-varijante",
   "/variants/set-nema-zadatka",
+  "/variants/nema-varijante/solutions",
   "/exams/ftn-p3",
   "/faculties/ftn",
 ];
@@ -149,12 +159,14 @@ test("keeps other locales of Serbian content out of search", async ({
     "/ru/bank/eks-001",
     "/en/theory/exponential-equations",
     "/ru/theory/exponential-equations/methods",
+    "/en/variants/ftn-p1-2025/solutions",
   ]) {
     expect(await (await request.get(path)).text(), path).toContain(noindex);
   }
   for (const path of [
     "/bank/eks-001",
     "/theory/exponential-equations",
+    "/variants/ftn-p1-2025/solutions",
     "/ru/bank",
   ]) {
     expect(await (await request.get(path)).text(), path).not.toContain(noindex);

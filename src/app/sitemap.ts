@@ -32,6 +32,7 @@ const untranslatedPages = [
     `/theory/${t.topic}/methods`,
   ]),
   ...theoryMethods.map((m) => `/theory/${m.topic}/methods/${m.slug}`),
+  ...contentVariants.map((v) => `/variants/${v.id}/solutions`),
 ];
 
 const url = (path: string) => new URL(path, siteUrl).href;
