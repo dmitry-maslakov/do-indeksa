@@ -1,4 +1,4 @@
-import { sum, sumBy } from "es-toolkit";
+import { sumBy } from "es-toolkit";
 import { dateIn, dayMs } from "@/lib/dates";
 
 export interface PracticeSpan {
@@ -15,13 +15,16 @@ export interface PracticeDay {
 }
 
 export interface Regularity {
-  week: PracticeDay[];
-  weekDays: number;
-  weekMs: number;
-  weeks: { start: string; ms: number }[];
+  weeks: PracticeDay[][];
+  days: number;
+  ms: number;
 }
 
 export const practiceWeeks = 8;
+
+export const practiceMonths = 6;
+
+export const gridWeeks = Math.round((practiceMonths * 365) / 12 / 7);
 
 const dayNumber = (day: string) => Date.parse(`${day}T00:00:00Z`) / dayMs;
 
@@ -48,27 +51,23 @@ export function regularity(
 ): Regularity {
   const days = practiceDays(spans);
   const monday = mondayOf(today);
-  const week = Array.from({ length: 7 }, (_, i) => {
-    const day = shift(monday, i);
-    return {
-      day,
-      ms: days.get(day) ?? 0,
-      active: days.has(day),
-      future: day > today,
-    };
+  const weeks = Array.from({ length: weekCount }, (_, w) => {
+    const start = shift(monday, (w - weekCount + 1) * 7);
+    return Array.from({ length: 7 }, (_, d) => {
+      const day = shift(start, d);
+      return {
+        day,
+        ms: days.get(day) ?? 0,
+        active: days.has(day),
+        future: day > today,
+      };
+    });
   });
-  const weeks = Array.from({ length: weekCount }, (_, i) => {
-    const start = shift(monday, (i - weekCount + 1) * 7);
-    const ms = sum(
-      Array.from({ length: 7 }, (_, d) => days.get(shift(start, d)) ?? 0),
-    );
-    return { start, ms };
-  });
+  const shown = weeks.flat();
   return {
-    week,
-    weekDays: week.filter((d) => d.active).length,
-    weekMs: sumBy(week, (d) => d.ms),
     weeks,
+    days: shown.filter((d) => d.active).length,
+    ms: sumBy(shown, (d) => d.ms),
   };
 }
 

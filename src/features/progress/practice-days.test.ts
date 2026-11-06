@@ -28,19 +28,32 @@ describe("regularity", () => {
     span("2026-10-28", 60),
   ];
 
-  it("lays out this week from Monday", () => {
-    const { week, weekDays, weekMs } = regularity(spans, "2026-11-04", 8);
-    expect(week.map((d) => d.day)).toEqual([
-      "2026-11-02",
-      "2026-11-03",
-      "2026-11-04",
-      "2026-11-05",
-      "2026-11-06",
-      "2026-11-07",
-      "2026-11-08",
+  it("lays out whole weeks from Monday, this week last", () => {
+    const { weeks } = regularity(spans, "2026-11-04", 2);
+    expect(weeks.map((week) => week.map((d) => d.day))).toEqual([
+      [
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30",
+        "2026-10-31",
+        "2026-11-01",
+      ],
+      [
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07",
+        "2026-11-08",
+      ],
     ]);
-    expect(week.map((d) => d.ms / minuteMs)).toEqual([35, 10, 20, 0, 0, 0, 0]);
-    expect(week.map((d) => d.future)).toEqual([
+    expect(weeks[1]?.map((d) => d.ms / minuteMs)).toEqual([
+      35, 10, 20, 0, 0, 0, 0,
+    ]);
+    expect(weeks[1]?.map((d) => d.future)).toEqual([
       false,
       false,
       false,
@@ -49,22 +62,24 @@ describe("regularity", () => {
       true,
       true,
     ]);
-    expect(weekDays).toBe(3);
-    expect(weekMs).toBe(65 * minuteMs);
   });
 
-  it("sums the minutes of each week, oldest first", () => {
-    const { weeks } = regularity(spans, "2026-11-04", 3);
-    expect(weeks).toEqual([
-      { start: "2026-10-19", ms: 0 },
-      { start: "2026-10-26", ms: 60 * minuteMs },
-      { start: "2026-11-02", ms: 65 * minuteMs },
-    ]);
+  it("counts the days and the time in the shown weeks only", () => {
+    expect(regularity(spans, "2026-11-04", 2)).toMatchObject({
+      days: 4,
+      ms: 125 * minuteMs,
+    });
+    expect(regularity(spans, "2026-11-04", 1)).toMatchObject({
+      days: 3,
+      ms: 65 * minuteMs,
+    });
   });
 
   it("puts a session on the day of its own time zone", () => {
     const late = { at: at("2026-11-03", 23), tz: "Europe/Belgrade", ms: 0 };
-    expect(regularity([late], "2026-11-04", 1).week[2]?.active).toBe(true);
+    expect(regularity([late], "2026-11-04", 1).weeks[0]?.[2]?.active).toBe(
+      true,
+    );
   });
 });
 

@@ -57,7 +57,7 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
   return (
     <section
       aria-label={t("tasks")}
-      className="grid gap-4 lg:grid-cols-[18.75rem_minmax(0,1fr)] lg:items-stretch lg:gap-6"
+      className="grid gap-4 lg:grid-cols-[21rem_minmax(0,1fr)] xl:grid-cols-[26.25rem_minmax(0,1fr)] lg:items-stretch lg:gap-6"
     >
       <ol className="hidden flex-col gap-0.5 rounded-[20px] bg-muted p-2 lg:flex">
         {tasks.map((x, i) => (
@@ -66,14 +66,14 @@ export function ReviewTasks({ tasks, timed, testSessionId }: ReviewTasksProps) {
               type="button"
               {...choose(i, x)}
               className={cn(
-                "grid h-10.5 w-full items-center gap-2.5 rounded-xl px-2.5 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current]:bg-card aria-[current]:shadow-raised",
+                "grid min-h-10.5 w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm outline-none hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring aria-[current]:bg-card aria-[current]:shadow-raised",
                 timed
                   ? "grid-cols-[1.5rem_minmax(0,1fr)_auto_2.5rem]"
                   : "grid-cols-[1.5rem_minmax(0,1fr)_2.5rem]",
               )}
             >
               <TaskBadge entry={x} />
-              <span className="truncate font-medium in-aria-[current]:font-semibold">
+              <span className="line-clamp-2 font-medium leading-snug in-aria-[current]:font-semibold">
                 {x.topicName}
                 <span className="sr-only">
                   {" · "}

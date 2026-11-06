@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { segmentTone } from "@/components/segment-tone";
 import { Button } from "@/components/ui/button";
 import { ReportTask } from "@/features/practice/report-task";
-import { RevealSwitch } from "@/features/practice/reveal/reveal";
+import { RevealSolution } from "@/features/practice/reveal/reveal";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
 import { Answers } from "./review-answers";
@@ -62,7 +62,6 @@ export function ReviewTask({
 }: ReviewTaskProps) {
   const t = useTranslations("Review");
   const solve = useTranslations("Solve");
-  const step = "size-8 rounded-[10px]";
 
   return (
     <article
@@ -88,51 +87,33 @@ export function ReviewTask({
             })}
           </span>
         </span>
-        <span className="hidden gap-1 lg:flex">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={step}
-            aria-label={t("prev")}
-            disabled={prev === undefined}
-            onClick={onPrev}
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={step}
-            aria-label={t("next")}
-            disabled={next === undefined}
-            onClick={onNext}
-          >
-            <ChevronRightIcon />
-          </Button>
-        </span>
       </div>
-      <Statement html={entry.statement} />
-      <Answers entry={entry} />
-      <RevealSwitch
-        taskId={entry.taskId}
-        testSessionId={testSessionId}
-        parts={[{ part: "solution", label: solve("solution") }]}
-      >
-        <Link
-          href={`/bank/${entry.taskId}`}
-          target="_blank"
-          rel="noopener"
-          data-intent={intentOf({ via: "review", placement: "review_row" })}
-          className="inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
-        >
-          {t("toBank")}
-          <ArrowUpRightIcon aria-hidden className="size-4" />
-        </Link>
-      </RevealSwitch>
-      <ReportTask taskId={entry.taskId} />
+      <div className="grid gap-4 2xl:grid-cols-2 2xl:grid-rows-[auto_auto_1fr] 2xl:gap-x-7">
+        <Statement html={entry.statement} />
+        <Answers entry={entry} />
+        <RevealSolution
+          taskId={entry.taskId}
+          testSessionId={testSessionId}
+          label={solve("solution")}
+          className="2xl:col-start-2 2xl:row-span-3 2xl:row-start-1 2xl:self-start 2xl:rounded-2xl 2xl:bg-muted 2xl:p-5"
+        />
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3 self-start">
+          <Link
+            href={`/bank/${entry.taskId}`}
+            target="_blank"
+            rel="noopener"
+            data-intent={intentOf({ via: "review", placement: "review_row" })}
+            className="inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("toBank")}
+            <ArrowUpRightIcon aria-hidden className="size-4" />
+          </Link>
+          <ReportTask taskId={entry.taskId} />
+        </div>
+      </div>
       <nav
         aria-label={t("tasks")}
-        className="mt-auto flex items-center justify-center gap-5 pt-1 lg:hidden"
+        className="mt-auto flex items-center justify-center gap-5 pt-1"
       >
         <Button
           variant="lime"
