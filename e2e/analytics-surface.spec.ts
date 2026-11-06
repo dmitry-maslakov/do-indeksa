@@ -326,6 +326,59 @@ test("theory records how far a page was read", async ({ page }) => {
   ]);
 });
 
+test("a solutions page records how far it was read", async ({ page }) => {
+  await page.goto("/variants/ftn-p1-2025/solutions");
+  await hydrated(page);
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForFunction(
+    () => innerHeight + scrollY >= document.documentElement.scrollHeight - 1,
+  );
+  await flush(page);
+
+  await expect
+    .poll(() => propsOf(page, "solutions_read"))
+    .toEqual([
+      expect.objectContaining({
+        variant_id: "ftn-p1-2025",
+        sections: 10,
+        sections_reached: 10,
+        last_section: "task-10",
+        max_scroll_pct: 100,
+        exit: "pagehide",
+        seq: 1,
+      }),
+    ]);
+  expect(
+    (await recorded(page, "solutions_read")).map(({ route }) => route),
+  ).toEqual(["/variants/[id]/solutions"]);
+});
+
+test("a solutions page counts the time on the task in the middle of the screen", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto("/variants/ftn-p1-2025/solutions");
+  await hydrated(page);
+  await page
+    .locator("#task-3")
+    .evaluate((task) => task.scrollIntoView({ block: "center" }));
+  await page.mouse.move(10, 10);
+  await page.clock.fastForward("00:20");
+  await page.mouse.move(20, 20);
+  await flush(page);
+
+  await expect
+    .poll(() => propsOf(page, "solutions_read"))
+    .toEqual([expect.objectContaining({ exit: "pagehide" })]);
+  const [read] = await propsOf(page, "solutions_read");
+  const times = read?.section_ms as number[];
+  expect(times).toHaveLength(10);
+  expect(times[2]).toBeGreaterThanOrEqual(20_000);
+  expect(times.reduce((all, ms) => all + ms, 0)).toBeLessThanOrEqual(
+    Number(read?.active_ms),
+  );
+});
+
 test("an idle theory page is not counted as reading", async ({ page }) => {
   await page.clock.install();
   await page.goto("/theory/exponential-equations");

@@ -5,6 +5,7 @@ import { clientEvents as practiceEvents } from "@/features/practice/practice-eve
 import { clientEvents as progressEvents } from "@/features/progress/progress-events";
 import { clientEvents as testEvents } from "@/features/tests/test-events";
 import { clientEvents as theoryEvents } from "@/features/theory/theory-events";
+import { clientEvents as variantEvents } from "@/features/variants/variant-events";
 import { batchBytes } from "@/lib/analytics-browser";
 import { batchParser } from "@/lib/analytics-schema";
 import { clientEvents } from "@/lib/site-events";
@@ -18,6 +19,7 @@ const parseBatch = batchParser([
   ...progressEvents,
   ...bankEvents,
   ...theoryEvents,
+  ...variantEvents,
 ]);
 
 function refusal(headers: Headers) {
