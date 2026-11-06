@@ -108,6 +108,20 @@ export function ReviewTask({
             {t("toBank")}
             <ArrowUpRightIcon aria-hidden className="size-4" />
           </Link>
+          <Link
+            href={`/bank/similar/${entry.taskId}`}
+            prefetch={false}
+            target="_blank"
+            rel="noopener"
+            data-intent={intentOf({
+              via: "review",
+              placement: "review_similar",
+            })}
+            className="inline-flex items-center gap-1 rounded-sm font-semibold text-muted-foreground text-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            {t("similar")}
+            <ArrowUpRightIcon aria-hidden className="size-4" />
+          </Link>
           <ReportTask taskId={entry.taskId} />
         </div>
       </div>

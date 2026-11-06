@@ -174,3 +174,29 @@ test("an unfinished test continues from the server on another device", async ({
     )
     .toBe("7");
 });
+
+test("a task in the result opens another task of its topic to practise", async ({
+  page,
+  context,
+}) => {
+  await finishSet(page);
+  const task = shownTask(page);
+  const topic = await task.getByRole("heading").first().innerText();
+  const toBank = task.getByRole("link", { name: "Otvori u banci" });
+  const shown = (await toBank.getAttribute("href"))?.split("/").at(-1);
+  const opened = context.waitForEvent("page");
+  await task.getByRole("link", { name: "Reši sličan" }).click();
+  const similar = await opened;
+  await expect(similar).toHaveURL(/\/bank\/[^/]+$/);
+  expect(similar.url()).not.toMatch(new RegExp(`/bank/${shown}$`));
+  await expect(
+    similar.getByText(topic, { exact: true }).filter({ visible: true }).first(),
+  ).toBeVisible();
+});
+
+test("a missing task has no similar one", async ({ page }) => {
+  const response = await page.request.get("/bank/similar/nema-zadatka", {
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(404);
+});

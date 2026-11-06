@@ -64,6 +64,7 @@ export function MistakesCard({ rows }: { rows: MistakeRow[] }) {
                   <th scope="row" className="py-2.5 pr-2 text-left font-medium">
                     <Link
                       href={`/bank/start/${row.topic}`}
+                      prefetch={false}
                       className="rounded-sm outline-none hover:underline hover:underline-offset-3 focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {row.name}

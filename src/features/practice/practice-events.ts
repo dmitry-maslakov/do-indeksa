@@ -28,6 +28,7 @@ export const placements = [
   "skip",
   "card",
   "review_row",
+  "review_similar",
 ] as const;
 
 export const taskIntent = z.object({
