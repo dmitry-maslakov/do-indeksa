@@ -60,7 +60,7 @@ export function SymbolTray({
 }: SymbolTrayProps) {
   if (locked || (!symbols.length && !children && !hint)) return null;
   return (
-    <div className="invisible hidden min-h-8 flex-wrap items-center gap-1.5 group-focus-within/field:visible pointer-fine:flex">
+    <div className="invisible hidden min-h-8 flex-wrap items-center gap-1.5 group-focus-within/field:visible group-not-last/field:-mb-2 pointer-fine:flex">
       {children}
       {symbols.map((name) => (
         <TrayButton
