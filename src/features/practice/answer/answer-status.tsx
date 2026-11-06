@@ -5,17 +5,12 @@ import { EyeIcon, LightbulbIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { PartOutcome } from "@/db/columns";
-import { cardsOf } from "@/features/practice/reveal/help";
-import { RevealError } from "@/features/practice/reveal/reveal";
-import { useReveal } from "@/features/practice/reveal/use-reveal";
 import { useTaskSession } from "@/features/practice/session/task-session";
 import type { TaskStatus } from "@/features/progress/status";
 import { StatusIcon } from "@/features/progress/status-icon";
 import { type Verdict, verdictOf } from "./verdicts";
 
 interface AnswerStatusProps {
-  taskId: string;
-  answerText: boolean;
   outcomes?: PartOutcome[];
   solved: number;
   total: number;
@@ -44,16 +39,9 @@ function Note({ children }: { children: ReactNode }) {
   );
 }
 
-function Content({
-  taskId,
-  answerText,
-  outcomes,
-  solved,
-  total,
-}: AnswerStatusProps) {
+function Content({ outcomes, solved, total }: AnswerStatusProps) {
   const t = useTranslations("Solve");
-  const { hints, shown, solution, opened } = useTaskSession();
-  const { isError, refetch } = useReveal(taskId, shown);
+  const { hints, shown, solution } = useTaskSession();
   if (solved === total)
     return (
       <>
@@ -78,9 +66,6 @@ function Content({
         </span>
         {total > 1 && solved > 0 && (
           <Note>{t("ownParts", { own: solved, total })}</Note>
-        )}
-        {isError && !cardsOf(opened, answerText).includes(shown) && (
-          <RevealError onRetry={() => refetch()} />
         )}
       </>
     );

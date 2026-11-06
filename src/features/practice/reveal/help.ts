@@ -23,6 +23,21 @@ export const openedOf = ({
   ...(solution ? (["solution"] as const) : []),
 ];
 
+export interface HelpHtml {
+  hints: string[];
+  answer: string;
+  solution: string;
+}
+
+export const blocksOf = (
+  { hints, answer, solution }: HelpHtml,
+  answerText: boolean,
+): { part: RevealPart; html: string }[] => [
+  ...hints.map((html, part) => ({ part, html })),
+  ...(answerText ? [{ part: "answer" as const, html: answer }] : []),
+  { part: "solution", html: solution },
+];
+
 export const cardsOf = (opened: RevealPart[], answerText: boolean) =>
   opened.filter(
     (part) => part !== "answer" || (answerText && !opened.includes("solution")),

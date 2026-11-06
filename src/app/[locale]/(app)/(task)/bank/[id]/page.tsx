@@ -107,7 +107,7 @@ export default async function SolvePage({
             taskId={id}
             parts={html.parts}
             unchecked={html.unchecked}
-            answerText={html.answerText}
+            answerValues={html.answerValues}
             next={personal.then((p) => p.next)}
             fallback="/bank"
             afterCorrect={
@@ -119,7 +119,9 @@ export default async function SolvePage({
         </LiveNextTask>
         <HelpPanel
           taskId={id}
-          hintCount={html.hints.length}
+          hints={html.hints}
+          answer={html.answer}
+          solution={html.solution}
           answerText={html.answerText}
         />
         <div className="mt-6">

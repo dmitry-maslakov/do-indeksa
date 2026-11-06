@@ -11,6 +11,7 @@ import {
   idsByTopic,
   renderParts,
   renderStatement,
+  renderTask,
   summarize,
   taskDescription,
   taskIdSchema,
@@ -82,6 +83,15 @@ describe("task statements", () => {
       expect(await renderStatement(task)).toBe(html);
       expect(renderMarkdown).toHaveBeenCalledTimes(1);
     }
+  });
+});
+
+describe("rendered tasks", () => {
+  it("fill the answer fields with what the checks expect", async () => {
+    expect((await renderTask("eks-001"))?.answerValues).toEqual(["2"]);
+    expect((await renderTask("eks-003"))?.answerValues).toEqual([
+      "(-\\infty;0)\\cup(2;+\\infty)",
+    ]);
   });
 });
 
