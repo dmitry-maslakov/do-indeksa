@@ -17,6 +17,7 @@ import { timeZone } from "@/lib/dates";
 import { earlierGroups, type Period } from "./earlier";
 import { type Pick, planQueue, startSize, upcomingSize } from "./picks";
 import type { PickReason } from "./recommendation";
+import { similarPool } from "./similar";
 import { examYear, previewHtml } from "./task-preview";
 import { earlierRuns, visitOf } from "./visit";
 
@@ -133,6 +134,26 @@ export async function nextTasks(profileId: string) {
       return next ? [[topic, next] as const] : [];
     }),
   );
+}
+
+export async function similarTask(profileId: string, id: string) {
+  const task = getTask(id);
+  const shown = task && poolOf([id])[0];
+  if (!task || !shown) return undefined;
+  const ids = topicIds(task.topic);
+  const [touched, { now, learningAt }] = await Promise.all([
+    getTouched(profileId, ids),
+    getTimeline(profileId),
+  ]);
+  const pool = similarPool(shown, poolOf(ids), touched.statuses);
+  const { upcoming } = planQueue({
+    pool,
+    learningAt,
+    ...touched,
+    now,
+    size: startSize,
+  });
+  return upcoming[0]?.id ?? pool[0]?.taskId;
 }
 
 export const topicStart = (
