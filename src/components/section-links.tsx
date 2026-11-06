@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { RailLink } from "@/components/rail";
-import { queueEvent } from "@/lib/analytics-browser";
+import { type ReactNode, useEffect, useState } from "react";
+import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
+import { RailLink } from "./rail";
 
 interface SectionLinksProps {
   base: string;
-  sections: { id: string; title: string }[];
+  sections: { id: string; title: ReactNode }[];
+  control: BrowserEvents["control_used"]["control"];
 }
 
-export function SectionLinks({ base, sections }: SectionLinksProps) {
+export function SectionLinks({ base, sections, control }: SectionLinksProps) {
   const [current, setCurrent] = useState(sections[0]?.id);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export function SectionLinks({ base, sections }: SectionLinksProps) {
       onClick={() => {
         setCurrent(s.id);
         queueEvent("control_used", {
-          control: "theory_section_link",
+          control,
           value: s.id,
         });
       }}
