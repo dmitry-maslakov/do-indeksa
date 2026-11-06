@@ -343,8 +343,10 @@ test("the solutions of an exam record their links and the starts they lead to", 
   await expect(shown(page, /^Zadatak 1 · /)).toBeVisible();
   await page.goBack();
   await hydrated(page);
-  await page.getByRole("link", { name: "Reši u banci" }).first().click();
-  await expect(page).toHaveURL(/\/bank\/kb-003$/);
+  const toBank = page.getByRole("link", { name: "Reši u banci" }).first();
+  const task = (await toBank.getAttribute("href"))?.split("/").at(-1);
+  await toBank.click();
+  await expect(page).toHaveURL(new RegExp(`/bank/${task}$`));
   await flush(page);
 
   await expect
@@ -357,9 +359,7 @@ test("the solutions of an exam record their links and the starts they lead to", 
     .toEqual([["ftn-p1-2025", "solutions"]]);
   await expect
     .poll(() => propsOf(page, "task_opened"))
-    .toEqual([
-      expect.objectContaining({ task_id: "kb-003", via: "solutions" }),
-    ]);
+    .toEqual([expect.objectContaining({ task_id: task, via: "solutions" })]);
   expect(await propsOf(page, "control_used")).toContainEqual({
     control: "solutions_task_link",
     value: "task-3",

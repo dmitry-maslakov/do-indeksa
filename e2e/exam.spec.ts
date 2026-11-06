@@ -22,12 +22,25 @@ test("the test rail tracks answers and hides the time", async ({ page }) => {
   await expect(page.getByRole("timer")).toBeVisible();
 });
 
-test("the solutions of an exam are in its HTML and lead to the test", async ({
+test.describe("without scripts", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the solutions of an exam are in its HTML", async ({ page }) => {
+    await page.goto("/variants/ftn-p1-2025/solutions");
+    const solutions = page
+      .locator("main section", {
+        has: page.getByRole("heading", { name: "Rešenje", exact: true }),
+      })
+      .locator(".math-text");
+    await expect(solutions).toHaveCount(10);
+    for (const solution of await solutions.all())
+      await expect(solution).not.toBeEmpty();
+  });
+});
+
+test("the catalog leads to the solutions of an exam and they lead to the test", async ({
   page,
-  request,
 }) => {
-  const html = await request.get("/variants/ftn-p1-2025/solutions");
-  expect(await html.text()).toContain("Pri deljenju se moduli dele");
   await page.goto("/variants");
   await page
     .getByRole("listitem")
