@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { resultsShown } from "@/features/bank/bank-events";
 import { BankList } from "@/features/bank/bank-list";
@@ -11,21 +12,27 @@ import { FiltersSheet } from "@/features/bank/filters/filters-sheet";
 import {
   bankHref,
   loadBankFilters,
+  pagedTopic,
   serializeBankFilters,
 } from "@/features/bank/params";
 import { type BankQuery, findTasks } from "@/features/bank/search";
 import { positions } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
+import { redirect } from "@/i18n/navigation";
 import { EmptyResults } from "./empty-results";
 import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
 
 interface BankProps extends Pick<PageProps<"/[locale]/bank">, "searchParams"> {
   topic: string | null;
+  offset?: number;
 }
 
-export async function Bank({ topic, searchParams }: BankProps) {
+export async function Bank({ topic, offset = 0, searchParams }: BankProps) {
   const filters = { ...(await loadBankFilters(searchParams)), topic };
+  if (offset > 0 && !pagedTopic(filters)) {
+    redirect({ href: bankHref(filters), locale: await getLocale() });
+  }
   const personal = loadPersonal(topic ?? positions[0]?.topic ?? "");
   const statuses = filters.status ? (await personal).statuses : undefined;
 
@@ -33,6 +40,7 @@ export async function Bank({ topic, searchParams }: BankProps) {
     <BankResults
       filters={filters}
       tasks={findTasks(filters, statuses)}
+      offset={offset}
       personal={personal}
     />
   );
@@ -41,10 +49,16 @@ export async function Bank({ topic, searchParams }: BankProps) {
 interface BankResultsProps {
   filters: BankQuery;
   tasks: TaskSummary[];
+  offset?: number;
   personal?: ReturnType<typeof loadPersonal>;
 }
 
-export function BankResults({ filters, tasks, personal }: BankResultsProps) {
+export function BankResults({
+  filters,
+  tasks,
+  offset = 0,
+  personal,
+}: BankResultsProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
   const search = serializeBankFilters(filters);
@@ -108,6 +122,8 @@ export function BankResults({ filters, tasks, personal }: BankResultsProps) {
           <BankList
             tasks={tasks}
             search={search}
+            offset={offset}
+            paged={pagedTopic(filters)}
             statuses={personal?.then((p) => p.statuses)}
           />
         )}

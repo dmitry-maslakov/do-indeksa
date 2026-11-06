@@ -10,12 +10,19 @@ import { intentOf } from "@/lib/analytics-browser";
 import { type Page, useFeed } from "@/lib/use-feed";
 import type { BankCard } from "./feed";
 import { useBankFilters } from "./filters/use-bank-filters";
-import { loadBankFilters, serializeBankFilters } from "./params";
+import {
+  bankPageHref,
+  loadBankFilters,
+  pageAt,
+  serializeBankFilters,
+} from "./params";
 import { TaskCard } from "./task-card";
 
 interface BankFeedProps {
   search: string;
   first: Page<BankCard>;
+  offset: number;
+  paged?: string;
   statuses?: Promise<TaskStatuses>;
 }
 
@@ -50,9 +57,16 @@ function UrlList({ search, children }: UrlListProps) {
   );
 }
 
-export function BankFeed({ search, first, statuses }: BankFeedProps) {
+export function BankFeed({
+  search,
+  first,
+  offset,
+  paged,
+  statuses,
+}: BankFeedProps) {
   const t = useTranslations("Bank");
-  const feed = useFeed("bank", first, search, true);
+  const feed = useFeed("bank", first, { search, keep: true, offset });
+  const next = feed.data.pages.at(-1)?.next;
   const hydrated = useSyncExternalStore(
     () => noop,
     () => true,
@@ -68,10 +82,14 @@ export function BankFeed({ search, first, statuses }: BankFeedProps) {
             key={card.id}
             card={card}
             statuses={statuses}
-            intent={intentOf({ via, placement: "card", rank: i + 1 })}
+            intent={intentOf({ via, placement: "card", rank: offset + i + 1 })}
           />
         ))}
-      <LoadMore key={feed.data.pages.length} feed={feed}>
+      <LoadMore
+        key={feed.data.pages.length}
+        feed={feed}
+        href={paged && next ? bankPageHref(paged, pageAt(next)) : undefined}
+      >
         {t("more")}
       </LoadMore>
     </>

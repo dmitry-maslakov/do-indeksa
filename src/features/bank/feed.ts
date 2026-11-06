@@ -10,6 +10,7 @@ import {
 import type { Tone, TopicIconData } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import type { Page } from "@/lib/use-feed";
+import { firstPageSize, pageSize } from "./params";
 
 export interface BankCard {
   id: string;
@@ -18,9 +19,6 @@ export interface BankCard {
   level: Level;
   statement: string;
 }
-
-const firstPageSize = 3;
-const pageSize = 10;
 
 async function cardOf(task: TaskSummary, locale: Locale): Promise<BankCard> {
   const content = getTask(task.id);

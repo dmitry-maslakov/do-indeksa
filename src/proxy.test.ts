@@ -31,6 +31,7 @@ describe("proxy", () => {
     "/bank",
     "/bank/topic/logarithms",
     "/ru/bank/topic/logarithms?level=easy",
+    "/bank/topic/logarithms/2",
     "/theory",
     "/variants",
     "/ru/theory/exponential-equations",
@@ -51,6 +52,10 @@ describe("proxy", () => {
     ["/sr-Latn/bank/nema-zadatka", "sr-Latn"],
     ["/bank/topic/nema-teme", "sr-Latn"],
     ["/en/bank/topic/nema-teme", "en"],
+    ["/bank/topic/nema-teme/2", "sr-Latn"],
+    ["/bank/topic/logarithms/1", "sr-Latn"],
+    ["/bank/topic/logarithms/02", "sr-Latn"],
+    ["/ru/bank/topic/logarithms/strana", "ru"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });

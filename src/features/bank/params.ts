@@ -46,3 +46,29 @@ const serializeQuery = createSerializer(queryParsers);
 
 export const bankHref = ({ topic, ...query }: BankQuery) =>
   serializeQuery(topic ? `/bank/topic/${topic}` : "/bank", query);
+
+export const firstPageSize = 3;
+
+export const pageSize = 10;
+
+export const pageOffset = (page: number) =>
+  firstPageSize + (page - 2) * pageSize;
+
+export const pageAt = (offset: number) =>
+  (offset - firstPageSize) / pageSize + 2;
+
+export const pageCount = (tasks: number) =>
+  1 + Math.ceil(Math.max(0, tasks - firstPageSize) / pageSize);
+
+export function pageOf(value: string) {
+  const page = Number(value);
+  return Number.isInteger(page) && page >= 2 && String(page) === value
+    ? page
+    : undefined;
+}
+
+export const pagedTopic = ({ topic, ...query }: BankQuery) =>
+  topic && !serializeQuery(query) ? topic : undefined;
+
+export const bankPageHref = (topic: string, page: number) =>
+  `${bankHref({ topic })}/${page}`;

@@ -7,12 +7,27 @@ import { bankPage } from "./feed";
 interface BankListProps {
   tasks: TaskSummary[];
   search: string;
+  offset: number;
+  paged?: string;
   statuses?: Promise<TaskStatuses>;
 }
 
-export async function BankList({ tasks, search, statuses }: BankListProps) {
-  const first = await bankPage(tasks, 0, await getLocale());
+export async function BankList({
+  tasks,
+  search,
+  offset,
+  paged,
+  statuses,
+}: BankListProps) {
+  const first = await bankPage(tasks, offset, await getLocale());
   return (
-    <BankFeed key={search} search={search} first={first} statuses={statuses} />
+    <BankFeed
+      key={search}
+      search={search}
+      first={first}
+      offset={offset}
+      paged={paged}
+      statuses={statuses}
+    />
   );
 }

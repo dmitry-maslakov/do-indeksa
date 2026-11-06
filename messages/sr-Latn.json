@@ -9,6 +9,7 @@
     "bankDescription": "Zadaci za prijemni ispit iz matematike na FTN-u po temama: kompleksni brojevi, logaritmi, trigonometrija, integrali i ostalo, sa nagoveštajima i rešenjima.",
     "bankTopic": "{topic}: zadaci",
     "bankTopicDescription": "{topic} za prijemni iz matematike na FTN-u: zadaci sa nagoveštajima i rešenjima.",
+    "bankTopicPage": "{topic}: zadaci, strana {page, number}",
     "variantsTitle": "Probni prijemni iz matematike za FTN",
     "variantsDescription": "Probni prijemni iz matematike za FTN u Novom Sadu: testovi po formatu prijemnog i naši testovi, sa merenjem vremena kao na ispitu.",
     "taskPlace": "{topic}, zadatak {number, number}",

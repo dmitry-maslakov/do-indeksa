@@ -9,16 +9,21 @@ export interface Page<T> {
 
 type List = BrowserEvents["list_page_loaded"]["list"];
 
+interface FeedOptions {
+  search?: string;
+  keep?: boolean;
+  offset?: number;
+}
+
 export function useFeed<T>(
   list: List,
   first: Page<T>,
-  search = "",
-  keep = false,
+  { search = "", keep = false, offset = 0 }: FeedOptions = {},
 ) {
   const locale = useLocale();
   const path = `/api/${list}`;
   return useInfiniteQuery({
-    queryKey: [path, locale, search],
+    queryKey: [path, locale, search, offset],
     queryFn: async ({ pageParam, signal }): Promise<Page<T>> => {
       const params = new URLSearchParams(search);
       params.set("offset", String(pageParam));
@@ -36,8 +41,8 @@ export function useFeed<T>(
       });
       return page;
     },
-    initialPageParam: 0,
-    initialData: { pages: [first], pageParams: [0] },
+    initialPageParam: offset,
+    initialData: { pages: [first], pageParams: [offset] },
     initialDataUpdatedAt: 0,
     getNextPageParam: (last) => last.next,
     staleTime: "static",
