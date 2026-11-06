@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { LinkTabs } from "@/components/link-tabs";
 import { RailContent, RailLink, RailSelect } from "@/components/rail";
+import { SectionLinks } from "@/components/section-links";
 import { NativeSelectOption } from "@/components/ui/native-select";
 import { useRouter } from "@/i18n/navigation";
-import { SectionLinks } from "./section-links";
 
 interface TheoryRailProps {
   topic: string;
@@ -73,7 +73,11 @@ export function TheoryRail({
             </RailLink>
           ))
         ) : (
-          <SectionLinks base={base} sections={sections} />
+          <SectionLinks
+            base={base}
+            sections={sections}
+            control="theory_section_link"
+          />
         )}
       </div>
     </RailContent>
