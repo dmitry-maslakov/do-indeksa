@@ -1,7 +1,7 @@
 import "server-only";
 import { loadQueue, nextTasks, topicStart } from "@/features/bank/queue/queue";
 import { recommendationOf } from "@/features/bank/queue/recommendation";
-import { examTopics } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { getSolved } from "@/features/progress/progress";
 import { getSittingState } from "@/features/progress/sitting";
 import { getSession } from "@/server/auth";
@@ -28,7 +28,7 @@ export async function loadPersonal({ id, topic }: PersonalInput) {
   return {
     queue,
     starts: Object.fromEntries(
-      examTopics.map((topic) => [topic, topicStart(starts, topic)]),
+      examOf().topics.map((topic) => [topic, topicStart(starts, topic)]),
     ),
     next: {
       href: queue.next && `/bank/${queue.next}`,

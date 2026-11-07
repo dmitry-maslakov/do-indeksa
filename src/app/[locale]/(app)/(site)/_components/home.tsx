@@ -1,5 +1,5 @@
 import { useLocale } from "next-intl";
-import { examTopics } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { WeeklyCard } from "@/features/tests/weekly/weekly-card";
 import type { WeeklyVariant } from "@/features/variants/weekly";
@@ -23,7 +23,7 @@ export function Home({ weekly, personal }: HomeProps) {
         <WeeklyCard {...weekly} test={personal.then((p) => p.weeklyTest)} />
       )}
       <TopicMap
-        topics={examTopics.map((topic) => ({
+        topics={examOf().topics.map((topic) => ({
           topic,
           name: topicName(topic, locale),
           look: topicLook(topic),

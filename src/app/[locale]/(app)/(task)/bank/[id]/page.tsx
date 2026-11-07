@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
-import { examTopics } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
 import {
@@ -72,7 +72,7 @@ export default async function SolvePage({
   };
   const feed = {
     topic: task.topic,
-    topics: examTopics.map((topic) => ({
+    topics: examOf().topics.map((topic) => ({
       id: topic,
       name: topicName(topic, locale),
     })),

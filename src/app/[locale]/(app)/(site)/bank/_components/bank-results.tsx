@@ -16,7 +16,7 @@ import {
   serializeBankFilters,
 } from "@/features/bank/params";
 import { type BankQuery, findTasks } from "@/features/bank/search";
-import { positions } from "@/features/catalog/exams";
+import { examOf } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
 import { redirect } from "@/i18n/navigation";
 import { EmptyResults } from "./empty-results";
@@ -33,7 +33,7 @@ export async function Bank({ topic, offset = 0, searchParams }: BankProps) {
   if (offset > 0 && !pagedTopic(filters)) {
     redirect({ href: bankHref(filters), locale: await getLocale() });
   }
-  const personal = loadPersonal(topic ?? positions[0]?.topic ?? "");
+  const personal = loadPersonal(topic ?? examOf().positions[0]?.topic ?? "");
   const statuses = filters.status ? (await personal).statuses : undefined;
 
   return (
@@ -63,7 +63,7 @@ export function BankResults({
   const locale = useLocale();
   const search = serializeBankFilters(filters);
   const pending = !personal;
-  const start = `/bank/start/${filters.topic ?? positions[0]?.topic}`;
+  const start = `/bank/start/${filters.topic ?? examOf().positions[0]?.topic}`;
   const list = bankHref(filters);
   const tabs = (
     <Suspense

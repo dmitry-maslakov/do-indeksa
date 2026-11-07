@@ -6,7 +6,7 @@ import { z } from "zod";
 import { testDraft, type Visit } from "@/db/columns";
 import { attempts, taskSessions, testSessions } from "@/db/schema";
 import { checkerVersion } from "@/features/catalog/checker";
-import { positions } from "@/features/catalog/exams";
+import { maxPlaces } from "@/features/catalog/exams";
 import { maxParts } from "@/features/catalog/parts";
 import { getTask } from "@/features/catalog/tasks";
 import { getVariant, minutesOf, slotsOf } from "@/features/variants/variants";
@@ -21,7 +21,7 @@ export const testInput = z.object({
   id: z.uuid(),
   variantId: z.string().refine((id) => getVariant(id) !== undefined),
   startedAt: z.number().int(),
-  draft: testDraft({ tasks: positions.length, parts: maxParts }),
+  draft: testDraft({ tasks: maxPlaces, parts: maxParts }),
 });
 
 export type TestInput = z.infer<typeof testInput>;

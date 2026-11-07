@@ -3,7 +3,7 @@
 import { uniq } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
-import { positions } from "@/features/catalog/exams";
+import { maxPlaces } from "@/features/catalog/exams";
 import { taskIdSchema } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
 import { redirect } from "@/i18n/navigation";
@@ -35,7 +35,7 @@ export const composeVariant = baseClient
         .array(z.string())
         .max(topicIds.length)
         .transform((ids) => topicIds.filter((id) => ids.includes(id))),
-      count: z.int().positive().max(positions.length).optional(),
+      count: z.int().positive().max(maxPlaces).optional(),
     }),
   )
   .action(async ({ parsedInput: { locale, mode, topics, count } }) => {
@@ -50,7 +50,7 @@ export const swapTask = baseClient
   .inputSchema(
     z.object({
       locale: localeSchema,
-      taskIds: z.array(taskIdSchema).min(1).max(positions.length),
+      taskIds: z.array(taskIdSchema).min(1).max(maxPlaces),
     }),
   )
   .action(async ({ parsedInput: { locale, taskIds } }) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { numberOf } from "./exams";
+import { examOf } from "./exams";
 import { taskFacts } from "./tasks";
 
 vi.mock("content-collections", async (importOriginal) => {
@@ -34,7 +34,7 @@ describe("task facts", () => {
     expect(facts).toMatchObject({
       level: "easy",
       exam_year: undefined,
-      exam_position: numberOf(facts.topic) ?? undefined,
+      exam_position: examOf().numberOf(facts.topic) ?? undefined,
     });
   });
 });
