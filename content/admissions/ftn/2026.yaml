@@ -1,0 +1,7 @@
+sources:
+  - https://ftn.uns.ac.rs/konkurs-za-upis-u-i-godinu-svih-stepena-studija-2026/
+programs:
+  siit:
+    budget: 40
+    self: 40
+    tuition: 140000
