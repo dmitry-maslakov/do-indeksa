@@ -43,7 +43,8 @@ export function ExamSwitcher({ exams, current }: ExamSwitcherProps) {
           />
         }
       >
-        {selected?.title}
+        {selected &&
+          t("title", { faculty: selected.faculty, exam: selected.title })}
         <ChevronDownIcon />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72 p-2">

@@ -1,6 +1,6 @@
 # Architecture
 
-Do indeksa is one Next.js app. Pages render on the server and call feature code directly, writes go through server actions, and the few reads the client drives go through GET route handlers. The one write outside actions is `POST /api/events`, which takes analytics batches from the browser: they are sent with `keepalive` when the page is hidden or closed, and a server action cannot do that. Postgres holds only what students do. Topics, exams, tasks, variants and theory are Markdown files compiled into the build.
+Do indeksa is one Next.js app. Pages render on the server and call feature code directly, writes go through server actions, and the few reads the client drives go through GET route handlers. The one write outside actions is `POST /api/events`, which takes analytics batches from the browser: they are sent with `keepalive` when the page is hidden or closed, and a server action cannot do that. Postgres holds only what students do. Faculties, exams, tests, topics, tasks, variants and theory are Markdown and YAML files compiled into the build.
 
 Filters, sort and search live in the URL through nuqs. The bank's topic is a path segment, `/bank/topic/<topic>`, so the build prerenders a shell for every topic. `bankHref` builds the bank links that carry filters, and the proxy sends old `/bank?topic=` links to the topic path with a 308. Lists that grow on the client, the bank feed and the test history, fetch further pages with TanStack Query from a route handler that parses its input with the same parsers as the page, and the server renders the first page. Bank cards carry their statement as HTML from the server renderer, so the browser has no Markdown stack. They are the same for every student, so the shell already shows the first cards of its topic without the query filters, dimmed after a client navigation until the list for the full address streams in. The student's marks and recommended task stream in next to them, and the bank keeps its loaded pages when the student comes back to it. The first page holds three cards and the next ten load right after it.
 
@@ -13,6 +13,8 @@ Cloudflare serves `/_next/static` on doindeksa.rs from the R2 bucket `do-indeksa
 ## Code map
 
 `content/` is a small public sample. Production builds read the private bank instead, through `CONTENT_DIR`, and content-collections validates both against the schemas in `content-collections.ts`.
+
+A faculty has its short and full name, university, city and site. An exam names its faculty, the tests it consists of and its points, and opens to students only with `open: true`. A test names its faculty, subject, kind of answer, minutes, the penalty for a wrong answer, and the topic, points and minutes of each position. A variant names its test and lists one task per position. Records refer to each other by id, an exam id starts with its faculty id, and the build fails on an unknown id or on points and minutes that do not add up. The code takes exams, tests and faculties from these records only, and a unit test fails when one of their ids appears in `src/`. Pages use the first open exam by `order`.
 
 A task's `check` lists the parts its answer field asks for. Each part has the `expected` LaTeX and may add:
 

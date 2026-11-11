@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { defineCollection, defineConfig } from "@content-collections/core";
-import { compact, uniqBy } from "es-toolkit";
+import { compact, sumBy, uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { answerProblem, parseMath } from "./src/features/catalog/checker";
 import {
@@ -135,15 +135,43 @@ const taskIds = defineCollection({
   transform: (task) => ({ id: task._meta.path }),
 });
 
-const exams = defineCollection({
-  name: "exams",
-  directory: `${root}/exams`,
+const faculties = defineCollection({
+  name: "faculties",
+  directory: `${root}/faculties`,
   include: "*.yaml",
   parser: "yaml",
   schema: z.object({
-    faculty: z.string().min(1),
-    title: z.string().min(1),
-    durationMinutes: z.number().int().positive(),
+    short: z.string().min(1),
+    name: z.string().min(1),
+    university: z.string().min(1),
+    city: z.string().min(1),
+    site: z.url(),
+    order: z.number().int(),
+  }),
+  transform: (faculty) => ({ ...faculty, id: faculty._meta.path }),
+});
+
+function checkFaculty(
+  id: string,
+  all: { _meta: { path: string } }[],
+  origin: string,
+) {
+  if (!all.some((f) => f._meta.path === id)) {
+    throw new Error(`${origin}: unknown faculty "${id}"`);
+  }
+}
+
+const tests = defineCollection({
+  name: "tests",
+  directory: `${root}/tests`,
+  include: "*.yaml",
+  parser: "yaml",
+  schema: z.object({
+    faculty: z.string(),
+    subject: z.enum(["math", "physics", "logic"]),
+    answers: z.enum(["written", "choice"]),
+    minutes: z.number().int().positive(),
+    penalty: z.number().min(0).lt(1).default(0),
     positions: z
       .array(
         z.object({
@@ -154,22 +182,62 @@ const exams = defineCollection({
       )
       .min(1),
   }),
-  transform: ({ positions, ...exam }, { documents }) => {
+  transform: (test, { documents }) => {
+    const origin = test._meta.filePath;
+    const { positions } = test;
+    checkFaculty(test.faculty, documents(faculties), origin);
     const topicIds = new Set(documents(topics).map((t) => t._meta.path));
     const covered = new Set(documents(tasks).map((t) => t.topic));
     const unknown = positions.find((p) => !topicIds.has(p.topic));
-    if (unknown)
-      throw new Error(
-        `${exam._meta.filePath}: unknown topic "${unknown.topic}"`,
-      );
+    if (unknown) throw new Error(`${origin}: unknown topic "${unknown.topic}"`);
     const empty = positions.find((p) => !covered.has(p.topic));
-    if (empty)
-      throw new Error(`${exam._meta.filePath}: no tasks for "${empty.topic}"`);
+    if (empty) throw new Error(`${origin}: no tasks for "${empty.topic}"`);
+    const minutes = sumBy(positions, (p) => p.minutes);
+    if (minutes !== test.minutes) {
+      throw new Error(`${origin}: positions take ${minutes} minutes`);
+    }
+    return { ...test, id: test._meta.path };
+  },
+});
+
+const exams = defineCollection({
+  name: "exams",
+  directory: `${root}/exams`,
+  include: "*.yaml",
+  parser: "yaml",
+  schema: z.object({
+    faculty: z.string(),
+    title: z.string().min(1),
+    tests: z.array(z.string()).min(1),
+    points: z.number().int().positive(),
+    open: z.boolean().default(false),
+    order: z.number().int(),
+  }),
+  transform: (exam, { documents }) => {
+    const origin = exam._meta.filePath;
+    const id = exam._meta.path;
+    const { faculty } = exam;
+    checkFaculty(faculty, documents(faculties), origin);
+    if (!id.startsWith(`${faculty}-`)) {
+      throw new Error(`${origin}: an exam id starts with "${faculty}-"`);
+    }
+    const parts = exam.tests.map((testId) => {
+      const test = documents(tests).find((t) => t._meta.path === testId);
+      if (!test) throw new Error(`${origin}: unknown test "${testId}"`);
+      if (test.faculty !== faculty) {
+        throw new Error(`${origin}: "${testId}" is not a test of ${faculty}`);
+      }
+      return test;
+    });
+    const positions = parts.flatMap((test) => test.positions);
+    if (sumBy(positions, (p) => p.points) !== exam.points) {
+      throw new Error(`${origin}: the tests do not add up to ${exam.points}`);
+    }
     return {
-      id: exam._meta.path,
       ...exam,
+      id,
       positions: positions.map((p, i) => ({ number: i + 1, ...p })),
-      maxPoints: positions.reduce((sum, p) => sum + p.points, 0),
+      minutes: sumBy(parts, (t) => t.minutes),
     };
   },
 });
@@ -188,7 +256,7 @@ const variants = defineCollection({
   include: "*.yaml",
   parser: "yaml",
   schema: z.object({
-    exam: z.string(),
+    test: z.string(),
     kind: z.enum(["official", "curated", "weekly"]),
     year: z.number().int().optional(),
     title: z.string().optional(),
@@ -200,11 +268,11 @@ const variants = defineCollection({
     const origin = variant._meta.filePath;
     const id = variant._meta.path;
     const week = variant.kind === "weekly" ? weekOf(id, origin) : undefined;
-    const exam = documents(exams).find((e) => e._meta.path === variant.exam);
-    if (!exam) throw new Error(`${origin}: unknown exam "${variant.exam}"`);
+    const test = documents(tests).find((t) => t._meta.path === variant.test);
+    if (!test) throw new Error(`${origin}: unknown test "${variant.test}"`);
     const tasksById = new Map(documents(tasks).map((t) => [t._meta.path, t]));
-    if (variant.taskIds.length !== exam.positions.length) {
-      throw new Error(`${origin}: expected ${exam.positions.length} tasks`);
+    if (variant.taskIds.length !== test.positions.length) {
+      throw new Error(`${origin}: expected ${test.positions.length} tasks`);
     }
     if (new Set(variant.taskIds).size !== variant.taskIds.length) {
       throw new Error(`${origin}: a task is listed twice`);
@@ -329,6 +397,8 @@ export default defineConfig({
     topics,
     tasks,
     taskIds,
+    faculties,
+    tests,
     exams,
     variants,
     theories,
