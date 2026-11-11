@@ -129,6 +129,16 @@ for (const [path, text, title] of screens) {
   });
 }
 
+test("names each bank page in its main heading", async ({ page }) => {
+  const heading = page.getByRole("heading", { level: 1 });
+  await page.goto("/bank/topic/exponential-equations");
+  await expect(heading).toHaveText("Eksponencijalne jednačine i nejednačine");
+  await page.goto("/bank/eks-001");
+  await expect(heading).toHaveText(
+    "Eksponencijalne jednačine i nejednačine, zadatak 1: Rešiti jednačinu",
+  );
+});
+
 const missing = [
   "/bank/unknown",
   "/review/a/b",

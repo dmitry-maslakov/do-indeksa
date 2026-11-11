@@ -224,12 +224,20 @@ function heading(
   };
 }
 
+export function taskHeading(
+  task: Task,
+  locale: Locale,
+  meta: ReturnType<typeof useTranslations<"Metadata">>,
+) {
+  return meta("task", heading(task, locale, meta));
+}
+
 export function taskTitle(
   task: Task,
   locale: Locale,
   meta: ReturnType<typeof useTranslations<"Metadata">>,
 ) {
-  return cut(meta("task", heading(task, locale, meta)), titleLength);
+  return cut(taskHeading(task, locale, meta), titleLength);
 }
 
 export function taskDescription(

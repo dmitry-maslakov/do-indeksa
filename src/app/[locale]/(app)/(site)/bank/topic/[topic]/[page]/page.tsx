@@ -61,16 +61,19 @@ export default async function BankTopicPagePage({
   const offset = pageOffset(page);
 
   return (
-    <Suspense
-      fallback={
-        <BankResults
-          filters={{ topic }}
-          tasks={findTasks({ topic })}
-          offset={offset}
-        />
-      }
-    >
-      <Bank topic={topic} offset={offset} searchParams={searchParams} />
-    </Suspense>
+    <>
+      <h1 className="sr-only">{topicName(topic, await getLocale())}</h1>
+      <Suspense
+        fallback={
+          <BankResults
+            filters={{ topic }}
+            tasks={findTasks({ topic })}
+            offset={offset}
+          />
+        }
+      >
+        <Bank topic={topic} offset={offset} searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }

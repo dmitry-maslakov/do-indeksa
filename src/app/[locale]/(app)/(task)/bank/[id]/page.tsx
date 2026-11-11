@@ -12,6 +12,7 @@ import {
   getTask,
   renderTask,
   taskDescription,
+  taskHeading,
   tasks,
   taskTitle,
 } from "@/features/catalog/tasks";
@@ -60,7 +61,11 @@ export default async function SolvePage({
   const task = getTask(id);
   if (!task) notFound();
 
-  const [locale, html] = await Promise.all([getLocale(), renderTask(id)]);
+  const [locale, t, html] = await Promise.all([
+    getLocale(),
+    getTranslations("Metadata"),
+    renderTask(id),
+  ]);
   if (!html) notFound();
   const personal = loadPersonal({ id, topic: task.topic });
   const topic = topicName(task.topic, locale);
@@ -93,6 +98,7 @@ export default async function SolvePage({
         look={topicLook(task.topic)}
       />
       <article className="flex min-w-0 max-w-task flex-1 flex-col pt-1">
+        <h1 className="sr-only">{taskHeading(task, locale, t)}</h1>
         <div className="flex min-h-10 items-start md:items-center">
           <Suspense fallback={<TaskMeta {...meta} />}>
             <TaskMeta {...meta} before={personal.then((p) => p.queue.before)} />
