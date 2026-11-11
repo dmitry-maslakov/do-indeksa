@@ -242,6 +242,87 @@ const exams = defineCollection({
   },
 });
 
+const pairOf = (path: string) => {
+  const [faculty = "", name = ""] = path.split("/");
+  return { faculty, name };
+};
+
+const programs = defineCollection({
+  name: "programs",
+  directory: `${root}/programs`,
+  include: "*/*.md",
+  schema: z.object({
+    content: z.string().min(1),
+    name: z.string().min(1),
+    short: z.string().min(1).optional(),
+    level: z.enum(["academic", "applied"]),
+    years: z.number().int().positive(),
+    espb: z.number().int().positive(),
+    exam: z.string(),
+    modules: z.array(z.string().min(1)).default([]),
+    sources: z.array(z.url()).min(1),
+    checked: z.iso.date().optional(),
+  }),
+  transform: async (program, { documents, cache }) => {
+    const origin = program._meta.filePath;
+    const { faculty, name: slug } = pairOf(program._meta.path);
+    checkFaculty(faculty, documents(faculties), origin);
+    const exam = documents(exams).find((e) => e._meta.path === program.exam);
+    if (exam?.faculty !== faculty) {
+      throw new Error(
+        `${origin}: "${program.exam}" is not an exam of ${faculty}`,
+      );
+    }
+    await cache(program.content, (source) =>
+      renderMarkdown(source, origin).then(() => true),
+    );
+    return { ...program, id: program._meta.path, faculty, slug };
+  },
+});
+
+const admissions = defineCollection({
+  name: "admissions",
+  directory: `${root}/admissions`,
+  include: "*/*.yaml",
+  parser: "yaml",
+  schema: z.object({
+    sources: z.array(z.url()).min(1),
+    programs: z.record(
+      z.string(),
+      z.object({
+        budget: z.number().int().nonnegative(),
+        self: z.number().int().nonnegative(),
+        tuition: z.number().int().positive().optional(),
+        cutoff: z
+          .object({
+            budget: z.number().min(0).max(100).optional(),
+            self: z.number().min(0).max(100).optional(),
+          })
+          .optional(),
+      }),
+    ),
+  }),
+  transform: (admission, { documents }) => {
+    const origin = admission._meta.filePath;
+    const { faculty, name: year } = pairOf(admission._meta.path);
+    if (!/^\d{4}$/.test(year)) {
+      throw new Error(`${origin}: the file is named after its year`);
+    }
+    checkFaculty(faculty, documents(faculties), origin);
+    const known = new Set(documents(programs).map((p) => p._meta.path));
+    const unknown = Object.keys(admission.programs).find(
+      (slug) => !known.has(`${faculty}/${slug}`),
+    );
+    if (unknown) throw new Error(`${origin}: unknown programme "${unknown}"`);
+    return {
+      ...admission,
+      id: admission._meta.path,
+      faculty,
+      year: Number(year),
+    };
+  },
+});
+
 function weekOf(id: string, origin: string) {
   const week = /^nedelja-(\d{4}-\d{2}-\d{2})$/.exec(id)?.[1];
   if (!week || new Date(`${week}T00:00:00Z`).getUTCDay() !== 1) {
@@ -400,6 +481,8 @@ export default defineConfig({
     faculties,
     tests,
     exams,
+    programs,
+    admissions,
     variants,
     theories,
     methods,
