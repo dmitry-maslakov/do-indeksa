@@ -14,12 +14,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function BankPage({
+export default async function BankPage({
   searchParams,
 }: PageProps<"/[locale]/bank">) {
+  const t = await getTranslations("Bank");
+
   return (
-    <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
-      <Bank topic={null} searchParams={searchParams} />
-    </Suspense>
+    <>
+      <h1 className="sr-only">{t("title")}</h1>
+      <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
+        <Bank topic={null} searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }

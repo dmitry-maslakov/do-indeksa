@@ -14,6 +14,7 @@ import {
   renderTask,
   summarize,
   taskDescription,
+  taskHeading,
   taskIdSchema,
   tasks,
   taskTitle,
@@ -171,6 +172,12 @@ describe("task titles", () => {
   it("name the year and the position of an exam task", () => {
     expect(taskTitle(fromExam, "sr-Latn", metaIn("sr-Latn"))).toBe(
       "FTN prijemni 2019, zadatak 4: Eksponencijalne jednačine i…",
+    );
+  });
+
+  it("are cut from a heading that keeps the whole subject", () => {
+    expect(taskHeading(fromExam, "sr-Latn", metaIn("sr-Latn"))).toBe(
+      "FTN prijemni 2019, zadatak 4: Eksponencijalne jednačine i nejednačine",
     );
   });
 

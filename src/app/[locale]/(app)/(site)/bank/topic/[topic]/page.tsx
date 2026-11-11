@@ -39,12 +39,15 @@ export default async function BankTopicPage({
   if (!known(topic)) notFound();
 
   return (
-    <Suspense
-      fallback={
-        <BankResults filters={{ topic }} tasks={findTasks({ topic })} />
-      }
-    >
-      <Bank topic={topic} searchParams={searchParams} />
-    </Suspense>
+    <>
+      <h1 className="sr-only">{topicName(topic, await getLocale())}</h1>
+      <Suspense
+        fallback={
+          <BankResults filters={{ topic }} tasks={findTasks({ topic })} />
+        }
+      >
+        <Bank topic={topic} searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }
