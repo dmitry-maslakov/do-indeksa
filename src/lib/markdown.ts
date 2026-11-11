@@ -1,11 +1,48 @@
 import { truncate } from "es-toolkit/compat";
+import type { Element, Root } from "hast";
 import { toString as plainText } from "mdast-util-to-string";
 import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { type PluggableList, unified } from "unified";
+import { type PluggableList, type Plugin, unified } from "unified";
+import { SKIP, visit } from "unist-util-visit";
+
+const hasClass = (node: Element, name: string) => {
+  const classes = node.properties.className;
+  return Array.isArray(classes) && classes.includes(name);
+};
+
+const glyph = (text: string): Element => ({
+  type: "element",
+  tagName: "span",
+  properties: { dataText: text },
+  children: [],
+});
+
+const drawGlyphs = (html: Element) =>
+  visit(html, "text", (text, index, parent) => {
+    if (parent?.type !== "element" || index === undefined) return;
+    if (parent.children.length > 1) {
+      parent.children[index] = glyph(text.value);
+      return;
+    }
+    parent.properties.dataText = text.value;
+    parent.children = [];
+  });
+
+export const mathTextOnce: Plugin<[], Root> = () => (tree) => {
+  visit(tree, "element", (node, index, parent) => {
+    if (node.tagName === "annotation" && parent && index !== undefined) {
+      parent.children.splice(index, 1);
+      return index;
+    }
+    if (!hasClass(node, "katex-html")) return;
+    drawGlyphs(node);
+    return SKIP;
+  });
+};
 
 export const markdown = (plugins: PluggableList = []) =>
   unified()
@@ -14,6 +51,7 @@ export const markdown = (plugins: PluggableList = []) =>
     .use(plugins)
     .use(remarkRehype)
     .use(rehypeKatex, { strict: "error" })
+    .use(mathTextOnce)
     .use(rehypeStringify);
 
 const processor = markdown();

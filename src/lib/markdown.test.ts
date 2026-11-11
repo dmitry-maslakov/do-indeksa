@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { excerpt, headline, preview } from "./markdown";
+import { excerpt, headline, preview, renderMarkdown } from "./markdown";
 
 describe("excerpt", () => {
   it("joins paragraphs with a space", () => {
@@ -95,5 +95,20 @@ describe("preview", () => {
     expect(preview(`${"reč ".repeat(34)}$x^{2}+1$`)).toBe(
       "reč ".repeat(34).trimEnd(),
     );
+  });
+});
+
+describe("rendered formulas", () => {
+  const rendered = renderMarkdown("Neka je $\\log_2 x$.", "test");
+
+  it("keep their text only in MathML", async () => {
+    const html = await rendered;
+    expect(html).not.toContain("<annotation");
+    expect(html.replace(/<[^>]+>/g, "")).toBe("Neka je log\u20612x.");
+  });
+
+  it("draw the visible glyphs from attributes", async () => {
+    const glyphs = [...(await rendered).matchAll(/data-text="([^"]*)"/g)];
+    expect(glyphs.map(([, text]) => text).join("")).toBe("log2\u200bx");
   });
 });

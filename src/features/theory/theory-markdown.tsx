@@ -7,6 +7,7 @@ import remarkMath from "remark-math";
 import type { Plugin } from "unified";
 import { SKIP, visit } from "unist-util-visit";
 import { KatexHtml } from "@/components/math-html";
+import { mathTextOnce } from "@/lib/markdown";
 import { Block } from "./block";
 import { theoryPlugins } from "./blocks";
 
@@ -26,7 +27,7 @@ const collapseMath: Plugin<[], Root> = () => (tree) => {
 };
 
 const remarkPlugins = [remarkMath, ...theoryPlugins];
-const rehypePlugins = [rehypeKatex, collapseMath];
+const rehypePlugins = [rehypeKatex, mathTextOnce, collapseMath];
 
 const MathSpan: Components["span"] = ({ node, children, ...props }) => {
   const html = node?.properties.dataHtml;

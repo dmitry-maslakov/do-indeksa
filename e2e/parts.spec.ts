@@ -8,7 +8,7 @@ test.skip(
 
 const boxes = (page: Page) => page.locator("[data-field]");
 
-const symbols = (box: Locator) => box.locator(".katex-html");
+const symbols = (box: Locator) => box.locator(".katex-mathml");
 
 const letters = (box: Locator) => box.locator("b");
 
@@ -72,5 +72,5 @@ test("the result of a task without an answer text is built from its checks", asy
   const reveal = await (
     await request.get("/api/tasks/eks-003/reveal?part=answer")
   ).json();
-  expect(reveal.html).toContain(">(-\\infty,0)\\cup(2,+\\infty)<");
+  expect(reveal.html.replace(/<[^>]+>/g, "")).toContain("(−∞,0)∪(2,+∞)");
 });

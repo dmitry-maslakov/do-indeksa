@@ -236,6 +236,10 @@
 }
 
 @layer components {
+  .katex-html [data-text]::before {
+    content: attr(data-text);
+  }
+
   .math-text {
     @apply text-pretty leading-relaxed;
     &:where(div) {
