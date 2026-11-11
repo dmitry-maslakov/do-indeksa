@@ -1,7 +1,11 @@
 import "server-only";
-import { allExams, allTopics } from "content-collections";
-
-export const defaultExam = "ftn-p1";
+import {
+  allExams,
+  allFaculties,
+  allTests,
+  allTopics,
+} from "content-collections";
+import { sortBy } from "es-toolkit";
 
 const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
   const byTopic = new Map(positions.map((p) => [p.topic, p]));
@@ -16,20 +20,39 @@ const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
   };
 };
 
-const exams = new Map(allExams.map((e) => [e.id, buildExam(e)]));
+const ordered = sortBy(allExams, ["order"]);
+const exams = new Map(ordered.map((e) => [e.id, buildExam(e)]));
+const openExams = ordered.filter((e) => e.open);
+const firstOpen = openExams[0]?.id;
 
-export function examOf(id = defaultExam) {
-  const exam = exams.get(id);
+export function examOf(id = firstOpen) {
+  const exam = id && exams.get(id);
   if (!exam) throw new Error(`exam ${id} is missing`);
   return exam;
 }
 
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
-export const examOptions = allExams.map((e) => ({
+const faculties = new Map(allFaculties.map((f) => [f.id, f]));
+
+function facultyOf(id: string) {
+  const faculty = faculties.get(id);
+  if (!faculty) throw new Error(`faculty ${id} is missing`);
+  return faculty;
+}
+
+const tests = new Map(allTests.map((t) => [t.id, t]));
+
+export function testFaculty(id: string) {
+  const test = tests.get(id);
+  if (!test) throw new Error(`test ${id} is missing`);
+  return facultyOf(test.faculty).short;
+}
+
+export const examOptions = openExams.map((e) => ({
   id: e.id,
-  faculty: e.faculty,
+  faculty: facultyOf(e.faculty).short,
   title: e.title,
   tasks: e.positions.length,
-  hours: e.durationMinutes / 60,
+  hours: e.minutes / 60,
 }));

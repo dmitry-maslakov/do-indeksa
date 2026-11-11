@@ -56,6 +56,7 @@
     "en": "English"
   },
   "ExamSwitcher": {
+    "title": "{faculty} · {exam}",
     "meta": "{tasks, number} задач · {hours, number} ч",
     "more": "Другие факультеты появятся позже"
   },

@@ -3,7 +3,7 @@ import type { Variant } from "content-collections";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
-import { examOptions } from "@/features/catalog/exams";
+import { testFaculty } from "@/features/catalog/exams";
 import { type ExamVariant, minutesOf } from "./variants";
 
 export async function variantTitle(variant: ExamVariant, locale: Locale) {
@@ -29,8 +29,7 @@ export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
 
 const solutionsFacts = (variant: Variant) => ({
   kind: variant.kind,
-  faculty:
-    examOptions.find((e) => e.id === variant.exam)?.faculty ?? variant.exam,
+  faculty: testFaculty(variant.test),
   year: String(variant.year ?? ""),
   title: variant.title,
   tasks: variant.taskIds.length,

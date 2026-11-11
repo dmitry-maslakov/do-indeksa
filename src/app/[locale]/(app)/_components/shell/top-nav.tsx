@@ -3,7 +3,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { UserMenu } from "@/features/account/user-menu";
 import { ExamSwitcher } from "@/features/catalog/exam-switcher";
-import { defaultExam, examOptions } from "@/features/catalog/exams";
+import { examOf, examOptions } from "@/features/catalog/exams";
 import { NavLinks } from "./nav-links";
 
 export function TopNav({ className }: { className?: string }) {
@@ -16,7 +16,7 @@ export function TopNav({ className }: { className?: string }) {
     >
       <Logo />
       <div className="max-lg:hidden">
-        <ExamSwitcher exams={examOptions} current={defaultExam} />
+        <ExamSwitcher exams={examOptions} current={examOf().id} />
       </div>
       <NavLinks />
       <div className="ml-auto flex shrink-0 items-center gap-4">
