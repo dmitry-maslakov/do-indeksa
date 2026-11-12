@@ -191,10 +191,14 @@ export async function finishTest(
         .onConflictDoNothing();
     }
     const graded = gradeTest(
-      stored.taskIds.map((taskId) => ({
-        taskId,
-        parts: getTask(taskId)?.check ?? [],
-      })),
+      stored.taskIds.map((taskId) => {
+        const task = getTask(taskId);
+        return {
+          taskId,
+          check: task?.check ?? [],
+          choice: task?.choice ?? null,
+        };
+      }),
       test.draft.answers,
     );
     const attempted = await storeAttempts(

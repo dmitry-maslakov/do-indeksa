@@ -1,5 +1,6 @@
 import { round, sumBy } from "es-toolkit";
 import { isRight, type PartOutcome } from "@/db/columns";
+import type { OptionLetter } from "@/features/catalog/choice";
 import type { YesNo } from "@/features/catalog/kinds";
 import type { Slot } from "@/features/variants/variants";
 import { minuteMs } from "@/lib/dates";
@@ -12,7 +13,10 @@ export interface ReviewAttempt {
   durationMs?: number;
 }
 
-export type Shown = { html: string } | { yesno: YesNo };
+export type Shown =
+  | { html: string }
+  | { yesno: YesNo }
+  | { letters: OptionLetter[] };
 
 export interface PartAnswer {
   key: Shown;
@@ -49,12 +53,15 @@ const isBlank = (outcomes: PartOutcome[]) =>
 
 export const reviewHref = (testId: string) => `/review/${testId.slice(0, 8)}`;
 
-export const creditOf = (outcomes: PartOutcome[], points: number) =>
-  outcomes.length === 0
-    ? 0
-    : Math.round(
-        (points * outcomes.filter(isRight).length * 10) / outcomes.length,
-      ) / 10;
+export function creditOf(
+  outcomes: PartOutcome[],
+  points: number,
+  scoring: Slot["scoring"],
+) {
+  const right = outcomes.filter(isRight).length;
+  if (right === 0 || (scoring === "whole" && right < outcomes.length)) return 0;
+  return Math.round((points * right * 10) / outcomes.length) / 10;
+}
 
 export function review<T extends Slot, A extends ReviewAttempt>(
   tasks: T[],
@@ -66,7 +73,9 @@ export function review<T extends Slot, A extends ReviewAttempt>(
     return {
       ...task,
       attempt,
-      earned: attempt ? creditOf(attempt.outcomes, task.points) : 0,
+      earned: attempt
+        ? creditOf(attempt.outcomes, task.points, task.scoring)
+        : 0,
       segment: isBlank(attempt?.outcomes ?? [])
         ? ("none" as const)
         : segmentOf(attempt?.outcomes.map(isRight)),

@@ -39,6 +39,7 @@ describe("slotsOf", () => {
         topic: "logarithms",
         points: 6,
         minutes: 24,
+        scoring: "proportional",
       },
       {
         taskId: "kb-003",
@@ -46,6 +47,7 @@ describe("slotsOf", () => {
         topic: "complex-numbers",
         points: 6,
         minutes: 24,
+        scoring: "proportional",
       },
     ]);
   });

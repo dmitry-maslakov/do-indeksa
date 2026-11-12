@@ -144,6 +144,16 @@
     "ownParts": "{own, number} of {total, number} on your own",
     "withHint": "with a hint"
   },
+  "Choice": {
+    "label": "Answer",
+    "one": "One answer is correct.",
+    "many": "More than one answer can be correct. Mark all correct ones.",
+    "keys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> marks and unmarks · <kbd>Enter</kbd> checks} other {<kbd>A</kbd>–<kbd>{last}</kbd> picks an answer · <kbd>↑</kbd> <kbd>↓</kbd> move · <kbd>Enter</kbd> checks}}",
+    "examKeys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> marks and unmarks. You can change your answers until the test ends.} other {<kbd>A</kbd>–<kbd>{last}</kbd> picks an answer. You can change it until the test ends.}}",
+    "retry": "{pick, select, many {Correct ones marked: {right, number} of {total, number}{wrong, plural, =0 {} other {, wrong ones: #}}.} other {Pick another answer and check again.}}",
+    "tag": "{tag, select, yours {your answer} key {correct answer} marked {marked, correct} markedWrong {marked, wrong} missed {correct, not marked} other {}}",
+    "scoring": "{scoring, select, whole {Several correct · points only when every correct option and no wrong one is marked} other {Several correct · points in proportion to options marked or left unmarked correctly}}"
+  },
   "Field": {
     "value": "Value {number, number}",
     "coordinate": "Coordinate {number, number}",

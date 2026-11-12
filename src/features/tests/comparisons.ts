@@ -1,6 +1,7 @@
 import "server-only";
 import katex from "katex";
 import { isBoxKind } from "@/features/catalog/boxes";
+import { pickedOf } from "@/features/catalog/choice";
 import { isYesNo, type Kind, kindOf } from "@/features/catalog/kinds";
 import { getTask } from "@/features/catalog/tasks";
 import type { PartAnswer, TaskAnswers } from "./review";
@@ -37,17 +38,28 @@ function partAnswer(
   };
 }
 
+function answersOfTask(taskId: string, given: string[] = []): PartAnswer[] {
+  const task = getTask(taskId);
+  if (task?.choice) {
+    const picked = pickedOf(given);
+    return [
+      {
+        key: { letters: task.choice.correct },
+        given: picked.length ? { letters: picked } : undefined,
+      },
+    ];
+  }
+  return (task?.check ?? []).map((check, i) =>
+    partAnswer(check, given[i]?.trim() || undefined),
+  );
+}
+
 export function answersOf(
   taskIds: string[],
   attempts: { taskId: string; answers: string[] }[],
 ): TaskAnswers {
   const given = new Map(attempts.map((a) => [a.taskId, a.answers]));
   return Object.fromEntries(
-    taskIds.map((taskId) => [
-      taskId,
-      (getTask(taskId)?.check ?? []).map((check, i) =>
-        partAnswer(check, given.get(taskId)?.[i]?.trim() || undefined),
-      ),
-    ]),
+    taskIds.map((taskId) => [taskId, answersOfTask(taskId, given.get(taskId))]),
   );
 }

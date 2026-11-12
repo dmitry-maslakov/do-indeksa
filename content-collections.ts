@@ -6,6 +6,11 @@ import { compact, sumBy, uniqBy } from "es-toolkit";
 import { z } from "zod";
 import { answerProblem, parseMath } from "./src/features/catalog/checker";
 import {
+  choiceProblem,
+  choiceResult,
+  optionLetters,
+} from "./src/features/catalog/choice";
+import {
   labelOf,
   markupOf,
   maxParts,
@@ -29,6 +34,12 @@ const keyRevOf = (expected: string[]) =>
     .slice(0, 12);
 
 const root = process.env.CONTENT_DIR ?? "content";
+
+const choiceSchema = z.strictObject({
+  many: z.boolean().default(false),
+  options: z.array(z.string().min(1)).min(2).max(optionLetters.length),
+  correct: z.array(z.enum(optionLetters)).min(1),
+});
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
 
@@ -57,13 +68,15 @@ const tasks = defineCollection({
     difficulty: z.number().int().min(1).max(5),
     source: z.string().min(1),
     answer: z.string().min(1).optional(),
-    check: z.array(partSchema).min(1).max(maxParts),
+    check: z.array(partSchema).min(1).max(maxParts).optional(),
+    choice: choiceSchema.optional(),
+    scoring: z.enum(["proportional", "whole"]).default("proportional"),
     hints: z.array(z.string().min(1)).max(3).default([]),
     solution: z.string().min(1),
     type: z.string().min(1),
   }),
   transform: async (
-    { content, answer, check, hints, solution, ...task },
+    { content, answer, check, choice, hints, solution, ...task },
     { documents, cache },
   ) => {
     const origin = task._meta.filePath;
@@ -72,7 +85,11 @@ const tasks = defineCollection({
     if (!topic.types.includes(task.type)) {
       throw new Error(`${origin}: unknown type "${task.type}"`);
     }
-    const invalid = check.find(
+    if (!check === !choice) {
+      throw new Error(`${origin}: a task is answered by check or by choice`);
+    }
+    const markup = check?.map(markupOf) ?? [];
+    const invalid = markup.find(
       (c) => c.kind !== "yesno" && !parseMath(c.expected).isValid,
     );
     if (invalid) {
@@ -86,7 +103,6 @@ const tasks = defineCollection({
           () => true,
         ),
       );
-    const markup = check.map(markupOf);
     if (onlyYesNo(markup)) {
       throw new Error(
         `${origin}: a yes/no part needs a part that justifies it`,
@@ -102,8 +118,27 @@ const tasks = defineCollection({
           `${origin}: part ${i + 1}: expected "${c.expected}" ${unsent}`,
         );
     });
-    await rendered(compact([content, answer, solution, ...hints]), origin);
-    if (!answer) await rendered([resultOf(markup)], `${origin}: result`);
+    if (choice) {
+      const problem = choiceProblem(choice);
+      if (problem) throw new Error(`${origin}: choice: ${problem}`);
+      if (answer) {
+        throw new Error(`${origin}: a choice task shows its correct options`);
+      }
+    }
+    await rendered(
+      compact([
+        content,
+        answer,
+        solution,
+        ...hints,
+        ...(choice?.options ?? []),
+      ]),
+      origin,
+    );
+    if (!answer) {
+      const result = choice ? choiceResult(choice) : resultOf(markup);
+      await rendered([result], `${origin}: result`);
+    }
     for (const [i, c] of markup.entries()) {
       const { prefix, suffix, caption } = labelOf(c, i, markup.length);
       await rendered(
@@ -122,7 +157,12 @@ const tasks = defineCollection({
       hints,
       solution,
       check: markup,
-      keyRev: keyRevOf(check.map((c) => c.expected)),
+      choice: choice ?? null,
+      keyRev: keyRevOf(
+        choice
+          ? [...choice.options, ...choice.correct]
+          : markup.map((c) => c.expected),
+      ),
     };
   },
 });

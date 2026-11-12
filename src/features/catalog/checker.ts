@@ -22,6 +22,7 @@ import {
   sentForm,
   sentOf,
 } from "./boxes";
+import { type Choice, gradeChoice } from "./choice";
 import { isYesNo, type Kind, kindOf } from "./kinds";
 
 const ce = new ComputeEngine();
@@ -330,6 +331,19 @@ export const checkerVersion = 7;
 
 export const gradeParts = (parts: GradedPart[], answers: string[]) =>
   parts.map((part, i) => gradePart(part, answers[i] ?? ""));
+
+export interface GradedTask {
+  check: GradedPart[];
+  choice: Choice | null;
+}
+
+export const gradeTask = (
+  { check, choice }: GradedTask,
+  answers: string[],
+): Graded[] =>
+  choice
+    ? gradeChoice(choice, answers).map((outcome) => ({ outcome }))
+    : gradeParts(check, answers);
 
 export function answerProblem(part: GradedPart) {
   const sent = sentForm(part);

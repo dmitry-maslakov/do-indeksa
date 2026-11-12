@@ -144,6 +144,16 @@
     "ownParts": "Самостоятельно: {own, number} из {total, number}",
     "withHint": "с подсказкой"
   },
+  "Choice": {
+    "label": "Ответ",
+    "one": "Верный ответ один.",
+    "many": "Верных ответов может быть несколько. Отметь все верные.",
+    "keys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> отмечает и снимает · <kbd>Enter</kbd> проверяет} other {<kbd>A</kbd>–<kbd>{last}</kbd> выбирает ответ · <kbd>↑</kbd> <kbd>↓</kbd> переключают · <kbd>Enter</kbd> проверяет}}",
+    "examKeys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> отмечает и снимает. Ответы можно менять до конца теста.} other {<kbd>A</kbd>–<kbd>{last}</kbd> выбирает ответ. Ответ можно менять до конца теста.}}",
+    "retry": "{pick, select, many {Отмечено верных: {right, number} из {total, number}{wrong, plural, =0 {} other {, неверных: #}}.} other {Выбери другой ответ и проверь снова.}}",
+    "tag": "{tag, select, yours {твой ответ} key {верный ответ} marked {отмечено, верно} markedWrong {отмечено, неверно} missed {верно, не отмечено} other {}}",
+    "scoring": "{scoring, select, whole {Несколько верных · баллы, только если отмечены все верные и ни одного неверного} other {Несколько верных · баллы пропорционально верно отмеченным и неотмеченным вариантам}}"
+  },
   "Field": {
     "value": "Значение {number, number}",
     "coordinate": "Координата {number, number}",

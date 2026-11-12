@@ -144,6 +144,16 @@
     "ownParts": "{own, number} od {total, number} tvoje",
     "withHint": "uz nagoveštaj"
   },
+  "Choice": {
+    "label": "Odgovor",
+    "one": "Jedan odgovor je tačan.",
+    "many": "Tačnih odgovora može biti više. Označi sve tačne.",
+    "keys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> označava i briše · <kbd>Enter</kbd> proverava} other {<kbd>A</kbd>–<kbd>{last}</kbd> bira odgovor · <kbd>↑</kbd> <kbd>↓</kbd> pomera · <kbd>Enter</kbd> proverava}}",
+    "examKeys": "{pick, select, many {<kbd>A</kbd>–<kbd>{last}</kbd> označava i briše. Odgovore možeš da promeniš do kraja testa.} other {<kbd>A</kbd>–<kbd>{last}</kbd> bira odgovor. Odgovor možeš da promeniš do kraja testa.}}",
+    "retry": "{pick, select, many {Označeno tačnih: {right, number} od {total, number}{wrong, plural, =0 {} other {, netačnih: #}}.} other {Izaberi drugi odgovor i proveri ponovo.}}",
+    "tag": "{tag, select, yours {tvoj odgovor} key {tačan odgovor} marked {označeno, tačno} markedWrong {označeno, netačno} missed {tačno, nije označeno} other {}}",
+    "scoring": "{scoring, select, whole {Više tačnih · bodovi samo kad su označena sva tačna i nijedan netačan} other {Više tačnih · bodovi srazmerno tačno označenim i neoznačenim opcijama}}"
+  },
   "Field": {
     "value": "Vrednost {number, number}",
     "coordinate": "Koordinata {number, number}",

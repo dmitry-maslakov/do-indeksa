@@ -1,7 +1,7 @@
 import "server-only";
 import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
-import { checkerVersion, gradeParts } from "@/features/catalog/checker";
+import { checkerVersion, gradeTask } from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
 import {
   factsAt,
@@ -29,7 +29,7 @@ export async function submitAnswer(
   const sitting = await getSittingState(profileId, taskId);
   if (isLocked(sitting)) return { sitting };
 
-  const graded = gradeParts(task.check, answers);
+  const graded = gradeTask(task, answers);
   const outcomes = graded.map((g) => g.outcome);
   const problems = graded.map((g) => g.problem ?? null);
   const correct = outcomes.every(isRight);

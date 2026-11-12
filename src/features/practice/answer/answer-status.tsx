@@ -14,6 +14,7 @@ interface AnswerStatusProps {
   outcomes?: PartOutcome[];
   solved: number;
   total: number;
+  note?: ReactNode;
 }
 
 const verdicts: Record<Verdict, { look: string; status?: TaskStatus }> = {
@@ -39,7 +40,7 @@ function Note({ children }: { children: ReactNode }) {
   );
 }
 
-function Content({ outcomes, solved, total }: AnswerStatusProps) {
+function Content({ outcomes, solved, total, note }: AnswerStatusProps) {
   const t = useTranslations("Solve");
   const { hints, shown, solution } = useTaskSession();
   if (solved === total)
@@ -73,10 +74,13 @@ function Content({ outcomes, solved, total }: AnswerStatusProps) {
   const verdict = verdictOf(outcomes);
   const { look, status } = verdicts[verdict];
   return (
-    <span className={cn("flex items-center gap-2", look)}>
-      {status && <StatusIcon status={status} className="size-5" />}
-      {t(verdict)}
-    </span>
+    <>
+      <span className={cn("flex items-center gap-2", look)}>
+        {status && <StatusIcon status={status} className="size-5" />}
+        {t(verdict)}
+      </span>
+      {note && <Note>{note}</Note>}
+    </>
   );
 }
 

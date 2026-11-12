@@ -8,3 +8,4 @@ tone: blue
 keys: [log, ln, e, sqrt, nth-root, fraction, power, pi]
 types:
 - substitution
+- change-of-base

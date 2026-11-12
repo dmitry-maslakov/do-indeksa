@@ -14,6 +14,7 @@ import { RevealSolution } from "@/features/practice/reveal/reveal";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
 import { Answers } from "./review-answers";
+import { ChoiceAnswers } from "./review-choice";
 import type { ReviewEntry } from "./review-entry";
 import { Statement } from "./review-statement";
 
@@ -90,7 +91,11 @@ export function ReviewTask({
       </div>
       <div className="grid gap-4 2xl:grid-cols-2 2xl:grid-rows-[auto_auto_1fr] 2xl:gap-x-7">
         <Statement html={entry.statement} />
-        <Answers entry={entry} />
+        {entry.choice ? (
+          <ChoiceAnswers entry={entry} choice={entry.choice} />
+        ) : (
+          <Answers entry={entry} />
+        )}
         <RevealSolution
           taskId={entry.taskId}
           testSessionId={testSessionId}

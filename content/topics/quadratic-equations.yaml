@@ -8,3 +8,4 @@ tone: blue
 keys: [sqrt, fraction, power]
 types:
 - symmetric-expressions
+- irrational-equations

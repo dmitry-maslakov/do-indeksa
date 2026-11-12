@@ -6,6 +6,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { RailPanel } from "@/components/rail";
+import { fieldCount } from "@/features/catalog/choice";
 import { saveTest, submitTest } from "@/features/tests/actions";
 import { isAnswered, nextIndex } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
@@ -93,7 +94,7 @@ export function TestRunner({
   const meta = {
     title,
     minutes,
-    parts: tasks.map((task) => task.parts.length),
+    parts: tasks.map(fieldCount),
   };
   const resumed = useMemo(
     (): LocalTest | undefined =>

@@ -1,12 +1,14 @@
 import "server-only";
-import { allVariants, type Variant } from "content-collections";
+import { allVariants, type Task, type Variant } from "content-collections";
 import { sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
+import type { RenderedChoice } from "@/features/catalog/choice";
 import { examOf, maxPlaces } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import {
   getTask,
   idsByTopic,
+  renderChoice,
   renderParts,
   renderStatement,
 } from "@/features/catalog/tasks";
@@ -55,6 +57,7 @@ export interface Slot {
   topic: string;
   points: number;
   minutes: number;
+  scoring: Task["scoring"];
 }
 
 export const slotsOf = (taskIds: string[]): Slot[] =>
@@ -69,6 +72,7 @@ export const slotsOf = (taskIds: string[]): Slot[] =>
         topic: task.topic,
         points: place.points,
         minutes: place.minutes,
+        scoring: task.scoring,
       };
     });
 
@@ -82,6 +86,7 @@ export interface VariantTask extends Slot {
   topicName: string;
   statement: string;
   parts: PartLabel[];
+  choice: RenderedChoice | null;
 }
 
 export async function tasksFor(
@@ -97,6 +102,7 @@ export async function tasksFor(
         topicName: topicName(slot.topic, locale),
         statement: await renderStatement(task),
         parts: await renderParts(task),
+        choice: await renderChoice(task),
       };
     }),
   );
