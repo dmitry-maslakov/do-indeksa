@@ -7,6 +7,14 @@ import type { Locale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { renderMarkdown } from "@/lib/markdown";
 import { sentForm } from "./boxes";
+import {
+  answerCount,
+  choiceResult,
+  isShort,
+  keyOf,
+  pickOf,
+  type RenderedChoice,
+} from "./choice";
 import { examOf } from "./exams";
 import { type Level, levelOf } from "./level";
 import {
@@ -85,7 +93,8 @@ export function taskFacts(id: string) {
     exam_position: exam?.position ?? examOf().numberOf(task.topic) ?? undefined,
     key_rev: task.keyRev,
     hints_available: task.hints.length,
-    parts: task.check.length,
+    parts: task.choice ? answerCount(task.choice) : task.check.length,
+    choice: task.choice ? pickOf(task.choice) : undefined,
   };
 }
 
@@ -100,6 +109,7 @@ type RenderedTask = {
   solution: string;
   answerValues: string[];
   parts: PartLabel[];
+  choice: RenderedChoice | null;
   unchecked: string[];
   answerText: boolean;
 };
@@ -114,6 +124,7 @@ const rendered = new LRUCache<string, RenderedTask>({
         html.solution,
         ...html.hints,
         ...html.parts.flatMap((p) => [p.prefix, p.suffix, p.caption]),
+        ...(html.choice?.options ?? []),
       ],
       (part) => part?.length ?? 0,
     ) + 1,
@@ -171,6 +182,26 @@ export async function renderParts(task: Task) {
   return parts;
 }
 
+const choices = new LRUCache<string, RenderedChoice>({
+  maxSize: 2 * 1024 * 1024,
+  sizeCalculation: (choice) => sumBy(choice.options, (o) => o.length) + 1,
+});
+
+export async function renderChoice({ id, choice }: Task) {
+  if (!choice) return null;
+  const cached = choices.get(id);
+  if (cached) return cached;
+  const rendered = {
+    many: choice.many,
+    options: await Promise.all(
+      choice.options.map((option) => renderMarkdown(option, id)),
+    ),
+    short: choice.options.every(isShort),
+  };
+  choices.set(id, rendered);
+  return rendered;
+}
+
 export async function renderTask(id: string) {
   const cached = rendered.get(id);
   if (cached) return cached;
@@ -180,11 +211,17 @@ export async function renderTask(id: string) {
   const unchecked = uncheckedLetters(task.text, labelsOf(task));
   const html = {
     statement: await renderStatement(task),
-    answer: await render(task.answer ?? resultOf(task.check)),
+    answer: await render(
+      task.answer ??
+        (task.choice ? choiceResult(task.choice) : resultOf(task.check)),
+    ),
     hints: await Promise.all(task.hints.map(render)),
     solution: await render(task.solution),
-    answerValues: task.check.map((c) => sentForm(c) ?? c.expected),
+    answerValues: task.choice
+      ? keyOf(task.choice)
+      : task.check.map((c) => sentForm(c) ?? c.expected),
     parts: await renderParts(task),
+    choice: await renderChoice(task),
     unchecked,
     answerText:
       unchecked.length > 0 ||

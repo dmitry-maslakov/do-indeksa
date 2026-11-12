@@ -112,6 +112,7 @@ export default async function SolvePage({
           <AnswerForm
             taskId={id}
             parts={html.parts}
+            choice={html.choice}
             unchecked={html.unchecked}
             answerValues={html.answerValues}
             next={personal.then((p) => p.next)}

@@ -12,6 +12,7 @@ function Value({ shown, part }: { shown: Shown; part?: PartLabel }) {
   const prefix = part?.prefix;
   const suffix = part?.suffix;
   if ("yesno" in shown) return field(shown.yesno);
+  if ("letters" in shown) return shown.letters.join(", ");
   return (
     <span className="inline-flex flex-wrap items-baseline gap-1.5">
       {prefix && (

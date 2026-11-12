@@ -181,7 +181,7 @@ export function partProblem(markup: PartMarkup, letters: string[]) {
 }
 
 export const onlyYesNo = (parts: PartMarkup[]) =>
-  parts.every((part) => part.kind === "yesno");
+  parts.length > 0 && parts.every((part) => part.kind === "yesno");
 
 const maths = (text: string) => text.match(/\$\$?[^$]+\$\$?/g) ?? [];
 

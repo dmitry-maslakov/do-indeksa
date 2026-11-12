@@ -4,6 +4,8 @@ import { cn } from "cn";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { type ReactNode, Suspense, useRef, useState } from "react";
+import type { PartOutcome } from "@/db/columns";
+import { fieldCount, type RenderedChoice } from "@/features/catalog/choice";
 import type { PartLabel } from "@/features/catalog/parts";
 import { checkAnswer, saveSkip } from "@/features/practice/actions";
 import { useTaskSession } from "@/features/practice/session/task-session";
@@ -12,13 +14,29 @@ import { useErrorText } from "@/lib/use-error-text";
 import { ActionBar, type NextTask } from "./action-bar";
 import { AnswerField } from "./answer-field";
 import { AnswerStatus } from "./answer-status";
+import { ChoiceRetry } from "./choice-retry";
+import { ChoiceField, type ChoiceResult } from "./field/choice-field";
 import type { FieldState } from "./field/field-frame";
-import { boxStats, freshInput, latexStats, takeInput } from "./input-stats";
+import { freshInput, takeInput, valueStats } from "./input-stats";
 import { verdictOf } from "./verdicts";
+
+function choiceView(
+  { correct, solved }: { correct: boolean; solved: (string | undefined)[] },
+  shown: boolean,
+  key: string[],
+  values: string[],
+  outcomes?: PartOutcome[],
+): { value: string[]; result?: ChoiceResult } {
+  if (correct)
+    return { value: solved.map((text) => text ?? ""), result: "right" };
+  if (shown) return { value: key, result: "shown" };
+  return { value: values, result: outcomes };
+}
 
 interface AnswerFormProps {
   taskId: string;
   parts: PartLabel[];
+  choice: RenderedChoice | null;
   unchecked: string[];
   answerValues: string[];
   next: Promise<NextTask>;
@@ -29,6 +47,7 @@ interface AnswerFormProps {
 export function AnswerForm({
   taskId,
   parts,
+  choice,
   unchecked,
   answerValues,
   next,
@@ -43,12 +62,14 @@ export function AnswerForm({
   const [edited, setEdited] = useState(false);
   const answerId = useRef<string | null>(null);
   const stats = useRef(freshInput());
-  const [values, setValues] = useState(() => parts.map(() => ""));
-  const onChange = (index: number, value: string) => {
+  const [values, setValues] = useState(() =>
+    Array.from({ length: fieldCount({ parts, choice }) }, () => ""),
+  );
+  const edit = (next: string[]) => {
     setEdited(true);
     answerId.current = null;
-    help.note({ typed: values.with(index, value).join("").length });
-    setValues((all) => all.with(index, value));
+    help.note({ typed: next.join("").length });
+    setValues(next);
   };
 
   const checked =
@@ -67,6 +88,13 @@ export function AnswerForm({
     if (fillOf(i) !== undefined) return "shown";
     return checked?.outcomes[i] ?? "empty";
   };
+  const view = choiceView(
+    help,
+    filled,
+    answerValues,
+    values,
+    checked?.outcomes,
+  );
   const bar = {
     go: help.correct || filled,
     fallback,
@@ -91,10 +119,9 @@ export function AnswerForm({
             context: "practice",
             task_id: taskId,
             answer_client_id: answerId.current,
-            fields: parts.length,
-            ...boxStats(parts, values),
+            fields: values.length,
+            ...valueStats({ parts, choice }, values),
             ...takeInput(stats),
-            ...latexStats(values),
           });
         }
         form.set("clientId", answerId.current);
@@ -116,36 +143,52 @@ export function AnswerForm({
       className="mt-6 flex max-w-task flex-col gap-4 md:mt-8"
     >
       <input type="hidden" name="taskId" value={taskId} />
-      <div
-        className={cn("flex flex-col gap-4", grid && "md:grid md:grid-cols-2")}
-      >
-        {fields.map(({ part, id }, i) => (
-          <AnswerField
-            key={id}
-            id={id}
-            index={i}
-            name="answer"
-            label={
-              parts.length === 1
-                ? t("yourAnswer")
-                : t("answerPart", { number: i + 1 })
-            }
-            part={part}
-            variant="solve"
-            placeholder={
-              part.letter || part.prefix
-                ? undefined
-                : `\\text{${t("placeholder")}}`
-            }
-            state={stateOf(i)}
-            problem={checked?.problems[i]}
-            locked={solved[i] !== undefined || filled}
-            fill={fillOf(i)}
-            stats={stats}
-            onChange={onChange}
-          />
-        ))}
-      </div>
+      {choice ? (
+        <ChoiceField
+          id={`answer-${taskId}`}
+          choice={choice}
+          variant="solve"
+          value={view.value}
+          result={view.result}
+          locked={help.correct || filled}
+          stats={stats}
+          onChange={edit}
+        />
+      ) : (
+        <div
+          className={cn(
+            "flex flex-col gap-4",
+            grid && "md:grid md:grid-cols-2",
+          )}
+        >
+          {fields.map(({ part, id }, i) => (
+            <AnswerField
+              key={id}
+              id={id}
+              index={i}
+              name="answer"
+              label={
+                parts.length === 1
+                  ? t("yourAnswer")
+                  : t("answerPart", { number: i + 1 })
+              }
+              part={part}
+              variant="solve"
+              placeholder={
+                part.letter || part.prefix
+                  ? undefined
+                  : `\\text{${t("placeholder")}}`
+              }
+              state={stateOf(i)}
+              problem={checked?.problems[i]}
+              locked={solved[i] !== undefined || filled}
+              fill={fillOf(i)}
+              stats={stats}
+              onChange={(index, value) => edit(values.with(index, value))}
+            />
+          ))}
+        </div>
+      )}
       {unchecked.length > 0 && (
         <p className="-mt-1 text-subtle text-xs">
           {t("unchecked", { parts: unchecked.join(", ") })}
@@ -153,8 +196,22 @@ export function AnswerForm({
       )}
       <AnswerStatus
         outcomes={checked?.outcomes}
-        solved={solved.filter((text) => text !== undefined).length}
-        total={parts.length}
+        solved={
+          choice
+            ? Number(help.correct)
+            : solved.filter((text) => text !== undefined).length
+        }
+        total={choice ? 1 : parts.length}
+        note={
+          choice &&
+          checked?.correct === false && (
+            <ChoiceRetry
+              choice={choice}
+              value={values}
+              outcomes={checked.outcomes}
+            />
+          )
+        }
       />
       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-3">
         <Suspense fallback={<ActionBar {...bar} />}>

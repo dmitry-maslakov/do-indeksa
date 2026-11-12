@@ -7,6 +7,7 @@ import { MathHtml } from "@/components/math-html";
 import { Button } from "@/components/ui/button";
 import { PhoneBar } from "@/features/practice/answer/action-bar";
 import { AnswerField } from "@/features/practice/answer/answer-field";
+import { ChoiceField } from "@/features/practice/answer/field/choice-field";
 import type { InputStats } from "@/features/practice/answer/input-stats";
 import type { VariantTask as Task } from "@/features/variants/variants";
 
@@ -60,27 +61,44 @@ export function TestTask({
         html={task.statement}
         className="mt-3 text-task md:mt-5.5 md:text-xl md:leading-relaxed [&_strong]:font-semibold"
       />
-      <div className="mt-5.5 grid gap-3.5 md:mt-8 md:grid-cols-2 md:gap-x-4 md:gap-y-4.5">
-        {task.parts.map((part, i) => (
-          <AnswerField
-            key={ids[i]}
-            id={ids[i] ?? task.taskId}
-            index={i}
-            name="answer"
-            label={
-              task.parts.length === 1
-                ? solve("yourAnswer")
-                : solve("answerPart", { number: i + 1 })
-            }
-            part={part}
+      {task.choice ? (
+        <div className="mt-5.5 md:mt-8">
+          <ChoiceField
+            id={`answer-${task.taskId}`}
+            choice={task.choice}
             variant="exam"
-            defaultValue={answers[i]}
+            value={answers}
             stats={stats}
-            onChange={onAnswer}
+            onChange={(sent) => {
+              for (const [i, value] of sent.entries()) onAnswer(i, value);
+            }}
           />
-        ))}
-      </div>
-      <p className="mt-3 text-[13px] text-subtle">{t("answerHint")}</p>
+        </div>
+      ) : (
+        <>
+          <div className="mt-5.5 grid gap-3.5 md:mt-8 md:grid-cols-2 md:gap-x-4 md:gap-y-4.5">
+            {task.parts.map((part, i) => (
+              <AnswerField
+                key={ids[i]}
+                id={ids[i] ?? task.taskId}
+                index={i}
+                name="answer"
+                label={
+                  task.parts.length === 1
+                    ? solve("yourAnswer")
+                    : solve("answerPart", { number: i + 1 })
+                }
+                part={part}
+                variant="exam"
+                defaultValue={answers[i]}
+                stats={stats}
+                onChange={onAnswer}
+              />
+            ))}
+          </div>
+          <p className="mt-3 text-[13px] text-subtle">{t("answerHint")}</p>
+        </>
+      )}
       <div className="md:mt-8 md:flex md:items-center md:gap-6">
         <PhoneBar>
           <Button

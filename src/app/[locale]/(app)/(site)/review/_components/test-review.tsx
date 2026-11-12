@@ -35,6 +35,8 @@ export async function TestReview({
       topicName: row.topicName,
       statement: row.statement,
       parts: row.parts,
+      choice: row.choice,
+      scoring: row.scoring,
       points: row.points,
       earned: row.earned,
       segment: row.segment,

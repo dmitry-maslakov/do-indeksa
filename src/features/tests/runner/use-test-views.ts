@@ -1,10 +1,10 @@
 import { attempt } from "es-toolkit";
 import { useEffect, useEffectEvent, useRef } from "react";
+import { fieldCount } from "@/features/catalog/choice";
 import {
-  boxStats,
   freshInput,
-  latexStats,
   takeInput,
+  valueStats,
 } from "@/features/practice/answer/input-stats";
 import { answeredCount, overtimeAt } from "@/features/tests/state";
 import type { UnfinishedTest } from "@/features/tests/test-sessions";
@@ -53,15 +53,15 @@ export function useTestViews(
     const task = test && tasks[test.current];
     const { focus_to_submit_ms, ...taken } = takeInput(stats);
     if (!test || !task || !taken.inputs) return;
+    const answers = test.answers[test.current] ?? [];
     queueEvent("answer_input", {
       context: "test",
       task_id: task.taskId,
       test_session_id: test.testId,
       position: test.current + 1,
-      fields: task.parts.length,
-      ...boxStats(task.parts, test.answers[test.current] ?? []),
+      fields: fieldCount(task),
+      ...valueStats(task, answers),
       ...taken,
-      ...latexStats(test.answers[test.current] ?? []),
     });
   };
   const recordInputOnLeave = useEffectEvent(recordInput);

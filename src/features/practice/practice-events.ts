@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { partOutcomes, reportKinds, sessionKinds } from "@/db/columns";
 import { revealPart, testKind } from "@/db/schema";
+import { picks } from "@/features/catalog/choice";
 import { kinds } from "@/features/catalog/kinds";
 import { levels } from "@/features/catalog/level";
 import { maxParts } from "@/features/catalog/parts";
@@ -48,6 +49,7 @@ const task = {
   key_rev: text,
   hints_available: z.int().min(0).max(3),
   parts: z.int().min(1).max(maxParts),
+  choice: z.enum(picks).optional(),
 };
 
 const session = {
@@ -83,6 +85,8 @@ const answerInput = defineEvent("answer_input", {
   fields: z.int().min(1).max(maxParts),
   kinds: z.array(z.enum(kinds)).max(maxParts).optional(),
   boxes: count.optional(),
+  choice: z.enum(picks).optional(),
+  picked: count.optional(),
   inputs: count,
   deletes: count,
   pastes: count,
@@ -93,7 +97,7 @@ const answerInput = defineEvent("answer_input", {
   first_focus_ms: count.optional(),
   focus_to_submit_ms: count.optional(),
   edit_ms: count.optional(),
-  latex_len: count,
+  latex_len: count.optional(),
   structures: z
     .array(z.enum(structureKinds))
     .max(structureKinds.length)

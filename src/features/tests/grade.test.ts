@@ -1,10 +1,17 @@
 import { describe, expect, it } from "vitest";
+import type { Choice } from "@/features/catalog/choice";
 import { gradeTest } from "./grade";
 
+const written = (taskId: string, expected: string[]) => ({
+  taskId,
+  check: expected.map((e) => ({ expected: e })),
+  choice: null,
+});
+
 const tasks = [
-  { taskId: "a", parts: [{ expected: "2" }] },
-  { taskId: "b", parts: [{ expected: "1" }, { expected: "3" }] },
-  { taskId: "c", parts: [{ expected: "5" }] },
+  written("a", ["2"]),
+  written("b", ["1", "3"]),
+  written("c", ["5"]),
 ];
 
 describe("gradeTest", () => {
@@ -20,12 +27,7 @@ describe("gradeTest", () => {
 
   it("keeps unreadable and empty parts apart from wrong ones", () => {
     const [d] = gradeTest(
-      [
-        {
-          taskId: "d",
-          parts: [{ expected: "1" }, { expected: "2" }, { expected: "3" }],
-        },
-      ],
+      [written("d", ["1", "2", "3"])],
       [["1", "\\frac{2", ""]],
     );
     expect(d).toMatchObject({
@@ -41,5 +43,22 @@ describe("gradeTest", () => {
       false,
     ]);
     expect(c).toMatchObject({ answers: [] });
+  });
+
+  it("grades a choice task by its options", () => {
+    const choice: Choice = {
+      many: true,
+      options: ["a", "b", "c"],
+      correct: ["A", "C"],
+    };
+    const [e] = gradeTest(
+      [{ taskId: "e", check: [], choice }],
+      [["A", "B", ""]],
+    );
+    expect(e).toMatchObject({
+      outcomes: ["right", "wrong", "wrong"],
+      correct: false,
+      answered: true,
+    });
   });
 });

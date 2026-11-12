@@ -8,6 +8,7 @@ const task = (taskId: string, topic: string) => ({
   topic,
   points: 6,
   minutes: 24,
+  scoring: "proportional" as const,
 });
 
 const tasks = [
@@ -88,9 +89,23 @@ describe("reviewHref", () => {
 
 describe("creditOf", () => {
   it("credits the share of right parts", () => {
-    expect(creditOf(["right"], 6)).toBe(6);
-    expect(creditOf(["right", "wrong"], 6)).toBe(3);
-    expect(creditOf(["right", "unreadable", "empty"], 6)).toBe(2);
-    expect(creditOf([], 6)).toBe(0);
+    expect(creditOf(["right"], 6, "proportional")).toBe(6);
+    expect(creditOf(["right", "wrong"], 6, "proportional")).toBe(3);
+    expect(creditOf(["right", "unreadable", "empty"], 6, "proportional")).toBe(
+      2,
+    );
+    expect(creditOf([], 6, "proportional")).toBe(0);
+  });
+
+  it("credits a whole task only when every part is right", () => {
+    expect(creditOf(["right", "right"], 5, "whole")).toBe(5);
+    expect(creditOf(["right", "wrong", "right"], 5, "whole")).toBe(0);
+    expect(creditOf([], 5, "whole")).toBe(0);
+  });
+
+  it("scores options marked and left unmarked correctly in proportion", () => {
+    const marked = ["right", "wrong", "wrong", "right", "right"] as const;
+    expect(creditOf([...marked], 5, "proportional")).toBe(3);
+    expect(creditOf(["empty", "empty", "empty"], 5, "proportional")).toBe(0);
   });
 });

@@ -1,6 +1,11 @@
 import { sumBy } from "es-toolkit";
 import type { RefObject } from "react";
 import { filledCount } from "@/features/catalog/boxes";
+import {
+  pickedOf,
+  pickOf,
+  type RenderedChoice,
+} from "@/features/catalog/choice";
 import type { PartLabel } from "@/features/catalog/parts";
 import { secondMs } from "@/lib/dates";
 
@@ -143,3 +148,14 @@ export const boxStats = (
   kinds: parts.map(({ kind }) => kind ?? "value"),
   boxes: sumBy(values, (text, i) => filledCount(parts[i]?.kind ?? null, text)),
 });
+
+export const valueStats = (
+  {
+    parts,
+    choice,
+  }: { parts: Pick<PartLabel, "kind">[]; choice: RenderedChoice | null },
+  values: string[],
+) =>
+  choice
+    ? { choice: pickOf(choice), picked: pickedOf(values).length }
+    : { ...boxStats(parts, values), ...latexStats(values) };
