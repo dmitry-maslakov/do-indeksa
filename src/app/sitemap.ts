@@ -31,6 +31,7 @@ const examPages = [
 ];
 
 const translatedPages = [
+  "/",
   "/privacy",
   "/terms",
   ...openExamIds.flatMap((id) => examPages.map((href) => inExam(id, href))),

@@ -489,5 +489,25 @@
     "scoring": "Admission adds the school record, {schoolMin} to {schoolMax} points, and the exam, {examMin} to {examMax}; at most {max} in total.",
     "scoringLink": "How admission points are counted",
     "allPrograms": "All {short} programmes"
+  },
+  "Landing": {
+    "metaTitle": "Do indeksa — maths entrance exam{count, select, 1 { for {faculties}} other {}}",
+    "metaDescription": "Free preparation for the maths entrance exam at {faculties}: real past {years} with solutions, tasks by topic and timed practice exams, no account.",
+    "title": "Take the entrance exam before the entrance exam.",
+    "lead": "Preparation for the university entrance exam in maths: past exams with solutions, tasks by topic and practice exams against the clock.",
+    "choose": "Choose your entrance exam",
+    "place": "{faculty} · {city}",
+    "years": "exams {first}–{last}",
+    "start": "Start",
+    "byProgram": "Not sure which exam you take? By study programme",
+    "free": "Free, with no account and no ads.",
+    "dailyTitle": "Every day you know what to solve.",
+    "dailyText": "You don't waste time on what you already know, and the topics you struggle with don't get left behind.",
+    "tasksTitle": "You won't run out of tasks.",
+    "tasksText": "Once you've done all the past exams, practice goes on. The task bank keeps growing, and a new variant comes out every week.",
+    "sample": "Example: {faculty} · {exam}",
+    "format": "{tasks, plural, one {# task} other {# tasks}} · {hours, plural, one {# hour} other {# hours}} · {points, plural, one {# point} other {# points}}",
+    "note": "Do indeksa is free preparation for the maths entrance exam at {places}. It is not an official faculty website.",
+    "notePlace": "{short}"
   }
 }

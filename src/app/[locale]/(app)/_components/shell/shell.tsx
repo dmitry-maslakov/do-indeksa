@@ -8,6 +8,7 @@ interface ShellProps {
   mode?: "site" | "read" | "task" | "exam";
   exam?: string;
   languages?: boolean;
+  note?: ReactNode;
   children: ReactNode;
 }
 
@@ -15,6 +16,7 @@ export function Shell({
   mode = "site",
   exam,
   languages = true,
+  note,
   children,
 }: ShellProps) {
   return (
@@ -34,7 +36,10 @@ export function Shell({
       {children}
       {mode !== "exam" && (
         <>
-          <Footer className={cn(mode === "task" && "max-md:hidden")} />
+          <Footer
+            note={note}
+            className={cn(mode === "task" && "max-md:hidden")}
+          />
           {exam && (
             <BottomNav className={cn(mode === "task" && "max-md:hidden")} />
           )}

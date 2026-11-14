@@ -11,7 +11,7 @@
     "format": "biome format --write",
     "knip": "knip && knip --production",
     "commitlint": "commitlint",
-    "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src -i \"Faculty.*\" \"Program.*\" \"ProgramSearch.*\"",
+    "i18n": "i18n-check -l messages -s sr-Latn -f next-intl -u src -i \"Faculty.*\" \"Program.*\" \"ProgramSearch.*\" \"Landing.notePlace\"",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:bundle": "esbuild src/db/migrate.mts src/db/cleanup.mts --bundle --platform=node --format=esm --outdir=dist --out-extension:.js=.mjs --external:pg-native --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\"",

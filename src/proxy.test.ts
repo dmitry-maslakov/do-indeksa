@@ -125,21 +125,16 @@ describe("proxy", () => {
     },
   );
 
-  it.each([
-    ["/", "/ftn/p1"],
-    ["/sr-Latn", "/ftn/p1"],
-    ["/ru?utm_source=ig", "/ru/ftn/p1?utm_source=ig"],
-    ["/RU", "/ru/ftn/p1"],
-  ])("sends %s into the first open exam", async (path, location) => {
-    const response = await proxy(
-      new NextRequest(new URL(path, "https://doindeksa.rs")),
-    );
-    expect([response.status, response.headers.get("location")]).toEqual([
-      307,
-      `https://doindeksa.rs${location}`,
-    ]);
-    expect(response.headers.get("cache-control")).toBe("no-store");
-  });
+  it.each(["/", "/ru?utm_source=ig", "/?pick=1"])(
+    "shows the landing at %s to a new visitor",
+    async (path) => {
+      const response = await proxy(
+        new NextRequest(new URL(path, "https://doindeksa.rs")),
+      );
+      expect(response.headers.get("location")).toBeNull();
+      expect(response.status).toBe(200);
+    },
+  );
 
   const visit = (path: string, headers: Record<string, string> = {}) =>
     proxy(new NextRequest(new URL(path, "https://doindeksa.rs"), { headers }));
@@ -147,9 +142,9 @@ describe("proxy", () => {
   it.each([
     ["__Host-exam=ftn-p1", "/", "/ftn/p1"],
     ["__Host-exam=ftn-p1", "/ru", "/ru/ftn/p1"],
+    ["__Host-exam=ftn-p1", "/RU", "/ru/ftn/p1"],
     ["__Host-exam=ftn-p3", "/", "/ftn/p3"],
     ["__Host-exam=ftn-p3", "/ru", "/ru/ftn/p3"],
-    ["__Host-exam=ftn-p9", "/", "/ftn/p1"],
     ["__Host-profile=token", "/", "/ftn/p1"],
     ["better-auth.session_token=token", "/en", "/en/ftn/p1"],
   ])(
@@ -163,6 +158,15 @@ describe("proxy", () => {
       expect(response.headers.get("cache-control")).toBe("no-store");
     },
   );
+
+  it.each([
+    ["__Host-exam=ftn-p1", "/?pick=1"],
+    ["__Host-profile=token", "/ru?pick=1"],
+    ["__Host-exam=ftn-p9", "/"],
+  ])("shows the landing to a visitor with %s at %s", async (cookie, path) => {
+    const response = await visit(path, { cookie });
+    expect(response.headers.get("location")).toBeNull();
+  });
 
   it.each([
     ["/sr-Latn/opengraph-image", false],

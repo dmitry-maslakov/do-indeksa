@@ -34,7 +34,7 @@ it("lists only addresses inside an exam or outside every exam", async () => {
   expect(
     (await sitemapPaths()).filter(
       (path) =>
-        !/^(\/(ru|en))?(\/ftn\/p1(\/|$)|\/privacy$|\/terms$)|^\/ftn(\/programs\/[a-z-]+)?$/.test(
+        !/^(\/(ru|en))?(\/ftn\/p1(\/|$)|\/privacy$|\/terms$|\/?$)|^\/ftn(\/programs\/[a-z-]+)?$/.test(
           path,
         ),
     ),
