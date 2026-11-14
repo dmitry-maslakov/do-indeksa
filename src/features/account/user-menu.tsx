@@ -26,7 +26,7 @@ export function UserMenu() {
 
   if (isPending)
     return (
-      <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-3 font-semibold text-sm *:invisible sm:px-4 [&_svg]:size-4">
+      <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-2.5 font-semibold text-sm *:invisible xs:px-3 sm:px-4 [&_svg]:size-4">
         <GoogleLogo />
         <span>{t("signIn")}</span>
       </Skeleton>
@@ -38,7 +38,7 @@ export function UserMenu() {
         from="header"
         variant="tint"
         size="sm"
-        className="px-3 sm:px-4"
+        className="px-2.5 xs:px-3 sm:px-4"
       >
         <GoogleLogo />
         {t("signIn")}
