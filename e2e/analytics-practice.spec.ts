@@ -326,7 +326,7 @@ test("leaving a task records how it was left", async ({ page }) => {
 test("opens from the hero, the next link and a reload are told apart", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(at("/"));
   await page.getByRole("link", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await page.goto(at("/bank/eks-001"));

@@ -302,7 +302,7 @@ test("a test records its answers, controls and where it was started", async ({
 test("tests started from home record the year or the weekly card", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(at("/"));
   await hydrated(page);
   const year = page.getByRole("link", { name: /^\d{4}$/ }).first();
   const exam = await year.getAttribute("href");

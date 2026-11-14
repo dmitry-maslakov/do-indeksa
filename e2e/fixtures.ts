@@ -10,7 +10,8 @@ const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
 const exam = "";
 
-export const at = (path: string) => `${exam}${path}`;
+export const at = (path: string) =>
+  exam && path === "/" ? exam : `${exam}${path}`;
 
 export interface Row {
   name: string;

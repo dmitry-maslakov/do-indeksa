@@ -9,7 +9,7 @@ async function topicCount(page: Page) {
 }
 
 async function expectFirstVisit(page: Page) {
-  await page.goto("/");
+  await page.goto(at("/"));
 
   await expect(page.getByText("Predlog za danas")).toBeVisible();
   await expect(
@@ -48,7 +48,7 @@ test("the home page suggests a topic and maps progress", async ({
   await seedAttempt(auth.db, id, "plan-001", false, 240);
   await seedAttempt(auth.db, id, "fun-002", true, 3);
   await seedAttempt(auth.db, id, "eks-001", false, 1);
-  await page.goto("/");
+  await page.goto(at("/"));
 
   await expect(
     page.getByRole("heading", {
@@ -76,7 +76,7 @@ test("the home page suggests a topic and maps progress", async ({
 });
 
 test("Počni opens the suggested topic", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(at("/"));
   await page.getByRole("link", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
 });
@@ -84,7 +84,7 @@ test("Počni opens the suggested topic", async ({ page }) => {
 test("the home page doesn't show an unfinished test", async ({ page }) => {
   await page.goto(at("/variants/set-eks-001"));
   await page.getByRole("timer").waitFor();
-  await page.goto("/");
+  await page.goto(at("/"));
   await expect(page.getByText("Predlog za danas")).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Nastavi", exact: true }),

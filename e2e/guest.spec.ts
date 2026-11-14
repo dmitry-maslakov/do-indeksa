@@ -110,7 +110,7 @@ test("a guest back on another day with five solved tasks gets Google One Tap", a
   await expect(
     page.getByRole("link", { name: "Sledeći zadatak" }),
   ).toBeVisible();
-  await page.goto("/");
+  await page.goto(at("/"));
   await expect.poll(() => prompts).toEqual(["/"]);
   await page.reload();
   await expect(page.getByRole("heading", { name: "Mapa tema" })).toBeVisible();
