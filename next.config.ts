@@ -35,18 +35,16 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return legacyPages.flatMap(
-      ({ source, destination, statusCode = 301, ...match }) => [
-        { ...match, source, destination, statusCode },
-        { ...match, source: `/sr-Latn${source}`, destination, statusCode },
-        {
-          ...match,
-          source: `/:locale(ru|en)${source}`,
-          destination: `/:locale${destination}`.replace(/\/$/, ""),
-          statusCode,
-        },
-      ],
-    );
+    return legacyPages.flatMap(({ source, destination, ...match }) => [
+      { ...match, source, destination, statusCode: 301 },
+      { ...match, source: `/sr-Latn${source}`, destination, statusCode: 301 },
+      {
+        ...match,
+        source: `/:locale(ru|en)${source}`,
+        destination: `/:locale${destination}`.replace(/\/$/, ""),
+        statusCode: 301,
+      },
+    ]);
   },
 };
 
