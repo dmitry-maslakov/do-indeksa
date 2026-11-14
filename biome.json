@@ -9,6 +9,7 @@
     "ignoreUnknown": true,
     "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!drizzle"]
   },
+  "plugins": ["./navigation.grit"],
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
