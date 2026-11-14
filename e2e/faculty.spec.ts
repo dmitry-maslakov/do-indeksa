@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Page, Request } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
 const register = "#registar";
@@ -81,6 +81,41 @@ test("shows the row an address points to below the column head", {
       return el.contains(document.elementFromPoint(left + width / 2, top + 2));
     }),
   ).toBe(true);
+});
+
+test("finishes every prefetch when the page is opened again", async ({
+  page,
+  context,
+}) => {
+  const prefetched: string[] = [];
+  const prefetchOf = (request: Request) =>
+    "next-router-segment-prefetch" in request.headers()
+      ? new URL(request.url()).pathname
+      : undefined;
+  page.on("requestfinished", (request) => {
+    const path = prefetchOf(request);
+    if (path) prefetched.push(path);
+  });
+  await page.goto("/ftn");
+  const home = await page
+    .getByRole("button", { name: /^Vežbaj za/ })
+    .first()
+    .getAttribute("href");
+  await expect.poll(() => prefetched).toContain(home);
+
+  const again = await context.newPage();
+  const open = new Set<Request>();
+  again.on("request", (request) => open.add(request));
+  again.on("requestfinished", (request) => open.delete(request));
+  again.on("requestfailed", (request) => open.delete(request));
+  const prefetch = again.waitForRequest(
+    (request) => prefetchOf(request) === home,
+  );
+  await again.goto("/ftn");
+  await prefetch;
+  await expect
+    .poll(() => [...open].map((request) => request.url()))
+    .toEqual([]);
 });
 
 test("answers other locales with the Serbian page", async ({ request }) => {
