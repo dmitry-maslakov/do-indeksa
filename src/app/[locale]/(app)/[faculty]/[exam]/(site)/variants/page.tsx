@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { examAt, examOf } from "@/features/catalog/exams";
+import { examAt, examOf, inExam } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
@@ -19,12 +19,15 @@ import { CatalogTab, tabs, VariantTable } from "./_components/catalog-tab";
 import { ComposeCard } from "./_components/compose-card";
 import { loadWeeklyTest } from "./_components/weekly-test";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]/variants">): Promise<Metadata> {
   const t = await getTranslations("Metadata");
+  const href = inExam(examAt(await params), "/variants");
   return {
     title: t("variantsTitle"),
     description: t("variantsDescription"),
-    alternates: alternates("/variants", await getLocale()),
+    alternates: alternates(href, await getLocale()),
   };
 }
 

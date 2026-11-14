@@ -28,7 +28,7 @@ test("serves robots and sitemap", async ({ request }) => {
   expect(robots.status()).toBe(200);
   const rules = await robots.text();
   expect(rules).toContain("Sitemap: https://doindeksa.rs/sitemap/0.xml");
-  expect(rules).toContain("Disallow: /review");
+  expect(rules).toContain("Disallow: /*/review");
   const parts = [...rules.matchAll(/^Sitemap: (.+)$/gm)].map(
     ([, href]) => new URL(href as string).pathname,
   );
@@ -42,21 +42,22 @@ test("serves robots and sitemap", async ({ request }) => {
     sitemaps.push(xml);
   }
   const [pages = "", ...tasks] = sitemaps;
-  expect(pages).toContain("<loc>https://doindeksa.rs/bank</loc>");
-  expect(pages).toContain("<loc>https://doindeksa.rs/ru/bank</loc>");
+  expect(pages).toContain("<loc>https://doindeksa.rs/ftn/p1/bank</loc>");
+  expect(pages).toContain("<loc>https://doindeksa.rs/ru/ftn/p1/bank</loc>");
   expect(pages).toContain(
-    "<loc>https://doindeksa.rs/theory/exponential-equations</loc>",
+    "<loc>https://doindeksa.rs/ftn/p1/theory/exponential-equations</loc>",
   );
-  expect(pages).not.toContain("/ru/theory/exponential-equations");
+  expect(pages).not.toContain("/ru/ftn/p1/theory/exponential-equations");
   expect(pages).toContain(
-    "<loc>https://doindeksa.rs/variants/ftn-p1-2025/solutions</loc>",
+    "<loc>https://doindeksa.rs/ftn/p1/variants/ftn-p1-2025/solutions</loc>",
   );
   expect(pages).not.toContain("/ru/variants/ftn-p1-2025/solutions");
   expect(pages).not.toContain("/bank/eks-001");
   const urls = tasks.join();
-  expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
-  expect(urls).not.toContain("/ru/bank/eks-001");
-  expect(urls).not.toContain("<loc>https://doindeksa.rs/bank</loc>");
+  expect(urls).toContain("https://doindeksa.rs/ftn/p1/bank/eks-001");
+  expect(urls).not.toContain("/ru/ftn/p1/bank/eks-001");
+  expect(urls).not.toContain("<loc>https://doindeksa.rs/ftn/p1/bank</loc>");
+  expect(sitemaps.join()).not.toContain("/launch");
 });
 
 const screens = [

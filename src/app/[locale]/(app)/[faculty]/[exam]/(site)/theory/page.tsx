@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
-import { examAt } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
@@ -9,12 +9,15 @@ import { methodsOf, theoriesOf } from "@/features/theory/theory";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]/theory">): Promise<Metadata> {
   const t = await getTranslations("Metadata");
+  const href = inExam(examAt(await params), "/theory");
   return {
     title: t("theoryTitle"),
     description: t("theoryDescription"),
-    alternates: alternates("/theory", await getLocale()),
+    alternates: alternates(href, await getLocale()),
   };
 }
 

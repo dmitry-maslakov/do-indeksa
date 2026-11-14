@@ -2,6 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { canonicalHref } from "@/features/catalog/exams";
 import { topicName } from "@/features/catalog/topics";
 import { getMethod, methodsOf, theoryMethods } from "@/features/theory/theory";
 import {
@@ -36,7 +37,10 @@ export async function generateMetadata({
   return {
     title: meta("theoryMethod", names),
     description: meta("theoryMethodDescription", names),
-    ...untranslated(`/theory/${topic}/methods/${slug}`, locale),
+    ...untranslated(
+      canonicalHref(topic, `/theory/${topic}/methods/${slug}`),
+      locale,
+    ),
   };
 }
 

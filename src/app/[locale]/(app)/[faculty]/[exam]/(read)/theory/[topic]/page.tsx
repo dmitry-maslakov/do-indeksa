@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { examAt } from "@/features/catalog/exams";
+import { canonicalHref, examAt } from "@/features/catalog/exams";
 import { topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theoriesOf } from "@/features/theory/theory";
 import { TheoryMarkdown } from "@/features/theory/theory-markdown";
@@ -35,7 +35,7 @@ export async function generateMetadata({
       topic: name,
       sections: theory.sections.map((s) => s.title).join(", "),
     }),
-    ...untranslated(`/theory/${topic}`, locale),
+    ...untranslated(canonicalHref(topic, `/theory/${topic}`), locale),
   };
 }
 
