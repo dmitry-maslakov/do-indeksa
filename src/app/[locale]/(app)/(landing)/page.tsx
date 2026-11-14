@@ -2,11 +2,7 @@ import { mapValues } from "es-toolkit";
 import type { Metadata } from "next";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/json-ld";
-import {
-  examChoice,
-  firstOpenExam,
-  openFaculties,
-} from "@/features/catalog/exams";
+import { examGroups, firstOpenExam } from "@/features/catalog/exams";
 import { officialYears } from "@/features/variants/variants";
 import { currentWeekly } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
@@ -15,15 +11,19 @@ import { repoUrl, siteUrl } from "@/lib/site";
 import { Landing } from "./_components/landing";
 
 async function describe() {
-  const [t, format] = await Promise.all([
+  const [t, format, locale] = await Promise.all([
     getTranslations("Landing"),
     getFormatter(),
+    getLocale(),
   ]);
-  const faculties = format.list(openFaculties.map((f) => f.short));
-  const years = officialYears(...examChoice.map((e) => e.id));
+  const groups = examGroups(locale);
+  const faculties = format.list(groups.map((g) => g.short));
+  const years = officialYears(
+    ...groups.flatMap((g) => g.exams.map((e) => e.id)),
+  );
   return {
     title: t("metaTitle", {
-      count: String(openFaculties.length),
+      count: String(groups.length),
       faculties,
     }),
     description:

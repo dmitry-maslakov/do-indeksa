@@ -1,13 +1,11 @@
 import type { allExams } from "content-collections";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  examChoice,
   examLabel,
   examOf,
   examRecord,
   firstOpenExam,
   maxPlaces,
-  openFaculties,
 } from "./exams";
 
 type Exam = (typeof allExams)[number];
@@ -74,13 +72,6 @@ describe("examOf", () => {
 describe("maxPlaces", () => {
   it("fits the largest exam", () => {
     expect(maxPlaces).toBeGreaterThanOrEqual(examOf("ftn-p1").positions.length);
-  });
-});
-
-describe("examChoice", () => {
-  it("offers open exams only, each faculty once in the faculty list", () => {
-    expect(examChoice.map((e) => e.id)).toEqual(["ftn-p1"]);
-    expect(openFaculties.map((f) => f.id)).toEqual(["ftn"]);
   });
 });
 
