@@ -7,6 +7,7 @@ import {
   inExam,
   openExamIds,
 } from "@/features/catalog/exams";
+import { faculties } from "@/features/catalog/faculties";
 import { tasks } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
 import { theoriesOf, theoryMethods } from "@/features/theory/theory";
@@ -34,6 +35,7 @@ const translatedPages = [
 ];
 
 const untranslatedPages = [
+  ...faculties.map((f) => `/${f.id}`),
   ...theoriesOf(firstOpenExam()).flatMap(({ topic }) =>
     [`/theory/${topic}`, `/theory/${topic}/methods`].map((href) =>
       canonicalHref(topic, href),

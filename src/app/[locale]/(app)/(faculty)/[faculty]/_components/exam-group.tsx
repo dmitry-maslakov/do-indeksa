@@ -74,7 +74,13 @@ async function ExamHead({
         <Button
           variant="lime"
           nativeButton={false}
-          render={<Link href="/" data-intent={intentOf({ via: "faculty" })} />}
+          render={
+            <Link
+              exam={exam.path}
+              href="/"
+              data-intent={intentOf({ via: "faculty" })}
+            />
+          }
           className="col-start-2 row-span-2 row-start-1 self-center px-3 lg:px-4.5"
         >
           {t("practice", { exam: exam.title })}
