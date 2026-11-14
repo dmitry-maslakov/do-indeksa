@@ -7,6 +7,7 @@ const badge = cva("inline-flex shrink-0 items-center justify-center", {
     size: {
       dot: "size-2 -translate-y-0.5 rounded-full",
       sm: "size-6 rounded-full font-bold text-2xs",
+      pill: "h-6 w-8 rounded-full font-semibold text-xs leading-none md:text-[11px]",
       md: "size-11.5 rounded-full font-bold text-[15px] leading-none md:size-13 md:text-base",
     },
   },
@@ -14,7 +15,7 @@ const badge = cva("inline-flex shrink-0 items-center justify-center", {
 
 interface ExamBadgeProps {
   exam: { title: string; tone?: Tone };
-  size: "dot" | "sm" | "md";
+  size: "dot" | "sm" | "pill" | "md";
   className?: string;
 }
 
