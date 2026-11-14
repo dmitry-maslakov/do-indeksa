@@ -1,12 +1,14 @@
 import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
+import { z } from "zod";
 import { getFaculty } from "./faculties";
 
-const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
+const buildExam = ({ id, path, positions }: (typeof allExams)[number]) => {
   const byTopic = new Map(positions.map((p) => [p.topic, p]));
   return {
     id,
+    path,
     positions,
     topics: [
       ...positions.map((p) => p.topic),
@@ -25,6 +27,32 @@ export function examOf(id: string) {
   if (!exam) throw new Error(`exam ${id} is missing`);
   return exam;
 }
+
+const openByPath = new Map(openExams.map((e) => [e.path, e.id]));
+
+export const openExamParams = openExams.map((e) => ({
+  faculty: e.faculty,
+  exam: e.segment,
+}));
+
+export const examByPath = (path: string) => openByPath.get(path);
+
+function openExamAt(path: string) {
+  const id = openByPath.get(path);
+  if (!id) throw new Error(`exam ${path} is not open`);
+  return id;
+}
+
+export const examAt = ({ faculty, exam }: { faculty: string; exam: string }) =>
+  openExamAt(`/${faculty}/${exam}`);
+
+export const examPathSchema = z
+  .string()
+  .refine((path) => openByPath.has(path))
+  .transform(openExamAt);
+
+export const inExam = (examId: string, href: string) =>
+  `${examOf(examId).path}${href === "/" ? "" : href}`;
 
 export function firstOpenExam() {
   const exam = openExams[0];
