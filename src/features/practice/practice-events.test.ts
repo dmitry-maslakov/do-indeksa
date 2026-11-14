@@ -161,7 +161,8 @@ describe("practice events", () => {
   it("accepts the facts of every task", () => {
     const rejected = tasks.filter(
       ({ id }) =>
-        !taskSkipped.props.safeParse({ ...taskFacts(id), ...session }).success,
+        !taskSkipped.props.safeParse({ ...taskFacts("ftn-p1", id), ...session })
+          .success,
     );
     expect(rejected.map(({ id }) => id)).toEqual([]);
   });

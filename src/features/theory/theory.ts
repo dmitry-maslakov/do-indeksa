@@ -3,9 +3,10 @@ import { allMethods, allTheories } from "content-collections";
 import { sortBy } from "es-toolkit";
 import { examOf } from "@/features/catalog/exams";
 
-export const theories = sortBy(allTheories, [
-  (t) => examOf().numberOf(t.topic) ?? Number.POSITIVE_INFINITY,
-]);
+export const theoriesOf = (examId: string) =>
+  sortBy(allTheories, [
+    (t) => examOf(examId).numberOf(t.topic) ?? Number.POSITIVE_INFINITY,
+  ]);
 
 export const getTheory = (topic: string) =>
   allTheories.find((t) => t.topic === topic);

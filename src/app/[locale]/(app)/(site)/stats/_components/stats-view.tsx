@@ -25,7 +25,7 @@ import { TestsCard } from "./tests-card";
 
 const listedTests = 6;
 
-async function loadStats() {
+async function loadStats(examId: string) {
   const [profileId, locale] = await Promise.all([getProfileId(), getLocale()]);
   const now = Date.now();
   const [recent, spans, days, zone, outcomes] = await Promise.all([
@@ -35,7 +35,7 @@ async function loadStats() {
     getZone(profileId),
     getTaskOutcomes(profileId, new Date(now - mistakeDays * dayMs)),
   ]);
-  const tests = await summarizeTests(profileId, recent, locale);
+  const tests = await summarizeTests(profileId, examId, recent, locale);
   const since = now - practiceWeeks * 7 * dayMs;
   const today = dateIn(now, zone);
   return {
@@ -54,9 +54,9 @@ async function loadStats() {
   };
 }
 
-export async function StatsView() {
+export async function StatsView({ examId }: { examId: string }) {
   const [stats, session, strip] = await Promise.all([
-    loadStats(),
+    loadStats(examId),
     getSession(),
     getTranslations("SignInStrip"),
   ]);

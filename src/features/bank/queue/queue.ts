@@ -57,10 +57,12 @@ export interface Earlier {
 interface PoolInput {
   topic: string;
   profileId: string;
+  examId: string;
   current?: string;
 }
 
-const topicIds = (topic: string) => findTasks({ topic }).map((t) => t.id);
+const topicIds = (examId: string, topic: string) =>
+  findTasks(examId, { topic }).map((t) => t.id);
 
 const poolOf = (ids: string[]) =>
   ids.flatMap((id): Candidate[] => {
@@ -77,12 +79,12 @@ const poolOf = (ids: string[]) =>
     ];
   });
 
-async function plan({ topic, profileId, current }: PoolInput) {
-  const ids = topicIds(topic);
+async function plan({ topic, profileId, examId, current }: PoolInput) {
+  const ids = topicIds(examId, topic);
   const asked = current && !ids.includes(current) ? [...ids, current] : ids;
   const [touched, { now, learningAt }] = await Promise.all([
     getTouched(profileId, asked),
-    getTimeline(profileId),
+    getTimeline(profileId, examId),
   ]);
   const queue = planQueue({
     pool: poolOf(ids),
@@ -109,14 +111,14 @@ const rowOf = (id: string, status?: TouchStatus): QueueRow[] => {
   ];
 };
 
-export async function nextTasks(profileId: string) {
-  const topics = examOf().topics.map((topic) => ({
+export async function nextTasks(profileId: string, examId: string) {
+  const topics = examOf(examId).topics.map((topic) => ({
     topic,
-    ids: topicIds(topic),
+    ids: topicIds(examId, topic),
   }));
   const [{ touches, statuses }, { now, learningAt }] = await Promise.all([
     getTouched(profileId),
-    getTimeline(profileId),
+    getTimeline(profileId, examId),
   ]);
   return new Map(
     topics.flatMap(({ topic, ids }) => {
@@ -136,14 +138,18 @@ export async function nextTasks(profileId: string) {
   );
 }
 
-export async function similarTask(profileId: string, id: string) {
+export async function similarTask(
+  profileId: string,
+  examId: string,
+  id: string,
+) {
   const task = getTask(id);
   const shown = task && poolOf([id])[0];
   if (!task || !shown) return undefined;
-  const ids = topicIds(task.topic);
+  const ids = topicIds(examId, task.topic);
   const [touched, { now, learningAt }] = await Promise.all([
     getTouched(profileId, ids),
-    getTimeline(profileId),
+    getTimeline(profileId, examId),
   ]);
   const pool = similarPool(shown, poolOf(ids), touched.statuses);
   const { upcoming } = planQueue({
@@ -192,9 +198,10 @@ export async function loadQueue(input: PoolInput): Promise<Queue> {
 
 export async function loadEarlier(
   profileId: string,
+  examId: string,
   topic: string,
 ): Promise<Earlier> {
-  const ids = topicIds(topic);
+  const ids = topicIds(examId, topic);
   const [{ touches }, outcomes, zone] = await Promise.all([
     getTouched(profileId, ids),
     getOutcomes(profileId, ids),

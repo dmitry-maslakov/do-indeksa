@@ -10,11 +10,12 @@ import { FilterSelect } from "./filter-select";
 import { ResetLink } from "./reset-link";
 
 interface BankFiltersProps {
+  examId: string;
   variant?: ComponentProps<typeof NativeSelect>["variant"];
   children?: ReactNode;
 }
 
-export function BankFilters({ variant, children }: BankFiltersProps) {
+export function BankFilters({ examId, variant, children }: BankFiltersProps) {
   const t = useTranslations("Bank");
   const locale = useLocale();
 
@@ -31,7 +32,7 @@ export function BankFilters({ variant, children }: BankFiltersProps) {
       {children}
       <FilterSelect name="number" label={t("number")} variant={variant}>
         <NativeSelectOption value="">{t("any")}</NativeSelectOption>
-        {examOf().positions.map((p) => (
+        {examOf(examId).positions.map((p) => (
           <NativeSelectOption key={p.number} value={p.number}>
             {t("position", { number: p.number })}
           </NativeSelectOption>

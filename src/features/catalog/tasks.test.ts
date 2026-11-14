@@ -215,10 +215,10 @@ describe("task numbers", () => {
   const taskOn = (topic: string) => ({ id: "t", topic, difficulty: 2 }) as Task;
 
   it("take the exam position of the topic", () => {
-    expect(summarize(taskOn("logarithms")).number).toBe(3);
+    expect(summarize("ftn-p1", taskOn("logarithms")).number).toBe(3);
   });
 
   it("are missing for topics outside the exam", () => {
-    expect(summarize(taskOn("sequences")).number).toBeNull();
+    expect(summarize("ftn-p1", taskOn("sequences")).number).toBeNull();
   });
 });

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { findTasks } from "@/features/bank/search";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { alternates } from "@/i18n/alternates";
 import { Bank, BankResults } from "./_components/bank-results";
 
@@ -18,12 +19,21 @@ export default async function BankPage({
   searchParams,
 }: PageProps<"/[locale]/bank">) {
   const t = await getTranslations("Bank");
+  const examId = firstOpenExam();
 
   return (
     <>
       <h1 className="sr-only">{t("title")}</h1>
-      <Suspense fallback={<BankResults filters={{}} tasks={findTasks({})} />}>
-        <Bank topic={null} searchParams={searchParams} />
+      <Suspense
+        fallback={
+          <BankResults
+            examId={examId}
+            filters={{}}
+            tasks={findTasks(examId, {})}
+          />
+        }
+      >
+        <Bank examId={examId} topic={null} searchParams={searchParams} />
       </Suspense>
     </>
   );

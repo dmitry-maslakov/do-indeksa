@@ -35,10 +35,10 @@ export interface TaskSummary {
   level: Level;
 }
 
-export function summarize(task: Task): TaskSummary {
+export function summarize(examId: string, task: Task): TaskSummary {
   return {
     id: task.id,
-    number: examOf().numberOf(task.topic),
+    number: examOf(examId).numberOf(task.topic),
     topic: task.topic,
     difficulty: task.difficulty,
     level: levelOf(task.difficulty),
@@ -79,7 +79,7 @@ export const typesByTopic = new Map(
 
 export const getTask = (id: string) => byId.get(id);
 
-export function taskFacts(id: string) {
+export function taskFacts(examId: string, id: string) {
   const task = byId.get(id);
   if (!task) throw new Error(`unknown task ${id}`);
   const exam = examSource(task.source);
@@ -90,7 +90,8 @@ export function taskFacts(id: string) {
     difficulty: task.difficulty,
     level: levelOf(task.difficulty),
     exam_year: exam?.year,
-    exam_position: exam?.position ?? examOf().numberOf(task.topic) ?? undefined,
+    exam_position:
+      exam?.position ?? examOf(examId).numberOf(task.topic) ?? undefined,
     key_rev: task.keyRev,
     hints_available: task.hints.length,
     parts: task.choice ? answerCount(task.choice) : task.check.length,

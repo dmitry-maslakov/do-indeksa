@@ -41,6 +41,7 @@ export interface TestSummary {
 
 export async function summarizeTests(
   profileId: string,
+  examId: string,
   tests: TestRow[],
   locale: Locale,
 ): Promise<TestSummary[]> {
@@ -51,16 +52,20 @@ export async function summarizeTests(
   const byTest = Map.groupBy(attempts, (a) => a.testId);
   return Promise.all(
     tests.map(async (test) => {
-      const variant = getVariant(test.variantId);
-      const result = review(slotsOf(test.taskIds), byTest.get(test.id) ?? []);
-      const weekly = weeklyVariant(test.finishedAt)?.id === test.variantId;
+      const variant = getVariant(examId, test.variantId);
+      const result = review(
+        slotsOf(examId, test.taskIds),
+        byTest.get(test.id) ?? [],
+      );
+      const weekly =
+        weeklyVariant(examId, test.finishedAt)?.id === test.variantId;
       return {
         id: test.id,
         variantId: test.variantId,
         kind: weekly ? "weekly" : (variant?.kind ?? "custom"),
         title: variant ? await variantTitle(variant, locale) : test.variantId,
         finishedAt: test.finishedAt.getTime(),
-        examTasks: examOf().positions.length,
+        examTasks: examOf(examId).positions.length,
         segments: result.rows.map((r) => r.segment),
         looks: result.rows.map((r) => topicLook(r.topic)),
         misses: result.rows
@@ -78,23 +83,31 @@ const pageSize = 20;
 
 export async function testPage(
   profileId: string,
+  examId: string,
   offset: number,
   locale: Locale,
 ): Promise<Page<TestSummary>> {
   const rows = await getTests(profileId, pageSize + 1, offset);
   return {
-    items: await summarizeTests(profileId, rows.slice(0, pageSize), locale),
+    items: await summarizeTests(
+      profileId,
+      examId,
+      rows.slice(0, pageSize),
+      locale,
+    ),
     next: rows.length > pageSize ? offset + pageSize : null,
   };
 }
 
 export async function summarizeLatest(
   profileId: string,
+  examId: string,
   variantIds: string[],
   locale: Locale,
 ) {
   return summarizeTests(
     profileId,
+    examId,
     await getLatestTests(profileId, variantIds),
     locale,
   );
@@ -102,11 +115,13 @@ export async function summarizeLatest(
 
 export async function summarizeWeekly(
   profileId: string,
+  examId: string,
   weekly: WeeklyVariant,
   locale: Locale,
 ) {
-  const tests = await summarizeLatest(profileId, [weekly.id], locale);
+  const tests = await summarizeLatest(profileId, examId, [weekly.id], locale);
   return tests.find(
-    (test) => weeklyVariant(new Date(test.finishedAt))?.week === weekly.week,
+    (test) =>
+      weeklyVariant(examId, new Date(test.finishedAt))?.week === weekly.week,
   );
 }

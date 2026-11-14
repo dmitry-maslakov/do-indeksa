@@ -1,5 +1,5 @@
 import "server-only";
-import { orderBy } from "es-toolkit";
+import { memoize, orderBy } from "es-toolkit";
 import type { inferParserType } from "nuqs/server";
 import { examSource } from "@/features/catalog/source";
 import { summarize, type TaskSummary, tasks } from "@/features/catalog/tasks";
@@ -15,31 +15,28 @@ interface Entry {
   exam: boolean;
 }
 
-const entries: Entry[] = tasks.map((task) => ({
-  summary: summarize(task),
-  text: fold(`${task.id} ${task.text} ${task.source}`),
-  exam: examSource(task.source) !== null,
-}));
+const ordersOf = memoize((examId: string) => {
+  const entries: Entry[] = tasks.map((task) => ({
+    summary: summarize(examId, task),
+    text: fold(`${task.id} ${task.text} ${task.source}`),
+    exam: examSource(task.source) !== null,
+  }));
+  const sortedBy = (order: -1 | 0 | 1) =>
+    orderBy(
+      entries,
+      [(e) => order * e.summary.difficulty, (e) => e.summary.number],
+      ["asc"],
+    );
+  return { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };
+});
 
-const sortedBy = (order: -1 | 0 | 1) =>
-  orderBy(
-    entries,
-    [(e) => order * e.summary.difficulty, (e) => e.summary.number],
-    ["asc"],
-  );
-
-const orders = { number: sortedBy(0), easy: sortedBy(1), hard: sortedBy(-1) };
-
-export function searchBank({
-  q,
-  number,
-  topic,
-  source,
-  level,
-  sort,
-}: BankQuery) {
+export function searchBank(
+  examId: string,
+  { q, number, topic, source, level, sort }: BankQuery,
+) {
   const query = q && fold(q);
-  return orders[sort ?? "number"]
+  const sorted = ordersOf(examId)[sort ?? "number"];
+  return sorted
     .filter(
       ({ summary, text, exam }) =>
         (!query || text.includes(query)) &&
@@ -60,5 +57,8 @@ export function filterByStatus(
   return found.filter((t) => (statuses.get(t.id) ?? "new") === status);
 }
 
-export const findTasks = (filters: BankQuery, statuses?: TaskStatuses) =>
-  filterByStatus(searchBank(filters), filters.status, statuses);
+export const findTasks = (
+  examId: string,
+  filters: BankQuery,
+  statuses?: TaskStatuses,
+) => filterByStatus(searchBank(examId, filters), filters.status, statuses);

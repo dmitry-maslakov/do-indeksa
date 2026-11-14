@@ -33,13 +33,17 @@ const evidenceBefore = (
   activity: activity.filter((a) => a.at < at),
 });
 
-function buildLearning({ logs, activity }: Evidence, now: number): Learning {
+function buildLearning(
+  examId: string,
+  { logs, activity }: Evidence,
+  now: number,
+): Learning {
   const activityOf = Map.groupBy(activity, (a) => a.topic);
   const observations = Map.groupBy(
     logs.firstAttempts.flatMap((attempt) => observe(attempt, now) ?? []),
     (o) => o.topic,
   );
-  const abilities = topicAbilities(examOf().topics, observations);
+  const abilities = topicAbilities(examOf(examId).topics, observations);
   const topics = [...abilities].map(([topic, ability]) => {
     const mine = observations.get(topic) ?? [];
     const done = activityOf.get(topic) ?? [];
@@ -61,9 +65,9 @@ function buildLearning({ logs, activity }: Evidence, now: number): Learning {
   return { topics: new Map(topics), tasks: new Map(tasks) };
 }
 
-export const learningAsOf = (evidence: Evidence, now: number) =>
+export const learningAsOf = (examId: string, evidence: Evidence, now: number) =>
   memoize((moment: number) =>
     moment < now
-      ? buildLearning(evidenceBefore(evidence, moment), moment)
-      : buildLearning(evidence, now),
+      ? buildLearning(examId, evidenceBefore(evidence, moment), moment)
+      : buildLearning(examId, evidence, now),
   );

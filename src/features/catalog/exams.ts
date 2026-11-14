@@ -19,12 +19,17 @@ const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
 const ordered = sortBy(allExams, ["order"]);
 const exams = new Map(ordered.map((e) => [e.id, buildExam(e)]));
 const openExams = ordered.filter((e) => e.open);
-const firstOpen = openExams[0]?.id;
 
-export function examOf(id = firstOpen) {
-  const exam = id && exams.get(id);
+export function examOf(id: string) {
+  const exam = exams.get(id);
   if (!exam) throw new Error(`exam ${id} is missing`);
   return exam;
+}
+
+export function firstOpenExam() {
+  const exam = openExams[0];
+  if (!exam) throw new Error("no exam is open");
+  return exam.id;
 }
 
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));

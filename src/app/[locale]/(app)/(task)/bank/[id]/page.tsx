@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
-import { examOf } from "@/features/catalog/exams";
+import { examOf, firstOpenExam } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
 import {
@@ -36,7 +36,9 @@ export function generateStaticParams({
   params: { locale: string };
 }) {
   const shells =
-    params.locale === routing.defaultLocale ? firstTasks() : tasks.slice(0, 1);
+    params.locale === routing.defaultLocale
+      ? firstTasks(firstOpenExam())
+      : tasks.slice(0, 1);
   return shells.map((t) => ({ id: t.id }));
 }
 
@@ -67,7 +69,8 @@ export default async function SolvePage({
     renderTask(id),
   ]);
   if (!html) notFound();
-  const personal = loadPersonal({ id, topic: task.topic });
+  const examId = firstOpenExam();
+  const personal = loadPersonal({ examId, id, topic: task.topic });
   const topic = topicName(task.topic, locale);
   const meta = {
     id,
@@ -77,7 +80,7 @@ export default async function SolvePage({
   };
   const feed = {
     topic: task.topic,
-    topics: examOf().topics.map((topic) => ({
+    topics: examOf(examId).topics.map((topic) => ({
       id: topic,
       name: topicName(topic, locale),
     })),

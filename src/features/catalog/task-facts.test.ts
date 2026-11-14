@@ -22,7 +22,7 @@ vi.mock("content-collections", async (importOriginal) => {
 
 describe("task facts", () => {
   it("place an exam task where it stood in that exam", () => {
-    expect(taskFacts("from-exam")).toMatchObject({
+    expect(taskFacts("ftn-p1", "from-exam")).toMatchObject({
       level: "hard",
       exam_year: 2019,
       exam_position: 3,
@@ -30,11 +30,11 @@ describe("task facts", () => {
   });
 
   it("place our own task at the position of its topic", () => {
-    const facts = taskFacts("our-own");
+    const facts = taskFacts("ftn-p1", "our-own");
     expect(facts).toMatchObject({
       level: "easy",
       exam_year: undefined,
-      exam_position: examOf().numberOf(facts.topic) ?? undefined,
+      exam_position: examOf("ftn-p1").numberOf(facts.topic) ?? undefined,
     });
   });
 });

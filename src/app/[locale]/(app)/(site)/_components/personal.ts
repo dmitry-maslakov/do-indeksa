@@ -7,12 +7,12 @@ import { summarizeWeekly } from "@/features/tests/summaries";
 import type { WeeklyVariant } from "@/features/variants/weekly";
 import { getProfileId } from "@/server/profile";
 
-export async function loadHome(weekly?: WeeklyVariant) {
+export async function loadHome(examId: string, weekly?: WeeklyVariant) {
   const profileId = await getProfileId();
   const [{ topics, suggestion }, starts, weeklyTest] = await Promise.all([
-    getTopicPlan(profileId),
-    nextTasks(profileId),
-    weekly && summarizeWeekly(profileId, weekly, await getLocale()),
+    getTopicPlan(profileId, examId),
+    nextTasks(profileId, examId),
+    weekly && summarizeWeekly(profileId, examId, weekly, await getLocale()),
   ]);
   return {
     weeklyTest,

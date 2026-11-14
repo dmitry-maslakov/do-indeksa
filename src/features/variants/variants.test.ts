@@ -4,35 +4,37 @@ import { tasks } from "@/features/catalog/tasks";
 import { setId } from "./variant-id";
 import { getVariant, officialVariants, slotsOf } from "./variants";
 
+const exam = "ftn-p1";
+
 describe("getVariant", () => {
   it("finds a variant from the bank", () => {
     const official = officialVariants[0];
-    expect(official && getVariant(official.id)).toBe(official);
+    expect(official && getVariant(exam, official.id)).toBe(official);
   });
 
   it("orders a custom set by exam topic and rejects unknown tasks", () => {
-    expect(getVariant("set-log-001.kb-003")?.taskIds).toEqual([
+    expect(getVariant(exam, "set-log-001.kb-003")?.taskIds).toEqual([
       "kb-003",
       "log-001",
     ]);
-    expect(getVariant("set-log-001.missing")).toBeUndefined();
+    expect(getVariant(exam, "set-log-001.missing")).toBeUndefined();
   });
 
   it("takes a set up to the exam size and no more", () => {
     expect(tasks.length).toBeGreaterThan(maxPlaces);
     const ids = tasks.slice(0, maxPlaces + 1).map((t) => t.id);
-    expect(getVariant(setId(ids.slice(0, maxPlaces)))).toBeDefined();
-    expect(getVariant(setId(ids))).toBeUndefined();
+    expect(getVariant(exam, setId(ids.slice(0, maxPlaces)))).toBeDefined();
+    expect(getVariant(exam, setId(ids))).toBeUndefined();
   });
 
   it("ignores unknown ids", () => {
-    expect(getVariant("nope")).toBeUndefined();
+    expect(getVariant(exam, "nope")).toBeUndefined();
   });
 });
 
 describe("slotsOf", () => {
   it("takes number, points and minutes from the place in the test", () => {
-    expect(slotsOf(["log-001", "kb-003"])).toEqual([
+    expect(slotsOf(exam, ["log-001", "kb-003"])).toEqual([
       {
         taskId: "log-001",
         number: 1,
@@ -65,7 +67,7 @@ describe("slotsOf", () => {
       "fun-002",
       "komb-002",
     ];
-    const slots = slotsOf(ids);
+    const slots = slotsOf(exam, ids);
     expect(slots.map((s) => s.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(slots.slice(0, 2).map((s) => s.topic)).toEqual([
       "quadratic-equations",
@@ -76,7 +78,7 @@ describe("slotsOf", () => {
 
   it("skips tasks that are not in the bank", () => {
     expect(
-      slotsOf(["missing", "log-001"]).map((t) => [t.taskId, t.number]),
+      slotsOf(exam, ["missing", "log-001"]).map((t) => [t.taskId, t.number]),
     ).toEqual([["log-001", 1]]);
   });
 });

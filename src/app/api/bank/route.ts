@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { bankPage } from "@/features/bank/feed";
 import { loadBankFilters } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { getTaskStatuses } from "@/features/progress/progress";
 import { pageQuery } from "@/lib/page-query";
 import { getProfileId } from "@/server/profile";
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   const statuses = filters.status
     ? await getTaskStatuses(await getProfileId())
     : undefined;
-  const tasks = findTasks(filters, statuses);
+  const tasks = findTasks(firstOpenExam(), filters, statuses);
   return Response.json(
     await bankPage(tasks, query.data.offset, query.data.locale),
   );

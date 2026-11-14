@@ -4,12 +4,14 @@ import { filterByStatus, searchBank } from "./search";
 const rank = (t: { number: number | null }) =>
   t.number ?? Number.MAX_SAFE_INTEGER;
 
-const ids = (filters: Parameters<typeof searchBank>[0]) =>
-  searchBank(filters).map((t) => t.id);
+const exam = "ftn-p1";
+
+const ids = (filters: Parameters<typeof searchBank>[1]) =>
+  searchBank(exam, filters).map((t) => t.id);
 
 describe("searchBank", () => {
   it("lists every task by number, tasks outside the exam last", () => {
-    const found = searchBank({});
+    const found = searchBank(exam, {});
     expect(found.length).toBeGreaterThan(0);
     expect(found.map(rank)).toEqual(found.map(rank).sort((a, b) => a - b));
   });
@@ -22,14 +24,16 @@ describe("searchBank", () => {
 
   it("filters by topic, number and level", () => {
     expect(
-      searchBank({ topic: "logarithms" }).every(
+      searchBank(exam, { topic: "logarithms" }).every(
         (t) => t.topic === "logarithms",
       ),
     ).toBe(true);
-    expect(searchBank({ number: 3 }).every((t) => t.number === 3)).toBe(true);
-    expect(searchBank({ level: "easy" }).every((t) => t.level === "easy")).toBe(
+    expect(searchBank(exam, { number: 3 }).every((t) => t.number === 3)).toBe(
       true,
     );
+    expect(
+      searchBank(exam, { level: "easy" }).every((t) => t.level === "easy"),
+    ).toBe(true);
   });
 
   it("filters by source", () => {
@@ -49,14 +53,18 @@ describe("searchBank", () => {
   });
 
   it("combines the text search with the other filters", () => {
-    const found = searchBank({ q: "jednacinu", level: "easy", sort: "hard" });
-    const all = searchBank({ q: "jednacinu", sort: "hard" });
+    const found = searchBank(exam, {
+      q: "jednacinu",
+      level: "easy",
+      sort: "hard",
+    });
+    const all = searchBank(exam, { q: "jednacinu", sort: "hard" });
     expect(found.length).toBeGreaterThan(0);
     expect(found).toEqual(all.filter((t) => t.level === "easy"));
   });
 
   it("sorts easy first by difficulty, then by number", () => {
-    const found = searchBank({ sort: "easy" });
+    const found = searchBank(exam, { sort: "easy" });
     expect(found).toEqual(
       [...found].sort(
         (a, b) => a.difficulty - b.difficulty || rank(a) - rank(b),
@@ -65,7 +73,7 @@ describe("searchBank", () => {
   });
 
   it("sorts hard first by difficulty, then by number", () => {
-    const found = searchBank({ sort: "hard" });
+    const found = searchBank(exam, { sort: "hard" });
     expect(found).toEqual(
       [...found].sort(
         (a, b) => b.difficulty - a.difficulty || rank(a) - rank(b),
@@ -81,7 +89,7 @@ describe("searchBank", () => {
 });
 
 describe("filterByStatus", () => {
-  const found = searchBank({});
+  const found = searchBank(exam, {});
   const [first] = found.map((t) => t.id);
   const statuses = new Map([[String(first), "solved" as const]]);
   const idsBy = (status: Parameters<typeof filterByStatus>[1]) =>

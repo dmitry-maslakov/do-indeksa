@@ -36,7 +36,7 @@ const learningWith = (profileId: string, taskLogs: TaskLog[]) => {
     firstAttempts: [first],
     taskLogs,
   });
-  return getLearning(profileId);
+  return getLearning(profileId, "ftn-p1");
 };
 
 beforeEach(() => {

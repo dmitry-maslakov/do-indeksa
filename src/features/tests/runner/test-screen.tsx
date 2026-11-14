@@ -15,17 +15,19 @@ import { TestGhost } from "./test-ghost";
 import { TestRunner } from "./test-runner";
 
 export async function TestScreen({
+  examId,
   variant,
   code,
   fallback,
 }: {
+  examId: string;
   variant: ExamVariant;
   code?: string;
   fallback?: ComposeMode;
 }) {
   const locale = await getLocale();
-  const tasks = await tasksFor(variant.taskIds, locale);
-  const minutes = minutesOf(variant);
+  const tasks = await tasksFor(examId, variant.taskIds, locale);
+  const minutes = minutesOf(examId, variant);
   const title = await variantTitle(variant, locale);
 
   return (

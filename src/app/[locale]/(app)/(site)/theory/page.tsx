@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import { methodsOf, theories } from "@/features/theory/theory";
+import { methodsOf, theoriesOf } from "@/features/theory/theory";
 import { alternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 
@@ -31,7 +32,7 @@ export default function TheoryPage() {
         {t("lead")}
       </p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {theories.map(({ topic, sections }) => {
+        {theoriesOf(firstOpenExam()).map(({ topic, sections }) => {
           const look = topicLook(topic);
           return (
             <li key={topic}>
