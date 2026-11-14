@@ -19,7 +19,18 @@ or {
   or {
     JsImportNamespaceClause(source=$s),
     JsExportFromClause(source=$s)
-  } where { $s <: r"['\"]next/navigation['\"]" }
+  } where { $s <: r"['\"]next/navigation['\"]" },
+  or {
+    JsImportNamedClause(source=$s),
+    JsImportDefaultClause(source=$s),
+    JsImportNamespaceClause(source=$s),
+    JsImportCombinedClause(source=$s),
+    JsExportNamedFromClause(source=$s),
+    JsExportFromClause(source=$s)
+  } where {
+    $s <: r"['\"]next-intl/navigation['\"]",
+    $filename <: not r".*src/i18n/.*"
+  }
 } as $import where {
-  register_diagnostic(span=$import, message="Import Link, redirect and permanentRedirect from @/i18n/navigation.")
+  register_diagnostic(span=$import, message="Import Link, redirect, permanentRedirect and next-intl navigation from @/i18n/navigation.")
 }
