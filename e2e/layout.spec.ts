@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { at, expect, inExam, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test(
   "the main navigation follows the breakpoint",
@@ -69,7 +69,7 @@ async function fitsPhone(
   path: string,
   account: string,
 ) {
-  await page.goto(inExam(path));
+  await page.goto(at(path));
   await expect(
     /^\/(bank|theory|variants)\//.test(path)
       ? page.getByRole("main")
