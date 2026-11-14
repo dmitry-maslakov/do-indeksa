@@ -55,7 +55,7 @@ test("the task rail keeps its rows while the student moves between tasks", async
   await seedAttempt(auth.db, profileId, "eks-001", true);
   const rows = page
     .getByRole("complementary")
-    .locator("a[href^='/bank/']:not(nav a)");
+    .locator(`a[href^='${at("/bank/")}']:not(nav a)`);
   const current = rows.and(page.locator("[aria-current=page]"));
   const hrefs = (unmarked = false) =>
     rows.evaluateAll(
@@ -69,8 +69,8 @@ test("the task rail keeps its rows while the student moves between tasks", async
   await page.goto(at("/bank/eks-001"));
   await expect(current).toHaveAttribute("href", /\/bank\/eks-001$/);
   const before = await hrefs();
-  const next = before[before.indexOf("/bank/eks-001") + 1] ?? "";
-  expect(next).toMatch(/^\/bank\/[\w-]+$/);
+  const next = before[before.indexOf(at("/bank/eks-001")) + 1] ?? "";
+  expect(next).toMatch(new RegExp(`^${at("/bank/")}[\\w-]+$`));
   await rows.evaluateAll((links) => {
     for (const link of links) Object.assign(link, { kept: true });
   });

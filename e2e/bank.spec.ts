@@ -259,12 +259,15 @@ test("Zadaci and Svi zadaci keep the student's filters", async ({
 });
 
 test("an old topic link moves to the topic page", async ({ request }) => {
-  const response = await request.get("/ru/bank?topic=logarithms&level=easy", {
-    maxRedirects: 0,
-  });
+  const response = await request.get(
+    `/ru${at("/bank?topic=logarithms&level=easy")}`,
+    {
+      maxRedirects: 0,
+    },
+  );
   expect(response.status()).toBe(308);
   expect(response.headers().location).toMatch(
-    /\/ru\/bank\/topic\/logarithms\?level=easy$/,
+    /\/ru\/ftn\/p1\/bank\/topic\/logarithms\?level=easy$/,
   );
 });
 
