@@ -6,9 +6,9 @@ espb: 240
 exam: ftn-p1
 links:
   page: https://example.com/
-  plan: { url: "https://example.com/", accreditation: 2020 }
+  plan: { url: "https://example.com/", accreditation: 2019 }
   planPdf: https://example.com/
-  courseBook: { url: "https://example.com/", accreditation: 2027 }
+  courseBook: { url: "https://example.com/", accreditation: 2028 }
 degree: { title: Diplomirani inženjer }
 department: Departman
 jointDepartments: 2
