@@ -1,15 +1,25 @@
 language js
 
 or {
-  `import $_ from "next/link"`,
-  `import { $names } from "next/navigation"` where {
+  or {
+    JsImportDefaultClause(source=$s),
+    JsImportCombinedClause(source=$s)
+  } where { $s <: r"['\"]next/link['\"]" },
+  or {
+    JsImportNamedClause(source=$s, named_specifiers=$names),
+    JsImportCombinedClause(source=$s, specifier=$names),
+    JsExportNamedFromClause(source=$s, specifiers=$names)
+  } where {
+    $s <: r"['\"]next/navigation['\"]",
     $names <: contains or {
-      `redirect`,
-      `permanentRedirect`,
-      `redirect as $_`,
-      `permanentRedirect as $_`
+      r"redirect",
+      r"permanentRedirect"
     }
-  }
+  },
+  or {
+    JsImportNamespaceClause(source=$s),
+    JsExportFromClause(source=$s)
+  } where { $s <: r"['\"]next/navigation['\"]" }
 } as $import where {
-  register_diagnostic(span=$import, message="Use Link and redirect from @/i18n/navigation.")
+  register_diagnostic(span=$import, message="Import Link, redirect and permanentRedirect from @/i18n/navigation.")
 }
