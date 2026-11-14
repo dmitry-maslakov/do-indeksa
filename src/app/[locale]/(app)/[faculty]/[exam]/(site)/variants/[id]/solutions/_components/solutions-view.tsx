@@ -83,7 +83,7 @@ export async function SolutionsView({
                 <span aria-hidden="true">·</span>
                 <ExternalLink
                   href={variant.original}
-                  className="inline-flex items-center underline underline-offset-3 hover:text-foreground"
+                  className="underline underline-offset-3 hover:text-foreground"
                 >
                   {variants("original")}
                 </ExternalLink>

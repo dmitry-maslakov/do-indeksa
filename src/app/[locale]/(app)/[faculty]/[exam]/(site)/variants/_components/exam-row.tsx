@@ -76,9 +76,7 @@ export function ExamRow({
         {(original || solutions) && (
           <span className="relative flex w-fit items-center gap-1.5 whitespace-nowrap text-subtle text-xs [&_a]:underline [&_a]:underline-offset-3 [&_a:hover]:text-foreground">
             {original && (
-              <ExternalLink href={original} className="flex items-center">
-                {t("original")}
-              </ExternalLink>
+              <ExternalLink href={original}>{t("original")}</ExternalLink>
             )}
             {solutions && original && <span aria-hidden="true">·</span>}
             {solutions && <Link href={solutions}>{t("solutions")}</Link>}
