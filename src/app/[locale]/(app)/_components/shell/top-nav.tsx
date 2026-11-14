@@ -18,7 +18,7 @@ export function TopNav({ exam, languages, className }: TopNavProps) {
   return (
     <header
       className={cn(
-        "flex h-14 items-center gap-3 px-4 md:gap-4 lg:h-18 lg:gap-7 lg:px-10",
+        "flex h-14 items-center gap-2 px-4 xs:gap-3 md:gap-4 lg:h-18 lg:gap-7 lg:px-10",
         className,
       )}
     >
@@ -29,7 +29,7 @@ export function TopNav({ exam, languages, className }: TopNavProps) {
           <NavLinks />
         </>
       )}
-      <div className="ml-auto flex shrink-0 items-center gap-2.5 md:gap-4">
+      <div className="ml-auto flex shrink-0 items-center gap-2 xs:gap-2.5 md:gap-4">
         {languages && <LocaleSwitcher />}
         <UserMenu />
       </div>
