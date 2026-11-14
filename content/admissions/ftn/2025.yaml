@@ -1,0 +1,8 @@
+konkurs: https://example.com/konkurs.pdf
+statistics: https://example.com/statistika
+scoring: { school: { min: 20, max: 40 }, exam: { min: 0, max: 60 } }
+thresholds: { budget: { over: 50 }, self: { atLeast: 30 } }
+programs:
+  siit: { budget: 10, self: 10, tuition: 90000, cutoff: { budget: 90, self: 80 } }
+  ra: { budget: 20, self: 10, tuition: 90000, cutoff: { budget: 70, self: null } }
+  geodezija: { cutoff: { budget: 60, self: 40 } }

@@ -1,12 +1,20 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { allExams, allFaculties, allTests } from "content-collections";
+import {
+  allExams,
+  allFaculties,
+  allPrograms,
+  allTests,
+} from "content-collections";
 import { expect, it } from "vitest";
 
-const ids = [...allFaculties, ...allExams, ...allTests].map((r) => r.id);
+const ids = [
+  ...[...allFaculties, ...allExams, ...allTests].map((r) => r.id),
+  ...allPrograms.map((p) => p.slug),
+];
 const quoted = new RegExp(`["'\`](${ids.join("|")})["'\`]`, "g");
 
-it("keeps faculty, exam and test ids out of the code", async () => {
+it("keeps faculty, exam, test and programme ids out of the code", async () => {
   const files = (await readdir("src", { recursive: true })).filter(
     (file) => /\.tsx?$/.test(file) && !file.endsWith(".test.ts"),
   );

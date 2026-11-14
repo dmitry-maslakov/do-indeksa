@@ -54,5 +54,5 @@ export const examOptions = openExams.map((e) => ({
   faculty: facultyOf(e.faculty).short,
   title: e.title,
   tasks: e.positions.length,
-  hours: e.minutes / 60,
+  hours: (e.minutes ?? 0) / 60,
 }));

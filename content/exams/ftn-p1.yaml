@@ -1,6 +1,19 @@
 faculty: ftn
 title: P1
+name: Matematika
+label: { ru: Математика, en: Mathematics }
+tone: blue
 tests: [ftn-math]
 points: 60
 open: true
 order: 1
+sampleTask: komb-002
+about:
+  checked: 2026-01-01
+  grading: method
+  rulesSources: [{ link: examRules }]
+  syllabus: { title: Oblasti, url: "https://example.com/", areas: 1 }
+  papers: { title: Zbirka, url: "https://example.com/" }
+  exemption:
+    text: Opis oslobađanja.
+    sources: [{ cycle: 2026, section: "1" }, { link: exemption }]

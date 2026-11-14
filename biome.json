@@ -115,6 +115,30 @@
       }
     },
     {
+      "includes": ["src/features/admission/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "!@/features/admission/**",
+                      "!@/features/catalog/**"
+                    ],
+                    "message": "admission imports only catalog; features form a DAG."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["src/features/progress/**"],
       "linter": {
         "rules": {

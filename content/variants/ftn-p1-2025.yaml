@@ -1,4 +1,5 @@
 test: ftn-math
 kind: official
 year: 2025
+held: 2025-07-01
 taskIds: [kb-003, kv-002, log-001, eks-001, trig-001, vek-002, plan-001, ster-001, fun-002, komb-002]
