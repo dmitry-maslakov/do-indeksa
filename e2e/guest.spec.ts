@@ -110,11 +110,11 @@ test("a guest back on another day with five solved tasks gets Google One Tap", a
   await expect(
     page.getByRole("link", { name: "Sledeći zadatak" }),
   ).toBeVisible();
-  await page.goto(at("/"));
-  await expect.poll(() => prompts).toEqual(["/"]);
+  await page.goto("/");
+  await expect.poll(() => prompts).toEqual([at("/")]);
   await page.reload();
   await expect(page.getByRole("heading", { name: "Mapa tema" })).toBeVisible();
-  expect(prompts).toEqual(["/"]);
+  expect(prompts).toEqual([at("/")]);
 });
 
 const profileCookie = async (context: BrowserContext) =>
@@ -124,7 +124,7 @@ test("a task seen before comes after the ones not seen yet", async ({
   page,
   context,
 }) => {
-  const start = "/bank/start/exponential-equations";
+  const start = at("/bank/start/exponential-equations");
   await page.goto(start);
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   const seen = page.url();
@@ -147,7 +147,7 @@ test("a skipped task stays in the visit before the current one", async ({
   const current = new URL(page.url()).pathname;
   const rail = page
     .getByRole("complementary")
-    .locator("a[href^='/bank/']:not(nav a)");
+    .locator(`a[href^='${at("/bank/")}']:not(nav a)`);
   const order = () =>
     rail.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
   await expect.poll(order).toContain(current);
@@ -199,7 +199,7 @@ test("browsing without a task creates no profile", async ({
   context,
 }) => {
   for (const path of ["/", "/bank", "/variants", "/theory"]) {
-    await page.goto(path);
+    await page.goto(at(path));
     await expect(page.getByRole("main")).toBeVisible();
   }
   expect(await profileCookie(context)).toBe(false);
@@ -223,7 +223,7 @@ test("a guest opens the solution and moves on", async ({ page }) => {
   await page.goto(at("/bank/eks-001"));
   const skip = page.getByRole("link", { name: "Preskoči" });
   const next = await skip.getAttribute("href");
-  expect(next).toMatch(/^\/bank\/[\w-]+$/);
+  expect(next).toMatch(new RegExp(`^${at("/bank/")}[\\w-]+$`));
   await page.getByRole("button", { name: "Rešenje" }).click();
   await expect(page.getByRole("heading", { name: "Rešenje" })).toBeVisible();
   await expect(skip).toBeHidden();
@@ -257,7 +257,7 @@ test("the sheet opens with the list already in place", {
 }, async ({ page }) => {
   await page.goto(at("/bank/eks-001"));
   await page
-    .locator("aside a[href^='/bank/']:not(nav a)")
+    .locator(`aside a[href^='${at("/bank/")}']:not(nav a)`)
     .first()
     .waitFor({ state: "attached" });
   const sheet = await openSheet(page, /Eksponencijalne/);

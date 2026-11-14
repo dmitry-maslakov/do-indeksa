@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test.skip(
   process.env.CONTENT_DIR === "bank",
@@ -50,7 +50,7 @@ const shades = (box: Locator) =>
   );
 
 async function open(page: Page, path: string) {
-  await page.goto(path);
+  await page.goto(at(path));
   await page.waitForFunction(() => customElements.get("math-field"));
 }
 

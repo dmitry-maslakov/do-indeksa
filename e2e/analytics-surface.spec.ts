@@ -185,7 +185,7 @@ test("the task rail records its first pick again on a new visit to the task", as
   await expect(page).toHaveURL(/\/bank\/topic\/exponential-equations$/);
   await page
     .getByRole("main")
-    .locator("a[href='/bank/eks-001']")
+    .locator(`a[href='${at("/bank/eks-001")}']`)
     .first()
     .click();
   await expect(page).toHaveURL(/\/bank\/eks-001$/);

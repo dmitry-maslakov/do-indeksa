@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { at, expect, test } from "./fixtures";
+import { at, expect, inExam, test } from "./fixtures";
 
 test(
   "the main navigation follows the breakpoint",
@@ -37,7 +37,7 @@ test(
 
 for (const path of ["/variants/ftn-p1-2025/solutions", "/bank/eks-001"])
   test(`${path} scrolls its formulas only sideways`, async ({ page }) => {
-    await page.goto(path);
+    await page.goto(at(path));
     const texts = page.locator("main div.math-text");
     await expect(texts.first()).toBeVisible();
     const scrolls = await texts.evaluateAll((all) =>
@@ -69,7 +69,7 @@ async function fitsPhone(
   path: string,
   account: string,
 ) {
-  await page.goto(path);
+  await page.goto(inExam(path));
   await expect(
     /^\/(bank|theory|variants)\//.test(path)
       ? page.getByRole("main")
@@ -149,7 +149,7 @@ test.describe("before scripts run", () => {
       ["/theory/exponential-equations", false, true],
       ["/variants/ftn-p1-2025", false, false],
     ] as const) {
-      await page.goto(path);
+      await page.goto(at(path));
       await expect(page.getByRole("banner"), path).toBeVisible({
         visible: header,
       });

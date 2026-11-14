@@ -195,7 +195,7 @@ test("a task in the result opens another task of its topic to practise", async (
 });
 
 test("a missing task has no similar one", async ({ page }) => {
-  const response = await page.request.get("/bank/similar/nema-zadatka", {
+  const response = await page.request.get(at("/bank/similar/nema-zadatka"), {
     maxRedirects: 0,
   });
   expect(response.status()).toBe(404);
