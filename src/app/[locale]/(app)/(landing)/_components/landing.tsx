@@ -77,7 +77,7 @@ export function Landing({ sample, weekly }: LandingProps) {
   return (
     <main className="pb-14 lg:pb-30">
       <div className="flex flex-col px-4 pt-10 md:items-center md:px-10 md:pt-20 md:text-center">
-        <h1 className="wrap-break-word font-bold text-[44px] leading-11.5 md:max-w-140 md:text-7xl md:leading-19">
+        <h1 className="wrap-break-word font-bold text-[44px] leading-11.5 md:max-w-150 md:text-7xl md:leading-19">
           {t("title")}
         </h1>
         <p className="mt-4 font-medium text-[17px] leading-[25px] md:mt-6 md:max-w-170 md:text-xl md:leading-7.5">
