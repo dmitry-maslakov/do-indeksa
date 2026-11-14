@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useLayoutEffect, useRef } from "react";
 import { queueEvent } from "@/lib/analytics-browser";
 import { watchReading } from "@/lib/reading";
 
@@ -17,7 +17,7 @@ export function SolutionsReading({
 }: SolutionsReadingProps) {
   const list = useRef<HTMLOListElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (list.current)
       return watchReading(list.current, ":scope > li", (read, path) =>
         queueEvent("solutions_read", { ...read, variant_id: variantId }, path),

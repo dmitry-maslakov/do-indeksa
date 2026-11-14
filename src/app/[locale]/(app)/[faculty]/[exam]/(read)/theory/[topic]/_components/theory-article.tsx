@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useLayoutEffect, useRef } from "react";
 import { type BrowserEvents, queueEvent } from "@/lib/analytics-browser";
 import { watchReading } from "@/lib/reading";
 
@@ -20,7 +20,7 @@ export function TheoryArticle({
 }: TheoryArticleProps) {
   const article = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (article.current)
       return watchReading(article.current, "h2[id]", (read, path) =>
         queueEvent("theory_read", { ...read, topic, method, page }, path),
