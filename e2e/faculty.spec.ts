@@ -1,6 +1,14 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
 const register = "#registar";
+
+const searchReady = (page: Page) =>
+  page.waitForFunction(() =>
+    Object.keys(document.querySelector("main input[type=search]") ?? {}).some(
+      (key) => key.startsWith("__reactProps"),
+    ),
+  );
 
 test("lists the programmes of a faculty by exam", async ({ page }) => {
   const res = await page.goto("/ftn");
@@ -34,11 +42,13 @@ test("finds a programme and keeps the query in the address", async ({
   const name = (await first.locator("th > *").first().textContent()) ?? "";
   const field = page.getByRole("searchbox", { name: "Nađi smer" });
 
+  await searchReady(page);
   await field.fill(name);
   await expect(first).toBeVisible();
   await expect(page.locator("main [aria-live=polite]")).toHaveText(/\d/);
   await expect(page).toHaveURL(/[?&]q=/);
   await page.reload();
+  await searchReady(page);
   await expect(field).toHaveValue(name);
   await expect(first).toBeVisible();
 
