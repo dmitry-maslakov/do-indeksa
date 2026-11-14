@@ -62,7 +62,7 @@ export function ExamSwitcher({ groups, current }: ExamSwitcherProps) {
   return (
     <>
       <ExamMenu entries={entries} pill={pill} />
-      <ExamSheet entries={entries} pill={pill} />
+      <ExamSheet entries={entries} pill={pill} title={exam.title} />
     </>
   );
 }
@@ -126,7 +126,11 @@ function ExamMenu({ entries, pill }: ExamListProps) {
   );
 }
 
-function ExamSheet({ entries, pill }: ExamListProps) {
+function ExamSheet({
+  entries,
+  pill,
+  title,
+}: ExamListProps & { title: string }) {
   const t = useTranslations("ExamSwitcher");
   const [open, setOpen] = useState(false);
 
@@ -137,11 +141,13 @@ function ExamSheet({ entries, pill }: ExamListProps) {
           <Button
             variant="ghost"
             size="sm"
+            aria-label={pill}
             className="h-8 gap-1 rounded-full bg-untouched pr-2 pl-3 font-medium text-[13px] leading-4.5 md:hidden"
           />
         }
       >
-        {pill}
+        <span className="max-xs:hidden">{pill}</span>
+        <span className="xs:hidden">{title}</span>
         <ChevronDownIcon className="size-3.5" />
       </DrawerTrigger>
       <DrawerContent title={t("label")}>
