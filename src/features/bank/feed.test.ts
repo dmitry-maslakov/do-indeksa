@@ -3,7 +3,7 @@ import { summarize, tasks } from "@/features/catalog/tasks";
 import { renderMarkdown } from "@/lib/markdown";
 import { bankPage } from "./feed";
 
-const summaries = tasks.map(summarize);
+const summaries = tasks.map((task) => summarize("ftn-p1", task));
 
 describe("bankPage", () => {
   it("sends each statement as the HTML of its Markdown", async () => {

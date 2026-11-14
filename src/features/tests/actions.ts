@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { attemptFacts } from "@/features/practice/answer/answers";
 import { answerSubmitted } from "@/features/practice/practice-events";
 import { redirect } from "@/i18n/navigation";
@@ -15,21 +16,22 @@ import { finishTest, saveDraft, testInput } from "./test-sessions";
 export const saveTest = actionClient
   .inputSchema(testInput)
   .action(({ parsedInput, ctx: { profileId } }) =>
-    saveDraft(profileId, parsedInput),
+    saveDraft(profileId, firstOpenExam(), parsedInput),
   );
 
 export const submitTest = actionClient
   .inputSchema(testInput.extend({ tz: timeZoneSchema, locale: localeSchema }))
   .action(
     async ({ parsedInput: { tz, locale, ...test }, ctx: { profileId } }) => {
-      const finished = await finishTest(profileId, test, tz);
+      const examId = firstOpenExam();
+      const finished = await finishTest(profileId, examId, test, tz);
       if (finished) {
         await track(testFinished, finished.facts, { profileId });
         for (const { attempt, ...facts } of finished.attempted)
           await track(
             answerSubmitted,
             async () => ({
-              ...(await attemptFacts(profileId, attempt)),
+              ...(await attemptFacts(profileId, examId, attempt)),
               ...facts,
               context: "test",
               test_session_id: test.id,

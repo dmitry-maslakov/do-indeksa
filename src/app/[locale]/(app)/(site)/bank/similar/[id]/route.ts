@@ -1,16 +1,17 @@
 import { hasLocale } from "next-intl";
 import { similarTask } from "@/features/bank/queue/queue";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { getTopicPlan } from "@/features/progress/progress";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getProfileId } from "@/server/profile";
 
-async function targetOf(id: string, topic: string) {
+async function targetOf(examId: string, id: string, topic: string) {
   const profileId = await getProfileId();
-  const similar = await similarTask(profileId, id);
+  const similar = await similarTask(profileId, examId, id);
   if (similar) return `/bank/${similar}`;
-  const { suggestion } = await getTopicPlan(profileId);
+  const { suggestion } = await getTopicPlan(profileId, examId);
   return suggestion && suggestion.topic !== topic
     ? `/bank/start/${suggestion.topic}`
     : "/bank";
@@ -25,6 +26,9 @@ export async function GET(
   if (!task || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });
   }
-  const href = getPathname({ href: await targetOf(id, task.topic), locale });
+  const href = getPathname({
+    href: await targetOf(firstOpenExam(), id, task.topic),
+    locale,
+  });
   return new Response(null, { status: 307, headers: { Location: href } });
 }

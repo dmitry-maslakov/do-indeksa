@@ -9,7 +9,12 @@ import { checkerVersion } from "@/features/catalog/checker";
 import { maxPlaces } from "@/features/catalog/exams";
 import { maxParts } from "@/features/catalog/parts";
 import { getTask } from "@/features/catalog/tasks";
-import { getVariant, minutesOf, slotsOf } from "@/features/variants/variants";
+import {
+  getVariant,
+  isVariant,
+  minutesOf,
+  slotsOf,
+} from "@/features/variants/variants";
 import { weeklyVariant } from "@/features/variants/weekly";
 import { minuteMs } from "@/lib/dates";
 import { db, type Tx } from "@/server/db";
@@ -19,7 +24,7 @@ import { overtimeAt } from "./state";
 
 export const testInput = z.object({
   id: z.uuid(),
-  variantId: z.string().refine((id) => getVariant(id) !== undefined),
+  variantId: z.string().refine(isVariant),
   startedAt: z.number().int(),
   draft: testDraft({ tasks: maxPlaces, parts: maxParts }),
 });
@@ -28,8 +33,8 @@ export type TestInput = z.infer<typeof testInput>;
 
 export type UnfinishedTest = TestInput & { updatedAt: number };
 
-function variantOf(variantId: string) {
-  const variant = getVariant(variantId);
+function variantOf(examId: string, variantId: string) {
+  const variant = getVariant(examId, variantId);
   if (!variant) throw new Error(`unknown variant ${variantId}`);
   return variant;
 }
@@ -37,10 +42,11 @@ function variantOf(variantId: string) {
 const upsert = (
   executor: Pick<typeof db, "insert">,
   profileId: string,
+  examId: string,
   { id, variantId, startedAt, draft }: TestInput,
   set: Partial<typeof testSessions.$inferInsert>,
 ) => {
-  const variant = variantOf(variantId);
+  const variant = variantOf(examId, variantId);
   const now = new Date();
   return executor
     .insert(testSessions)
@@ -68,8 +74,12 @@ const upsert = (
     });
 };
 
-export async function saveDraft(profileId: string, test: TestInput) {
-  await upsert(db, profileId, test, {});
+export async function saveDraft(
+  profileId: string,
+  examId: string,
+  test: TestInput,
+) {
+  await upsert(db, profileId, examId, test, {});
 }
 
 function sessionsOf(
@@ -144,14 +154,15 @@ async function storeAttempts(
 
 export async function finishTest(
   profileId: string,
+  examId: string,
   test: TestInput,
   tz: string | undefined,
 ) {
-  const variant = variantOf(test.variantId);
-  const minutes = minutesOf(variant);
+  const variant = variantOf(examId, test.variantId);
+  const minutes = minutesOf(examId, variant);
   const now = Date.now();
   const finished = await db.transaction(async (tx) => {
-    const [stored] = await upsert(tx, profileId, test, {
+    const [stored] = await upsert(tx, profileId, examId, test, {
       draft: null,
       finishedAt: new Date(now),
     });
@@ -216,7 +227,10 @@ export async function finishTest(
   const { startedAt, overtime, graded, attempted } = finished;
   const answered = graded.filter((g) => g.answered);
   const { score, max, correct } = review(
-    slotsOf(graded.map((g) => g.taskId)),
+    slotsOf(
+      examId,
+      graded.map((g) => g.taskId),
+    ),
     answered,
   );
   const facts = {
@@ -225,7 +239,7 @@ export async function finishTest(
     variant_kind: variant.kind,
     tasks: graded.length,
     minutes,
-    weekly: weeklyVariant()?.id === variant.id,
+    weekly: weeklyVariant(examId)?.id === variant.id,
     answered: answered.length,
     correct,
     score,

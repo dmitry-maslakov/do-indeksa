@@ -12,7 +12,7 @@ import {
 
 const pool = curatedVariants.length > 0 ? curatedVariants : contentVariants;
 
-export function weeklyVariant(now = new Date()) {
+export function weeklyVariant(examId: string, now = new Date()) {
   const day = Date.parse(belgradeDate(now)) / dayMs;
   const weekday = (day + 3) % 7;
   const week = Math.floor((day + 3) / 7);
@@ -28,16 +28,16 @@ export function weeklyVariant(now = new Date()) {
       const topic = getTask(id)?.topic;
       return topic ? [{ id, topic }] : [];
     }),
-    hours: Math.round(minutesOf(variant) / 60),
-    points: pointsOf(variant),
+    hours: Math.round(minutesOf(examId, variant) / 60),
+    points: pointsOf(examId, variant),
     daysLeft: 7 - weekday,
   };
 }
 
-export async function currentWeekly() {
+export async function currentWeekly(examId: string) {
   "use cache";
   cacheLife("hours");
-  return weeklyVariant();
+  return weeklyVariant(examId);
 }
 
 export type WeeklyVariant = NonNullable<ReturnType<typeof weeklyVariant>>;

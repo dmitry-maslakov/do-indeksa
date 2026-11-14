@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { StatsSkeleton } from "./_components/stats-skeleton";
 import { StatsView } from "./_components/stats-view";
 
@@ -19,7 +20,7 @@ export default async function StatsPage() {
         <PageTitle>{t("title")}</PageTitle>
       </div>
       <Suspense fallback={<StatsSkeleton />}>
-        <StatsView />
+        <StatsView examId={firstOpenExam()} />
       </Suspense>
     </main>
   );

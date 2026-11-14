@@ -1,9 +1,10 @@
 import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
 import { bankHref } from "@/features/bank/params";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
-import { theories, theoryMethods } from "@/features/theory/theory";
+import { theoriesOf, theoryMethods } from "@/features/theory/theory";
 import { contentVariants } from "@/features/variants/variants";
 import { languages } from "@/i18n/alternates";
 import { getPathname } from "@/i18n/navigation";
@@ -24,7 +25,7 @@ const translatedPages = [
 ];
 
 const untranslatedPages = [
-  ...theories.flatMap((t) => [
+  ...theoriesOf(firstOpenExam()).flatMap((t) => [
     `/theory/${t.topic}`,
     `/theory/${t.topic}/methods`,
   ]),

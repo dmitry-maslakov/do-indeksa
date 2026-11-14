@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { reportKinds } from "@/db/columns";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { maxParts } from "@/features/catalog/parts";
 import { taskFacts, taskIdSchema } from "@/features/catalog/tasks";
 import {
@@ -30,6 +31,7 @@ import { recordSkip } from "./session/skips";
 
 function trackOpening(
   profileId: string,
+  examId: string,
   taskId: string,
   session: Awaited<ReturnType<typeof keepSession>>,
   previous?: string,
@@ -49,7 +51,7 @@ function trackOpening(
   return track(
     taskOpened,
     async () => ({
-      ...taskFacts(taskId),
+      ...taskFacts(examId, taskId),
       task_session_id: session.id,
       session_kind: session.kind,
       ...(intent ?? { via: "direct" }),
@@ -82,12 +84,13 @@ export const checkAnswer = actionClient
       });
       if ("sitting" in submitted) return { sitting: submitted.sitting };
       const { session, attempt, outcomes, problems, correct } = submitted;
-      await trackOpening(profileId, taskId, session, sessionId);
+      const examId = firstOpenExam();
+      await trackOpening(profileId, examId, taskId, session, sessionId);
       if (attempt)
         await track(
           answerSubmitted,
           async () => ({
-            ...(await attemptFacts(profileId, attempt)),
+            ...(await attemptFacts(profileId, examId, attempt)),
             context: "practice",
           }),
           { profileId },
@@ -112,11 +115,18 @@ export const saveReveal = actionClient
       const { session } = revealed;
       const test = "testSessionId" in owner ? owner.testSessionId : undefined;
       const previous = "sessionId" in owner ? owner.sessionId : undefined;
-      await trackOpening(profileId, taskId, session, previous);
+      const examId = firstOpenExam();
+      await trackOpening(profileId, examId, taskId, session, previous);
       await track(
         helpRevealed,
         async () => ({
-          ...(await factsAt(profileId, taskId, session.id, revealed.createdAt)),
+          ...(await factsAt(
+            profileId,
+            examId,
+            taskId,
+            session.id,
+            revealed.createdAt,
+          )),
           context: test ? "review" : "practice",
           part: revealed.part,
           test_session_id: test,
@@ -145,7 +155,14 @@ export const keepTaskSession = actionClient
       ctx: { profileId },
     }) => {
       const session = await keepSession(profileId, taskId, sessionId, tz);
-      await trackOpening(profileId, taskId, session, sessionId, intent);
+      await trackOpening(
+        profileId,
+        firstOpenExam(),
+        taskId,
+        session,
+        sessionId,
+        intent,
+      );
       return session.id;
     },
   );
@@ -161,10 +178,11 @@ export const saveSkip = actionClient
         taskId,
         sessionId,
       );
-      await trackOpening(profileId, taskId, session, sessionId);
+      const examId = firstOpenExam();
+      await trackOpening(profileId, examId, taskId, session, sessionId);
       await track(
         taskSkipped,
-        () => factsAt(profileId, taskId, session.id, createdAt),
+        () => factsAt(profileId, examId, taskId, session.id, createdAt),
         { profileId },
       );
       refresh();
@@ -185,7 +203,7 @@ export const reportTask = actionClient
     await track(
       taskReported,
       {
-        ...taskFacts(parsedInput.taskId),
+        ...taskFacts(firstOpenExam(), parsedInput.taskId),
         kind: parsedInput.kind,
         has_message: parsedInput.message.length > 0,
         message_len: parsedInput.message.length,

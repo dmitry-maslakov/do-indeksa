@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { RailPanel } from "@/components/rail";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
-import { getTheory, methodsOf, theories } from "@/features/theory/theory";
+import { getTheory, methodsOf, theoriesOf } from "@/features/theory/theory";
 import { InlineMarkdown } from "@/features/theory/theory-markdown";
 import { TheoryRail } from "./_components/theory-rail";
 
@@ -28,7 +29,7 @@ export default async function TopicLayout({
         <RailPanel label={t("title")}>
           <TheoryRail
             topic={topic}
-            topics={theories.map((x) => ({
+            topics={theoriesOf(firstOpenExam()).map((x) => ({
               id: x.topic,
               name: topicName(x.topic, locale),
             }))}

@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { bankHref } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { Bank, BankResults } from "../../_components/bank-results";
@@ -37,16 +38,21 @@ export default async function BankTopicPage({
 }: PageProps<"/[locale]/bank/topic/[topic]">) {
   const { topic } = await params;
   if (!known(topic)) notFound();
+  const examId = firstOpenExam();
 
   return (
     <>
       <h1 className="sr-only">{topicName(topic, await getLocale())}</h1>
       <Suspense
         fallback={
-          <BankResults filters={{ topic }} tasks={findTasks({ topic })} />
+          <BankResults
+            examId={examId}
+            filters={{ topic }}
+            tasks={findTasks(examId, { topic })}
+          />
         }
       >
-        <Bank topic={topic} searchParams={searchParams} />
+        <Bank examId={examId} topic={topic} searchParams={searchParams} />
       </Suspense>
     </>
   );

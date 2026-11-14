@@ -21,10 +21,16 @@ export function Hero({
   );
 }
 
-export function TopicHero({ topic }: { topic: string }) {
+export function TopicHero({
+  examId,
+  topic,
+}: {
+  examId: string;
+  topic: string;
+}) {
   const t = useTranslations("Theory");
   const locale = useLocale();
-  const number = examOf().numberOf(topic);
+  const number = examOf(examId).numberOf(topic);
   const counts = t("counts", {
     sections: getTheory(topic)?.sections.length ?? 0,
     methods: methodsOf(topic).length,

@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { examOf } from "@/features/catalog/exams";
+import { examOf, firstOpenExam } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
@@ -28,8 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function loadWeak() {
-  return weakTopics(await getTaskStats(await getProfileId()));
+async function loadWeak(examId: string) {
+  return weakTopics(examId, await getTaskStats(await getProfileId()));
 }
 
 export default async function VariantsPage({
@@ -37,8 +37,9 @@ export default async function VariantsPage({
 }: PageProps<"/[locale]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
-  const weekly = await currentWeekly();
-  const exam = examOf();
+  const examId = firstOpenExam();
+  const weekly = await currentWeekly(examId);
+  const exam = examOf(examId);
   const topics = exam.topics.map((topic) => ({
     id: topic,
     name: topicName(topic, locale),
@@ -65,19 +66,19 @@ export default async function VariantsPage({
             }))}
           />
           <Suspense fallback={<VariantTable tab="official" pending />}>
-            <CatalogTab searchParams={searchParams} />
+            <CatalogTab examId={examId} searchParams={searchParams} />
           </Suspense>
         </section>
         <aside className="contents lg:flex lg:flex-col lg:gap-5">
           {weekly && (
             <div className="max-lg:order-first">
-              <WeeklyCard {...weekly} test={loadWeeklyTest(weekly)} />
+              <WeeklyCard {...weekly} test={loadWeeklyTest(examId, weekly)} />
             </div>
           )}
           <ComposeCard
             size={exam.positions.length}
             topics={topics}
-            weak={loadWeak()}
+            weak={loadWeak(examId)}
           />
         </aside>
       </div>

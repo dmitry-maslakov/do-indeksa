@@ -4,11 +4,11 @@ import { recommendationOf } from "@/features/bank/queue/recommendation";
 import { getTaskStatuses } from "@/features/progress/progress";
 import { getProfileId } from "@/server/profile";
 
-export async function loadPersonal(topic: string) {
+export async function loadPersonal(examId: string, topic: string) {
   const profileId = await getProfileId();
   const [statuses, starts] = await Promise.all([
     getTaskStatuses(profileId),
-    nextTasks(profileId),
+    nextTasks(profileId, examId),
   ]);
   return {
     statuses,

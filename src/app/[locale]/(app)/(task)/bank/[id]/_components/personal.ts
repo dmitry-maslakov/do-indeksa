@@ -8,6 +8,7 @@ import { getSession } from "@/server/auth";
 import { getProfileId } from "@/server/profile";
 
 interface PersonalInput {
+  examId: string;
   id: string;
   topic: string;
 }
@@ -18,17 +19,17 @@ async function solvedBefore(profileId: string, id: string) {
   return solved.filter((s) => s.taskId !== id).length + 1;
 }
 
-export async function loadPersonal({ id, topic }: PersonalInput) {
+export async function loadPersonal({ examId, id, topic }: PersonalInput) {
   const profileId = await getProfileId();
   const [queue, starts, solved] = await Promise.all([
-    loadQueue({ topic, profileId, current: id }),
-    nextTasks(profileId),
+    loadQueue({ topic, profileId, examId, current: id }),
+    nextTasks(profileId, examId),
     solvedBefore(profileId, id),
   ]);
   return {
     queue,
     starts: Object.fromEntries(
-      examOf().topics.map((topic) => [topic, topicStart(starts, topic)]),
+      examOf(examId).topics.map((topic) => [topic, topicStart(starts, topic)]),
     ),
     next: {
       href: queue.next && `/bank/${queue.next}`,

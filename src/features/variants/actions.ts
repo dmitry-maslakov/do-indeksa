@@ -3,7 +3,7 @@
 import { uniq } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
-import { maxPlaces } from "@/features/catalog/exams";
+import { firstOpenExam, maxPlaces } from "@/features/catalog/exams";
 import { taskIdSchema } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
 import { redirect } from "@/i18n/navigation";
@@ -40,6 +40,7 @@ export const composeVariant = baseClient
   )
   .action(async ({ parsedInput: { locale, mode, topics, count } }) => {
     const { ids, fallback } = composeTaskIds(
+      firstOpenExam(),
       { mode, topics, size: count },
       crypto.randomUUID(),
     );
@@ -54,5 +55,10 @@ export const swapTask = baseClient
     }),
   )
   .action(async ({ parsedInput: { locale, taskIds } }) => {
-    await openSet(inExamOrder(uniq(taskIds)), locale, "", "replace");
+    await openSet(
+      inExamOrder(firstOpenExam(), uniq(taskIds)),
+      locale,
+      "",
+      "replace",
+    );
   });

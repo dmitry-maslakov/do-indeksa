@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { topicName } from "@/features/catalog/topics";
-import { getTheory, methodsOf, theories } from "@/features/theory/theory";
+import { getTheory, methodsOf, theoriesOf } from "@/features/theory/theory";
 import { TheoryMarkdown } from "@/features/theory/theory-markdown";
 import { untranslated } from "@/i18n/alternates";
 import { TopicHero } from "./_components/hero";
@@ -10,7 +11,7 @@ import { BackBar, PhoneTabs } from "./_components/phone-nav";
 import { TheoryArticle } from "./_components/theory-article";
 
 export function generateStaticParams() {
-  return theories.map((t) => ({ topic: t.topic }));
+  return theoriesOf(firstOpenExam()).map((t) => ({ topic: t.topic }));
 }
 
 export async function generateMetadata({
@@ -50,7 +51,7 @@ export default async function TheoryTopicPage({
         page="topic"
         className="flex flex-col gap-7.5 md:gap-10"
       >
-        <TopicHero topic={topic} />
+        <TopicHero examId={firstOpenExam()} topic={topic} />
         <PhoneTabs
           topic={topic}
           methods={methodsOf(topic).length}

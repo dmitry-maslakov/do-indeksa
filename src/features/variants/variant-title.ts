@@ -16,13 +16,16 @@ export async function variantTitle(variant: ExamVariant, locale: Locale) {
   return variant.title ?? variant.id;
 }
 
-export async function variantMetadata(variant: ExamVariant): Promise<Metadata> {
+export async function variantMetadata(
+  examId: string,
+  variant: ExamVariant,
+): Promise<Metadata> {
   const t = await getTranslations("Variants");
   return {
     title: await variantTitle(variant, await getLocale()),
     description: t("format", {
       tasks: variant.taskIds.length,
-      minutes: minutesOf(variant),
+      minutes: minutesOf(examId, variant),
     }),
   };
 }

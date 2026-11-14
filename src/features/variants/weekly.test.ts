@@ -23,7 +23,8 @@ vi.mock("content-collections", async (importOriginal) => {
   };
 });
 
-const at = (day: string) => weeklyVariant(new Date(`${day}T10:00:00Z`));
+const at = (day: string) =>
+  weeklyVariant("ftn-p1", new Date(`${day}T10:00:00Z`));
 
 describe("weeklyVariant", () => {
   it("keeps one variant from Monday to Sunday", () => {

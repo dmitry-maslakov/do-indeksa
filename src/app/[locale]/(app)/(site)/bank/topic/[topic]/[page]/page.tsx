@@ -9,19 +9,20 @@ import {
   pageOffset,
 } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
 import { Bank, BankResults } from "../../../_components/bank-results";
 
-const pagesOf = (topic: string) =>
+const pagesOf = (examId: string, topic: string) =>
   topics.some((t) => t.id === topic)
-    ? pageCount(findTasks({ topic }).length)
+    ? pageCount(findTasks(examId, { topic }).length)
     : 0;
 
-function pageIn(topic: string, value: string) {
+function pageIn(examId: string, topic: string, value: string) {
   const page = pageOf(value);
-  return page && page <= pagesOf(topic) ? page : undefined;
+  return page && page <= pagesOf(examId, topic) ? page : undefined;
 }
 
 export function generateStaticParams({
@@ -37,7 +38,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/bank/topic/[topic]/[page]">): Promise<Metadata> {
   const { topic, page: value } = await params;
-  const page = pageIn(topic, value);
+  const page = pageIn(firstOpenExam(), topic, value);
   if (!page) return {};
   const [meta, locale] = await Promise.all([
     getTranslations("Metadata"),
@@ -56,7 +57,8 @@ export default async function BankTopicPagePage({
   searchParams,
 }: PageProps<"/[locale]/bank/topic/[topic]/[page]">) {
   const { topic, page: value } = await params;
-  const page = pageIn(topic, value);
+  const examId = firstOpenExam();
+  const page = pageIn(examId, topic, value);
   if (!page) notFound();
   const offset = pageOffset(page);
 
@@ -66,13 +68,19 @@ export default async function BankTopicPagePage({
       <Suspense
         fallback={
           <BankResults
+            examId={examId}
             filters={{ topic }}
-            tasks={findTasks({ topic })}
+            tasks={findTasks(examId, { topic })}
             offset={offset}
           />
         }
       >
-        <Bank topic={topic} offset={offset} searchParams={searchParams} />
+        <Bank
+          examId={examId}
+          topic={topic}
+          offset={offset}
+          searchParams={searchParams}
+        />
       </Suspense>
     </>
   );

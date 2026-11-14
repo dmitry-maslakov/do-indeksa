@@ -34,22 +34,30 @@ export interface ExamVariant
   taskIds: string[];
 }
 
-export const byPosition = examOf().positions.map(
-  (p) => idsByTopic.get(p.topic) ?? [],
-);
+export const positionPools = (examId: string) =>
+  examOf(examId).positions.map((p) => idsByTopic.get(p.topic) ?? []);
 
-export function getVariant(id: string): ExamVariant | undefined {
+const customIds = (id: string) => customTaskIds(id, maxPlaces, getTask);
+
+export const isVariant = (id: string) =>
+  allVariants.some((v) => v.id === id) || customIds(id) !== undefined;
+
+export function getVariant(
+  examId: string,
+  id: string,
+): ExamVariant | undefined {
   const variant = allVariants.find((v) => v.id === id);
   if (variant) return variant;
-  const taskIds = customTaskIds(id, maxPlaces, getTask);
-  if (taskIds) return { id, kind: "custom", taskIds: inExamOrder(taskIds) };
+  const taskIds = customIds(id);
+  if (taskIds)
+    return { id, kind: "custom", taskIds: inExamOrder(examId, taskIds) };
 }
 
-const examRank = (id: string) =>
-  examOf().topics.indexOf(getTask(id)?.topic ?? "");
-
-export const inExamOrder = (ids: string[]) =>
-  ids.toSorted((a, b) => examRank(a) - examRank(b));
+export const inExamOrder = (examId: string, ids: string[]) => {
+  const { topics } = examOf(examId);
+  const rank = (id: string) => topics.indexOf(getTask(id)?.topic ?? "");
+  return ids.toSorted((a, b) => rank(a) - rank(b));
+};
 
 export interface Slot {
   taskId: string;
@@ -60,11 +68,11 @@ export interface Slot {
   scoring: Task["scoring"];
 }
 
-export const slotsOf = (taskIds: string[]): Slot[] =>
+export const slotsOf = (examId: string, taskIds: string[]): Slot[] =>
   taskIds
     .flatMap((id) => getTask(id) ?? [])
     .flatMap((task, index) => {
-      const place = examOf().positions[index];
+      const place = examOf(examId).positions[index];
       if (!place) return [];
       return {
         taskId: task.id,
@@ -76,11 +84,11 @@ export const slotsOf = (taskIds: string[]): Slot[] =>
       };
     });
 
-export const minutesOf = (variant: ExamVariant) =>
-  sumBy(slotsOf(variant.taskIds), (slot) => slot.minutes);
+export const minutesOf = (examId: string, variant: ExamVariant) =>
+  sumBy(slotsOf(examId, variant.taskIds), (slot) => slot.minutes);
 
-export const pointsOf = (variant: ExamVariant) =>
-  sumBy(slotsOf(variant.taskIds), (slot) => slot.points);
+export const pointsOf = (examId: string, variant: ExamVariant) =>
+  sumBy(slotsOf(examId, variant.taskIds), (slot) => slot.points);
 
 export interface VariantTask extends Slot {
   topicName: string;
@@ -90,11 +98,12 @@ export interface VariantTask extends Slot {
 }
 
 export async function tasksFor(
+  examId: string,
   taskIds: string[],
   locale: Locale,
 ): Promise<VariantTask[]> {
   const tasks = await Promise.all(
-    slotsOf(taskIds).map(async (slot) => {
+    slotsOf(examId, taskIds).map(async (slot) => {
       const task = getTask(slot.taskId);
       if (!task) return [];
       return {

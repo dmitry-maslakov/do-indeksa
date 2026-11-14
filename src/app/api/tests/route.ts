@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { testPage } from "@/features/tests/summaries";
 import { pageQuery } from "@/lib/page-query";
 import { getProfileId } from "@/server/profile";
@@ -9,6 +10,11 @@ export async function GET(request: NextRequest) {
   );
   if (!query.success) return new Response(null, { status: 400 });
   return Response.json(
-    await testPage(await getProfileId(), query.data.offset, query.data.locale),
+    await testPage(
+      await getProfileId(),
+      firstOpenExam(),
+      query.data.offset,
+      query.data.locale,
+    ),
   );
 }

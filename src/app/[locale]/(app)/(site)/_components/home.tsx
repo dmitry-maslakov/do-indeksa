@@ -9,11 +9,12 @@ import { TodayHero } from "./today-hero";
 import { TopicMap } from "./topic-map";
 
 interface HomeProps {
+  examId: string;
   weekly?: WeeklyVariant;
   personal: Promise<HomeData>;
 }
 
-export function Home({ weekly, personal }: HomeProps) {
+export function Home({ examId, weekly, personal }: HomeProps) {
   const locale = useLocale();
 
   return (
@@ -23,7 +24,7 @@ export function Home({ weekly, personal }: HomeProps) {
         <WeeklyCard {...weekly} test={personal.then((p) => p.weeklyTest)} />
       )}
       <TopicMap
-        topics={examOf().topics.map((topic) => ({
+        topics={examOf(examId).topics.map((topic) => ({
           topic,
           name: topicName(topic, locale),
           look: topicLook(topic),

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { topicName } from "@/features/catalog/topics";
-import { getTheory, methodsOf, theories } from "@/features/theory/theory";
+import { getTheory, methodsOf, theoriesOf } from "@/features/theory/theory";
 import { InlineMarkdown } from "@/features/theory/theory-markdown";
 import { untranslated } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
@@ -12,7 +13,7 @@ import { BackBar, PhoneTabs } from "../_components/phone-nav";
 import { TheoryArticle } from "../_components/theory-article";
 
 export function generateStaticParams() {
-  return theories.map((t) => ({ topic: t.topic }));
+  return theoriesOf(firstOpenExam()).map((t) => ({ topic: t.topic }));
 }
 
 export async function generateMetadata({
@@ -53,7 +54,7 @@ export default async function MethodsPage({
         page="methods"
         className="flex flex-col gap-5.5 md:gap-10"
       >
-        <TopicHero topic={topic} />
+        <TopicHero examId={firstOpenExam()} topic={topic} />
         <PhoneTabs topic={topic} methods={methods.length} active="methods" />
         <ul className="flex flex-col gap-2">
           {methods.map((m) => (

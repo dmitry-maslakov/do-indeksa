@@ -12,17 +12,19 @@ import { ReviewSummary } from "./review-summary";
 import { ReviewTasks } from "./review-tasks";
 
 export async function TestReview({
+  examId,
   found,
   guest,
 }: {
+  examId: string;
   found: NonNullable<Awaited<ReturnType<typeof getTest>>>;
   guest: boolean;
 }) {
   const locale = await getLocale();
   const strip = await getTranslations("SignInStrip");
-  const variant = getVariant(found.test.variantId);
+  const variant = getVariant(examId, found.test.variantId);
   const [tasks, code] = await Promise.all([
-    tasksFor(found.test.taskIds, locale),
+    tasksFor(examId, found.test.taskIds, locale),
     variant?.kind === "custom" && findSetCode(variant.taskIds),
   ]);
   const result = review(tasks, found.attempts);

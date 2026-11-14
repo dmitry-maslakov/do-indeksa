@@ -187,10 +187,11 @@ async function sessionFacts(profileId: string, sessionId: string, at: Date) {
 
 export const factsAt = async (
   profileId: string,
+  examId: string,
   taskId: string,
   sessionId: string,
   at: Date,
 ) => ({
-  ...taskFacts(taskId),
+  ...taskFacts(examId, taskId),
   ...(await sessionFacts(profileId, sessionId, at)),
 });

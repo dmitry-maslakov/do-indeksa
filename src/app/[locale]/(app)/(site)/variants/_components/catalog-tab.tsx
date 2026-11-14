@@ -18,24 +18,32 @@ import { TestsTable } from "./tests-table";
 export const tabs = ["official", "curated", "history"] as const;
 type Tab = (typeof tabs)[number];
 
-async function loadHistory() {
-  return testPage(await getProfileId(), 0, await getLocale());
+async function loadHistory(examId: string) {
+  return testPage(await getProfileId(), examId, 0, await getLocale());
 }
 
-export async function loadLatest(variantIds: string[]) {
-  return summarizeLatest(await getProfileId(), variantIds, await getLocale());
+export async function loadLatest(examId: string, variantIds: string[]) {
+  return summarizeLatest(
+    await getProfileId(),
+    examId,
+    variantIds,
+    await getLocale(),
+  );
 }
 
 export async function CatalogTab({
+  examId,
   searchParams,
-}: Pick<PageProps<"/[locale]/variants">, "searchParams">) {
+}: Pick<PageProps<"/[locale]/variants">, "searchParams"> & {
+  examId: string;
+}) {
   const { tab: raw } = await searchParams;
   const tab: Tab = tabs.find((x) => x === raw) ?? "official";
 
   if (tab === "history") {
     return (
       <Suspense fallback={<TestsTable first="attempt">{null}</TestsTable>}>
-        <Await promise={loadHistory()}>
+        <Await promise={loadHistory(examId)}>
           {(first) => <TestHistory first={first} />}
         </Await>
       </Suspense>
@@ -44,7 +52,12 @@ export async function CatalogTab({
 
   return (
     <Suspense fallback={<VariantTable tab={tab} pending />}>
-      <Await promise={loadLatest(variantsOf(tab).map((v) => v.id))}>
+      <Await
+        promise={loadLatest(
+          examId,
+          variantsOf(tab).map((v) => v.id),
+        )}
+      >
         {(tests) => <VariantTable tab={tab} tests={tests} />}
       </Await>
     </Suspense>

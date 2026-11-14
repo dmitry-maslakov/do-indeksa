@@ -24,22 +24,32 @@ import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
 
 interface BankProps extends Pick<PageProps<"/[locale]/bank">, "searchParams"> {
+  examId: string;
   topic: string | null;
   offset?: number;
 }
 
-export async function Bank({ topic, offset = 0, searchParams }: BankProps) {
+export async function Bank({
+  examId,
+  topic,
+  offset = 0,
+  searchParams,
+}: BankProps) {
   const filters = { ...(await loadBankFilters(searchParams)), topic };
   if (offset > 0 && !pagedTopic(filters)) {
     redirect({ href: bankHref(filters), locale: await getLocale() });
   }
-  const personal = loadPersonal(topic ?? examOf().positions[0]?.topic ?? "");
+  const personal = loadPersonal(
+    examId,
+    topic ?? examOf(examId).positions[0]?.topic ?? "",
+  );
   const statuses = filters.status ? (await personal).statuses : undefined;
 
   return (
     <BankResults
+      examId={examId}
       filters={filters}
-      tasks={findTasks(filters, statuses)}
+      tasks={findTasks(examId, filters, statuses)}
       offset={offset}
       personal={personal}
     />
@@ -47,6 +57,7 @@ export async function Bank({ topic, offset = 0, searchParams }: BankProps) {
 }
 
 interface BankResultsProps {
+  examId: string;
   filters: BankQuery;
   tasks: TaskSummary[];
   offset?: number;
@@ -54,6 +65,7 @@ interface BankResultsProps {
 }
 
 export function BankResults({
+  examId,
   filters,
   tasks,
   offset = 0,
@@ -63,7 +75,7 @@ export function BankResults({
   const locale = useLocale();
   const search = serializeBankFilters(filters);
   const pending = !personal;
-  const start = `/bank/start/${filters.topic ?? examOf().positions[0]?.topic}`;
+  const start = `/bank/start/${filters.topic ?? examOf(examId).positions[0]?.topic}`;
   const list = bankHref(filters);
   const tabs = (
     <Suspense
@@ -82,7 +94,7 @@ export function BankResults({
     <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="sticky top-3 hidden flex-col gap-4 rounded-2xl bg-muted p-4 lg:flex">
         {tabs}
-        <BankFilters variant="card">
+        <BankFilters examId={examId} variant="card">
           <FilterLabel text={t("search")}>
             <FilterSearch
               variant="card"
@@ -106,7 +118,7 @@ export function BankResults({
               active={activeFilters(filters, t, locale).length}
               count={tasks.length}
             >
-              <BankFilters />
+              <BankFilters examId={examId} />
             </FiltersSheet>
           </div>
         </div>

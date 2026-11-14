@@ -180,8 +180,8 @@ export async function getSolved(profileId: string) {
   return rows.filter((row) => row.correct);
 }
 
-export async function getTopicPlan(profileId: string) {
-  const learning = await getLearning(profileId);
+export async function getTopicPlan(profileId: string, examId: string) {
+  const learning = await getLearning(profileId, examId);
   const topics = [...learning.topics].map(([topic, { status }]) => ({
     topic,
     ...status,
@@ -191,7 +191,7 @@ export async function getTopicPlan(profileId: string) {
 
 const weakCount = 3;
 
-export const weakTopics = (stats: TaskStat[]) =>
-  weakest(stats, examOf().topics)
+export const weakTopics = (examId: string, stats: TaskStat[]) =>
+  weakest(stats, examOf(examId).topics)
     .slice(0, weakCount)
     .map((w) => w.topic);

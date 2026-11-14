@@ -9,8 +9,10 @@ import { getProfileId } from "@/server/profile";
 import { TestReview } from "./test-review";
 
 export async function ReviewView({
+  examId,
   params,
 }: {
+  examId: string;
   params?: Promise<{ code: string }>;
 }) {
   const t = await getTranslations("Review");
@@ -30,7 +32,7 @@ export async function ReviewView({
           </Button>
         </Card>
       ) : (
-        <TestReview found={found} guest={!session} />
+        <TestReview examId={examId} found={found} guest={!session} />
       )}
     </>
   );

@@ -60,10 +60,12 @@ export async function submitAnswer(
 
 export const attemptFacts = async (
   profileId: string,
+  examId: string,
   attempt: typeof attempts.$inferSelect,
 ) => ({
   ...(await factsAt(
     profileId,
+    examId,
     attempt.taskId,
     attempt.sessionId,
     attempt.createdAt,

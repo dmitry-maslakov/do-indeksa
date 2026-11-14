@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
+import { firstOpenExam } from "@/features/catalog/exams";
 import { TestScreen } from "@/features/tests/runner/test-screen";
 import { findSetCode, saveSet } from "@/features/variants/custom/sets";
 import { variantMetadata } from "@/features/variants/variant-title";
@@ -17,9 +18,10 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/variants/[id]">) {
   const { id } = await params;
-  const variant = getVariant(id);
+  const examId = firstOpenExam();
+  const variant = getVariant(examId, id);
   if (!variant) return {};
-  const metadata = await variantMetadata(variant);
+  const metadata = await variantMetadata(examId, variant);
   return contentVariants.some((v) => v.id === id)
     ? {
         ...metadata,
@@ -32,12 +34,13 @@ export default async function VariantPage({
   params,
 }: PageProps<"/[locale]/variants/[id]">) {
   const { id } = await params;
-  const variant = getVariant(id);
+  const examId = firstOpenExam();
+  const variant = getVariant(examId, id);
   if (!variant) notFound();
   if (variant.kind === "custom") {
     const code =
       (await findSetCode(variant.taskIds)) ?? (await saveSet(variant.taskIds));
     redirect({ href: `/v/${code}`, locale: await getLocale() });
   }
-  return <TestScreen variant={variant} />;
+  return <TestScreen examId={examId} variant={variant} />;
 }

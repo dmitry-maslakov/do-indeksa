@@ -21,7 +21,7 @@ const evidence = {
 const now = logStart + 3 * dayMs;
 
 describe("learningAsOf", () => {
-  const learningAt = learningAsOf(evidence, now);
+  const learningAt = learningAsOf("ftn-p1", evidence, now);
 
   it("folds the log up to the moment", () => {
     const earlier = learningAt(logStart + dayMs);

@@ -15,9 +15,13 @@ import { controlOf, intentOf } from "@/lib/analytics-browser";
 import { type Solution, SolutionTask } from "./solution-task";
 import { SolutionsReading } from "./solutions-reading";
 
-async function loadSolutions(taskIds: string[], locale: Locale) {
+async function loadSolutions(
+  examId: string,
+  taskIds: string[],
+  locale: Locale,
+) {
   const solutions = await Promise.all(
-    slotsOf(taskIds).map(async (slot): Promise<Solution[]> => {
+    slotsOf(examId, taskIds).map(async (slot): Promise<Solution[]> => {
       const html = await renderTask(slot.taskId);
       if (!html) return [];
       const { statement, answer, solution } = html;
@@ -28,13 +32,19 @@ async function loadSolutions(taskIds: string[], locale: Locale) {
   return solutions.flat();
 }
 
-export async function SolutionsView({ variant }: { variant: Variant }) {
+export async function SolutionsView({
+  examId,
+  variant,
+}: {
+  examId: string;
+  variant: Variant;
+}) {
   const locale = await getLocale();
   const [t, variants, title, solutions] = await Promise.all([
     getTranslations("Solutions"),
     getTranslations("Variants"),
     solutionsTitle(variant, locale),
-    loadSolutions(variant.taskIds, locale),
+    loadSolutions(examId, variant.taskIds, locale),
   ]);
 
   const anchor = (number: number) => `task-${number}`;
@@ -87,7 +97,7 @@ export async function SolutionsView({ variant }: { variant: Variant }) {
           <p className="text-muted-foreground">
             {variants("format", {
               tasks: solutions.length,
-              minutes: minutesOf(variant),
+              minutes: minutesOf(examId, variant),
             })}
           </p>
           <Button
