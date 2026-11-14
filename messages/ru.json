@@ -424,5 +424,20 @@
   },
   "Time": {
     "duration": "{hours, plural, =0 {} other {# ч }}{minutes, number} мин"
+  },
+  "Facts": {
+    "month": "{month, plural, =1 {января} =2 {февраля} =3 {марта} =4 {апреля} =5 {мая} =6 {июня} =7 {июля} =8 {августа} =9 {сентября} =10 {октября} =11 {ноября} =12 {декабря} other {}}",
+    "date": "{day} {month} {year} г.",
+    "day": "{day} {month}",
+    "dayNumber": "{day}",
+    "daysInMonth": "{days} {month}",
+    "spanInMonth": "с {from} по {to} {month}",
+    "span": "с {from} по {to}",
+    "word": "{n, plural, =1 {один} =2 {два} =3 {три} =4 {четыре} =5 {пять} =6 {шесть} other {#}}",
+    "unpublished": "{short} не опубликовал",
+    "sourceLine": "{count, plural, one {Источник} other {Источники}}: <list></list>.",
+    "konkurs": "конкурс {short} на {year}",
+    "section": ", пункт {section}",
+    "checkedOn": "Проверено {date}"
   }
 }

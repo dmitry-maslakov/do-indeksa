@@ -1,6 +1,15 @@
 import "server-only";
 import { allFaculties } from "content-collections";
+import { sortBy } from "es-toolkit";
 
-const faculties = new Map(allFaculties.map((f) => [f.id, f]));
+export const faculties = sortBy(allFaculties, ["order"]);
 
-export const getFaculty = (id: string) => faculties.get(id);
+const byId = new Map(faculties.map((f) => [f.id, f]));
+
+export const getFaculty = (id: string) => byId.get(id);
+
+export function facultyOf(id: string) {
+  const faculty = getFaculty(id);
+  if (!faculty) throw new Error(`faculty ${id} is missing`);
+  return faculty;
+}
