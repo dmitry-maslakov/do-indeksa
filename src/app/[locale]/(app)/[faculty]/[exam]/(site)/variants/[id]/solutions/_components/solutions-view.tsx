@@ -1,7 +1,7 @@
 import type { Variant } from "content-collections";
-import { ArrowUpRightIcon } from "lucide-react";
 import type { Locale } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ExternalLink } from "@/components/external-link";
 import { PageTitle } from "@/components/page-title";
 import { RailContent, RailPanel } from "@/components/rail";
 import { SectionLinks } from "@/components/section-links";
@@ -81,15 +81,12 @@ export async function SolutionsView({
             {variant.original && (
               <>
                 <span aria-hidden="true">·</span>
-                <a
+                <ExternalLink
                   href={variant.original}
-                  target="_blank"
-                  rel="noopener"
-                  className="inline-flex items-center gap-0.5 underline underline-offset-3 hover:text-foreground"
+                  className="inline-flex items-center underline underline-offset-3 hover:text-foreground"
                 >
                   {variants("original")}
-                  <ArrowUpRightIcon aria-hidden className="size-3" />
-                </a>
+                </ExternalLink>
               </>
             )}
           </p>

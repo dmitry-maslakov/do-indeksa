@@ -1,6 +1,7 @@
-import { ArrowUpRightIcon, InfoIcon, RotateCcwIcon } from "lucide-react";
+import { InfoIcon, RotateCcwIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { ExternalLink } from "@/components/external-link";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/features/tests/review";
 import { Link } from "@/i18n/navigation";
@@ -49,15 +50,12 @@ export function ReviewSummary({
         {original && (
           <>
             <span aria-hidden="true">·</span>
-            <a
+            <ExternalLink
               href={original}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-0.5 underline underline-offset-3 hover:text-foreground"
+              className="inline-flex items-center underline underline-offset-3 hover:text-foreground"
             >
               {variants("original")}
-              <ArrowUpRightIcon aria-hidden className="size-3" />
-            </a>
+            </ExternalLink>
           </>
         )}
       </p>
