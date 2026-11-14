@@ -108,19 +108,6 @@ for (const path of routes) {
   });
 }
 
-test("the launch page shows only the logo and the language", {
-  tag: "@responsive",
-}, async ({ page, errors }) => {
-  await fitsPhone(page, errors, "/launch", "Jezik");
-  const banner = page.getByRole("banner");
-  await expect(banner.getByRole("link")).toHaveText(["do indeksa"]);
-  await expect(banner.getByRole("button")).toHaveCount(1);
-  await expect(page.getByRole("navigation")).toHaveCount(0);
-  expect(
-    await page.evaluate(() => getComputedStyle(document.body).paddingBottom),
-  ).toBe("0px");
-});
-
 test("the nav comes back after leaving a task on a phone", {
   tag: "@mobile",
 }, async ({ page }) => {

@@ -10,7 +10,6 @@ export const env = z
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     OAUTH_PROXY_URL: z.url().optional(),
     OAUTH_PROXY_SECRET: z.string().min(32).optional(),
-    LAUNCH_ACCESS: z.string().min(32).optional(),
     SENTRY_DSN: z.url().optional(),
     ANALYTICS_CLICKHOUSE_URL: z.url().optional(),
     OPENPANEL_API_URL: z.url().optional(),

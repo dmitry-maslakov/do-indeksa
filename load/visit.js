@@ -2,7 +2,6 @@ import { check, group, sleep } from "k6";
 import http from "k6/http";
 
 const base = __ENV.BASE_URL || "http://localhost:3000";
-const access = __ENV.LAUNCH_COOKIE;
 const users = Number(__ENV.USERS || 20);
 
 const budget = ["p(95)<300", "p(99)<500"];
@@ -40,7 +39,6 @@ export const options = {
 const params = (page) => ({
   tags: { page },
   headers: { "Accept-Encoding": "gzip" },
-  cookies: access ? { "launch-access": access } : {},
   redirects: 0,
 });
 

@@ -85,7 +85,7 @@ describe("proxy", () => {
 
   it.each([
     ["/sr-Latn/opengraph-image", false],
-    ["/ru/launch/opengraph-image", false],
+    ["/ru/opengraph-image", false],
     ["/", true],
     ["/bank/eks-001", true],
   ])("runs on %s: %s", (url, runs) => {

@@ -52,7 +52,6 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 - `tests` runs a variant as a test, grades it and shows the review.
 - `theory` renders theory pages.
 - `account` is Google sign-in, the prompts that ask a guest to save their progress, and merging a guest into an account.
-- `launch` keeps the site closed before launch: without the access cookie only the landing, privacy and terms pages open.
 
 `catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`. Biome rejects an import that goes the other way.
 
