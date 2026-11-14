@@ -9,6 +9,7 @@ describe("routeOf", () => {
     ["/privacy", "sr-Latn", null, "/privacy"],
     ["/ftn/p1", "sr-Latn", "/ftn/p1", "/"],
     ["/ftn/p1/bank/eks-001", "sr-Latn", "/ftn/p1", "/bank/[id]"],
+    ["/ru/ftn/p1/about", "ru", "/ftn/p1", "/about"],
     [
       "/en/ftn/p1/theory/logarithms/methods",
       "en",

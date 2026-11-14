@@ -31,7 +31,7 @@ export function Home({ examId, weekly, personal }: HomeProps) {
         }))}
         progress={personal.then((p) => p.rows)}
       />
-      <ExamYears />
+      <ExamYears examId={examId} />
     </main>
   );
 }

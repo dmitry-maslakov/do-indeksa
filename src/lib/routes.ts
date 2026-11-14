@@ -4,6 +4,7 @@ const siteTemplates = ["/privacy", "/terms", "/[faculty]"] as const;
 
 const examTemplates = [
   "/",
+  "/about",
   "/bank",
   "/bank/[id]",
   "/bank/topic/[topic]",

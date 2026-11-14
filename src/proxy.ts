@@ -12,6 +12,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { bankHref, pageOf } from "@/features/bank/params";
 import {
+  aboutPaths,
   examByPath,
   examOf,
   firstOpenExam,
@@ -31,6 +32,7 @@ const variantIds = idsOf(allVariants);
 const bankTopicIds = idsOf(allTopics);
 const topicExists = (topic: string) => topicIds.has(topic);
 const facultyIds = idsOf(allFaculties);
+const aboutExams = new Set(aboutPaths);
 const serbianOnly = new Set<RouteTemplate>(["/[faculty]"]);
 
 const contentPages: Partial<
@@ -91,6 +93,8 @@ async function respond(request: NextRequest) {
   if (route === "/" && !exam)
     return toExam(request, locale, returningTo(request) ?? firstExamPath());
   if (exam && !examByPath(exam)) return notFound(request, locale);
+  if (route === "/about" && !aboutExams.has(exam ?? ""))
+    return notFound(request, locale);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {
     if (topic && !bankTopicIds.has(topic)) return notFound(request, locale);

@@ -3,7 +3,7 @@ import { allVariants, type Task, type Variant } from "content-collections";
 import { sumBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import type { RenderedChoice } from "@/features/catalog/choice";
-import { examOf, maxPlaces } from "@/features/catalog/exams";
+import { examOf, examRecord, maxPlaces } from "@/features/catalog/exams";
 import type { PartLabel } from "@/features/catalog/parts";
 import {
   getTask,
@@ -18,6 +18,17 @@ import { customTaskIds } from "./variant-id";
 export const officialVariants = allVariants
   .filter((v) => v.kind === "official")
   .sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+
+export const examPapers = (examId: string) => {
+  const { tests } = examRecord(examId);
+  return officialVariants
+    .filter((v) => tests.includes(v.test))
+    .map((v) => ({
+      ...v,
+      year: v.year ?? 0,
+      topics: v.taskIds.map((id) => getTask(id)?.topic ?? ""),
+    }));
+};
 
 export const curatedVariants = allVariants.filter(
   (v) => v.kind === "curated" || (v.kind === "weekly" && v.released),

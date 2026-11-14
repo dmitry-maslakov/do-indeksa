@@ -53,7 +53,7 @@ async function ExamHead({
       className={cn(
         "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 pt-4 pb-2.5",
         open
-          ? "lg:items-center lg:gap-x-6 lg:pt-7 lg:pb-4"
+          ? "lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center lg:gap-x-6 lg:pt-7 lg:pb-4"
           : "border-b lg:pt-6 lg:pb-3.5",
       )}
     >
@@ -82,10 +82,23 @@ async function ExamHead({
               data-intent={intentOf({ via: "faculty" })}
             />
           }
-          className="col-start-2 row-span-2 row-start-1 self-center px-3 lg:px-4.5"
+          className={cn(
+            "col-start-2 row-start-1 self-center px-3 lg:row-span-2 lg:row-start-1 lg:px-4.5",
+            exam.about ? "row-span-3" : "row-span-2",
+          )}
         >
           {t("practice", { exam: exam.title })}
         </Button>
+      )}
+      {open && exam.about && (
+        <Link
+          exam={exam.path}
+          href="/about"
+          data-intent={intentOf({ via: "faculty_about" })}
+          className="col-start-1 mt-0.5 justify-self-start pl-4.5 font-medium text-[15px] text-data underline-offset-3 hover:underline lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-center lg:pl-0"
+        >
+          {t("aboutExam", { exam: exam.title })}
+        </Link>
       )}
     </div>
   );
@@ -122,7 +135,9 @@ export async function ExamGroup({
           aria-labelledby={`h-${exam.segment}`}
           className={
             exam.open
-              ? "scroll-mt-42 lg:scroll-mt-46"
+              ? exam.about
+                ? "scroll-mt-48 lg:scroll-mt-46"
+                : "scroll-mt-42 lg:scroll-mt-46"
               : "scroll-mt-13 lg:scroll-mt-15"
           }
         >

@@ -1,6 +1,7 @@
 import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
+import type { Locale } from "next-intl";
 import { z } from "zod";
 import { facultyOf } from "./faculties";
 
@@ -91,9 +92,27 @@ export function canonicalHref(topic: string, href: string) {
 export const facultyExams = (faculty: string) =>
   ordered.filter((e) => e.faculty === faculty);
 
+export function examRecord(id: string) {
+  const exam = ordered.find((e) => e.id === id);
+  if (!exam) throw new Error(`exam ${id} is missing`);
+  return exam;
+}
+
+export function examName(id: string, locale: Locale) {
+  const { name, label } = examRecord(id);
+  return (
+    (label as Partial<Record<Locale, string>> | undefined)?.[locale] ?? name
+  );
+}
+
+export const aboutPaths = openExams.filter((e) => e.about).map((e) => e.path);
+
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
 const tests = new Map(allTests.map((t) => [t.id, t]));
+
+export const examTests = (id: string) =>
+  examRecord(id).tests.flatMap((test) => tests.get(test) ?? []);
 
 export function testFaculty(id: string) {
   const test = tests.get(id);

@@ -47,6 +47,8 @@ describe("proxy", () => {
     "/RU/ftn/p1/bank",
     "/En/privacy",
     "/ftn",
+    "/ftn/p1/about",
+    "/ru/ftn/p1/about",
   ])("lets %s through", async (path) => {
     expect(await rewrite(path)).not.toMatch(/\/404$/);
   });
@@ -108,6 +110,7 @@ describe("proxy", () => {
   it.each([
     ["/ftn/p3", "sr-Latn"],
     ["/ftn/p9/bank", "sr-Latn"],
+    ["/ftn/p3/about", "sr-Latn"],
     ["/ru/xyz/p1/bank", "ru"],
     ["/bank/eks-001", "sr-Latn"],
   ])(

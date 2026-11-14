@@ -30,5 +30,7 @@ describe("getFacts", () => {
     expect(facts.schoolYear(2026)).toBe("2026/27");
     expect(facts.word(5)).toBe("pet");
     expect(facts.word(12)).toBe("12");
+    expect(facts.clock("12:00")).toBe("12");
+    expect(facts.clock("08:30")).toBe("8.30");
   });
 });

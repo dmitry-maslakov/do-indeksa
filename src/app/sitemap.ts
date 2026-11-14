@@ -2,6 +2,7 @@ import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
 import { bankHref } from "@/features/bank/params";
 import {
+  aboutPaths,
   canonicalHref,
   firstOpenExam,
   inExam,
@@ -36,6 +37,7 @@ const translatedPages = [
 
 const untranslatedPages = [
   ...faculties.map((f) => `/${f.id}`),
+  ...aboutPaths.map((path) => `${path}/about`),
   ...theoriesOf(firstOpenExam()).flatMap(({ topic }) =>
     [`/theory/${topic}`, `/theory/${topic}/methods`].map((href) =>
       canonicalHref(topic, href),
