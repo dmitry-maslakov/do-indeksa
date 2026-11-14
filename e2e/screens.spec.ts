@@ -13,6 +13,7 @@ test("serves pages with nothing personal whole from the cache", async ({
   for (const path of [
     "/terms",
     "/privacy",
+    "/ftn",
     "/theory",
     "/ru/theory/exponential-equations",
     "/theory/exponential-equations/methods",
@@ -42,6 +43,8 @@ test("serves robots and sitemap", async ({ request }) => {
     sitemaps.push(xml);
   }
   const [pages = "", ...tasks] = sitemaps;
+  expect(pages).toContain("<loc>https://doindeksa.rs/ftn</loc>");
+  expect(pages).not.toContain("<loc>https://doindeksa.rs/ru/ftn</loc>");
   expect(pages).toContain("<loc>https://doindeksa.rs/ftn/p1/bank</loc>");
   expect(pages).toContain("<loc>https://doindeksa.rs/ru/ftn/p1/bank</loc>");
   expect(pages).toContain(
@@ -119,7 +122,7 @@ const missing = [
   "/bank/topic/logarithms/1",
   "/bank/topic/logarithms/999",
   "/exams/ftn-p3",
-  "/faculties/ftn",
+  "/nema-fakulteta",
 ];
 
 for (const path of missing) {

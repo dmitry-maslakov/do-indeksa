@@ -44,7 +44,6 @@ const moves: [source: string, from: string, to: string, then?: number][] = [
   ],
   ["/(tasks|training)/:path*", "/tasks", "/ftn/p1/bank"],
   ["/(tasks|training)/:path*", "/training/new", "/ftn/p1/bank"],
-  ["/exams", "/exams?q=P1", "/ftn/p1/variants?q=P1"],
   ["/exams/:exam(ftn-p1)", "/exams/ftn-p1", "/ftn/p1/variants"],
   ["/(diagnostic|simulation)/:path*", "/simulation/new", "/ftn/p1/variants"],
   ["/history/:path*", "/history", "/ftn/p1/variants?tab=history"],
