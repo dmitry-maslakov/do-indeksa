@@ -1,15 +1,29 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { defineCollection, defineConfig } from "@content-collections/core";
+import {
+  type Context,
+  defineCollection,
+  defineConfig,
+} from "@content-collections/core";
 import { compact, sumBy, uniqBy } from "es-toolkit";
 import { z } from "zod";
+import {
+  admissionProblem,
+  moduleIdsOf,
+  programProblem,
+} from "./src/features/admission/content-rules";
 import { answerProblem, parseMath } from "./src/features/catalog/checker";
 import {
   choiceProblem,
   choiceResult,
   optionLetters,
 } from "./src/features/catalog/choice";
+import {
+  examProblem,
+  facultyProblem,
+  variantProblem,
+} from "./src/features/catalog/content-rules";
 import {
   labelOf,
   markupOf,
@@ -42,6 +56,46 @@ const choiceSchema = z.strictObject({
 });
 
 const localized = z.record(z.enum(routing.locales), z.string().min(1));
+
+const year = z.number().int().min(2000).max(2100);
+const isoDate = z.iso.date();
+const clock = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+const md = z.string().min(1);
+const link = z.strictObject({ title: z.string().min(1), url: z.url() });
+const linkKey = z.string().regex(/^[a-z][a-zA-Z]*$/);
+const ref = z.union([
+  z.strictObject({ cycle: year, section: z.string().min(1).optional() }),
+  z.strictObject({ link: linkKey }),
+]);
+const accredited = z.strictObject({ url: z.url(), accreditation: year });
+const score = z.number().min(0);
+const bound = z.union([
+  z.strictObject({ over: score }),
+  z.strictObject({ atLeast: score }),
+]);
+const pointRange = z.strictObject({
+  min: z.number().int().nonnegative(),
+  max: z.number().int().positive(),
+});
+const count = z.number().int().nonnegative().nullable();
+
+const renders = (cache: Context["cache"], sources: string[], origin: string) =>
+  cache(sources, (list) =>
+    Promise.all(list.map((source) => renderMarkdown(source, origin))).then(
+      () => true,
+    ),
+  );
+
+const pairOf = (path: string) => {
+  const [faculty = "", name = ""] = path.split("/");
+  return { faculty, name };
+};
+
+const namesOf = (files: { _meta: { path: string } }[], faculty: string) =>
+  files
+    .map((file) => pairOf(file._meta.path))
+    .filter((file) => file.faculty === faculty)
+    .map((file) => file.name);
 
 const topics = defineCollection({
   name: "topics",
@@ -183,12 +237,37 @@ const faculties = defineCollection({
   schema: z.object({
     short: z.string().min(1),
     name: z.string().min(1),
+    nameLocative: z.string().min(1),
     university: z.string().min(1),
+    universityGenitive: z.string().min(1),
     city: z.string().min(1),
+    cityLocative: z.string().min(1),
     site: z.url(),
     order: z.number().int(),
+    checked: isoDate.optional(),
+    links: z.record(linkKey, link).default({}),
   }),
-  transform: (faculty) => ({ ...faculty, id: faculty._meta.path }),
+  transform: (faculty, { documents }) => {
+    const origin = faculty._meta.filePath;
+    const id = faculty._meta.path;
+    const problem = facultyProblem(id);
+    if (problem) throw new Error(`${origin}: ${problem}`);
+    if (namesOf(documents(programs), id).length === 0) {
+      throw new Error(`${origin}: the faculty has no programmes`);
+    }
+    if (!documents(exams).some((e) => e.open)) {
+      throw new Error(`${origin}: no exam is open`);
+    }
+    return { ...faculty, id };
+  },
+});
+
+const admissionYears = defineCollection({
+  name: "admissionYears",
+  directory: `${root}/admissions`,
+  include: "*/*.yaml",
+  parser: "yaml",
+  schema: z.object({}),
 });
 
 function checkFaculty(
@@ -248,12 +327,36 @@ const exams = defineCollection({
   schema: z.object({
     faculty: z.string(),
     title: z.string().min(1),
-    tests: z.array(z.string()).min(1),
+    name: z.string().min(1),
+    officialName: z.string().min(1).optional(),
+    label: z
+      .strictObject({ ru: z.string().min(1), en: z.string().min(1) })
+      .optional(),
+    tone: z.enum(tones).optional(),
+    tests: z.array(z.string()).default([]),
     points: z.number().int().positive(),
+    minutes: z.number().int().positive().optional(),
+    summary: z.string().min(1).optional(),
     open: z.boolean().default(false),
     order: z.number().int(),
+    sampleTask: z.string().optional(),
+    about: z
+      .strictObject({
+        checked: isoDate.optional(),
+        grading: z.enum(["method", "answer"]),
+        aids: z.array(z.enum(["calculator", "formulas"])).default([]),
+        rulesSources: z.array(ref).min(1),
+        syllabus: link
+          .extend({ areas: z.number().int().positive() })
+          .optional(),
+        papers: link,
+        exemption: z
+          .strictObject({ text: md, sources: z.array(ref).min(1) })
+          .optional(),
+      })
+      .optional(),
   }),
-  transform: (exam, { documents }) => {
+  transform: async (exam, { documents, cache, collection }) => {
     const origin = exam._meta.filePath;
     const id = exam._meta.path;
     const { faculty } = exam;
@@ -270,40 +373,93 @@ const exams = defineCollection({
       return test;
     });
     const positions = parts.flatMap((test) => test.positions);
-    if (sumBy(positions, (p) => p.points) !== exam.points) {
+    if (parts.length > 0 && sumBy(positions, (p) => p.points) !== exam.points) {
       throw new Error(`${origin}: the tests do not add up to ${exam.points}`);
     }
+    const segment = id.slice(faculty.length + 1);
+    const links = documents(faculties).find(
+      (f) => f._meta.path === faculty,
+    )?.links;
+    const problem = examProblem(
+      { ...exam, id, segment },
+      {
+        exams: (await collection.documents()).map((e) => ({
+          ...e,
+          id: e._meta.path,
+        })),
+        links: Object.keys(links ?? {}),
+        years: namesOf(documents(admissionYears), faculty).map(Number),
+        topics: positions.map((p) => p.topic),
+        topicOf: (task) =>
+          documents(tasks).find((t) => t._meta.path === task)?.topic,
+      },
+    );
+    if (problem) throw new Error(`${origin}: ${problem}`);
+    await renders(cache, compact([exam.about?.exemption?.text]), origin);
     return {
       ...exam,
       id,
+      segment,
+      path: `/${faculty}/${segment}`,
       positions: positions.map((p, i) => ({ number: i + 1, ...p })),
-      minutes: sumBy(parts, (t) => t.minutes),
+      minutes: parts.length > 0 ? sumBy(parts, (t) => t.minutes) : exam.minutes,
     };
   },
 });
-
-const pairOf = (path: string) => {
-  const [faculty = "", name = ""] = path.split("/");
-  return { faculty, name };
-};
 
 const programs = defineCollection({
   name: "programs",
   directory: `${root}/programs`,
   include: "*/*.md",
   schema: z.object({
-    content: z.string().min(1),
+    content: z.string(),
     name: z.string().min(1),
     short: z.string().min(1).optional(),
+    aliases: z.array(z.string().min(1)).default([]),
     level: z.enum(["academic", "applied"]),
     years: z.number().int().positive(),
-    espb: z.number().int().positive(),
+    espb: z.number().int().positive().optional(),
     exam: z.string(),
-    modules: z.array(z.string().min(1)).default([]),
-    sources: z.array(z.url()).min(1),
-    checked: z.iso.date().optional(),
+    links: z.strictObject({
+      page: z.url(),
+      plan: accredited.optional(),
+      planPdf: z.url().optional(),
+      courseBook: accredited.optional(),
+    }),
+    checked: isoDate.optional(),
+    degree: z
+      .strictObject({
+        title: z.string().min(1),
+        abbreviation: z.string().min(1).optional(),
+      })
+      .optional(),
+    department: z.string().min(1).optional(),
+    jointDepartments: z.number().int().min(2).optional(),
+    plan: z
+      .array(
+        z.strictObject({
+          years: z.array(z.number().int().positive()).min(1),
+          subjects: z.array(z.string().min(1)).min(1).optional(),
+          text: md.optional(),
+        }),
+      )
+      .default([]),
+    planNotes: z.array(md).default([]),
+    choice: md.optional(),
+    moduleKind: z.enum(["module", "track", "orientation"]).default("module"),
+    modulesFrom: z.number().int().positive().optional(),
+    modules: z
+      .array(
+        z.strictObject({
+          name: z.string().min(1),
+          text: md,
+          url: z.url().optional(),
+        }),
+      )
+      .default([]),
+    employment: md.optional(),
   }),
-  transform: async (program, { documents, cache }) => {
+  transform: async (program, { documents, cache, collection }) => {
     const origin = program._meta.filePath;
     const { faculty, name: slug } = pairOf(program._meta.path);
     checkFaculty(faculty, documents(faculties), origin);
@@ -313,10 +469,30 @@ const programs = defineCollection({
         `${origin}: "${program.exam}" is not an exam of ${faculty}`,
       );
     }
-    await cache(program.content, (source) =>
-      renderMarkdown(source, origin).then(() => true),
+    const siblings = (await collection.documents())
+      .filter((p) => pairOf(p._meta.path).faculty === faculty)
+      .map((p) => ({ ...p, slug: pairOf(p._meta.path).name }));
+    const problem = programProblem({ ...program, slug }, siblings, exam.open);
+    if (problem) throw new Error(`${origin}: ${problem}`);
+    await renders(
+      cache,
+      compact([
+        program.content,
+        program.choice,
+        program.employment,
+        ...program.planNotes,
+        ...program.plan.map((item) => item.text),
+        ...program.modules.map((m) => m.text),
+      ]),
+      origin,
     );
-    return { ...program, id: program._meta.path, faculty, slug };
+    return {
+      ...program,
+      id: program._meta.path,
+      faculty,
+      slug,
+      moduleIds: moduleIdsOf(program.modules),
+    };
   },
 });
 
@@ -326,34 +502,94 @@ const admissions = defineCollection({
   include: "*/*.yaml",
   parser: "yaml",
   schema: z.object({
-    sources: z.array(z.url()).min(1),
+    konkurs: z.url(),
+    statistics: z.url().optional(),
+    scoring: z.strictObject({
+      school: pointRange,
+      exam: pointRange,
+      section: z.string().min(1).optional(),
+    }),
+    thresholds: z.strictObject({
+      budget: bound,
+      self: bound,
+      examMin: score.optional(),
+    }),
+    tieBreak: z.enum(["exam"]).optional(),
+    wishes: z
+      .strictObject({
+        max: z.number().int().positive(),
+        also: z.record(z.string(), z.array(z.string())),
+        ranking: md,
+        section: z.string().min(1).optional(),
+      })
+      .optional(),
+    schedule: z
+      .strictObject({
+        application: z.strictObject({
+          from: isoDate,
+          to: isoDate,
+          until: clock.optional(),
+        }),
+        exams: z.record(
+          z.string(),
+          z
+            .array(
+              z.strictObject({
+                date: isoDate,
+                from: clock,
+                to: clock.optional(),
+              }),
+            )
+            .min(1),
+        ),
+        finalRankLists: isoDate,
+      })
+      .optional(),
+    fees: z
+      .strictObject({
+        foreignTuition: z.number().int().positive(),
+        installments: md.optional(),
+        affirmative: md.optional(),
+      })
+      .optional(),
     programs: z.record(
       z.string(),
-      z.object({
-        budget: z.number().int().nonnegative(),
-        self: z.number().int().nonnegative(),
-        tuition: z.number().int().positive().optional(),
+      z.strictObject({
+        budget: count.optional(),
+        self: count.optional(),
+        tuition: z.number().int().positive().nullable().optional(),
         cutoff: z
-          .object({
-            budget: z.number().min(0).max(100).optional(),
-            self: z.number().min(0).max(100).optional(),
-          })
+          .strictObject({ budget: score.nullable(), self: score.nullable() })
           .optional(),
       }),
     ),
   }),
-  transform: (admission, { documents }) => {
+  transform: async (admission, { documents, cache }) => {
     const origin = admission._meta.filePath;
     const { faculty, name: year } = pairOf(admission._meta.path);
     if (!/^\d{4}$/.test(year)) {
       throw new Error(`${origin}: the file is named after its year`);
     }
     checkFaculty(faculty, documents(faculties), origin);
-    const known = new Set(documents(programs).map((p) => p._meta.path));
-    const unknown = Object.keys(admission.programs).find(
-      (slug) => !known.has(`${faculty}/${slug}`),
+    const problem = admissionProblem(admission, {
+      newest:
+        Number(year) ===
+        Math.max(...namesOf(documents(admissionYears), faculty).map(Number)),
+      programs: namesOf(documents(programs), faculty),
+      exams: documents(exams)
+        .filter((e) => e.faculty === faculty)
+        .map((e) => ({ ...e, id: e._meta.path })),
+    });
+    if (problem) throw new Error(`${origin}: ${problem}`);
+    await renders(
+      cache,
+      compact([
+        admission.wishes?.ranking,
+        admission.fees?.installments,
+        admission.fees?.affirmative,
+      ]),
+      origin,
     );
-    if (unknown) throw new Error(`${origin}: unknown programme "${unknown}"`);
     return {
       ...admission,
       id: admission._meta.path,
@@ -383,11 +619,14 @@ const variants = defineCollection({
     title: z.string().optional(),
     original: z.url().optional(),
     released: z.boolean().default(false),
+    held: isoDate.optional(),
     taskIds: z.array(z.string()).min(1),
   }),
   transform: (variant, { documents }) => {
     const origin = variant._meta.filePath;
     const id = variant._meta.path;
+    const problem = variantProblem(variant);
+    if (problem) throw new Error(`${origin}: ${problem}`);
     const week = variant.kind === "weekly" ? weekOf(id, origin) : undefined;
     const test = documents(tests).find((t) => t._meta.path === variant.test);
     if (!test) throw new Error(`${origin}: unknown test "${variant.test}"`);
@@ -519,6 +758,7 @@ export default defineConfig({
     tasks,
     taskIds,
     faculties,
+    admissionYears,
     tests,
     exams,
     programs,

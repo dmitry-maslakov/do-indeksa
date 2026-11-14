@@ -1,7 +1,25 @@
-sources:
-  - https://ftn.uns.ac.rs/konkurs-za-upis-u-i-godinu-svih-stepena-studija-2026/
+konkurs: https://example.com/konkurs.pdf
+scoring:
+  school: { min: 20, max: 40 }
+  exam: { min: 0, max: 60 }
+  section: "1"
+thresholds:
+  budget: { over: 60 }
+  self: { atLeast: 40 }
+tieBreak: exam
+wishes:
+  max: 3
+  also: { ftn-p1: [ftn-p3], ftn-p3: [] }
+  ranking: Opis rangiranja.
+  section: "1"
+schedule:
+  application: { from: 2026-06-01, to: 2026-06-05 }
+  exams:
+    ftn-p1: [{ date: 2026-06-10, from: "09:00", to: "13:00" }]
+    ftn-p3: [{ date: 2026-06-09, from: "09:00" }]
+  finalRankLists: 2026-06-20
+fees: { foreignTuition: 1000 }
 programs:
-  siit:
-    budget: 40
-    self: 40
-    tuition: 140000
+  siit: { budget: 10, self: 10, tuition: 100000 }
+  ra: { budget: 20, self: 10, tuition: 100000 }
+  geodezija: { budget: 10, self: 5, tuition: 100000 }

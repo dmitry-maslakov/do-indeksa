@@ -1,6 +1,26 @@
 short: FTN
 name: Fakultet tehničkih nauka
+nameLocative: Fakultetu tehničkih nauka
 university: Univerzitet u Novom Sadu
+universityGenitive: Univerziteta u Novom Sadu
 city: Novi Sad
+cityLocative: Novom Sadu
 site: https://ftn.uns.ac.rs
 order: 1
+checked: 2026-01-01
+links:
+  statistics:
+    title: Statistika
+    url: https://example.com/
+  examRules:
+    title: Pravila
+    url: https://example.com/
+  wishes:
+    title: Želje
+    url: https://example.com/
+  faq:
+    title: Pitanja
+    url: https://example.com/
+  exemption:
+    title: Oslobađanje
+    url: https://example.com/
