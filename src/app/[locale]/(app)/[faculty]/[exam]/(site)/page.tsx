@@ -1,19 +1,27 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { examAt } from "@/features/catalog/exams";
+import { examAt, examOf } from "@/features/catalog/exams";
 import { currentWeekly } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
 import { Home } from "./_components/home";
 import { OneTapGate } from "./_components/one-tap-gate";
 import { loadHome } from "./_components/personal";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]">): Promise<Metadata> {
   const t = await getTranslations("Metadata");
+  const exam = examOf(examAt(await params));
   return {
-    title: { absolute: t("homeTitle") },
+    title: {
+      absolute: t("examHomeTitle", {
+        faculty: exam.faculty,
+        exam: exam.title,
+      }),
+    },
     description: t("description"),
-    alternates: alternates("/", await getLocale()),
+    alternates: alternates(exam.path, await getLocale()),
   };
 }
 

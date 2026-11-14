@@ -4,11 +4,19 @@ import { sortBy } from "es-toolkit";
 import { z } from "zod";
 import { getFaculty } from "./faculties";
 
-const buildExam = ({ id, path, positions }: (typeof allExams)[number]) => {
+const buildExam = ({
+  id,
+  path,
+  faculty,
+  title,
+  positions,
+}: (typeof allExams)[number]) => {
   const byTopic = new Map(positions.map((p) => [p.topic, p]));
   return {
     id,
     path,
+    faculty: facultyOf(faculty).short,
+    title,
     positions,
     topics: [
       ...positions.map((p) => p.topic),
