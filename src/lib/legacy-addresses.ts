@@ -48,7 +48,7 @@ export const legacyPages: LegacyPage[] = [
   { source: "/(tasks|training)/:path*", destination: `${p1}/bank` },
   {
     source: "/exams/:exam(ftn-p1)",
-    destination: `${p1}/variants`,
+    destination: `${p1}/about`,
     statusCode: moved,
   },
   { source: "/(exams|calculator)", destination: "/ftn", statusCode: moved },

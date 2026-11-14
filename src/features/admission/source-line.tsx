@@ -14,6 +14,7 @@ interface SourceLineProps {
   refs: Ref[];
   checked?: string;
   className?: string;
+  linkClassName?: string;
   children?: ReactNode;
 }
 
@@ -22,6 +23,7 @@ export async function SourceLine({
   refs,
   checked,
   className,
+  linkClassName = sourceLink,
   children,
 }: SourceLineProps) {
   const [t, facts, format] = await Promise.all([
@@ -30,25 +32,40 @@ export async function SourceLine({
     getFormatter(),
   ]);
   const { short } = facultyOf(faculty);
-  const items = resolveRefs(faculty, refs).map((source) =>
+  const sources = resolveRefs(faculty, refs);
+  const mixed = sources.some((source) => source.kind === "cycle");
+  const items = sources.map((source, i) =>
     source.kind === "cycle" ? (
       <span key={source.url + source.section}>
-        <ExternalLink href={source.url} className={sourceLink}>
+        <ExternalLink href={source.url} className={linkClassName}>
           {t("konkurs", { short, year: facts.schoolYear(source.year) })}
         </ExternalLink>
-        {source.section && t("section", { section: source.section })}
+        {source.section &&
+          t("section", {
+            section: source.section,
+            more: i < sources.length - 1 ? "yes" : "no",
+          })}
       </span>
     ) : (
-      <ExternalLink key={source.title} href={source.url} className={sourceLink}>
-        {source.title}
-      </ExternalLink>
+      <span key={source.title}>
+        {t.rich("linkTitle", {
+          mixed: mixed ? "yes" : "no",
+          title: source.title,
+          link: (chunks) => (
+            <ExternalLink href={source.url} className={linkClassName}>
+              {chunks}
+            </ExternalLink>
+          ),
+        })}
+      </span>
     ),
   );
 
   return (
     <p className={cn("text-[13px] text-subtle", className)}>
       {t.rich("sourceLine", {
-        count: items.length,
+        short,
+        lead: sources[0]?.kind === "link" ? "yes" : "no",
         list: () => format.list(items),
       })}
       {checked && ` ${t("checkedOn", { date: facts.date(checked) })}`}

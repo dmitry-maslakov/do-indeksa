@@ -299,7 +299,8 @@
       "notStarted": "Nije početo"
     },
     "exams": "Prijemni ispiti",
-    "allExams": "Svi ispiti →"
+    "allExams": "Svi ispiti →",
+    "aboutExam": "O ispitu {exam}"
   },
   "Account": {
     "signIn": "Prijavi se preko Google-a"
@@ -435,10 +436,12 @@
     "span": "od {from} do {to}",
     "word": "{n, plural, =1 {jedan} =2 {dva} =3 {tri} =4 {četiri} =5 {pet} =6 {šest} other {#}}",
     "unpublished": "{short} nije objavio",
-    "sourceLine": "{count, plural, one {Izvor} other {Izvori}}: <list></list>.",
+    "sourceLine": "Izvor: {lead, select, yes {{short}, } other {}}<list></list>.",
     "konkurs": "konkurs {short}-a za upis {year}.",
-    "section": ", tačka {section}",
-    "checkedOn": "Provereno {date}"
+    "section": ", tačka {section}{more, select, yes {,} other {}}",
+    "checkedOn": "Provereno {date}",
+    "linkTitle": "{mixed, select, yes {„<link>{title}</link>“} other {<link>{title}</link>}}",
+    "clock": "{whole, select, yes {{hours}} other {{hours}.{minutes}}}"
   },
   "Faculty": {
     "metaTitle": "Smerovi {short}-a u {cityLocative}: prijemni, mesta{results, select, yes { i bodovi za upis} other {}}",
@@ -484,7 +487,8 @@
     "wishes": "Prijava ide na najviše {max} {count, plural, one {smer} few {smera} other {smerova}}, po redu želja.",
     "wishesAlso": "Ko polaže {exam}, kao želje može da navede i smerove sa prijemnim {exams} i bira da li će {count, plural, one {taj ispit} other {te ispite}} posebno polagati.",
     "wishesRules": "Pravila za ostale prijemne: stranica <link></link> na sajtu {short}-a.",
-    "konkursLink": "Konkurs za upis {year}{pdf, select, yes { (PDF)} other {}}"
+    "konkursLink": "Konkurs za upis {year}{pdf, select, yes { (PDF)} other {}}",
+    "aboutExam": "O prijemnom {exam}"
   },
   "ProgramSearch": {
     "label": "Nađi smer",
@@ -492,5 +496,51 @@
     "found": "{count, plural, one {Pronađen # smer} few {Pronađena # smera} other {Pronađeno # smerova}}",
     "none": "Nijedan smer ne odgovara pretrazi „{query}“.",
     "clear": "Obriši pretragu"
+  },
+  "ExamAbout": {
+    "metaTitle": "{short} {exam} prijemni iz {subject, select, math {matematike} physics {fizike} other {logike}}: oblasti, bodovanje i stari prijemni",
+    "metaDescription": "Prijemni {exam} na {short}-u u {cityLocative}: {tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}}, {hours, plural, one {# sat} few {# sata} other {# sati}}, do {points} bodova{grading, select, method {, boduje se postupak} other {}}. Oblasti po zadacima i prijemni {from}–{to} sa rešenjima.",
+    "crumbs": "Putanja",
+    "title": "Prijemni {exam} iz {subject, select, math {matematike} physics {fizike} other {logike}} na {short}-u",
+    "faculty": "{name} u {cityLocative}",
+    "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}}<dot></dot>{hours, plural, one {# sat} few {# sata} other {# sati}}<dot></dot>do {points} bodova",
+    "answers": "{answers, select, written {Zadaci se rešavaju sa postupkom, bez ponuđenih odgovora.} other {Odgovor se bira među ponuđenima.}}",
+    "points": "{same, select, yes {Svaki nosi} other {Zadaci nose}} od 0 do {max} bodova{grading, select, method {: boduje se postupak, pa i nedovršeno rešenje donosi bodove.} other {.}}",
+    "penalty": "{penalty, select, yes {Za netačan odgovor oduzimaju se bodovi.} other {Negativnih bodova nema.}}",
+    "aids": "{aids, select, none {Digitron i formule nisu dozvoljeni.} calculator {Digitron je dozvoljen, formule nisu.} formulas {Formule su dozvoljene, digitron nije.} other {Digitron i formule su dozvoljeni.}}",
+    "practice": "Vežbaj za {exam}",
+    "onPage": "Na ovoj stranici",
+    "tocTopics": "Oblasti",
+    "tocArchive": "Stari prijemni",
+    "tocExemption": "Oslobađanje",
+    "tocPrograms": "Smerovi",
+    "topicsTitle": "Oblasti po zadacima",
+    "topicsCaption": "Koja tema je na kom zadatku, prijemni <nowrap>{from}–{to}</nowrap>, i uz svaku zadatak sa prijemnog {latest}. Raspored je naš pregled; {short} ga ne objavljuje.",
+    "placeNote": "{years} kao {place}. zadatak: {topic}",
+    "year": "{year}.",
+    "taskSummary": "Zadatak {year}",
+    "taskSummaryDetail": " broj {place}, {topic}",
+    "taskLink": "Zadatak {place} i rešenje",
+    "taskLinkLabel": "Prijemni {year}, zadatak {place}, rešenje",
+    "areas": "{syllabus, select, yes {{short} navodi {areas, plural, one {# oblast} other {# oblasti}}; na} other {Na}} prijemnim <nowrap>{from}–{to}</nowrap> zadaci su bili iz {topics, plural, one {# teme} few {# teme} other {# tema}}.",
+    "documentTitle": "{title} ({short})",
+    "archiveTitle": "Stari prijemni",
+    "archiveCaption": "{tasks, plural, one {Jedini zadatak} few {Sva # zadatka} other {Svih # zadataka}} svake godine, sa rešenjima, <nowrap>{from}–{to}</nowrap>. Reši na vreme: ceo prijemni za {hours, plural, one {# sat} few {# sata} other {# sati}}, sa proverom odgovora; provera je vežba, nije bodovanje {short}-a.",
+    "yearName": "Prijemni {year}",
+    "solutions": "Rešenja",
+    "solutionsLabel": "Prijemni {year}, zadaci sa rešenjima",
+    "timed": "Reši na vreme",
+    "timedLabel": "Prijemni {year} na vreme",
+    "held": "Održan {date}",
+    "original": "Original {short} (PDF)",
+    "differentLayout": "Drugačiji raspored tema",
+    "papers": "Originali po godinama: <link></link>.",
+    "sitting": "Prijemni {exam} {year}. održan je {day}, {closed, select, yes {od {from} do {to} časova} other {od {from} časova}} (konkurs {schoolYear}.){missing, select, yes {; njegovih zadataka tamo nema} other {}}.",
+    "exemptionTitle": "Oslobađanje od prijemnog",
+    "programsTitle": "Smerovi sa prijemnim {exam}",
+    "programsCaption": "Prijemni {exam} polaže se za {count, plural, one {# smer} few {# smera} other {# smerova}} (konkurs {schoolYear}.).{pages, select, yes { Na stranici smera su mesta, školarina i najniži bodovi upisanih.} other {}}",
+    "scoring": "Za upis se sabiraju uspeh u srednjoj školi, od {schoolMin} do {schoolMax} bodova, i prijemni, od {examMin} do {examMax}; ukupno najviše {max}.",
+    "scoringLink": "Kako se računaju bodovi za upis",
+    "allPrograms": "Svi smerovi {short}-a"
   }
 }

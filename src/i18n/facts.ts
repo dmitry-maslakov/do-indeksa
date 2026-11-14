@@ -45,6 +45,14 @@ export async function getFacts() {
             month: monthOf(to),
           })
         : t("span", { from: day(from), to: day(to) }),
+    clock: (time: string) => {
+      const [hours = "", minutes = ""] = time.split(":");
+      return t("clock", {
+        hours: String(Number(hours)),
+        minutes,
+        whole: minutes === "00" ? "yes" : "no",
+      });
+    },
     schoolYear: (year: number) => `${year}/${String(year + 1).slice(-2)}`,
     word: (n: number) => t("word", { n }),
   };
