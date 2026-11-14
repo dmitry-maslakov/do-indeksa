@@ -3,6 +3,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import {
   allFaculties,
   allMethodSlugs,
+  allPrograms,
   allTaskIds,
   allTheoryIds,
   allTopics,
@@ -33,7 +34,13 @@ const bankTopicIds = idsOf(allTopics);
 const topicExists = (topic: string) => topicIds.has(topic);
 const facultyIds = idsOf(allFaculties);
 const aboutExams = new Set(aboutPaths);
-const serbianOnly = new Set<RouteTemplate>(["/[faculty]"]);
+const checkedPrograms = new Set(
+  allPrograms.filter((p) => p.checked).map((p) => p.id),
+);
+const serbianOnly = new Set<RouteTemplate>([
+  "/[faculty]",
+  "/[faculty]/programs/[slug]",
+]);
 
 const contentPages: Partial<
   Record<RouteTemplate, (...ids: string[]) => boolean>
@@ -51,6 +58,8 @@ const contentPages: Partial<
     customTaskIds(id, maxPlaces, (taskId) => taskIds.has(taskId)) !== undefined,
   "/variants/[id]/solutions": (id) => variantIds.has(id),
   "/[faculty]": (faculty) => facultyIds.has(faculty),
+  "/[faculty]/programs/[slug]": (faculty, slug) =>
+    checkedPrograms.has(`${faculty}/${slug}`),
 };
 
 function withTraceTiming(response: NextResponse) {

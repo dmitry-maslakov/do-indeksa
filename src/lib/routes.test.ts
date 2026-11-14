@@ -20,6 +20,7 @@ describe("routeOf", () => {
     ["/ftn/p1/bank/start/logarithms", "sr-Latn", "/ftn/p1", "/[...rest]"],
     ["/bank/eks-001", "sr-Latn", "/bank/eks-001", "/"],
     ["/ftn", "sr-Latn", null, "/[faculty]"],
+    ["/ftn/programs/ra", "sr-Latn", null, "/[faculty]/programs/[slug]"],
     ["/wp-admin/setup.php", "sr-Latn", "/wp-admin/setup.php", "/"],
     ["/ftn/programs", "sr-Latn", "/ftn/programs", "/"],
     ["/ru/ftn/p1/bank/eks-001", "ru", "/ftn/p1", "/bank/[id]"],

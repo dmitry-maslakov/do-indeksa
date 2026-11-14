@@ -49,6 +49,7 @@ describe("proxy", () => {
     "/ftn",
     "/ftn/p1/about",
     "/ru/ftn/p1/about",
+    "/ftn/programs/ra",
   ])("lets %s through", async (path) => {
     expect(await rewrite(path)).not.toMatch(/\/404$/);
   });
@@ -75,6 +76,9 @@ describe("proxy", () => {
     ["/ru/ftn/p1/bank?topic=logarithms%2F2", "ru"],
     ["/xyz", "sr-Latn"],
     ["/ru/xyz", "ru"],
+    ["/ftn/programs/geodezija", "sr-Latn"],
+    ["/ftn/programs/nema-smera", "sr-Latn"],
+    ["/xyz/programs/ra", "sr-Latn"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });
@@ -100,6 +104,7 @@ describe("proxy", () => {
     ["/ftn/p1/bank?topic=&level=easy", "/ftn/p1/bank?level=easy"],
     ["/ru/ftn", "/ftn"],
     ["/en/ftn?q=ra", "/ftn?q=ra"],
+    ["/ru/ftn/programs/ra", "/ftn/programs/ra"],
   ])("moves %s to %s", async (path, location) => {
     expect(await redirect(path)).toEqual([
       308,

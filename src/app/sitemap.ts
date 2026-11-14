@@ -1,5 +1,6 @@
 import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
+import { checkedPrograms } from "@/features/admission/programs";
 import { bankHref } from "@/features/bank/params";
 import {
   aboutPaths,
@@ -38,6 +39,7 @@ const translatedPages = [
 const untranslatedPages = [
   ...faculties.map((f) => `/${f.id}`),
   ...aboutPaths.map((path) => `${path}/about`),
+  ...checkedPrograms.map((p) => `/${p.faculty}/programs/${p.slug}`),
   ...theoriesOf(firstOpenExam()).flatMap(({ topic }) =>
     [`/theory/${topic}`, `/theory/${topic}/methods`].map((href) =>
       canonicalHref(topic, href),

@@ -1,4 +1,5 @@
 ---
+checked: 2026-01-01
 name: Računarstvo i automatika
 level: academic
 years: 4
