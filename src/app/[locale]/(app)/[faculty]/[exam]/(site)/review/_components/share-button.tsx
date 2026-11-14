@@ -4,7 +4,7 @@ import { CheckIcon, Share2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getPathname, useExamPath } from "@/i18n/navigation";
+import { examHref, getPathname, useExamPath } from "@/i18n/navigation";
 import { queueEvent, shareSource } from "@/lib/analytics-browser";
 import { secondMs } from "@/lib/dates";
 
@@ -34,7 +34,7 @@ export function ShareButton({
       url:
         location.origin +
         getPathname({
-          href: { pathname: `${exam}${href}`, query: shareTags },
+          href: { pathname: examHref(exam, href), query: shareTags },
           locale,
         }),
     };

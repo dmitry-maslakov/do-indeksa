@@ -8,7 +8,7 @@ const intl = createNavigation(routing);
 
 type Router = ReturnType<typeof intl.useRouter>;
 type RouterHref = Parameters<Router["push"]>[0];
-type ExamBase = string | null | undefined;
+type Base = string | null | undefined;
 
 const ExamContext = createContext<string | undefined>(undefined);
 
@@ -24,14 +24,14 @@ export function ExamBase({
 
 const useExamBase = () => use(ExamContext);
 
-function prefixed(base: ExamBase, pathname: string) {
+function prefixed(base: Base, pathname: string) {
   if (!base || pathname.startsWith("#") || pathname.startsWith("?"))
     return pathname;
   return pathname === "/" ? base : `${base}${pathname}`;
 }
 
 export function examHref<T extends string | { pathname?: string | null }>(
-  base: ExamBase,
+  base: Base,
   href: T,
 ): T {
   if (typeof href === "string") return prefixed(base, href) as T;
