@@ -31,7 +31,7 @@ const tagsOf = (p: Pick<ProgramRecord, "short" | "aliases">) =>
 
 function checkedProblem(program: ProgramRecord, examOpen: boolean) {
   const missing = Object.entries({
-    content: program.content.trim(),
+    "the intro (text after the frontmatter)": program.content.trim(),
     espb: program.espb,
     degree: program.degree,
     department: program.department,

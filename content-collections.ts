@@ -250,14 +250,11 @@ const faculties = defineCollection({
   transform: (faculty, { documents }) => {
     const origin = faculty._meta.filePath;
     const id = faculty._meta.path;
-    const problem = facultyProblem(id);
+    const problem = facultyProblem(id, {
+      programs: namesOf(documents(programs), id).length,
+      openExams: documents(exams).filter((e) => e.open).length,
+    });
     if (problem) throw new Error(`${origin}: ${problem}`);
-    if (namesOf(documents(programs), id).length === 0) {
-      throw new Error(`${origin}: the faculty has no programmes`);
-    }
-    if (!documents(exams).some((e) => e.open)) {
-      throw new Error(`${origin}: no exam is open`);
-    }
     return { ...faculty, id };
   },
 });
