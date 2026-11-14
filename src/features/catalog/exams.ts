@@ -15,7 +15,7 @@ const buildExam = ({
   return {
     id,
     path,
-    faculty: facultyOf(faculty).short,
+    facultyShort: facultyOf(faculty).short,
     title,
     positions,
     topics: [
@@ -36,6 +36,8 @@ export function examOf(id: string) {
   return exam;
 }
 
+export const openExamIds = openExams.map((e) => e.id);
+
 const openByPath = new Map(openExams.map((e) => [e.path, e.id]));
 
 export const openExamParams = openExams.map((e) => ({
@@ -44,6 +46,15 @@ export const openExamParams = openExams.map((e) => ({
 }));
 
 export const examByPath = (path: string) => openByPath.get(path);
+
+interface ExamParams {
+  faculty: string;
+  exam: string;
+}
+
+const pathOf = ({ faculty, exam }: ExamParams) => `/${faculty}/${exam}`;
+
+export const examByParams = (params: ExamParams) => examByPath(pathOf(params));
 
 const openPathOf = new Map(openExams.map((e) => [e.id, e.path]));
 
@@ -55,8 +66,7 @@ function openExamAt(path: string) {
   return id;
 }
 
-export const examAt = ({ faculty, exam }: { faculty: string; exam: string }) =>
-  openExamAt(`/${faculty}/${exam}`);
+export const examAt = (params: ExamParams) => openExamAt(pathOf(params));
 
 export const examPathSchema = z
   .string()

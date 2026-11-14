@@ -16,7 +16,7 @@ export async function generateMetadata({
   return {
     title: {
       absolute: t("examHomeTitle", {
-        faculty: exam.faculty,
+        faculty: exam.facultyShort,
         exam: exam.title,
       }),
     },
