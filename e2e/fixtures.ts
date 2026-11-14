@@ -10,7 +10,7 @@ const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
 const exam = "/ftn/p1";
 
-const outside = /^\/(privacy|terms)(\/|$)/;
+const outside = /^\/(privacy|terms|ftn)(\/|$)/;
 
 export function at(path: string) {
   const [, locale = "", rest = "/"] =
