@@ -32,6 +32,12 @@ export function firstOpenExam() {
   return exam.id;
 }
 
+function facultyOf(id: string) {
+  const faculty = getFaculty(id);
+  if (!faculty) throw new Error(`faculty ${id} is missing`);
+  return faculty;
+}
+
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
 const tests = new Map(allTests.map((t) => [t.id, t]));
@@ -39,12 +45,12 @@ const tests = new Map(allTests.map((t) => [t.id, t]));
 export function testFaculty(id: string) {
   const test = tests.get(id);
   if (!test) throw new Error(`test ${id} is missing`);
-  return getFaculty(test.faculty).short;
+  return facultyOf(test.faculty).short;
 }
 
 export const examOptions = openExams.map((e) => ({
   id: e.id,
-  faculty: getFaculty(e.faculty).short,
+  faculty: facultyOf(e.faculty).short,
   title: e.title,
   tasks: e.positions.length,
   hours: (e.minutes ?? 0) / 60,
