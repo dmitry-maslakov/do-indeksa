@@ -55,8 +55,9 @@
   },
   "ExamSwitcher": {
     "title": "{faculty} · {exam}",
-    "meta": "{tasks, number} задач · {hours, number} ч",
-    "more": "Другие факультеты появятся позже"
+    "group": "{faculty} · {city}",
+    "label": "Экзамен",
+    "all": "Все экзамены"
   },
   "UserMenu": {
     "signIn": "Войти",

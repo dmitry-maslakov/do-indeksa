@@ -4,7 +4,7 @@ import { sortBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
 import { hourMs, minuteMs } from "@/lib/dates";
-import { facultyOf } from "./faculties";
+import { faculties, facultyOf } from "./faculties";
 
 const buildExam = ({
   id,
@@ -125,10 +125,22 @@ export function testFaculty(id: string) {
   return facultyOf(test.faculty).short;
 }
 
-export const examOptions = openExams.map((e) => ({
-  id: e.id,
-  faculty: facultyOf(e.faculty).short,
-  title: e.title,
-  tasks: e.positions.length,
-  hours: examHours(e),
-}));
+export const examGroups = faculties
+  .map((faculty) => ({
+    id: faculty.id,
+    short: faculty.short,
+    city: faculty.city,
+    exams: openExams
+      .filter((e) => e.faculty === faculty.id)
+      .map(({ id, path, title, name, label, tone }) => ({
+        id,
+        path,
+        title,
+        name,
+        label,
+        tone,
+      })),
+  }))
+  .filter((group) => group.exams.length > 0);
+
+export type ExamGroup = (typeof examGroups)[number];

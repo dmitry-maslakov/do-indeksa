@@ -55,8 +55,9 @@
   },
   "ExamSwitcher": {
     "title": "{faculty} · {exam}",
-    "meta": "{tasks, number} tasks · {hours, number} h",
-    "more": "More faculties coming soon"
+    "group": "{faculty} · {city}",
+    "label": "Exam",
+    "all": "All exams"
   },
   "UserMenu": {
     "signIn": "Sign in",

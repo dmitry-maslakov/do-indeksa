@@ -55,8 +55,9 @@
   },
   "ExamSwitcher": {
     "title": "{faculty} · {exam}",
-    "meta": "{tasks, number} zadataka · {hours, number} h",
-    "more": "Ostali fakulteti uskoro"
+    "group": "{faculty} · {city}",
+    "label": "Ispit",
+    "all": "Svi ispiti"
   },
   "UserMenu": {
     "signIn": "Prijavi se",
