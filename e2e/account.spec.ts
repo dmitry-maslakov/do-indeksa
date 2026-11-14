@@ -112,7 +112,7 @@ test("signing in to an account with history merges both", async ({
   await solveAsGuest(page);
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "fun-002", true);
-  await page.goto(at("/bank?status=solved"));
+  await page.goto(at("/bank?status=solved"), { waitUntil: "commit" });
   await expect(
     page.getByText("Napredak sa ovog uređaja je spojen sa nalogom."),
   ).toBeVisible();
