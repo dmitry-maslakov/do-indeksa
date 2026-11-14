@@ -9,7 +9,7 @@ import {
   pageOffset,
 } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
-import { examAt } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
@@ -48,7 +48,10 @@ export async function generateMetadata({
   return {
     title: meta("bankTopicPage", { topic: name, page }),
     description: meta("bankTopicDescription", { topic: name }),
-    alternates: alternates(bankPageHref(topic, page), locale),
+    alternates: alternates(
+      inExam(examAt(exam), bankPageHref(topic, page)),
+      locale,
+    ),
   };
 }
 

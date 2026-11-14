@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
-import { examAt, examOf } from "@/features/catalog/exams";
+import { canonicalHref, examAt, examOf } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
 import {
@@ -52,7 +52,7 @@ export async function generateMetadata({
   return {
     title: taskTitle(task, locale, meta),
     description: taskDescription(task, locale, meta),
-    ...untranslated(`/bank/${task.id}`, locale),
+    ...untranslated(canonicalHref(task.topic, `/bank/${task.id}`), locale),
   };
 }
 

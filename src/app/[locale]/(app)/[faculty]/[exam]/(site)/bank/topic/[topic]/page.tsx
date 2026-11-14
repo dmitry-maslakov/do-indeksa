@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { bankHref } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
-import { examAt } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { Bank, BankResults } from "../../_components/bank-results";
@@ -18,7 +18,7 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/[faculty]/[exam]/bank/topic/[topic]">): Promise<Metadata> {
-  const { topic } = await params;
+  const { topic, ...exam } = await params;
   if (!known(topic)) return {};
   const [meta, locale] = await Promise.all([
     getTranslations("Metadata"),
@@ -28,7 +28,7 @@ export async function generateMetadata({
   return {
     title: meta("bankTopic", { topic: name }),
     description: meta("bankTopicDescription", { topic: name }),
-    alternates: alternates(bankHref({ topic }), locale),
+    alternates: alternates(inExam(examAt(exam), bankHref({ topic })), locale),
   };
 }
 

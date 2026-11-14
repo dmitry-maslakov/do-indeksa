@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { examAt } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { solutionsMetadata } from "@/features/variants/variant-title";
 import { contentVariants } from "@/features/variants/variants";
 import { untranslated } from "@/i18n/alternates";
@@ -16,12 +16,13 @@ const variantOf = (id: string) => contentVariants.find((v) => v.id === id);
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/[faculty]/[exam]/variants/[id]/solutions">): Promise<Metadata> {
-  const { id } = await params;
+  const { id, ...exam } = await params;
   const variant = variantOf(id);
   if (!variant) return {};
+  const href = inExam(examAt(exam), `/variants/${id}/solutions`);
   return {
     ...(await solutionsMetadata(variant)),
-    ...untranslated(`/variants/${id}/solutions`, await getLocale()),
+    ...untranslated(href, await getLocale()),
   };
 }
 

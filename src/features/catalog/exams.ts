@@ -70,6 +70,12 @@ function facultyOf(id: string) {
   return faculty;
 }
 
+export function canonicalHref(topic: string, href: string) {
+  const exam = openExams.find((e) => examOf(e.id).topics.includes(topic));
+  if (!exam) throw new Error(`no open exam has ${topic}`);
+  return inExam(exam.id, href);
+}
+
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
 const tests = new Map(allTests.map((t) => [t.id, t]));

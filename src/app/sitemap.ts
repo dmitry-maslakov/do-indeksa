@@ -1,7 +1,12 @@
 import { chunk } from "es-toolkit";
 import type { MetadataRoute } from "next";
 import { bankHref } from "@/features/bank/params";
-import { firstOpenExam } from "@/features/catalog/exams";
+import {
+  canonicalHref,
+  examOptions,
+  firstOpenExam,
+  inExam,
+} from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
 import { theoriesOf, theoryMethods } from "@/features/theory/theory";
@@ -13,24 +18,35 @@ import { siteUrl } from "@/lib/site";
 
 const urlsPerSitemap = 10_000;
 
-const translatedPages = [
+const examIds = examOptions.map((e) => e.id);
+
+const examPages = [
   "/",
   "/bank",
   ...topics.map((t) => bankHref({ topic: t.id })),
   "/variants",
-  "/privacy",
-  "/terms",
   ...contentVariants.map((v) => `/variants/${v.id}`),
   "/theory",
 ];
 
+const translatedPages = [
+  "/privacy",
+  "/terms",
+  ...examIds.flatMap((id) => examPages.map((href) => inExam(id, href))),
+];
+
 const untranslatedPages = [
-  ...theoriesOf(firstOpenExam()).flatMap((t) => [
-    `/theory/${t.topic}`,
-    `/theory/${t.topic}/methods`,
-  ]),
-  ...theoryMethods.map((m) => `/theory/${m.topic}/methods/${m.slug}`),
-  ...contentVariants.map((v) => `/variants/${v.id}/solutions`),
+  ...theoriesOf(firstOpenExam()).flatMap(({ topic }) =>
+    [`/theory/${topic}`, `/theory/${topic}/methods`].map((href) =>
+      canonicalHref(topic, href),
+    ),
+  ),
+  ...theoryMethods.map((m) =>
+    canonicalHref(m.topic, `/theory/${m.topic}/methods/${m.slug}`),
+  ),
+  ...examIds.flatMap((id) =>
+    contentVariants.map((v) => inExam(id, `/variants/${v.id}/solutions`)),
+  ),
 ];
 
 const url = (path: string) => new URL(path, siteUrl).href;
@@ -55,7 +71,7 @@ const sitemaps = (): MetadataRoute.Sitemap[] => [
     ...untranslatedPages.map(inDefaultLocale),
   ],
   ...chunk(
-    tasks.map((t) => inDefaultLocale(`/bank/${t.id}`)),
+    tasks.map((t) => inDefaultLocale(canonicalHref(t.topic, `/bank/${t.id}`))),
     urlsPerSitemap,
   ),
 ];

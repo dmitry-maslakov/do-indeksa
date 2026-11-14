@@ -25,7 +25,10 @@ export async function generateMetadata({
   return contentVariants.some((v) => v.id === id)
     ? {
         ...metadata,
-        alternates: alternates(`/variants/${id}`, await getLocale()),
+        alternates: alternates(
+          inExam(examId, `/variants/${id}`),
+          await getLocale(),
+        ),
       }
     : metadata;
 }
