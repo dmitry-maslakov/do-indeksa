@@ -30,7 +30,7 @@ function prefixed(base: ExamBase, pathname: string) {
   return pathname === "/" ? base : `${base}${pathname}`;
 }
 
-function examHref<T extends string | { pathname?: string | null }>(
+export function examHref<T extends string | { pathname?: string | null }>(
   base: ExamBase,
   href: T,
 ): T {
