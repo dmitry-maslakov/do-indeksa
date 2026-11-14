@@ -14,10 +14,10 @@ export function Footer({ className }: { className?: string }) {
         className,
       )}
     >
-      <Link href="/privacy" className={linkClass}>
+      <Link href="/privacy" exam={null} className={linkClass}>
         {t("privacy")}
       </Link>
-      <Link href="/terms" className={linkClass}>
+      <Link href="/terms" exam={null} className={linkClass}>
         {t("terms")}
       </Link>
       <span>{t("unofficial")}</span>

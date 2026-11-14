@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { TestScreen } from "@/features/tests/runner/test-screen";
 import { composeModes } from "@/features/variants/custom/compose";
 import { findSet } from "@/features/variants/custom/sets";
@@ -19,25 +19,29 @@ async function load(examId: string, code: string) {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/v/[code]">) {
-  const examId = firstOpenExam();
-  const set = await load(examId, (await params).code);
+}: PageProps<"/[locale]/[faculty]/[exam]/v/[code]">) {
+  const { code, ...exam } = await params;
+  const examId = examAt(exam);
+  const set = await load(examId, code);
   return set ? variantMetadata(examId, set.variant) : {};
 }
 
 export default async function SetPage({
   params,
   searchParams,
-}: PageProps<"/[locale]/v/[code]">) {
-  const { code } = await params;
-  const examId = firstOpenExam();
+}: PageProps<"/[locale]/[faculty]/[exam]/v/[code]">) {
+  const { code, ...exam } = await params;
+  const examId = examAt(exam);
   const set = await load(examId, code);
   if (!set) notFound();
   const { fallback } = await searchParams;
   const mode = composeModes.find((m) => m === fallback);
   if (set.code !== code) {
     redirect({
-      href: mode ? `/v/${set.code}?fallback=${mode}` : `/v/${set.code}`,
+      href: inExam(
+        examId,
+        mode ? `/v/${set.code}?fallback=${mode}` : `/v/${set.code}`,
+      ),
       locale: await getLocale(),
     });
   }

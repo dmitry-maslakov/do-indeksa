@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { RailPanel } from "@/components/rail";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { getTheory, methodsOf, theoriesOf } from "@/features/theory/theory";
@@ -11,8 +11,8 @@ import { TheoryRail } from "./_components/theory-rail";
 export default async function TopicLayout({
   params,
   children,
-}: LayoutProps<"/[locale]/theory/[topic]">) {
-  const { topic } = await params;
+}: LayoutProps<"/[locale]/[faculty]/[exam]/theory/[topic]">) {
+  const { topic, ...exam } = await params;
   const theory = getTheory(topic);
   if (!theory) notFound();
   const [locale, t] = await Promise.all([
@@ -29,7 +29,7 @@ export default async function TopicLayout({
         <RailPanel label={t("title")}>
           <TheoryRail
             topic={topic}
-            topics={theoriesOf(firstOpenExam()).map((x) => ({
+            topics={theoriesOf(examAt(exam)).map((x) => ({
               id: x.topic,
               name: topicName(x.topic, locale),
             }))}

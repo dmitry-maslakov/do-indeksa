@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { currentWeekly } from "@/features/variants/weekly";
 import { alternates } from "@/i18n/alternates";
 import { Home } from "./_components/home";
@@ -17,8 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HomePage() {
-  const examId = firstOpenExam();
+export default async function HomePage({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]">) {
+  const examId = examAt(await params);
   const weekly = await currentWeekly(examId);
 
   return (

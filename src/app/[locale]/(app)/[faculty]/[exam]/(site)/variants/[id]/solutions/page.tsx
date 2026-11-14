@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { solutionsMetadata } from "@/features/variants/variant-title";
 import { contentVariants } from "@/features/variants/variants";
 import { untranslated } from "@/i18n/alternates";
@@ -15,7 +15,7 @@ const variantOf = (id: string) => contentVariants.find((v) => v.id === id);
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/variants/[id]/solutions">): Promise<Metadata> {
+}: PageProps<"/[locale]/[faculty]/[exam]/variants/[id]/solutions">): Promise<Metadata> {
   const { id } = await params;
   const variant = variantOf(id);
   if (!variant) return {};
@@ -27,12 +27,13 @@ export async function generateMetadata({
 
 export default async function SolutionsPage({
   params,
-}: PageProps<"/[locale]/variants/[id]/solutions">) {
-  const variant = variantOf((await params).id);
+}: PageProps<"/[locale]/[faculty]/[exam]/variants/[id]/solutions">) {
+  const { id, ...exam } = await params;
+  const variant = variantOf(id);
   if (!variant) notFound();
   return (
     <main className="px-4 pb-12 md:px-10 md:pt-2 md:pb-15">
-      <SolutionsView examId={firstOpenExam()} variant={variant} />
+      <SolutionsView examId={examAt(exam)} variant={variant} />
     </main>
   );
 }

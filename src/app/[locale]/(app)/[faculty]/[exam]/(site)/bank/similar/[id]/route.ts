@@ -1,6 +1,6 @@
 import { hasLocale } from "next-intl";
 import { similarTask } from "@/features/bank/queue/queue";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examByPath, inExam } from "@/features/catalog/exams";
 import { getTask } from "@/features/catalog/tasks";
 import { getTopicPlan } from "@/features/progress/progress";
 import { getPathname } from "@/i18n/navigation";
@@ -19,15 +19,16 @@ async function targetOf(examId: string, id: string, topic: string) {
 
 export async function GET(
   _: Request,
-  { params }: RouteContext<"/[locale]/bank/similar/[id]">,
+  { params }: RouteContext<"/[locale]/[faculty]/[exam]/bank/similar/[id]">,
 ) {
-  const { locale, id } = await params;
+  const { locale, id, faculty, exam } = await params;
+  const examId = examByPath(`/${faculty}/${exam}`);
   const task = getTask(id);
-  if (!task || !hasLocale(routing.locales, locale)) {
+  if (!task || !examId || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });
   }
   const href = getPathname({
-    href: await targetOf(firstOpenExam(), id, task.topic),
+    href: inExam(examId, await targetOf(examId, id, task.topic)),
     locale,
   });
   return new Response(null, { status: 307, headers: { Location: href } });

@@ -3,7 +3,7 @@
 import { uniq } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
-import { firstOpenExam, maxPlaces } from "@/features/catalog/exams";
+import { examPathSchema, inExam, maxPlaces } from "@/features/catalog/exams";
 import { taskIdSchema } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
 import { redirect } from "@/i18n/navigation";
@@ -17,19 +17,20 @@ import { inExamOrder } from "./variants";
 const topicIds = topics.map((t) => t.id);
 
 async function openSet(
+  { examId, locale }: { examId: string; locale: Locale },
   taskIds: string[],
-  locale: Locale,
   query = "",
   type?: "push" | "replace",
 ) {
   const code = await saveSet(taskIds);
-  redirect({ href: `/v/${code}${query}`, locale }, type);
+  redirect({ href: inExam(examId, `/v/${code}${query}`), locale }, type);
 }
 
 export const composeVariant = baseClient
   .inputSchema(
     z.object({
       locale: localeSchema,
+      exam: examPathSchema,
       mode: z.enum(composeModes),
       topics: z
         .array(z.string())
@@ -38,26 +39,31 @@ export const composeVariant = baseClient
       count: z.int().positive().max(maxPlaces).optional(),
     }),
   )
-  .action(async ({ parsedInput: { locale, mode, topics, count } }) => {
+  .action(async ({ parsedInput: { locale, exam, mode, topics, count } }) => {
     const { ids, fallback } = composeTaskIds(
-      firstOpenExam(),
+      exam,
       { mode, topics, size: count },
       crypto.randomUUID(),
     );
-    await openSet(ids, locale, fallback ? `?fallback=${mode}` : "");
+    await openSet(
+      { examId: exam, locale },
+      ids,
+      fallback ? `?fallback=${mode}` : "",
+    );
   });
 
 export const swapTask = baseClient
   .inputSchema(
     z.object({
       locale: localeSchema,
+      exam: examPathSchema,
       taskIds: z.array(taskIdSchema).min(1).max(maxPlaces),
     }),
   )
-  .action(async ({ parsedInput: { locale, taskIds } }) => {
+  .action(async ({ parsedInput: { locale, exam, taskIds } }) => {
     await openSet(
-      inExamOrder(firstOpenExam(), uniq(taskIds)),
-      locale,
+      { examId: exam, locale },
+      inExamOrder(exam, uniq(taskIds)),
       "",
       "replace",
     );

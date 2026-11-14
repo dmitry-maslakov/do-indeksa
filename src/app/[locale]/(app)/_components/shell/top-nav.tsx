@@ -3,10 +3,16 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { UserMenu } from "@/features/account/user-menu";
 import { ExamSwitcher } from "@/features/catalog/exam-switcher";
-import { examOptions, firstOpenExam } from "@/features/catalog/exams";
+import { examOptions } from "@/features/catalog/exams";
 import { NavLinks } from "./nav-links";
 
-export function TopNav({ className }: { className?: string }) {
+interface TopNavProps {
+  exam?: string;
+  languages: boolean;
+  className?: string;
+}
+
+export function TopNav({ exam, languages, className }: TopNavProps) {
   return (
     <header
       className={cn(
@@ -15,12 +21,16 @@ export function TopNav({ className }: { className?: string }) {
       )}
     >
       <Logo />
-      <div className="max-lg:hidden">
-        <ExamSwitcher exams={examOptions} current={firstOpenExam()} />
-      </div>
-      <NavLinks />
+      {exam && (
+        <>
+          <div className="max-lg:hidden">
+            <ExamSwitcher exams={examOptions} current={exam} />
+          </div>
+          <NavLinks />
+        </>
+      )}
       <div className="ml-auto flex shrink-0 items-center gap-4">
-        <LocaleSwitcher />
+        {languages && <LocaleSwitcher />}
         <UserMenu />
       </div>
     </header>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { useLocale, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { TopicIcon } from "@/features/catalog/topic-icon";
 import { toneStyle } from "@/features/catalog/topic-look";
 import { topicLook, topicName } from "@/features/catalog/topics";
@@ -19,9 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function TheoryPage() {
-  const t = useTranslations("Theory");
-  const locale = useLocale();
+export default async function TheoryPage({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]/theory">) {
+  const t = await getTranslations("Theory");
+  const locale = await getLocale();
+  const examId = examAt(await params);
 
   return (
     <main className="px-4 pb-9 md:px-10 md:pb-14">
@@ -32,7 +34,7 @@ export default function TheoryPage() {
         {t("lead")}
       </p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {theoriesOf(firstOpenExam()).map(({ topic, sections }) => {
+        {theoriesOf(examId).map(({ topic, sections }) => {
           const look = topicLook(topic);
           return (
             <li key={topic}>

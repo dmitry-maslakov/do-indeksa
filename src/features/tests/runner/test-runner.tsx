@@ -17,6 +17,7 @@ import type {
   ExamVariant,
   VariantTask as Task,
 } from "@/features/variants/variants";
+import { useExamPath } from "@/i18n/navigation";
 import { navigationStarted, queueEvent } from "@/lib/analytics-browser";
 import { secondMs } from "@/lib/dates";
 import { localTimeZone } from "@/lib/time-zone";
@@ -77,6 +78,7 @@ export function TestRunner({
   const test = useTestStore((s) => s.tests[variantId]);
   const t = useTranslations("Exam");
   const locale = useLocale();
+  const exam = useExamPath();
   const errorText = useErrorText();
   const finishing = useRef(false);
   const { executeAsync: submit, isPending: pending } = useAction(submitTest, {
@@ -127,7 +129,7 @@ export function TestRunner({
       return;
     const id = setTimeout(() => {
       if (finishing.current) return;
-      saveTest(payload(variantId, test)).then(
+      saveTest({ ...payload(variantId, test), exam }).then(
         (result) =>
           (result?.serverError || result?.validationErrors) &&
           failed("test_save"),
@@ -135,7 +137,7 @@ export function TestRunner({
       );
     }, draftSaveMs);
     return () => clearTimeout(id);
-  }, [test, synced, variantId]);
+  }, [test, synced, variantId, exam]);
   const { goTo, recordInput, stats } = useTestViews(
     { variantId, kind, tasks, saved, fallback },
     hydrated ? test?.testId : undefined,
@@ -154,7 +156,7 @@ export function TestRunner({
     ? () => {
         const to = setId(swapTo);
         navigationStarted("replace");
-        swapTasks({ taskIds: swapTo, locale }).catch((error) => {
+        swapTasks({ taskIds: swapTo, locale, exam }).catch((error) => {
           const { tests } = useTestStore.getState();
           if (!isNavigationError(error) || !tests[variantId]) return;
           swap(variantId, to);
@@ -180,6 +182,7 @@ export function TestRunner({
         ...payload(variantId, test),
         tz: localTimeZone(),
         locale,
+        exam,
       }).catch((error) => {
         if (isNavigationError(error)) clear(variantId);
       });

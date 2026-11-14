@@ -9,7 +9,7 @@ import {
   pageOffset,
 } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { routing } from "@/i18n/routing";
@@ -36,9 +36,9 @@ export function generateStaticParams({
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/bank/topic/[topic]/[page]">): Promise<Metadata> {
-  const { topic, page: value } = await params;
-  const page = pageIn(firstOpenExam(), topic, value);
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/topic/[topic]/[page]">): Promise<Metadata> {
+  const { topic, page: value, ...exam } = await params;
+  const page = pageIn(examAt(exam), topic, value);
   if (!page) return {};
   const [meta, locale] = await Promise.all([
     getTranslations("Metadata"),
@@ -55,9 +55,9 @@ export async function generateMetadata({
 export default async function BankTopicPagePage({
   params,
   searchParams,
-}: PageProps<"/[locale]/bank/topic/[topic]/[page]">) {
-  const { topic, page: value } = await params;
-  const examId = firstOpenExam();
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/topic/[topic]/[page]">) {
+  const { topic, page: value, ...exam } = await params;
+  const examId = examAt(exam);
   const page = pageIn(examId, topic, value);
   if (!page) notFound();
   const offset = pageOffset(page);

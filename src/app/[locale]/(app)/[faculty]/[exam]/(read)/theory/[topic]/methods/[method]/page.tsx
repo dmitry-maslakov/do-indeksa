@@ -21,7 +21,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/theory/[topic]/methods/[method]">): Promise<Metadata> {
+}: PageProps<"/[locale]/[faculty]/[exam]/theory/[topic]/methods/[method]">): Promise<Metadata> {
   const { topic, method: slug } = await params;
   const method = getMethod(topic, slug);
   if (!method) return {};
@@ -42,7 +42,7 @@ export async function generateMetadata({
 
 export default async function MethodPage({
   params,
-}: PageProps<"/[locale]/theory/[topic]/methods/[method]">) {
+}: PageProps<"/[locale]/[faculty]/[exam]/theory/[topic]/methods/[method]">) {
   const { topic, method: slug } = await params;
   const method = getMethod(topic, slug);
   if (!method) notFound();

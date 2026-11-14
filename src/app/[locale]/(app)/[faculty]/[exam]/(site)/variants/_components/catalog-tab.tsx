@@ -34,7 +34,7 @@ export async function loadLatest(examId: string, variantIds: string[]) {
 export async function CatalogTab({
   examId,
   searchParams,
-}: Pick<PageProps<"/[locale]/variants">, "searchParams"> & {
+}: Pick<PageProps<"/[locale]/[faculty]/[exam]/variants">, "searchParams"> & {
   examId: string;
 }) {
   const { tab: raw } = await searchParams;

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { MathHtml } from "@/components/math-html";
 import { TaskSignInStrip } from "@/features/account/sign-in-strip";
 import { bankHref } from "@/features/bank/params";
-import { examOf, firstOpenExam } from "@/features/catalog/exams";
+import { examAt, examOf } from "@/features/catalog/exams";
 import { levelOf } from "@/features/catalog/level";
 import { examSource } from "@/features/catalog/source";
 import {
@@ -33,18 +33,18 @@ import { TaskMeta } from "./_components/task-meta";
 export function generateStaticParams({
   params,
 }: {
-  params: { locale: string };
+  params: { locale: string; faculty: string; exam: string };
 }) {
   const shells =
     params.locale === routing.defaultLocale
-      ? firstTasks(firstOpenExam())
+      ? firstTasks(examAt(params))
       : tasks.slice(0, 1);
   return shells.map((t) => ({ id: t.id }));
 }
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/bank/[id]">): Promise<Metadata> {
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/[id]">): Promise<Metadata> {
   const task = getTask((await params).id);
   if (!task) return {};
   const meta = await getTranslations("Metadata");
@@ -58,8 +58,8 @@ export async function generateMetadata({
 
 export default async function SolvePage({
   params,
-}: PageProps<"/[locale]/bank/[id]">) {
-  const { id } = await params;
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/[id]">) {
+  const { id, ...exam } = await params;
   const task = getTask(id);
   if (!task) notFound();
 
@@ -69,7 +69,7 @@ export default async function SolvePage({
     renderTask(id),
   ]);
   if (!html) notFound();
-  const examId = firstOpenExam();
+  const examId = examAt(exam);
   const personal = loadPersonal({ examId, id, topic: task.topic });
   const topic = topicName(task.topic, locale);
   const meta = {

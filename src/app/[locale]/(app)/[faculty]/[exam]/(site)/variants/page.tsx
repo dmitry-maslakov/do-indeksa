@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
 import { SearchTabs } from "@/components/search-tabs";
-import { examOf, firstOpenExam } from "@/features/catalog/exams";
+import { examAt, examOf } from "@/features/catalog/exams";
 import { topicLook, topicName } from "@/features/catalog/topics";
 import { weakTopics } from "@/features/progress/progress";
 import { getTaskStats } from "@/features/progress/task-stats";
@@ -33,11 +33,12 @@ async function loadWeak(examId: string) {
 }
 
 export default async function VariantsPage({
+  params,
   searchParams,
-}: PageProps<"/[locale]/variants">) {
+}: PageProps<"/[locale]/[faculty]/[exam]/variants">) {
   const t = await getTranslations("Variants");
   const locale = await getLocale();
-  const examId = firstOpenExam();
+  const examId = examAt(await params);
   const weekly = await currentWeekly(examId);
   const exam = examOf(examId);
   const topics = exam.topics.map((topic) => ({

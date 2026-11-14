@@ -6,24 +6,38 @@ import { TopNav } from "./top-nav";
 
 interface ShellProps {
   mode?: "site" | "read" | "task" | "exam";
+  exam?: string;
+  languages?: boolean;
   children: ReactNode;
 }
 
-export function Shell({ mode = "site", children }: ShellProps) {
+export function Shell({
+  mode = "site",
+  exam,
+  languages = true,
+  children,
+}: ShellProps) {
   return (
     <div
       className={cn(
-        "max-lg:pb-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))]",
+        exam &&
+          "max-lg:pb-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))]",
         mode === "task" && "max-md:[--nav-bottom:0rem]",
         mode === "exam" && "[--nav-bottom:0rem]",
       )}
     >
-      <TopNav className={cn(mode !== "site" && "max-md:hidden")} />
+      <TopNav
+        exam={exam}
+        languages={languages}
+        className={cn(mode !== "site" && "max-md:hidden")}
+      />
       {children}
       {mode !== "exam" && (
         <>
           <Footer className={cn(mode === "task" && "max-md:hidden")} />
-          <BottomNav className={cn(mode === "task" && "max-md:hidden")} />
+          {exam && (
+            <BottomNav className={cn(mode === "task" && "max-md:hidden")} />
+          )}
         </>
       )}
     </div>

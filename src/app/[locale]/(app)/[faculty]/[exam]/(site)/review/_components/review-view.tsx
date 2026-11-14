@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { examAt } from "@/features/catalog/exams";
 import { getTest } from "@/features/tests/finished-tests";
 import { Link } from "@/i18n/navigation";
 import { getSession } from "@/server/auth";
@@ -9,14 +10,14 @@ import { getProfileId } from "@/server/profile";
 import { TestReview } from "./test-review";
 
 export async function ReviewView({
-  examId,
   params,
 }: {
-  examId: string;
-  params?: Promise<{ code: string }>;
+  params: Promise<{ faculty: string; exam: string; code?: string }>;
 }) {
   const t = await getTranslations("Review");
-  const found = await getTest(await getProfileId(), (await params)?.code);
+  const { code, ...exam } = await params;
+  const examId = examAt(exam);
+  const found = await getTest(await getProfileId(), code);
   const session = await getSession();
 
   return (

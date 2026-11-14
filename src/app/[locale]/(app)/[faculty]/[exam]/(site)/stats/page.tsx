@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { PageTitle } from "@/components/page-title";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { StatsSkeleton } from "./_components/stats-skeleton";
 import { StatsView } from "./_components/stats-view";
 
@@ -11,8 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function StatsPage() {
+export default async function StatsPage({
+  params,
+}: PageProps<"/[locale]/[faculty]/[exam]/stats">) {
   const t = await getTranslations("Stats");
+  const examId = examAt(await params);
 
   return (
     <main className="px-4 pb-10 md:px-10 md:pb-14">
@@ -20,7 +23,7 @@ export default async function StatsPage() {
         <PageTitle>{t("title")}</PageTitle>
       </div>
       <Suspense fallback={<StatsSkeleton />}>
-        <StatsView examId={firstOpenExam()} />
+        <StatsView examId={examId} />
       </Suspense>
     </main>
   );

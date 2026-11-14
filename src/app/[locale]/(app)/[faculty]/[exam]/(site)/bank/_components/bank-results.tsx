@@ -16,14 +16,15 @@ import {
   serializeBankFilters,
 } from "@/features/bank/params";
 import { type BankQuery, findTasks } from "@/features/bank/search";
-import { examOf } from "@/features/catalog/exams";
+import { examOf, inExam } from "@/features/catalog/exams";
 import type { TaskSummary } from "@/features/catalog/tasks";
 import { redirect } from "@/i18n/navigation";
 import { EmptyResults } from "./empty-results";
 import { loadPersonal } from "./personal";
 import { ResultsHead } from "./results-head";
 
-interface BankProps extends Pick<PageProps<"/[locale]/bank">, "searchParams"> {
+interface BankProps
+  extends Pick<PageProps<"/[locale]/[faculty]/[exam]/bank">, "searchParams"> {
   examId: string;
   topic: string | null;
   offset?: number;
@@ -37,7 +38,10 @@ export async function Bank({
 }: BankProps) {
   const filters = { ...(await loadBankFilters(searchParams)), topic };
   if (offset > 0 && !pagedTopic(filters)) {
-    redirect({ href: bankHref(filters), locale: await getLocale() });
+    redirect({
+      href: inExam(examId, bankHref(filters)),
+      locale: await getLocale(),
+    });
   }
   const personal = loadPersonal(
     examId,

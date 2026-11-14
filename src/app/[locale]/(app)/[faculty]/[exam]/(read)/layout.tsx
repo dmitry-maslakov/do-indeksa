@@ -1,5 +1,13 @@
-import { Shell } from "../_components/shell/shell";
+import { Shell } from "@/app/[locale]/(app)/_components/shell/shell";
+import { examAt } from "@/features/catalog/exams";
 
-export default function ReadLayout({ children }: LayoutProps<"/[locale]">) {
-  return <Shell mode="read">{children}</Shell>;
+export default async function ReadLayout({
+  children,
+  params,
+}: LayoutProps<"/[locale]/[faculty]/[exam]">) {
+  return (
+    <Shell mode="read" exam={examAt(await params)}>
+      {children}
+    </Shell>
+  );
 }
