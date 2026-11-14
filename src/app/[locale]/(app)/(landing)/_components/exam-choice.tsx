@@ -2,18 +2,19 @@ import { mapValues } from "es-toolkit";
 import { ArrowRightIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ExamBadge } from "@/features/catalog/exam-badge";
-import { examChoice, examLabel, openFaculties } from "@/features/catalog/exams";
-import { facultyOf } from "@/features/catalog/faculties";
+import { type ExamGroup, examGroups } from "@/features/catalog/exams";
 import { officialYears } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
 
-type Exam = (typeof examChoice)[number];
+interface ExamButtonProps {
+  exam: ExamGroup["exams"][number];
+  faculty: ExamGroup;
+  rank: number;
+}
 
-function ExamButton({ exam, rank }: { exam: Exam; rank: number }) {
+function ExamButton({ exam, faculty, rank }: ExamButtonProps) {
   const t = useTranslations("Landing");
-  const locale = useLocale();
-  const faculty = facultyOf(exam.faculty);
   const years = officialYears(exam.id);
   const place = { faculty: faculty.short, city: faculty.city };
 
@@ -27,7 +28,7 @@ function ExamButton({ exam, rank }: { exam: Exam; rank: number }) {
       <ExamBadge exam={exam} size="md" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 md:gap-0">
         <span className="font-semibold text-base leading-[21px] md:text-[17px] md:leading-[23px]">
-          {examLabel(exam, locale)}
+          {exam.name}
         </span>
         <span className="font-medium text-[13px] leading-4.5 md:text-sm md:leading-5">
           {years
@@ -48,7 +49,11 @@ function ExamButton({ exam, rank }: { exam: Exam; rank: number }) {
 
 export function ExamChoice() {
   const t = useTranslations("Landing");
-  const [faculty] = openFaculties;
+  const groups = examGroups(useLocale());
+  const [faculty] = groups;
+  const exams = groups.flatMap((group) =>
+    group.exams.map((exam) => ({ exam, faculty: group })),
+  );
 
   return (
     <>
@@ -56,8 +61,13 @@ export function ExamChoice() {
         {t("choose")}
       </p>
       <div className="mt-3 flex flex-col gap-2 md:mt-4 md:w-full md:max-w-234 md:flex-row md:flex-wrap md:justify-center md:gap-x-4 md:gap-y-3">
-        {examChoice.map((exam, i) => (
-          <ExamButton key={exam.id} exam={exam} rank={i + 1} />
+        {exams.map(({ exam, faculty }, i) => (
+          <ExamButton
+            key={exam.id}
+            exam={exam}
+            faculty={faculty}
+            rank={i + 1}
+          />
         ))}
       </div>
       {faculty && (
