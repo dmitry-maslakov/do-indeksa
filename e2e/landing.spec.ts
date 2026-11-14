@@ -1,7 +1,11 @@
-import { allExams } from "content-collections";
+import { allExams, allTasks, allTopics } from "content-collections";
+import { sortBy } from "es-toolkit";
 import { expect, test } from "./fixtures";
 
-const open = allExams.filter((e) => e.open);
+const open = sortBy(
+  allExams.filter((e) => e.open),
+  ["order"],
+);
 const examButtons = (page: import("@playwright/test").Page) =>
   page
     .getByRole("main")
@@ -39,10 +43,13 @@ test("leads to the faculty page by programme", async ({ page }) => {
 });
 
 test("shows the sample task of the exam", async ({ page }) => {
-  const [exam] = open;
-  test.skip(!exam?.sampleTask, "the first open exam has no sample task");
+  const task = allTasks.find((t) => t._meta.path === open[0]?.sampleTask);
+  test.skip(!task, "the first open exam has no sample task");
+  const topic = allTopics.find((t) => t.id === task?.topic);
   await page.goto("/");
-  await expect(page.getByRole("main").locator("article")).toHaveCount(2);
+  const card = page.getByRole("main").locator("article").last();
+  await expect(card.locator(".math-text")).toHaveText(/\S/);
+  await expect(card).toContainText(topic?.name["sr-Latn"] ?? "");
 });
 
 test("keeps the landing after its links are prefetched", async ({ page }) => {
@@ -65,7 +72,14 @@ test("serves the landing whole from the cache", async ({ request }) => {
 
 test("describes the landing for search", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Do indeksa — prijemni iz matematike za FTN");
+  const place = (await examButtons(page).first().innerText())
+    .split("\n")
+    .find((line) => line.includes(" · "));
+  const [faculty] = place?.split(" · ") ?? [];
+  const years = place?.match(/\d{4}–\d{4}/)?.[0];
+  await expect(page).toHaveTitle(
+    `Do indeksa — prijemni iz matematike za ${faculty}`,
+  );
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -87,25 +101,28 @@ test("describes the landing for search", async ({ page }) => {
   expect(
     ld["@graph"].map((node: { "@type": string }) => node["@type"]),
   ).toEqual(["WebSite", "EducationalOrganization"]);
+  expect(years).toBeDefined();
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    /\d{4}–\d{4}/,
+    new RegExp(` ${years} `),
   );
 });
 
 test("fits a phone", { tag: "@mobile" }, async ({ page, errors }) => {
-  await page.goto("/");
-  await expect(examButtons(page).first()).toBeVisible();
-  for (const width of [390, 375, 360]) {
-    await page.setViewportSize({ width, height: 844 });
-    expect(
-      await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth -
-          document.documentElement.clientWidth,
-      ),
-      `${width}px`,
-    ).toBe(0);
+  for (const path of ["/", "/ru", "/en"]) {
+    await page.goto(path);
+    await expect(examButtons(page).first()).toBeVisible();
+    for (const width of [390, 375, 360]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        ),
+        `${path} ${width}px`,
+      ).toBe(0);
+    }
   }
   expect(errors).toEqual([]);
 });

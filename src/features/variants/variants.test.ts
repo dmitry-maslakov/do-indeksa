@@ -100,12 +100,12 @@ describe("slotsOf", () => {
 });
 
 describe("officialYears", () => {
-  it("spans the official papers of an exam and nothing for an exam without", () => {
+  it("spans the official papers of the exams and nothing for an exam without", () => {
     const years = officialVariants.flatMap((v) => v.year ?? []);
-    expect(officialYears(exam)).toEqual({
-      first: Math.min(...years),
-      last: Math.max(...years),
-    });
+    const span = { first: Math.min(...years), last: Math.max(...years) };
+    expect(officialYears(exam)).toEqual(span);
+    expect(officialYears(exam, "ftn-p3")).toEqual(span);
     expect(officialYears("ftn-p3")).toBeUndefined();
+    expect(officialYears()).toBeUndefined();
   });
 });

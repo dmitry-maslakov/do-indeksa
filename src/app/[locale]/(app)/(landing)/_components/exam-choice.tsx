@@ -1,3 +1,4 @@
+import { mapValues } from "es-toolkit";
 import { ArrowRightIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ExamBadge } from "@/features/catalog/exam-badge";
@@ -14,14 +15,14 @@ function ExamButton({ exam, rank }: { exam: Exam; rank: number }) {
   const locale = useLocale();
   const faculty = facultyOf(exam.faculty);
   const years = officialYears(exam.id);
-  const place = t("place", { faculty: faculty.short, city: faculty.city });
+  const place = { faculty: faculty.short, city: faculty.city };
 
   return (
     <Link
       exam={exam.path}
       href="/"
       data-intent={intentOf({ via: "landing_exam", rank })}
-      className="group flex min-h-19 items-center gap-3 rounded-3xl bg-muted py-3 pr-3 pl-2.5 transition-colors hover:bg-untouched md:h-21 md:w-115 md:gap-3.5 md:px-3.5 md:text-left"
+      className="group flex min-h-19 items-center gap-3 rounded-3xl bg-muted py-3 pr-3 pl-2.5 outline-none transition-colors hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring md:h-21 md:w-115 md:gap-3.5 md:px-3.5 md:text-left"
     >
       <ExamBadge exam={exam} size="md" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 md:gap-0">
@@ -30,11 +31,8 @@ function ExamButton({ exam, rank }: { exam: Exam; rank: number }) {
         </span>
         <span className="font-medium text-[13px] leading-4.5 md:text-sm md:leading-5">
           {years
-            ? `${place} · ${t("years", {
-                first: String(years.first),
-                last: String(years.last),
-              })}`
-            : place}
+            ? t("placeYears", { ...place, ...mapValues(years, String) })
+            : t("place", place)}
         </span>
       </span>
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card font-semibold text-[15px] leading-5 md:w-auto md:gap-2 md:pr-3 md:pl-4">
@@ -67,7 +65,7 @@ export function ExamChoice() {
           exam={null}
           href={`/${faculty.id}`}
           data-intent={intentOf({ via: "landing_programs" })}
-          className="mt-4 font-medium text-[15px] text-data md:mt-5 md:text-base"
+          className="mt-4 rounded-sm font-medium text-[15px] text-data outline-none focus-visible:ring-2 focus-visible:ring-ring md:mt-5 md:text-base"
         >
           {t("byProgram")}
         </Link>

@@ -18,7 +18,7 @@ export async function TaskSample({ sample }: { sample: string }) {
   ]);
 
   return (
-    <article className="absolute top-56 right-0 flex w-80 flex-col gap-2.5 rounded-2xl border border-input bg-card px-4 pt-4 pb-4.5 lg:top-54 lg:right-auto lg:left-38 lg:w-105 lg:px-6 lg:pt-4.5 lg:pb-6">
+    <article className="relative -mt-3 ml-auto flex w-80 max-w-full flex-col gap-2.5 rounded-2xl border border-input bg-card px-4 pt-4 pb-4.5 lg:-mt-11 lg:ml-38 lg:w-105 lg:px-6 lg:pt-4.5 lg:pb-6">
       <span className="inline-flex items-center gap-2 font-semibold text-sm">
         <TopicIcon {...topicLook(task.topic)} size="sm" />
         {topicName(task.topic, locale)}
