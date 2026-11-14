@@ -28,7 +28,7 @@ export async function FacultyIntro({ faculty: id }: { faculty: string }) {
 
   return (
     <div>
-      <PageTitle>{t("title", { short })}</PageTitle>
+      <PageTitle size="lg">{t("title", { short })}</PageTitle>
       <p className="mt-1.5">
         {t("lead", {
           name: faculty.name,
