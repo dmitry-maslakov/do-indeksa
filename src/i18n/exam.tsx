@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { createNavigation } from "next-intl/navigation";
 import { type ComponentProps, createContext, type ReactNode, use } from "react";
 import { routing } from "./routing";
@@ -48,12 +49,15 @@ export function useExamPath() {
 export function Link({
   exam,
   href,
+  locale,
   ...props
 }: ComponentProps<typeof intl.Link> & { exam?: string | null }) {
   const current = useExamBase();
+  const here = useLocale();
   return (
     <intl.Link
       href={examHref(exam === undefined ? current : exam, href)}
+      locale={locale === here ? undefined : locale}
       {...props}
     />
   );

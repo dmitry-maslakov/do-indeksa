@@ -3,6 +3,7 @@ import { allExams, allTests, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
+import { hourMs, minuteMs } from "@/lib/dates";
 import { facultyOf } from "./faculties";
 
 const buildExam = ({
@@ -28,6 +29,7 @@ const buildExam = ({
 };
 
 const ordered = sortBy(allExams, ["order"]);
+const records = new Map(ordered.map((e) => [e.id, e]));
 const exams = new Map(ordered.map((e) => [e.id, buildExam(e)]));
 const openExams = ordered.filter((e) => e.open);
 
@@ -93,17 +95,20 @@ export const facultyExams = (faculty: string) =>
   ordered.filter((e) => e.faculty === faculty);
 
 export function examRecord(id: string) {
-  const exam = ordered.find((e) => e.id === id);
+  const exam = records.get(id);
   if (!exam) throw new Error(`exam ${id} is missing`);
   return exam;
 }
 
-export function examName(id: string, locale: Locale) {
-  const { name, label } = examRecord(id);
-  return (
-    (label as Partial<Record<Locale, string>> | undefined)?.[locale] ?? name
-  );
+type Exam = (typeof allExams)[number];
+
+export function examLabel({ name, label }: Exam, locale: Locale) {
+  const labels: Partial<Record<Locale, string>> = label ?? {};
+  return labels[locale] ?? name;
 }
+
+export const examHours = ({ minutes }: Pick<Exam, "minutes">) =>
+  ((minutes ?? 0) * minuteMs) / hourMs;
 
 export const aboutPaths = openExams.filter((e) => e.about).map((e) => e.path);
 
@@ -125,5 +130,5 @@ export const examOptions = openExams.map((e) => ({
   faculty: facultyOf(e.faculty).short,
   title: e.title,
   tasks: e.positions.length,
-  hours: (e.minutes ?? 0) / 60,
+  hours: examHours(e),
 }));

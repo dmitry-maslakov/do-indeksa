@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import { maxPlaces } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { setId } from "./variant-id";
-import { getVariant, isVariant, officialVariants, slotsOf } from "./variants";
+import {
+  getVariant,
+  isVariant,
+  officialVariants,
+  officialYears,
+  slotsOf,
+} from "./variants";
 
 const exam = "ftn-p1";
 
@@ -90,5 +96,16 @@ describe("slotsOf", () => {
     expect(
       slotsOf(exam, ["missing", "log-001"]).map((t) => [t.taskId, t.number]),
     ).toEqual([["log-001", 1]]);
+  });
+});
+
+describe("officialYears", () => {
+  it("spans the official papers of an exam and nothing for an exam without", () => {
+    const years = officialVariants.flatMap((v) => v.year ?? []);
+    expect(officialYears(exam)).toEqual({
+      first: Math.min(...years),
+      last: Math.max(...years),
+    });
+    expect(officialYears("ftn-p3")).toBeUndefined();
   });
 });

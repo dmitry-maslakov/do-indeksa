@@ -1,7 +1,8 @@
+import { cn } from "cn";
 import { getTranslations } from "next-intl/server";
 import { ExternalLink } from "@/components/external-link";
 import { currentAdmission } from "@/features/admission/admissions";
-import { examRecord } from "@/features/catalog/exams";
+import { examHours, examRecord } from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import { differentLayout } from "@/features/variants/exam-layout";
 import { examPapers } from "@/features/variants/variants";
@@ -12,7 +13,9 @@ import {
   AboutSection,
   actionClass,
   listClass,
+  nowrap,
   quietLink,
+  type Years,
 } from "./about-section";
 
 type Paper = ReturnType<typeof examPapers>[number];
@@ -50,7 +53,13 @@ async function PaperCaption({
   );
 }
 
-export async function ArchiveSection({ examId }: { examId: string }) {
+export async function ArchiveSection({
+  examId,
+  years,
+}: {
+  examId: string;
+  years: Years;
+}) {
   const [t, factsT, facts] = await Promise.all([
     getTranslations("ExamAbout"),
     getTranslations("Facts"),
@@ -60,7 +69,6 @@ export async function ArchiveSection({ examId }: { examId: string }) {
   const { short } = facultyOf(exam.faculty);
   const papers = examPapers(examId);
   const places = exam.positions.map((p) => p.topic);
-  const years = papers.map((p) => p.year);
   const admission = currentAdmission(exam.faculty);
   const [sitting] = admission.schedule?.exams[examId] ?? [];
   const papersLink = exam.about?.papers;
@@ -71,11 +79,11 @@ export async function ArchiveSection({ examId }: { examId: string }) {
       title={t("archiveTitle")}
       caption={t.rich("archiveCaption", {
         tasks: exam.positions.length,
-        from: String(Math.max(...years)),
-        to: String(Math.min(...years)),
-        hours: (exam.minutes ?? 0) / 60,
+        from: String(years.last),
+        to: String(years.first),
+        hours: examHours(exam),
         short,
-        nowrap: (chunks) => <span className="whitespace-nowrap">{chunks}</span>,
+        nowrap,
       })}
     >
       <ul className={listClass}>
@@ -95,9 +103,7 @@ export async function ArchiveSection({ examId }: { examId: string }) {
                 <span className="whitespace-nowrap font-medium tabular-nums">
                   {t("yearName", { year })}
                 </span>
-                <span
-                  className={`${actionClass} underline-offset-3 group-hover:underline`}
-                >
+                <span className={cn(actionClass, "group-hover:underline")}>
                   {t("solutions")}
                 </span>
               </Link>
@@ -137,7 +143,9 @@ export async function ArchiveSection({ examId }: { examId: string }) {
             to: sitting.to ? facts.clock(sitting.to) : "",
             closed: sitting.to ? "yes" : "no",
             schoolYear: facts.schoolYear(admission.year),
-            missing: years.includes(admission.year) ? "no" : "yes",
+            missing: papers.some((p) => p.year === admission.year)
+              ? "no"
+              : "yes",
           })}`}
         {exam.about?.checked &&
           ` ${factsT("checkedOn", { date: facts.date(exam.about.checked) })}`}

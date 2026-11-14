@@ -1,4 +1,7 @@
 import type { ReactNode } from "react";
+import type { officialYears } from "@/features/variants/variants";
+
+export type Years = NonNullable<ReturnType<typeof officialYears>>;
 
 interface AboutSectionProps {
   id: string;
@@ -41,3 +44,7 @@ export const actionClass =
 
 export const quietLink =
   "underline decoration-1 underline-offset-2 hover:text-foreground";
+
+export const nowrap = (chunks: ReactNode) => (
+  <span className="whitespace-nowrap">{chunks}</span>
+);
