@@ -5,7 +5,6 @@ import { examChoice, examLabel, openFaculties } from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import { officialYears } from "@/features/variants/variants";
 import { Link } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
 import { intentOf } from "@/lib/analytics-browser";
 
 type Exam = (typeof examChoice)[number];
@@ -67,7 +66,6 @@ export function ExamChoice() {
         <Link
           exam={null}
           href={`/${faculty.id}`}
-          locale={routing.defaultLocale}
           data-intent={intentOf({ via: "landing_programs" })}
           className="mt-4 font-medium text-[15px] text-data md:mt-5 md:text-base"
         >
