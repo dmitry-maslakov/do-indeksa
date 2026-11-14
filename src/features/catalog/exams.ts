@@ -1,11 +1,7 @@
 import "server-only";
-import {
-  allExams,
-  allFaculties,
-  allTests,
-  allTopics,
-} from "content-collections";
+import { allExams, allTests, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
+import { getFaculty } from "./faculties";
 
 const buildExam = ({ id, positions }: (typeof allExams)[number]) => {
   const byTopic = new Map(positions.map((p) => [p.topic, p]));
@@ -33,25 +29,17 @@ export function examOf(id = firstOpen) {
 
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
-const faculties = new Map(allFaculties.map((f) => [f.id, f]));
-
-function facultyOf(id: string) {
-  const faculty = faculties.get(id);
-  if (!faculty) throw new Error(`faculty ${id} is missing`);
-  return faculty;
-}
-
 const tests = new Map(allTests.map((t) => [t.id, t]));
 
 export function testFaculty(id: string) {
   const test = tests.get(id);
   if (!test) throw new Error(`test ${id} is missing`);
-  return facultyOf(test.faculty).short;
+  return getFaculty(test.faculty).short;
 }
 
 export const examOptions = openExams.map((e) => ({
   id: e.id,
-  faculty: facultyOf(e.faculty).short,
+  faculty: getFaculty(e.faculty).short,
   title: e.title,
   tasks: e.positions.length,
   hours: (e.minutes ?? 0) / 60,
