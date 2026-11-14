@@ -125,13 +125,17 @@ export function testFaculty(id: string) {
   return facultyOf(test.faculty).short;
 }
 
-export const examGroups = faculties
-  .map((faculty) => ({
-    ...pick(faculty, ["id", "short", "city"]),
-    exams: openExams
-      .filter((e) => e.faculty === faculty.id)
-      .map((e) => pick(e, ["id", "path", "title", "name", "label", "tone"])),
-  }))
-  .filter((group) => group.exams.length > 0);
+export const examGroups = (locale: Locale) =>
+  faculties
+    .map((faculty) => ({
+      ...pick(faculty, ["id", "short", "city"]),
+      exams: openExams
+        .filter((e) => e.faculty === faculty.id)
+        .map((e) => ({
+          ...pick(e, ["id", "path", "title", "tone"]),
+          name: examLabel(e, locale),
+        })),
+    }))
+    .filter((group) => group.exams.length > 0);
 
-export type ExamGroup = (typeof examGroups)[number];
+export type ExamGroup = ReturnType<typeof examGroups>[number];

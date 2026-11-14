@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { useLocale } from "next-intl";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { UserMenu } from "@/features/account/user-menu";
@@ -13,6 +14,7 @@ interface TopNavProps {
 }
 
 export function TopNav({ exam, languages, className }: TopNavProps) {
+  const locale = useLocale();
   return (
     <header
       className={cn(
@@ -23,7 +25,7 @@ export function TopNav({ exam, languages, className }: TopNavProps) {
       <Logo />
       {exam && (
         <>
-          <ExamSwitcher groups={examGroups} current={exam} />
+          <ExamSwitcher groups={examGroups(locale)} current={exam} />
           <NavLinks />
         </>
       )}
