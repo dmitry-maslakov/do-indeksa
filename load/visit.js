@@ -2,6 +2,8 @@ import { check, group, sleep } from "k6";
 import http from "k6/http";
 
 const base = __ENV.BASE_URL || "http://localhost:3000";
+const exam = __ENV.EXAM || "/ftn/p1";
+const inExam = (path) => `${base}${exam}${path === "/" ? "" : path}`;
 const users = Number(__ENV.USERS || 20);
 
 const budget = ["p(95)<300", "p(99)<500"];
@@ -47,26 +49,25 @@ const links = (html, pattern) => [
 ];
 
 export function setup() {
-  const crawl = (path, pattern) => {
+  const crawl = (path) => {
     const found = links(
-      http.get(`${base}${path}`, params("setup")).body,
-      pattern,
+      http.get(inExam(path), params("setup")).body,
+      new RegExp(`href="${exam}(${path}/[a-z0-9-]+)"`, "g"),
     );
-    if (!found.length)
-      throw new Error(`no links matching ${pattern} on ${path}`);
+    if (!found.length) throw new Error(`no links under ${path}`);
     return found;
   };
   return {
-    topics: crawl("/theory", /href="(\/theory\/[a-z0-9-]+)"/g),
-    tasks: crawl("/bank", /href="(\/bank\/[a-z0-9-]+)"/g),
-    variants: crawl("/variants", /href="(\/variants\/[a-z0-9-]+)"/g),
+    topics: crawl("/theory"),
+    tasks: crawl("/bank"),
+    variants: crawl("/variants"),
   };
 }
 
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
 function visit(page, path) {
-  const response = http.get(`${base}${path}`, params(page));
+  const response = http.get(inExam(path), params(page));
   check(response, { [`${page} is 200`]: (r) => r.status === 200 });
   sleep(1 + Math.random() * 2);
 }
