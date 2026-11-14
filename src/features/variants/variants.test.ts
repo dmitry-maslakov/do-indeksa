@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { maxPlaces } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { setId } from "./variant-id";
-import { getVariant, officialVariants, slotsOf } from "./variants";
+import { getVariant, isVariant, officialVariants, slotsOf } from "./variants";
 
 const exam = "ftn-p1";
 
@@ -29,6 +29,16 @@ describe("getVariant", () => {
 
   it("ignores unknown ids", () => {
     expect(getVariant(exam, "nope")).toBeUndefined();
+  });
+});
+
+describe("isVariant", () => {
+  it("knows bank variants and custom sets up to the exam size", () => {
+    const ids = tasks.slice(0, maxPlaces + 1).map((t) => t.id);
+    expect(isVariant(officialVariants[0]?.id ?? "")).toBe(true);
+    expect(isVariant("set-log-001.kb-003")).toBe(true);
+    expect(isVariant(setId(ids))).toBe(false);
+    expect(isVariant("nope")).toBe(false);
   });
 });
 

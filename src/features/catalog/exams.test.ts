@@ -1,9 +1,41 @@
-import { describe, expect, it } from "vitest";
+import type { allExams } from "content-collections";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { examOf, firstOpenExam, maxPlaces } from "./exams";
 
+type Exam = (typeof allExams)[number];
+
+async function withExams(edit: (exam: Exam) => Exam[]) {
+  vi.resetModules();
+  vi.doMock("content-collections", async (importOriginal) => {
+    const content =
+      await importOriginal<typeof import("content-collections")>();
+    const [exam] = content.allExams;
+    return { ...content, allExams: exam ? edit(exam) : [] };
+  });
+  return import("./exams");
+}
+
 describe("firstOpenExam", () => {
+  afterEach(() => {
+    vi.doUnmock("content-collections");
+  });
+
   it("gives the first open exam", () => {
     expect(firstOpenExam()).toBe("ftn-p1");
+  });
+
+  it("skips closed exams and takes the lowest order", async () => {
+    const exams = await withExams((exam) => [
+      { ...exam, id: "late", open: true, order: 3 },
+      { ...exam, id: "closed", open: false, order: 0 },
+      { ...exam, id: "early", open: true, order: 2 },
+    ]);
+    expect(exams.firstOpenExam()).toBe("early");
+  });
+
+  it("fails when no exam is open", async () => {
+    const exams = await withExams((exam) => [{ ...exam, open: false }]);
+    expect(() => exams.firstOpenExam()).toThrow("no exam is open");
   });
 });
 
