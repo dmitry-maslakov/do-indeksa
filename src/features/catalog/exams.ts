@@ -2,7 +2,7 @@ import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
 import { z } from "zod";
-import { getFaculty } from "./faculties";
+import { facultyOf } from "./faculties";
 
 const buildExam = ({
   id,
@@ -82,17 +82,14 @@ export function firstOpenExam() {
   return exam.id;
 }
 
-function facultyOf(id: string) {
-  const faculty = getFaculty(id);
-  if (!faculty) throw new Error(`faculty ${id} is missing`);
-  return faculty;
-}
-
 export function canonicalHref(topic: string, href: string) {
   const exam = openExams.find((e) => examOf(e.id).topics.includes(topic));
   if (!exam) throw new Error(`no open exam has ${topic}`);
   return inExam(exam.id, href);
 }
+
+export const facultyExams = (faculty: string) =>
+  ordered.filter((e) => e.faculty === faculty);
 
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 

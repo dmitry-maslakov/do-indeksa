@@ -424,5 +424,20 @@
   },
   "Time": {
     "duration": "{hours, plural, =0 {} other {# h }}{minutes, number} min"
+  },
+  "Facts": {
+    "month": "{month, plural, =1 {January} =2 {February} =3 {March} =4 {April} =5 {May} =6 {June} =7 {July} =8 {August} =9 {September} =10 {October} =11 {November} =12 {December} other {}}",
+    "date": "{month} {day}, {year}",
+    "day": "{month} {day}",
+    "dayNumber": "{day}",
+    "daysInMonth": "{month} {days}",
+    "spanInMonth": "from {month} {from} to {to}",
+    "span": "from {from} to {to}",
+    "word": "{n, plural, =1 {one} =2 {two} =3 {three} =4 {four} =5 {five} =6 {six} other {#}}",
+    "unpublished": "{short} has not published it",
+    "sourceLine": "{count, plural, one {Source} other {Sources}}: <list></list>.",
+    "konkurs": "{short} admission call for {year}",
+    "section": ", section {section}",
+    "checkedOn": "Checked on {date}"
   }
 }

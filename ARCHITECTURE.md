@@ -54,7 +54,7 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 - `tests` runs a variant as a test, grades it and shows the review.
 - `theory` renders theory pages.
 - `account` is Google sign-in, the prompts that ask a guest to save their progress, and merging a guest into an account.
-- `admission` checks programme and admission records against each other.
+- `admission` reads study programmes and admission years (places, tuition, cutoffs, scoring, wishes and the sources they come from) and checks programme and admission records against each other.
 
 `catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`, `admission` on `catalog`. Biome rejects an import that goes the other way.
 

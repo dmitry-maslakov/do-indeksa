@@ -87,6 +87,18 @@
     }
   }
 
+  --animate-target: target 1.5s ease-in forwards;
+
+  @keyframes target {
+    0%,
+    40% {
+      background-color: var(--data-tint);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
   --animate-sync: sync 3.6s ease-in-out 1s infinite both;
 
   @keyframes sync {

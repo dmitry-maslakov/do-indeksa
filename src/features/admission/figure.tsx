@@ -1,0 +1,22 @@
+import { getTranslations } from "next-intl/server";
+import { getFacts } from "@/i18n/facts";
+
+interface FigureProps {
+  value: number | null | undefined;
+  kind: "count" | "score" | "money";
+  short: string;
+}
+
+export async function Figure({ value, kind, short }: FigureProps) {
+  if (value !== null && value !== undefined) {
+    const facts = await getFacts();
+    return facts[kind](value);
+  }
+  const t = await getTranslations("Facts");
+  return (
+    <>
+      <span aria-hidden="true">—</span>
+      <span className="sr-only">{t("unpublished", { short })}</span>
+    </>
+  );
+}
