@@ -42,7 +42,10 @@ const visitor = (...args: Parameters<typeof requestOf>) => {
   return visitorOf(request.headers, request.cookies);
 };
 
-const pageView = { name: "page_view", props: { path: "/ru/bank/eks-001" } };
+const pageView = {
+  name: "page_view",
+  props: { path: "/ru/ftn/p1/bank/eks-001" },
+};
 
 describe("visitorOf", () => {
   it("reads the aid, country and device", () => {
@@ -84,7 +87,7 @@ describe("rowOf", () => {
   const at = Date.parse("2026-10-30T10:00:00.000Z");
   const page = {
     url: new URL(
-      "https://doindeksa.rs/ru/bank/eks-001?utm_source=ig&utm_campaign=jun",
+      "https://doindeksa.rs/ru/ftn/p1/bank/eks-001?utm_source=ig&utm_campaign=jun",
     ),
     referrer: new URL("https://www.google.com"),
   };
