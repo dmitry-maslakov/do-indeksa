@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { at, inExam } from "./fixtures";
+import { at } from "./fixtures";
 
 test("healthz answers without a redirect", async ({ request }) => {
   const res = await request.get("/api/healthz", { maxRedirects: 0 });
@@ -17,7 +17,7 @@ test("serves pages with nothing personal whole from the cache", async ({
     "/ru/theory/exponential-equations",
     "/theory/exponential-equations/methods",
   ]) {
-    const headers = (await request.get(inExam(path))).headers();
+    const headers = (await request.get(at(path))).headers();
     expect(headers["x-nextjs-postponed"], path).toBeUndefined();
     expect(headers["cache-control"], path).toContain("s-maxage");
   }
@@ -90,7 +90,7 @@ const screens = [
 
 for (const [path, text, title] of screens) {
   test(`renders ${path}`, async ({ page }) => {
-    const res = await page.goto(inExam(path));
+    const res = await page.goto(at(path));
     expect(res?.status()).toBe(200);
     await expect(page.getByText(text).first()).toBeVisible();
     await expect(page).toHaveTitle(title);
@@ -141,9 +141,7 @@ test("keeps other locales of Serbian content out of search", async ({
     "/ru/theory/exponential-equations/methods",
     "/en/variants/ftn-p1-2025/solutions",
   ]) {
-    expect(await (await request.get(inExam(path))).text(), path).toContain(
-      noindex,
-    );
+    expect(await (await request.get(at(path))).text(), path).toContain(noindex);
   }
   for (const path of [
     "/bank/eks-001",
@@ -151,7 +149,7 @@ test("keeps other locales of Serbian content out of search", async ({
     "/variants/ftn-p1-2025/solutions",
     "/ru/bank",
   ]) {
-    expect(await (await request.get(inExam(path))).text(), path).not.toContain(
+    expect(await (await request.get(at(path))).text(), path).not.toContain(
       noindex,
     );
   }

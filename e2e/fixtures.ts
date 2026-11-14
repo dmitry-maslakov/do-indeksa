@@ -10,14 +10,13 @@ const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
 const exam = "/ftn/p1";
 
-export const at = (path: string) => (path === "/" ? exam : `${exam}${path}`);
-
 const outside = /^\/(privacy|terms)(\/|$)/;
 
-export function inExam(path: string) {
+export function at(path: string) {
   const [, locale = "", rest = "/"] =
     /^(\/(?:ru|en))?(\/.*)?$/.exec(path) ?? [];
-  return outside.test(rest) ? path : `${locale}${at(rest)}`;
+  if (outside.test(rest)) return path;
+  return `${locale}${rest === "/" ? exam : `${exam}${rest}`}`;
 }
 
 export interface Row {
