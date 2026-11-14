@@ -121,3 +121,28 @@ test("signing in to an account with history merges both", async ({
   await expect(solvedTask(page, "eks-001").first()).toBeVisible();
   await expect(solvedTask(page, "fun-002").first()).toBeVisible();
 });
+
+test("the account menu leaves the exam only for the privacy page", async ({
+  page,
+  auth,
+}) => {
+  await auth.signIn();
+  await page.goto(at("/ru/bank"));
+  await page.getByRole("button", { name: "Аккаунт" }).click();
+  await expect(
+    page.getByRole("menuitem", { name: "Статистика" }),
+  ).toHaveAttribute("href", "/ru/ftn/p1/stats");
+  await expect(
+    page.getByRole("menuitem", { name: "Конфиденциальность" }),
+  ).toHaveAttribute("href", "/ru/privacy");
+});
+
+test("signing in returns to the same address", async ({ page }) => {
+  await page.route("**/api/auth/sign-in/social", (route) => route.abort());
+  await page.goto(at("/ru/bank/eks-001"));
+  const signInRequest = page.waitForRequest("**/api/auth/sign-in/social");
+  await page.getByRole("banner").getByRole("button", { name: "Войти" }).click();
+  expect((await signInRequest).postDataJSON().callbackURL).toBe(
+    "/ru/ftn/p1/bank/eks-001",
+  );
+});

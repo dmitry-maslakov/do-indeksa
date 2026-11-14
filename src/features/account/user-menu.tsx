@@ -71,7 +71,7 @@ export function UserMenu() {
           <ChartNoAxesColumnIcon />
           {t("stats")}
         </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/privacy" />}>
+        <DropdownMenuItem render={<Link href="/privacy" exam={null} />}>
           <ShieldIcon />
           {t("privacy")}
         </DropdownMenuItem>
