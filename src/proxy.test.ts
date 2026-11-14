@@ -1,7 +1,16 @@
 import { unstable_doesMiddlewareMatch } from "next/experimental/testing/server";
 import { NextRequest } from "next/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import proxy, { config } from "./proxy";
+
+vi.mock("@/features/catalog/exams", async (original) => {
+  const exams = await original<typeof import("@/features/catalog/exams")>();
+  return {
+    ...exams,
+    openExamPath: (id: string) =>
+      id === "ftn-p3" ? "/ftn/p3" : exams.openExamPath(id),
+  };
+});
 
 const rewrite = async (path: string) => {
   const response = await proxy(
@@ -119,7 +128,9 @@ describe("proxy", () => {
   it.each([
     ["__Host-exam=ftn-p1", "/", "/ftn/p1"],
     ["__Host-exam=ftn-p1", "/ru", "/ru/ftn/p1"],
-    ["__Host-exam=ftn-p3", "/", "/ftn/p1"],
+    ["__Host-exam=ftn-p3", "/", "/ftn/p3"],
+    ["__Host-exam=ftn-p3", "/ru", "/ru/ftn/p3"],
+    ["__Host-exam=ftn-p9", "/", "/ftn/p1"],
     ["__Host-profile=token", "/", "/ftn/p1"],
     ["better-auth.session_token=token", "/en", "/en/ftn/p1"],
   ])(
