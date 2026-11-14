@@ -85,13 +85,16 @@ export function watchReading(
     );
   };
   const onVisibility = () => {
-    if (document.visibilityState === "hidden") send("hidden");
-    else {
+    if (document.visibilityState === "hidden") {
+      measure();
+      send("hidden");
+    } else {
       since = visibleNow();
       activeAt = since;
     }
   };
   const onPageHide = () => {
+    measure();
     send("pagehide");
     flush();
   };
