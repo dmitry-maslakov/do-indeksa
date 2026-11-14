@@ -135,6 +135,6 @@ for (const [from, to] of [
 ] as const)
   test(`redirects ${from} to the faculty`, async ({ request }) => {
     const res = await request.get(from, { maxRedirects: 0 });
-    expect(res.status()).toBe(307);
+    expect(res.status()).toBe(301);
     expect(res.headers().location).toBe(to);
   });

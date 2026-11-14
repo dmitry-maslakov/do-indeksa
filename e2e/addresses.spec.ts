@@ -1,57 +1,38 @@
 import type { Page } from "@playwright/test";
 import { allTasks, allTopics } from "content-collections";
-import { legacyPages } from "../src/lib/legacy-addresses";
 import { expect, test } from "./fixtures";
 
-const statusOf = (source: string) =>
-  legacyPages.find((page) => page.source === source)?.statusCode ?? 301;
-
-const moves: [source: string, from: string, to: string, then?: number][] = [
+const moves: [from: string, to: string, then?: number][] = [
+  ["/bank?topic=logarithms", "/ftn/p1/bank/topic/logarithms?topic=logarithms"],
+  ["/bank", "/ftn/p1/bank"],
+  ["/bank/eks-001", "/ftn/p1/bank/eks-001"],
+  ["/bank/topic/logarithms", "/ftn/p1/bank/topic/logarithms"],
+  ["/bank/start/logarithms", "/ftn/p1/bank/start/logarithms", 307],
+  ["/variants", "/ftn/p1/variants"],
+  ["/variants/ftn-p1-2025/solutions", "/ftn/p1/variants/ftn-p1-2025/solutions"],
+  ["/theory", "/ftn/p1/theory"],
   [
-    "/bank",
-    "/bank?topic=logarithms",
-    "/ftn/p1/bank/topic/logarithms?topic=logarithms",
-  ],
-  ["/bank/:path*", "/bank", "/ftn/p1/bank"],
-  ["/bank/:path*", "/bank/eks-001", "/ftn/p1/bank/eks-001"],
-  ["/bank/:path*", "/bank/topic/logarithms", "/ftn/p1/bank/topic/logarithms"],
-  [
-    "/bank/:path*",
-    "/bank/start/logarithms",
-    "/ftn/p1/bank/start/logarithms",
-    307,
-  ],
-  ["/variants/:path*", "/variants", "/ftn/p1/variants"],
-  [
-    "/variants/:path*",
-    "/variants/ftn-p1-2025/solutions",
-    "/ftn/p1/variants/ftn-p1-2025/solutions",
-  ],
-  ["/theory/:path*", "/theory", "/ftn/p1/theory"],
-  [
-    "/theory/:path*",
     "/theory/exponential-equations/methods",
     "/ftn/p1/theory/exponential-equations/methods",
   ],
-  ["/stats", "/stats", "/ftn/p1/stats"],
-  ["/review/:path*", "/review", "/ftn/p1/review"],
-  ["/v/:code", "/v/NEMA?utm_source=x", "/ftn/p1/v/NEMA?utm_source=x"],
-  ["/tasks/:topic/:id", "/tasks/x/log-002", "/ftn/p1/bank/log-002"],
+  ["/stats", "/ftn/p1/stats"],
+  ["/review", "/ftn/p1/review"],
+  ["/v/NEMA?utm_source=x", "/ftn/p1/v/NEMA?utm_source=x"],
+  ["/tasks/x/log-002", "/ftn/p1/bank/log-002"],
   [
-    "/tasks",
     "/tasks?topic=stereometrija",
     "/ftn/p1/bank/topic/solid-geometry?topic=stereometrija",
   ],
-  ["/(tasks|training)/:path*", "/tasks", "/ftn/p1/bank"],
-  ["/(tasks|training)/:path*", "/training/new", "/ftn/p1/bank"],
-  ["/exams/:exam(ftn-p1)", "/exams/ftn-p1", "/ftn/p1/about"],
-  ["/(diagnostic|simulation)/:path*", "/simulation/new", "/ftn/p1/variants"],
-  ["/history/:path*", "/history", "/ftn/p1/variants?tab=history"],
-  ["/cabinet", "/cabinet", "/ftn/p1/stats"],
-  ["/prep", "/prep", "/ftn/p1"],
+  ["/tasks", "/ftn/p1/bank"],
+  ["/training/new", "/ftn/p1/bank"],
+  ["/exams/ftn-p1", "/ftn/p1/about"],
+  ["/simulation/new", "/ftn/p1/variants"],
+  ["/history", "/ftn/p1/variants?tab=history"],
+  ["/cabinet", "/ftn/p1/stats"],
+  ["/prep", "/ftn/p1"],
 ];
 
-for (const [source, from, to, then = 200] of moves) {
+for (const [from, to, then = 200] of moves) {
   for (const [prefix, target] of [
     ["", ""],
     ["/sr-Latn", ""],
@@ -59,7 +40,7 @@ for (const [source, from, to, then = 200] of moves) {
   ]) {
     test(`moves ${prefix}${from} in one hop`, async ({ request }) => {
       const res = await request.get(`${prefix}${from}`, { maxRedirects: 0 });
-      expect(res.status()).toBe(statusOf(source));
+      expect(res.status()).toBe(301);
       expect(res.headers().location).toBe(`${target}${to}`);
       const next = await request.get(`${target}${to}`, { maxRedirects: 0 });
       expect(next.status()).toBe(then);
@@ -74,7 +55,7 @@ for (const [from, to] of [
 ] as const) {
   test(`moves ${from} to the landing in one hop`, async ({ request }) => {
     const res = await request.get(from, { maxRedirects: 0 });
-    expect(res.status()).toBe(statusOf("/launch"));
+    expect(res.status()).toBe(301);
     expect(res.headers().location).toBe(to);
     const next = await request.get(to, { maxRedirects: 0 });
     expect(next.status()).toBe(200);
