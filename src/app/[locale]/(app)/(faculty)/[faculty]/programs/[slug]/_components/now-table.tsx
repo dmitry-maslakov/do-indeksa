@@ -9,6 +9,7 @@ import { Figure } from "@/features/admission/figure";
 import type { Program } from "@/features/admission/programs";
 import { facultyOf } from "@/features/catalog/faculties";
 import { getFacts } from "@/i18n/facts";
+import { Link } from "@/i18n/navigation";
 
 const head =
   "pb-2 text-right align-bottom font-medium text-muted-foreground text-xs";
@@ -124,13 +125,13 @@ export async function NowTable({
           {note.join(" ")}
         </p>
       )}
-      <a
+      <Link
         href="#upis"
         className="mt-1 flex min-h-11 items-center justify-between gap-2 font-medium text-[15px] text-data underline-offset-4 hover:[&>span]:underline"
       >
         <span>{t("admissionTitle", { results: results ? "yes" : "no" })}</span>
         <ArrowDownIcon aria-hidden className="size-4 shrink-0" />
-      </a>
+      </Link>
     </div>
   );
 }

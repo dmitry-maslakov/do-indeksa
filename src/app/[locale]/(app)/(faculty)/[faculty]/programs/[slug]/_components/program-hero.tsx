@@ -84,7 +84,7 @@ export async function ProgramHero({
             ),
           })}
         </p>
-        <PageTitle className="mt-1">
+        <PageTitle size="lg" className="mt-1">
           {program.name}
           {program.short && ` (${program.short})`}
         </PageTitle>
