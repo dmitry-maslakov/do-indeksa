@@ -52,7 +52,7 @@ export function ReviewSummary({
             <span aria-hidden="true">·</span>
             <ExternalLink
               href={original}
-              className="inline-flex items-center underline underline-offset-3 hover:text-foreground"
+              className="underline underline-offset-3 hover:text-foreground"
             >
               {variants("original")}
             </ExternalLink>
