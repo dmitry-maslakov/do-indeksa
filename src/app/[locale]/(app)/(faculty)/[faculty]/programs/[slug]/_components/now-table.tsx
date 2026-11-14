@@ -101,7 +101,7 @@ export async function NowTable({
               {t("free")}
             </td>
             <td className={figure}>
-              <Figure value={row?.tuition} kind="money" short={short} />
+              <Figure value={row?.tuition} kind="count" short={short} />
             </td>
           </tr>
           {cutoff && (

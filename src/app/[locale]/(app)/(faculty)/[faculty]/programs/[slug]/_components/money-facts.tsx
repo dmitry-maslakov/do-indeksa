@@ -87,8 +87,8 @@ export async function MoneyFacts({
   const placesText = sentence(places, placesValue, placesValue);
   const tuitionText = sentence(
     tuition,
-    (v) => t("tuitionValue", { amount: facts.money(v) }),
-    facts.money,
+    (v) => t("tuitionValue", { amount: facts.count(v) }),
+    facts.count,
   );
   const cycles = history
     .filter((y) => y.budget !== undefined || y.tuition !== undefined)
