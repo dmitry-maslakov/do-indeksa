@@ -67,7 +67,7 @@ export async function AboutHead({ examId }: { examId: string }) {
       </nav>
       <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-20">
         <div>
-          <PageTitle className="mt-2">
+          <PageTitle size="lg" className="mt-2">
             {t("title", {
               exam: exam.title,
               short: faculty.short,
