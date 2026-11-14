@@ -4,6 +4,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import type { CSSProperties } from "react";
 import { MathHtml } from "@/components/math-html";
 import type { Program } from "@/features/admission/programs";
+import { Link } from "@/i18n/navigation";
 import { renderMarkdown } from "@/lib/markdown";
 
 const year =
@@ -44,12 +45,12 @@ export async function ModuleMap({ program }: { program: Program }) {
             "col-start-2 row-start-1 rounded-xl lg:-col-end-1 lg:rounded-b-none",
           )}
         >
-          <a
+          <Link
             href="#predmeti"
             className={cn(plateLink, "min-h-11 text-muted-foreground")}
           >
             {t("shared")}
-          </a>
+          </Link>
         </dd>
         <dt className={cn(year, "row-[2/span_var(--n)] mt-2 lg:row-2 lg:mt-0")}>
           {label(modulesFrom, years)}
@@ -66,12 +67,12 @@ export async function ModuleMap({ program }: { program: Program }) {
               i === modules.length - 1 && "rounded-b-xl lg:rounded-br-xl",
             )}
           >
-            <a
+            <Link
               href={`#${moduleIds[i]}`}
               className={cn(plateLink, "min-h-13 lg:min-h-16 lg:items-start")}
             >
               {module.name}
-            </a>
+            </Link>
           </dd>
         ))}
       </dl>
