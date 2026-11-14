@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test(
   "the main navigation follows the breakpoint",
@@ -27,7 +27,7 @@ test(
       await expect(link).toHaveAttribute("aria-current", "page");
     }
 
-    await page.goto("/review");
+    await page.goto(at("/review"));
     await expect(nav.getByRole("link", { name: "Testovi" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -112,7 +112,7 @@ test("the nav comes back after leaving a task on a phone", {
   tag: "@mobile",
 }, async ({ page }) => {
   const nav = page.getByRole("navigation", { name: "Glavna navigacija" });
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await page.getByRole("link", { name: "Preporučeno" }).first().click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect(nav).toBeHidden();
@@ -126,7 +126,7 @@ test("the nav comes back after leaving a task on a phone", {
 test("a theory topic keeps only the bottom bar on a phone", {
   tag: "@mobile",
 }, async ({ page }) => {
-  await page.goto("/theory/exponential-equations");
+  await page.goto(at("/theory/exponential-equations"));
   await expect(
     page.getByRole("main").getByRole("link", { name: "Teorija" }).first(),
   ).toBeVisible();

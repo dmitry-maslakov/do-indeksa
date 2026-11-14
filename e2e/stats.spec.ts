@@ -1,9 +1,9 @@
-import { answer, expect, finish, test } from "./fixtures";
+import { answer, at, expect, finish, test } from "./fixtures";
 
 test("a fresh guest sees empty statistics without the save strip", {
   tag: "@responsive",
 }, async ({ page, errors }) => {
-  await page.goto("/stats");
+  await page.goto(at("/stats"));
   await expect(
     page.getByRole("heading", { level: 1, name: "Statistika" }),
   ).toBeVisible();
@@ -22,19 +22,19 @@ test("a fresh guest sees empty statistics without the save strip", {
 test("a guest sees a finished test, today's practice and the mistakes", {
   tag: "@responsive",
 }, async ({ page, errors }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
 
-  await page.goto("/variants/set-eks-001");
+  await page.goto(at("/variants/set-eks-001"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await answer(page, "0");
   await finish(page);
   await expect(page).toHaveURL(/\/review\/[0-9a-f]{8}$/);
   const review = new URL(page.url()).pathname;
 
-  await page.goto("/stats");
+  await page.goto(at("/stats"));
 
   const tests = page.getByRole("region", { name: "Testovi" });
   await expect(tests).toContainText("0/6");

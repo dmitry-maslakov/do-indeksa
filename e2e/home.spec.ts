@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, seedAttempt, test } from "./fixtures";
+import { at, expect, seedAttempt, test } from "./fixtures";
 
 async function topicCount(page: Page) {
   const all = page
@@ -18,14 +18,14 @@ async function expectFirstVisit(page: Page) {
   await expect(page.getByText("Kreni odavde.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Počni →" })).toHaveAttribute(
     "href",
-    /^\/bank\/(?!start\/)[\w-]+$/,
+    new RegExp(`^${at("/bank/")}(?!start/)[\\w-]+$`),
   );
   await expect(
     page.getByRole("link", { name: "Počni varijantu →" }),
-  ).toHaveAttribute("href", /^\/variants\/.+/);
+  ).toHaveAttribute("href", new RegExp(`^${at("/variants/")}.+`));
   await expect(page.getByRole("link", { name: "2025" })).toHaveAttribute(
     "href",
-    "/variants/ftn-p1-2025",
+    at("/variants/ftn-p1-2025"),
   );
   await expect(page.locator("#topic-map").getByRole("listitem")).toHaveCount(
     await topicCount(page),
@@ -82,7 +82,7 @@ test("Počni opens the suggested topic", async ({ page }) => {
 });
 
 test("the home page doesn't show an unfinished test", async ({ page }) => {
-  await page.goto("/variants/set-eks-001");
+  await page.goto(at("/variants/set-eks-001"));
   await page.getByRole("timer").waitFor();
   await page.goto("/");
   await expect(page.getByText("Predlog za danas")).toBeVisible();

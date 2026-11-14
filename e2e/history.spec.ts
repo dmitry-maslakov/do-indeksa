@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test.use({ viewport: { width: 1280, height: 400 } });
 
@@ -23,7 +23,7 @@ test("the run history loads older runs while scrolling", async ({
   errors,
 }) => {
   await seedTests(auth.db, (await auth.signIn()).profileId, 25);
-  await page.goto("/variants?tab=history");
+  await page.goto(at("/variants?tab=history"));
   const rows = page.getByRole("img", { name: "0 od 0 tačno" });
   const more = page.getByRole("button", { name: "Prikaži još" });
   await expect(rows).toHaveCount(20);
@@ -39,7 +39,7 @@ test("a finished variant shows its result in the catalog", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   const first = page.locator('main li a[href^="/variants/"]').first();
   const href = (await first.getAttribute("href")) ?? "";
   const testId = randomUUID();
@@ -62,7 +62,7 @@ test("a finished weekly variant shows its score and review on both weekly cards"
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   const start = page.getByRole("link", { name: "Počni varijantu →" });
   const href = (await start.getAttribute("href")) ?? "";
   const testId = randomUUID();
@@ -79,7 +79,7 @@ test("a finished weekly variant shows its score and review on both weekly cards"
   await expect(card).toContainText("Nova varijanta za");
   await expect(card.getByRole("link", { name: "Pregled →" })).toHaveAttribute(
     "href",
-    `/review/${testId.slice(0, 8)}`,
+    at(`/review/${testId.slice(0, 8)}`),
   );
   await expect(start).toHaveCount(0);
 

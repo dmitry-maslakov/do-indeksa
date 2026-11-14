@@ -1,10 +1,10 @@
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import { secondMs } from "../src/lib/dates";
-import { answer, expect, finish, test } from "./fixtures";
+import { answer, at, expect, finish, test } from "./fixtures";
 
 async function finishSet(page: Page) {
-  await page.goto("/variants/set-eks-001");
+  await page.goto(at("/variants/set-eks-001"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await answer(page, "0");
   await finish(page);
@@ -52,7 +52,7 @@ test("a guest reviews a finished test and finds it in history", {
     page.getByText("ovo procena, a ne zvaničan rezultat", { exact: false }),
   ).toBeVisible();
   await expectAnswers(page, errors);
-  await page.goto("/variants?tab=history");
+  await page.goto(at("/variants?tab=history"));
   await expect(page.locator(`main a[href$="${review}"]`)).toBeVisible();
 });
 
@@ -106,7 +106,7 @@ test("a solution viewed in the review leaves the task open in the bank", async (
   await shownTask(page).getByRole("button", { name: "Rešenje" }).click();
   await saved;
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -149,7 +149,7 @@ test("an unfinished test continues from the server on another device", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/variants/set-eks-001");
+  await page.goto(at("/variants/set-eks-001"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   const test = page.url();
   await answer(page, "7");

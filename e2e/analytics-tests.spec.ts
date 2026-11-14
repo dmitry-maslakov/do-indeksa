@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import {
   aidOf,
   answer,
+  at,
   expect,
   finish,
   flush,
@@ -42,7 +43,7 @@ test("a composed test records its start, views, swap and finish", async ({
   context,
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   await page.getByRole("button", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   const first = page.url();
@@ -198,7 +199,7 @@ test("a composed test records its start, views, swap and finish", async ({
 test("a test records its answers, controls and where it was started", async ({
   page,
 }) => {
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   await hydrated(page);
   const exam = page
     .getByRole("main")
@@ -332,7 +333,7 @@ test("tests started from home record the year or the weekly card", async ({
 test("the solutions of an exam record their links and the starts they lead to", async ({
   page,
 }) => {
-  await page.goto("/variants/ftn-p1-2025/solutions");
+  await page.goto(at("/variants/ftn-p1-2025/solutions"));
   await hydrated(page);
   await page
     .getByRole("complementary", { name: "Zadaci" })

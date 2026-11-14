@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { BrowserContext } from "@playwright/test";
 import {
   answer,
+  at,
   expect,
   flush,
   needsRecorder,
@@ -31,7 +32,7 @@ const anonymousOnPrivacy = async (name: string) =>
 
 test("a first visit records the visit and the page", async ({ page }) => {
   const campaign = randomUUID();
-  await page.goto(`/bank?utm_source=e2e&utm_campaign=${campaign}`);
+  await page.goto(at(`/bank?utm_source=e2e&utm_campaign=${campaign}`));
   await expect
     .poll(() => visitOf(campaign))
     .toEqual(["page_view", "visit_started"]);
@@ -67,7 +68,7 @@ test("a first visit records the visit and the page", async ({ page }) => {
 });
 
 test("a missing page records error_shown", async ({ page }) => {
-  await page.goto("/bank/nema-zadatka");
+  await page.goto(at("/bank/nema-zadatka"));
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   const aid = await cookie(page.context(), "aid");
   await expect
@@ -87,7 +88,7 @@ test("a crawler is marked as a bot", async ({ browser }) => {
       "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
   });
   const campaign = randomUUID();
-  await (await context.newPage()).goto(`/theory?utm_campaign=${campaign}`);
+  await (await context.newPage()).goto(at(`/theory?utm_campaign=${campaign}`));
   await expect
     .poll(() => visitOf(campaign))
     .toEqual(["page_view", "visit_started"]);
@@ -99,7 +100,7 @@ test("a crawler is marked as a bot", async ({ browser }) => {
 test("an automated browser is a bot on browser and server events", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
@@ -129,9 +130,9 @@ test("after opting out nothing is recorded", async ({ page, browser }) => {
   const campaign = randomUUID();
   const control = await browser.newContext();
   await (await control.newPage()).goto(
-    `/bank?utm_campaign=${campaign}-control`,
+    at(`/bank?utm_campaign=${campaign}-control`),
   );
-  await page.goto(`/bank?utm_campaign=${campaign}`);
+  await page.goto(at(`/bank?utm_campaign=${campaign}`));
   await flush(page);
   await expect
     .poll(() => visitOf(`${campaign}-control`))

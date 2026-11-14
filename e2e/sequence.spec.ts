@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test.skip(
   process.env.CONTENT_DIR === "bank",
@@ -40,7 +40,7 @@ const paste = (box: Locator, text: string) =>
   }, text);
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/bank/vek-002");
+  await page.goto(at("/bank/vek-002"));
   await page.waitForFunction(() => customElements.get("math-field"));
 });
 

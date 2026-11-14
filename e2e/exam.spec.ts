@@ -1,7 +1,7 @@
-import { answer, expect, test } from "./fixtures";
+import { answer, at, expect, test } from "./fixtures";
 
 test("the test rail tracks answers and hides the time", async ({ page }) => {
-  await page.goto("/variants/ftn-p1-2025");
+  await page.goto(at("/variants/ftn-p1-2025"));
   const rail = page.getByRole("complementary", { name: "Zadaci" });
   await expect(rail.getByText("Prijemni 2025")).toBeVisible();
   await answer(page, "2");
@@ -26,7 +26,7 @@ test.describe("without scripts", () => {
   test.use({ javaScriptEnabled: false });
 
   test("the solutions of an exam are in its HTML", async ({ page }) => {
-    await page.goto("/variants/ftn-p1-2025/solutions");
+    await page.goto(at("/variants/ftn-p1-2025/solutions"));
     const solutions = page
       .locator("main section", {
         has: page.getByRole("heading", { name: "Rešenje", exact: true }),
@@ -41,7 +41,7 @@ test.describe("without scripts", () => {
 test("the catalog leads to the solutions of an exam and they lead to the test", async ({
   page,
 }) => {
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   await page
     .getByRole("listitem")
     .filter({ hasText: "2025" })
@@ -65,7 +65,7 @@ test("the catalog leads to the solutions of an exam and they lead to the test", 
 test("the phone test bar switches tasks", { tag: "@mobile" }, async ({
   page,
 }) => {
-  await page.goto("/variants/ftn-p1-2025");
+  await page.goto(at("/variants/ftn-p1-2025"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Sledeći" }).click();
   await expect(page.getByText("Zadatak 2 · 6 bodova")).toBeVisible();
@@ -85,7 +85,7 @@ test("the phone test bar switches tasks", { tag: "@mobile" }, async ({
 test("a composed test swaps an unanswered task and keeps the answers", async ({
   page,
 }) => {
-  await page.goto("/variants/set-kb-003.eks-001");
+  await page.goto(at("/variants/set-kb-003.eks-001"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   const before = page.url();
   await answer(page, "5");
