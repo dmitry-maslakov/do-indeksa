@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { fold, slugOf } from "./text";
 
 describe("fold", () => {
-  it("spells đ as dj", () => {
-    expect(fold("Đurđevdan")).toBe("djurdjevdan");
+  it("reads đ, dj and d as the same letter", () => {
+    expect(fold("između")).toBe(fold("izmedju"));
+    expect(fold("između")).toBe(fold("izmedu"));
   });
 
   it("drops diacritics and case", () => {
