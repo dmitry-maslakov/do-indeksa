@@ -1,3 +1,4 @@
+import { mapValues } from "es-toolkit";
 import type { Metadata } from "next";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { JsonLd } from "@/components/json-ld";
@@ -13,29 +14,24 @@ import { getPathname } from "@/i18n/navigation";
 import { repoUrl, siteUrl } from "@/lib/site";
 import { Landing } from "./_components/landing";
 
-function paperYears() {
-  const spans = examChoice.flatMap((e) => officialYears(e.id) ?? []);
-  if (spans.length === 0) return undefined;
-  return {
-    first: String(Math.min(...spans.map((s) => s.first))),
-    last: String(Math.max(...spans.map((s) => s.last))),
-  };
-}
-
 async function describe() {
   const [t, format] = await Promise.all([
     getTranslations("Landing"),
     getFormatter(),
   ]);
   const faculties = format.list(openFaculties.map((f) => f.short));
-  const years = paperYears();
+  const years = officialYears(...examChoice.map((e) => e.id));
   return {
     title: t("metaTitle", {
       count: String(openFaculties.length),
       faculties,
     }),
     description:
-      years && t("metaDescription", { faculties, years: t("years", years) }),
+      years &&
+      t("metaDescription", {
+        faculties,
+        years: t("years", mapValues(years, String)),
+      }),
   };
 }
 

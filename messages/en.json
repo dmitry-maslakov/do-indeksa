@@ -497,6 +497,7 @@
     "lead": "Preparation for the university entrance exam in maths: past exams with solutions, tasks by topic and practice exams against the clock.",
     "choose": "Choose your entrance exam",
     "place": "{faculty} · {city}",
+    "placeYears": "{faculty} · {city} · exams {first}–{last}",
     "years": "exams {first}–{last}",
     "start": "Start",
     "byProgram": "Not sure which exam you take? By study programme",
@@ -506,7 +507,6 @@
     "tasksTitle": "You won't run out of tasks.",
     "tasksText": "Once you've done all the past exams, practice goes on. The task bank keeps growing, and a new variant comes out every week.",
     "sample": "Example: {faculty} · {exam}",
-    "format": "{tasks, plural, one {# task} other {# tasks}} · {hours, plural, one {# hour} other {# hours}} · {points, plural, one {# point} other {# points}}",
     "note": "Do indeksa is free preparation for the maths entrance exam at {places}. It is not an official faculty website.",
     "notePlace": "{short}"
   }

@@ -22,7 +22,7 @@ import {
 } from "@/features/catalog/exams";
 import { customTaskIds } from "@/features/variants/variant-id";
 import { examCookie, profileCookie } from "@/lib/cookies";
-import { type RouteTemplate, routeOf } from "@/lib/routes";
+import { pickParam, type RouteTemplate, routeOf } from "@/lib/routes";
 import { routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
@@ -102,7 +102,7 @@ async function respond(request: NextRequest) {
   const target =
     route === "/" &&
     !exam &&
-    !request.nextUrl.searchParams.has("pick") &&
+    !request.nextUrl.searchParams.has(pickParam) &&
     returningTo(request);
   if (target) return toExam(request, locale, target);
   if (exam && !examByPath(exam)) return notFound(request, locale);

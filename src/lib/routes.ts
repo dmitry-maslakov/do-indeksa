@@ -8,6 +8,8 @@ const siteTemplates = [
   "/[faculty]/programs/[slug]",
 ] as const;
 
+export const pickParam = "pick";
+
 const examTemplates = [
   "/",
   "/about",

@@ -613,6 +613,7 @@
     "lead": "Priprema za prijemni iz matematike za upis na fakultet: stari prijemni sa rešenjima, zadaci po temama i probni prijemni sa satom.",
     "choose": "Izaberi svoj prijemni",
     "place": "{faculty} · {city}",
+    "placeYears": "{faculty} · {city} · prijemni {first}–{last}",
     "years": "prijemni {first}–{last}",
     "start": "Počni",
     "byProgram": "Ne znaš koji prijemni polažeš? Po smeru",
@@ -622,7 +623,6 @@
     "tasksTitle": "Zadataka ti neće ponestati.",
     "tasksText": "Kad prođeš sve stare prijemne, vežbanje se nastavlja. Banka zadataka stalno raste, a svake nedelje izlazi nova varijanta.",
     "sample": "Primer: {faculty} · {exam}",
-    "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · {points, plural, one {# poen} few {# poena} other {# poena}}",
     "note": "Do indeksa je besplatna priprema za prijemni ispit iz matematike na {places}. Nije zvanični sajt fakulteta.",
     "notePlace": "{name} ({short}) u {cityLocative}"
   }

@@ -30,11 +30,11 @@ export const examPapers = (examId: string) => {
     }));
 };
 
-export function officialYears(examId: string) {
-  const years = examPapers(examId).map((p) => p.year);
-  const [last] = years;
-  const first = years.at(-1);
-  return first && last ? { first, last } : undefined;
+export function officialYears(...examIds: string[]) {
+  const years = examIds.flatMap((id) => examPapers(id).map((p) => p.year));
+  const first = Math.min(...years);
+  const last = Math.max(...years);
+  return years.length && first ? { first, last } : undefined;
 }
 
 export const curatedVariants = allVariants.filter(
