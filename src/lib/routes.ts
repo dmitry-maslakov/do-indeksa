@@ -6,7 +6,6 @@ export const routeTemplates = [
   "/bank/[id]",
   "/bank/topic/[topic]",
   "/bank/topic/[topic]/[page]",
-  "/launch",
   "/privacy",
   "/review",
   "/review/[code]",

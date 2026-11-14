@@ -43,6 +43,21 @@ const legacyPages = [
   { source: "/prep", destination: "/" },
 ];
 
+const temporaryPages = [{ source: "/launch", destination: "/" }];
+
+const localized =
+  (statusCode: number) =>
+  ({ source, destination, ...match }: (typeof legacyPages)[number]) => [
+    { ...match, source, destination, statusCode },
+    { ...match, source: `/sr-Latn${source}`, destination, statusCode },
+    {
+      ...match,
+      source: `/:locale(ru|en)${source}`,
+      destination: `/:locale${destination}`.replace(/\/$/, ""),
+      statusCode,
+    },
+  ];
+
 const nextConfig: NextConfig = {
   output: "standalone",
   deploymentId: process.env.GIT_SHA,
@@ -53,16 +68,10 @@ const nextConfig: NextConfig = {
   experimental: { isrFlushToDisk: false },
   serverExternalPackages: ["@cortex-js/compute-engine"],
   async redirects() {
-    return legacyPages.flatMap(({ source, destination, ...match }) => [
-      { ...match, source, destination, statusCode: 301 },
-      { ...match, source: `/sr-Latn${source}`, destination, statusCode: 301 },
-      {
-        ...match,
-        source: `/:locale(ru|en)${source}`,
-        destination: `/:locale${destination}`.replace(/\/$/, ""),
-        statusCode: 301,
-      },
-    ]);
+    return [
+      ...legacyPages.flatMap(localized(301)),
+      ...temporaryPages.flatMap(localized(307)),
+    ];
   },
 };
 

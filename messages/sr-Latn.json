@@ -16,8 +16,6 @@
     "examTaskPlace": "FTN prijemni {year}, zadatak {position, number}",
     "task": "{place}: {subject}",
     "taskDescription": "{place}. {excerpt} Sa nagoveštajima i rešenjem.",
-    "launchTitle": "Do indeksa — priprema za prijemni iz matematike za FTN",
-    "launchDescription": "Besplatna priprema za prijemni ispit za maturante koji planiraju upis na fakultete u Srbiji. Počinjemo matematikom za FTN u Novom Sadu: pravi prijemni sa našim rešenjima, probni testovi i zadaci sa nagoveštajima.",
     "theoryTitle": "Teorija za prijemni iz matematike na FTN-u",
     "theoryDescription": "Teorija za prijemni ispit iz matematike na FTN-u po temama: šta treba znati, formule i metodi rešavanja sa primerima.",
     "theoryTopic": "{topic}: teorija",
@@ -382,11 +380,6 @@
     "rules": "Zabranjeno je ometati rad sajta, opterećivati ga automatskim zahtevima i pristupati tuđim nalozima.",
     "liability": "Sajt se pruža bez naknade, u stanju u kakvom jeste. Sadržaj može sadržati greške, a sajt može biti privremeno nedostupan. U meri u kojoj to zakon dozvoljava, Do indeksa ne odgovara za štetu nastalu korišćenjem sajta.",
     "changes": "Uslovi se mogu menjati, a važeća verzija je na ovoj stranici. Primenjuje se pravo Republike Srbije. Kontakt: <mail>{email}</mail>."
-  },
-  "Launch": {
-    "title": "Priprema za prijemni iz matematike",
-    "lead": "Besplatno, za maturante koji upisuju fakultete u Srbiji.",
-    "date": "Uskoro · novembar 2026"
   },
   "Theory": {
     "title": "Teorija",

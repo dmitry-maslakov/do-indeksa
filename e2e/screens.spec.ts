@@ -34,6 +34,18 @@ for (const [from, to] of [
   });
 }
 
+for (const [from, to] of [
+  ["/launch", "/"],
+  ["/sr-Latn/launch", "/"],
+  ["/ru/launch", "/ru"],
+] as const) {
+  test(`redirects ${from} for now`, async ({ request }) => {
+    const res = await request.get(from, { maxRedirects: 0 });
+    expect(res.status()).toBe(307);
+    expect(res.headers().location).toBe(to);
+  });
+}
+
 test("serves pages with nothing personal whole from the cache", async ({
   request,
 }) => {
@@ -84,7 +96,6 @@ test("serves robots and sitemap", async ({ request }) => {
   expect(urls).toContain("https://doindeksa.rs/bank/eks-001");
   expect(urls).not.toContain("/ru/bank/eks-001");
   expect(urls).not.toContain("<loc>https://doindeksa.rs/bank</loc>");
-  expect(sitemaps.join()).not.toContain("/launch");
 });
 
 const screens = [
@@ -113,11 +124,6 @@ const screens = [
   ["/stats", "Statistika", "Statistika · Do indeksa"],
   ["/privacy", "Šta čuvamo", "Politika privatnosti · Do indeksa"],
   ["/terms", "Do indeksa ne garantuje upis", "Uslovi korišćenja · Do indeksa"],
-  [
-    "/launch",
-    "Priprema za prijemni iz matematike",
-    "Do indeksa — priprema za prijemni iz matematike za FTN",
-  ],
 ] as const;
 
 for (const [path, text, title] of screens) {
@@ -202,32 +208,6 @@ test("keeps missing pages out of search before scripts run", async ({
   }
 });
 
-test("describes the launch page for search", async ({ page, request }) => {
-  await page.goto("/launch");
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://doindeksa.rs",
-  );
-  await expect(page.locator('link[hreflang="ru"]')).toHaveAttribute(
-    "href",
-    "https://doindeksa.rs/ru",
-  );
-  const ld = JSON.parse(
-    (await page.locator('script[type="application/ld+json"]').textContent()) ??
-      "",
-  );
-  expect(
-    ld["@graph"].map((node: { "@type": string }) => node["@type"]),
-  ).toEqual(["WebSite", "EducationalOrganization"]);
-  const image = await page
-    .locator('meta[property="og:image"]')
-    .getAttribute("content");
-  const res = await request.get(new URL(image ?? "").pathname);
-  expect(res.status()).toBe(200);
-  expect(res.headers()["content-type"]).toBe("image/png");
-});
-
 test("shares every page with the site image", async ({ page, request }) => {
   for (const [path, locale] of [
     ["/", "sr-Latn"],
@@ -257,16 +237,5 @@ test("switches the locale", async ({ page }) => {
   await expect(page).toHaveURL(/\/ru\/bank$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Банк задач",
-  );
-});
-
-test("switches the locale on the launch page", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/launch");
-  await page.getByRole("button", { name: /jezik/i }).click();
-  await page.getByRole("menuitemradio", { name: "Русский" }).click();
-  await expect(page).toHaveURL(/\/ru\/launch$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Подготовка к вступительному по математике",
   );
 });

@@ -49,16 +49,6 @@
   },
   "overrides": [
     {
-      "includes": ["src/app/**/launch/_components/field.ts"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "useHookAtTopLevel": "off"
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/lib/analytics-browser.ts"],
       "linter": {
         "rules": {
@@ -69,10 +59,7 @@
       }
     },
     {
-      "includes": [
-        "src/components/math-html.tsx",
-        "src/app/**/launch/_components/json-ld.tsx"
-      ],
+      "includes": ["src/components/math-html.tsx"],
       "linter": {
         "rules": {
           "security": {
@@ -293,26 +280,6 @@
                       "!@/features/tests/**"
                     ],
                     "message": "account imports only tests; features form a DAG."
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/features/launch/**"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": {
-              "level": "error",
-              "options": {
-                "patterns": [
-                  {
-                    "group": ["@/features/**", "!@/features/launch/**"],
-                    "message": "launch imports no other feature; features form a DAG."
                   }
                 ]
               }

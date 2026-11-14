@@ -10,9 +10,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { bankHref, pageOf } from "@/features/bank/params";
 import { maxPlaces } from "@/features/catalog/exams";
-import { launchCookie, launchGate } from "@/features/launch/launch";
 import { customTaskIds } from "@/features/variants/variant-id";
-import { daySeconds } from "@/lib/dates";
 import { type RouteTemplate, routeOf } from "@/lib/routes";
 import { routing } from "./i18n/routing";
 
@@ -50,24 +48,6 @@ function withTraceTiming(response: NextResponse) {
 }
 
 async function respond(request: NextRequest) {
-  const gate = await launchGate(
-    request.nextUrl,
-    request.cookies.get(launchCookie)?.value,
-    process.env.LAUNCH_ACCESS,
-  );
-  if (gate && "rewrite" in gate) return NextResponse.rewrite(gate.rewrite);
-  if (gate) {
-    const response = NextResponse.redirect(gate.redirect);
-    if (gate.token)
-      response.cookies.set(launchCookie, gate.token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 365 * daySeconds,
-      });
-    return response;
-  }
   const { locale, route, params } = routeOf(request.nextUrl.pathname);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {
