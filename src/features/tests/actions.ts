@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examPathSchema, inExam } from "@/features/catalog/exams";
 import { attemptFacts } from "@/features/practice/answer/answers";
 import { answerSubmitted } from "@/features/practice/practice-events";
 import { redirect } from "@/i18n/navigation";
@@ -14,16 +14,24 @@ import { testFinished } from "./test-events";
 import { finishTest, saveDraft, testInput } from "./test-sessions";
 
 export const saveTest = actionClient
-  .inputSchema(testInput)
-  .action(({ parsedInput, ctx: { profileId } }) =>
-    saveDraft(profileId, firstOpenExam(), parsedInput),
+  .inputSchema(testInput.extend({ exam: examPathSchema }))
+  .action(({ parsedInput: { exam, ...test }, ctx: { profileId } }) =>
+    saveDraft(profileId, exam, test),
   );
 
 export const submitTest = actionClient
-  .inputSchema(testInput.extend({ tz: timeZoneSchema, locale: localeSchema }))
+  .inputSchema(
+    testInput.extend({
+      tz: timeZoneSchema,
+      locale: localeSchema,
+      exam: examPathSchema,
+    }),
+  )
   .action(
-    async ({ parsedInput: { tz, locale, ...test }, ctx: { profileId } }) => {
-      const examId = firstOpenExam();
+    async ({
+      parsedInput: { tz, locale, exam: examId, ...test },
+      ctx: { profileId },
+    }) => {
       const finished = await finishTest(profileId, examId, test, tz);
       if (finished) {
         await track(testFinished, finished.facts, { profileId });
@@ -41,6 +49,6 @@ export const submitTest = actionClient
           );
       }
       refresh();
-      redirect({ href: reviewHref(test.id), locale });
+      redirect({ href: inExam(examId, reviewHref(test.id)), locale });
     },
   );

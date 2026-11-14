@@ -5,7 +5,7 @@ import { Rail } from "./_components/rail";
 
 export default async function BankLayout({
   children,
-}: LayoutProps<"/[locale]/bank">) {
+}: LayoutProps<"/[locale]/[faculty]/[exam]/bank">) {
   const bank = await getTranslations("Bank");
 
   return (

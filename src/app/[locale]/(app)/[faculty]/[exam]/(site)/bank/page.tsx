@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { findTasks } from "@/features/bank/search";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { alternates } from "@/i18n/alternates";
 import { Bank, BankResults } from "./_components/bank-results";
 
@@ -16,10 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BankPage({
+  params,
   searchParams,
-}: PageProps<"/[locale]/bank">) {
+}: PageProps<"/[locale]/[faculty]/[exam]/bank">) {
   const t = await getTranslations("Bank");
-  const examId = firstOpenExam();
+  const examId = examAt(await params);
 
   return (
     <>

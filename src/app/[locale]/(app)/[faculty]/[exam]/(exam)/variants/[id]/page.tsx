@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt, inExam } from "@/features/catalog/exams";
 import { TestScreen } from "@/features/tests/runner/test-screen";
 import { findSetCode, saveSet } from "@/features/variants/custom/sets";
 import { variantMetadata } from "@/features/variants/variant-title";
@@ -16,9 +16,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/variants/[id]">) {
-  const { id } = await params;
-  const examId = firstOpenExam();
+}: PageProps<"/[locale]/[faculty]/[exam]/variants/[id]">) {
+  const { id, ...exam } = await params;
+  const examId = examAt(exam);
   const variant = getVariant(examId, id);
   if (!variant) return {};
   const metadata = await variantMetadata(examId, variant);
@@ -32,15 +32,15 @@ export async function generateMetadata({
 
 export default async function VariantPage({
   params,
-}: PageProps<"/[locale]/variants/[id]">) {
-  const { id } = await params;
-  const examId = firstOpenExam();
+}: PageProps<"/[locale]/[faculty]/[exam]/variants/[id]">) {
+  const { id, ...exam } = await params;
+  const examId = examAt(exam);
   const variant = getVariant(examId, id);
   if (!variant) notFound();
   if (variant.kind === "custom") {
     const code =
       (await findSetCode(variant.taskIds)) ?? (await saveSet(variant.taskIds));
-    redirect({ href: `/v/${code}`, locale: await getLocale() });
+    redirect({ href: inExam(examId, `/v/${code}`), locale: await getLocale() });
   }
   return <TestScreen examId={examId} variant={variant} />;
 }

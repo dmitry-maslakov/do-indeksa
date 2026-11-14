@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { bankHref } from "@/features/bank/params";
 import { findTasks } from "@/features/bank/search";
-import { firstOpenExam } from "@/features/catalog/exams";
+import { examAt } from "@/features/catalog/exams";
 import { topicName, topics } from "@/features/catalog/topics";
 import { alternates } from "@/i18n/alternates";
 import { Bank, BankResults } from "../../_components/bank-results";
@@ -17,7 +17,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<"/[locale]/bank/topic/[topic]">): Promise<Metadata> {
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/topic/[topic]">): Promise<Metadata> {
   const { topic } = await params;
   if (!known(topic)) return {};
   const [meta, locale] = await Promise.all([
@@ -35,10 +35,10 @@ export async function generateMetadata({
 export default async function BankTopicPage({
   params,
   searchParams,
-}: PageProps<"/[locale]/bank/topic/[topic]">) {
-  const { topic } = await params;
+}: PageProps<"/[locale]/[faculty]/[exam]/bank/topic/[topic]">) {
+  const { topic, ...exam } = await params;
   if (!known(topic)) notFound();
-  const examId = firstOpenExam();
+  const examId = examAt(exam);
 
   return (
     <>
