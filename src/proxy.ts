@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { getSessionCookie } from "better-auth/cookies";
 import {
+  allFaculties,
   allMethodSlugs,
   allTaskIds,
   allTheoryIds,
@@ -29,6 +30,8 @@ const topicIds = idsOf(allTheoryIds);
 const variantIds = idsOf(allVariants);
 const bankTopicIds = idsOf(allTopics);
 const topicExists = (topic: string) => topicIds.has(topic);
+const facultyIds = idsOf(allFaculties);
+const serbianOnly = new Set<RouteTemplate>(["/[faculty]"]);
 
 const contentPages: Partial<
   Record<RouteTemplate, (...ids: string[]) => boolean>
@@ -45,6 +48,7 @@ const contentPages: Partial<
     variantIds.has(id) ||
     customTaskIds(id, maxPlaces, (taskId) => taskIds.has(taskId)) !== undefined,
   "/variants/[id]/solutions": (id) => variantIds.has(id),
+  "/[faculty]": (faculty) => facultyIds.has(faculty),
 };
 
 function withTraceTiming(response: NextResponse) {
@@ -65,6 +69,12 @@ function returningTo(request: NextRequest) {
   if (chosen) return chosen;
   if (request.cookies.has(profileCookie) || getSessionCookie(request))
     return firstExamPath();
+}
+
+function toSerbian(request: NextRequest, locale: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = url.pathname.slice(locale.length + 1);
+  return NextResponse.redirect(url, 308);
 }
 
 function toExam(request: NextRequest, locale: string, path: string) {
@@ -89,9 +99,11 @@ async function respond(request: NextRequest) {
     url.searchParams.delete("topic");
     return NextResponse.redirect(url, 308);
   }
-  return contentPages[route]?.(...params) === false
-    ? notFound(request, locale)
-    : intl(request);
+  if (contentPages[route]?.(...params) === false)
+    return notFound(request, locale);
+  if (serbianOnly.has(route) && locale !== routing.defaultLocale)
+    return toSerbian(request, locale);
+  return intl(request);
 }
 
 export default async function proxy(request: NextRequest) {

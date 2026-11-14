@@ -46,6 +46,7 @@ describe("proxy", () => {
     "/ru/ftn/p1/theory/exponential-equations",
     "/RU/ftn/p1/bank",
     "/En/privacy",
+    "/ftn",
   ])("lets %s through", async (path) => {
     expect(await rewrite(path)).not.toMatch(/\/404$/);
   });
@@ -70,6 +71,8 @@ describe("proxy", () => {
     ["/ftn/p1/bank?topic=nema-teme", "sr-Latn"],
     ["/ftn/p1/bank?topic=..%2F..%2F..%2F..%2F%2Fevil.com", "sr-Latn"],
     ["/ru/ftn/p1/bank?topic=logarithms%2F2", "ru"],
+    ["/xyz", "sr-Latn"],
+    ["/ru/xyz", "ru"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });
@@ -93,6 +96,8 @@ describe("proxy", () => {
       "/en/ftn/p1/bank/topic/logarithms?utm_source=ig",
     ],
     ["/ftn/p1/bank?topic=&level=easy", "/ftn/p1/bank?level=easy"],
+    ["/ru/ftn", "/ftn"],
+    ["/en/ftn?q=ra", "/ftn?q=ra"],
   ])("moves %s to %s", async (path, location) => {
     expect(await redirect(path)).toEqual([
       308,
