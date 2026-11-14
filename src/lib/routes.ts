@@ -1,6 +1,11 @@
 import { routing } from "@/i18n/routing";
 
-const siteTemplates = ["/privacy", "/terms", "/[faculty]"] as const;
+const siteTemplates = [
+  "/privacy",
+  "/terms",
+  "/[faculty]",
+  "/[faculty]/programs/[slug]",
+] as const;
 
 const examTemplates = [
   "/",

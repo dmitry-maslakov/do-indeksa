@@ -1,4 +1,5 @@
 ---
+checked: 2026-01-01
 name: Softversko inženjerstvo i informacione tehnologije
 aliases: [SIIT]
 level: academic
