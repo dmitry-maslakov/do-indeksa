@@ -13,9 +13,15 @@ const reserved = new Set<string>([
 
 const examPages = ["programs", "about"];
 
-export function facultyProblem(id: string) {
+export function facultyProblem(
+  id: string,
+  { programs, openExams }: { programs: number; openExams: number },
+) {
   if (!/^[a-z]+$/.test(id)) return "a faculty id is lower-case letters";
   if (reserved.has(id)) return `"${id}" is a reserved address`;
+  if (programs === 0) return "the faculty has no programmes";
+  if (openExams === 0)
+    return "no exam is open; set open: true in one exams/<faculty>-<segment>.yaml";
 }
 
 export interface ExamRecord {
@@ -84,7 +90,10 @@ export function examProblem(exam: ExamRecord, context: ExamContext) {
     if (problem) return problem;
   }
   const { sampleTask } = exam;
-  if (sampleTask && !context.topics.includes(context.topicOf(sampleTask) ?? ""))
+  if (!sampleTask) return;
+  const topic = context.topicOf(sampleTask);
+  if (!topic) return `unknown task "${sampleTask}"`;
+  if (!context.topics.includes(topic))
     return `"${sampleTask}" is not a task of a topic of the exam`;
 }
 
