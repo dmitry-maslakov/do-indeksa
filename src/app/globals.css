@@ -7,6 +7,7 @@
   --font-math: KaTeX_Main, "Times New Roman", serif;
   --spacing-rail: calc(100dvh - 6rem);
   --container-task: 45rem;
+  --breakpoint-xs: 25rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
