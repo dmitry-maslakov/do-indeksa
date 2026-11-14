@@ -3,7 +3,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { PageTitle } from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import { SourceLine } from "@/features/admission/source-line";
-import { examName, examRecord, examTests } from "@/features/catalog/exams";
+import {
+  examHours,
+  examLabel,
+  examRecord,
+  examTests,
+} from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -56,7 +61,7 @@ export async function AboutHead({ examId }: { examId: string }) {
             </Link>
           </li>
           <li aria-current="page">
-            {exam.title} · {examName(examId, locale)}
+            {exam.title} · {examLabel(exam, locale)}
           </li>
         </ol>
       </nav>
@@ -78,7 +83,7 @@ export async function AboutHead({ examId }: { examId: string }) {
           <p className="mt-3 whitespace-nowrap font-medium text-lg leading-6.5 tabular-nums lg:text-xl lg:leading-7">
             {t.rich("format", {
               tasks: exam.positions.length,
-              hours: (exam.minutes ?? 0) / 60,
+              hours: examHours(exam),
               points: String(exam.points),
               dot: () => (
                 <span aria-hidden className="px-1 text-subtle">

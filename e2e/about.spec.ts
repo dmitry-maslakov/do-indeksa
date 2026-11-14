@@ -20,6 +20,9 @@ test("describes the exam with the faculty's numbers", async ({ page }) => {
   const res = await page.goto(about);
   expect(res?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(
+    page.getByRole("main").locator('a[href^="/ftn"]:not([href^="/ftn/"])'),
+  ).toHaveCount(3);
   const head = compact(
     await page.getByRole("main").locator("header").textContent(),
   );
@@ -71,11 +74,16 @@ test("answers an exam without a page with not found", async ({ request }) => {
   expect((await request.get("/ftn/p3/about")).status()).toBe(404);
 });
 
-test("moves the old exam address to the exam page", async ({ request }) => {
-  const res = await request.get("/exams/ftn-p1", { maxRedirects: 0 });
-  expect(res.status()).toBe(307);
-  expect(res.headers().location).toBe(about);
-});
+for (const [from, to] of [
+  ["/exams/ftn-p1", about],
+  ["/en/exams/ftn-p1", `/en${about}`],
+] as const) {
+  test(`moves ${from} to the exam page`, async ({ request }) => {
+    const res = await request.get(from, { maxRedirects: 0 });
+    expect(res.status()).toBe(307);
+    expect(res.headers().location).toBe(to);
+  });
+}
 
 test("translates the chrome and keeps other locales out of search", async ({
   page,

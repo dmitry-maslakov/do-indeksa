@@ -10,7 +10,7 @@ import {
 import { FilterGroup } from "@/features/admission/program-search";
 import type { facultyPrograms } from "@/features/admission/programs";
 import { ExamBadge } from "@/features/catalog/exam-badge";
-import type { facultyExams } from "@/features/catalog/exams";
+import { examHours, type facultyExams } from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import { getFacts } from "@/i18n/facts";
 import { Link } from "@/i18n/navigation";
@@ -32,7 +32,7 @@ async function ExamHead({
 }) {
   const t = await getTranslations("Faculty");
   const Heading = open ? "h2" : "h3";
-  const hours = (exam.minutes ?? 0) / 60;
+  const hours = examHours(exam);
   const composition =
     exam.positions.length > 0
       ? t("composition", {
@@ -133,13 +133,12 @@ export async function ExamGroup({
         <section
           id={exam.segment}
           aria-labelledby={`h-${exam.segment}`}
-          className={
+          className={cn(
             exam.open
-              ? exam.about
-                ? "scroll-mt-48 lg:scroll-mt-46"
-                : "scroll-mt-42 lg:scroll-mt-46"
-              : "scroll-mt-13 lg:scroll-mt-15"
-          }
+              ? "scroll-mt-42 lg:scroll-mt-46"
+              : "scroll-mt-13 lg:scroll-mt-15",
+            exam.open && exam.about && "scroll-mt-48",
+          )}
         >
           {!exam.open && head}
           <table className="block w-full">

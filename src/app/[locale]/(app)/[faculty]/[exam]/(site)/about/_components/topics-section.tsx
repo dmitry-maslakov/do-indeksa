@@ -1,6 +1,6 @@
+import { cn } from "cn";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
 import { ExternalLink } from "@/components/external-link";
 import { MathHtml } from "@/components/math-html";
 import { bankHref } from "@/features/bank/params";
@@ -20,7 +20,9 @@ import {
   AboutSection,
   actionClass,
   listClass,
+  nowrap,
   quietLink,
+  type Years,
 } from "./about-section";
 
 async function TaskSheet({
@@ -45,6 +47,7 @@ async function TaskSheet({
           {t("taskSummary", { year: String(year) })}
         </span>
         <span className="sr-only">
+          {" "}
           {t("taskSummaryDetail", { place: String(place), topic })}
         </span>
         <ChevronDownIcon
@@ -63,7 +66,7 @@ async function TaskSheet({
             year: String(year),
             place: String(place),
           })}
-          className={`${actionClass} mt-1 -mb-3`}
+          className={cn(actionClass, "mt-1 -mb-3")}
         >
           {t("taskLink", { place: String(place) })}
         </Link>
@@ -72,7 +75,13 @@ async function TaskSheet({
   );
 }
 
-export async function TopicsSection({ examId }: { examId: string }) {
+export async function TopicsSection({
+  examId,
+  years,
+}: {
+  examId: string;
+  years: Years;
+}) {
   const [t, format, locale] = await Promise.all([
     getTranslations("ExamAbout"),
     getFormatter(),
@@ -84,13 +93,9 @@ export async function TopicsSection({ examId }: { examId: string }) {
   const [latest] = papers;
   const places = exam.positions.map((p) => p.topic);
   const notes = placeNotes(papers, places);
-  const years = papers.map((p) => p.year);
-  const first = String(Math.min(...years));
-  const last = String(Math.max(...years));
+  const first = String(years.first);
+  const last = String(years.last);
   const syllabus = exam.about?.syllabus;
-  const nowrap = (chunks: ReactNode) => (
-    <span className="whitespace-nowrap">{chunks}</span>
-  );
 
   return (
     <AboutSection
@@ -99,7 +104,7 @@ export async function TopicsSection({ examId }: { examId: string }) {
       caption={t.rich("topicsCaption", {
         from: String(layoutSince(papers, places) ?? last),
         to: last,
-        latest: String(latest?.year ?? last),
+        latest: last,
         short,
         nowrap,
       })}

@@ -30,6 +30,13 @@ export const examPapers = (examId: string) => {
     }));
 };
 
+export function officialYears(examId: string) {
+  const years = examPapers(examId).map((p) => p.year);
+  const [last] = years;
+  const first = years.at(-1);
+  return first && last ? { first, last } : undefined;
+}
+
 export const curatedVariants = allVariants.filter(
   (v) => v.kind === "curated" || (v.kind === "weekly" && v.released),
 );

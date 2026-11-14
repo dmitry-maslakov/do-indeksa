@@ -2,28 +2,35 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { breadcrumbList, JsonLd } from "@/components/json-ld";
-import { examAt, examRecord, examTests } from "@/features/catalog/exams";
+import {
+  examAt,
+  examHours,
+  examRecord,
+  examTests,
+} from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
-import { examPapers } from "@/features/variants/variants";
+import { officialYears } from "@/features/variants/variants";
 import { untranslated } from "@/i18n/alternates";
+import { routing } from "@/i18n/routing";
 import { AboutView } from "./_components/about-view";
 
 async function aboutOf(params: Promise<{ faculty: string; exam: string }>) {
   const exam = examRecord(examAt(await params));
-  return exam.about ? exam : undefined;
+  const years = officialYears(exam.id);
+  return exam.about && years ? { exam, years } : undefined;
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/[faculty]/[exam]/about">): Promise<Metadata> {
-  const exam = await aboutOf(params);
-  if (!exam) return {};
+  const about = await aboutOf(params);
+  if (!about) return {};
+  const { exam, years } = about;
   const [t, locale] = await Promise.all([
     getTranslations("ExamAbout"),
     getLocale(),
   ]);
   const faculty = facultyOf(exam.faculty);
-  const years = examPapers(exam.id).map((p) => p.year);
   const [test] = examTests(exam.id);
   return {
     title: {
@@ -36,13 +43,14 @@ export async function generateMetadata({
     description: t("metaDescription", {
       exam: exam.title,
       short: faculty.short,
-      cityLocative: faculty.cityLocative,
+      city:
+        locale === routing.defaultLocale ? faculty.cityLocative : faculty.city,
       tasks: exam.positions.length,
-      hours: (exam.minutes ?? 0) / 60,
+      hours: examHours(exam),
       points: String(exam.points),
       grading: exam.about?.grading ?? "",
-      from: String(Math.min(...years)),
-      to: String(Math.max(...years)),
+      from: String(years.first),
+      to: String(years.last),
     }),
     ...untranslated(`${exam.path}/about`, locale),
   };
@@ -51,13 +59,13 @@ export async function generateMetadata({
 export default async function AboutPage({
   params,
 }: PageProps<"/[locale]/[faculty]/[exam]/about">) {
-  const exam = (await aboutOf(params)) ?? notFound();
+  const { exam, years } = (await aboutOf(params)) ?? notFound();
   const meta = await getTranslations("Metadata");
   const faculty = facultyOf(exam.faculty);
 
   return (
     <>
-      <AboutView examId={exam.id} />
+      <AboutView examId={exam.id} years={years} />
       <JsonLd
         data={breadcrumbList([
           { name: meta("title"), href: "/" },

@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { ChevronRightIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { currentAdmission } from "@/features/admission/admissions";
@@ -46,7 +47,7 @@ export async function ProgramsSection({ examId }: { examId: string }) {
                 exam={null}
                 locale={routing.defaultLocale}
                 href={`/${faculty.id}/programs/${program.slug}`}
-                className={`group ${rowClass}`}
+                className={cn("group", rowClass)}
               >
                 <span className="min-w-0 flex-1 underline-offset-3 group-hover:underline">
                   {program.name}

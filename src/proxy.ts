@@ -93,7 +93,7 @@ async function respond(request: NextRequest) {
   if (route === "/" && !exam)
     return toExam(request, locale, returningTo(request) ?? firstExamPath());
   if (exam && !examByPath(exam)) return notFound(request, locale);
-  if (route === "/about" && !aboutExams.has(exam ?? ""))
+  if (route === "/about" && !(exam && aboutExams.has(exam)))
     return notFound(request, locale);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {
