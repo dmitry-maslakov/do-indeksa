@@ -79,7 +79,7 @@ test("a missing page records error_shown", async ({ page }) => {
         props.path,
       ]);
     })
-    .toContainEqual(["error_shown", "/bank/nema-zadatka"]);
+    .toContainEqual(["error_shown", at("/bank/nema-zadatka")]);
 });
 
 test("a crawler is marked as a bot", async ({ browser }) => {
