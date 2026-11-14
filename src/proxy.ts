@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { getSessionCookie } from "better-auth/cookies";
 import {
   allMethodSlugs,
   allTaskIds,
@@ -14,8 +15,10 @@ import {
   examOf,
   firstOpenExam,
   maxPlaces,
+  openExamPath,
 } from "@/features/catalog/exams";
 import { customTaskIds } from "@/features/variants/variant-id";
+import { examCookie, profileCookie } from "@/lib/cookies";
 import { type RouteTemplate, routeOf } from "@/lib/routes";
 import { routing } from "./i18n/routing";
 
@@ -55,10 +58,19 @@ function withTraceTiming(response: NextResponse) {
 const notFound = (request: NextRequest, locale: string) =>
   NextResponse.rewrite(new URL(`/${locale}/404`, request.url));
 
-function toExam(request: NextRequest, locale: string) {
+const firstExamPath = () => examOf(firstOpenExam()).path;
+
+function returningTo(request: NextRequest) {
+  const chosen = openExamPath(request.cookies.get(examCookie)?.value ?? "");
+  if (chosen) return chosen;
+  if (request.cookies.has(profileCookie) || getSessionCookie(request))
+    return firstExamPath();
+}
+
+function toExam(request: NextRequest, locale: string, path: string) {
   const url = request.nextUrl.clone();
   const prefix = locale === routing.defaultLocale ? "" : `/${locale}`;
-  url.pathname = `${prefix}${examOf(firstOpenExam()).path}`;
+  url.pathname = `${prefix}${path}`;
   const response = NextResponse.redirect(url, 307);
   response.headers.set("Cache-Control", "no-store");
   return response;
@@ -66,7 +78,8 @@ function toExam(request: NextRequest, locale: string) {
 
 async function respond(request: NextRequest) {
   const { locale, exam, route, params } = routeOf(request.nextUrl.pathname);
-  if (route === "/" && !exam) return toExam(request, locale);
+  if (route === "/" && !exam)
+    return toExam(request, locale, returningTo(request) ?? firstExamPath());
   if (exam && !examByPath(exam)) return notFound(request, locale);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {

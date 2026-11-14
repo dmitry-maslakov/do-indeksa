@@ -113,6 +113,27 @@ describe("proxy", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
+  const visit = (path: string, headers: Record<string, string> = {}) =>
+    proxy(new NextRequest(new URL(path, "https://doindeksa.rs"), { headers }));
+
+  it.each([
+    ["__Host-exam=ftn-p1", "/", "/ftn/p1"],
+    ["__Host-exam=ftn-p1", "/ru", "/ru/ftn/p1"],
+    ["__Host-exam=ftn-p3", "/", "/ftn/p1"],
+    ["__Host-profile=token", "/", "/ftn/p1"],
+    ["better-auth.session_token=token", "/en", "/en/ftn/p1"],
+  ])(
+    "sends a visitor with %s from %s to %s",
+    async (cookie, path, location) => {
+      const response = await visit(path, { cookie });
+      expect([response.status, response.headers.get("location")]).toEqual([
+        307,
+        `https://doindeksa.rs${location}`,
+      ]);
+      expect(response.headers.get("cache-control")).toBe("no-store");
+    },
+  );
+
   it.each([
     ["/sr-Latn/opengraph-image", false],
     ["/ru/opengraph-image", false],
