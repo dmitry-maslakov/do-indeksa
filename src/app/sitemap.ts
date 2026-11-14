@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 import { bankHref } from "@/features/bank/params";
 import {
   canonicalHref,
-  examOptions,
   firstOpenExam,
   inExam,
+  openExamIds,
 } from "@/features/catalog/exams";
 import { tasks } from "@/features/catalog/tasks";
 import { topics } from "@/features/catalog/topics";
@@ -17,8 +17,6 @@ import { routing } from "@/i18n/routing";
 import { siteUrl } from "@/lib/site";
 
 const urlsPerSitemap = 10_000;
-
-const examIds = examOptions.map((e) => e.id);
 
 const examPages = [
   "/",
@@ -32,7 +30,7 @@ const examPages = [
 const translatedPages = [
   "/privacy",
   "/terms",
-  ...examIds.flatMap((id) => examPages.map((href) => inExam(id, href))),
+  ...openExamIds.flatMap((id) => examPages.map((href) => inExam(id, href))),
 ];
 
 const untranslatedPages = [
@@ -44,7 +42,7 @@ const untranslatedPages = [
   ...theoryMethods.map((m) =>
     canonicalHref(m.topic, `/theory/${m.topic}/methods/${m.slug}`),
   ),
-  ...examIds.flatMap((id) =>
+  ...openExamIds.flatMap((id) =>
     contentVariants.map((v) => inExam(id, `/variants/${v.id}/solutions`)),
   ),
 ];

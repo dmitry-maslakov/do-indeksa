@@ -1,6 +1,6 @@
 import { hasLocale } from "next-intl";
 import { nextTasks } from "@/features/bank/queue/queue";
-import { examByPath, inExam } from "@/features/catalog/exams";
+import { examByParams, inExam } from "@/features/catalog/exams";
 import { idsByTopic } from "@/features/catalog/tasks";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -11,7 +11,7 @@ export async function GET(
   { params }: RouteContext<"/[locale]/[faculty]/[exam]/bank/start/[topic]">,
 ) {
   const { locale, topic, faculty, exam } = await params;
-  const examId = examByPath(`/${faculty}/${exam}`);
+  const examId = examByParams({ faculty, exam });
   const first = idsByTopic.get(topic)?.[0];
   if (!first || !examId || !hasLocale(routing.locales, locale)) {
     return new Response(null, { status: 404 });

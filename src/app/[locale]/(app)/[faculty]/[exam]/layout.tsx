@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { examByPath, openExamParams } from "@/features/catalog/exams";
+import { examByParams, examOf, openExamParams } from "@/features/catalog/exams";
 import { ExamBase } from "@/i18n/navigation";
 import { RememberExam } from "./_components/remember-exam";
 
@@ -11,12 +11,10 @@ export default async function OpenExamLayout({
   children,
   params,
 }: LayoutProps<"/[locale]/[faculty]/[exam]">) {
-  const { faculty, exam } = await params;
-  const path = `/${faculty}/${exam}`;
-  const id = examByPath(path);
+  const id = examByParams(await params);
   if (!id) notFound();
   return (
-    <ExamBase path={path}>
+    <ExamBase path={examOf(id).path}>
       <RememberExam id={id} />
       {children}
     </ExamBase>
