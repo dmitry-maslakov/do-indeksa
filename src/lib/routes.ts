@@ -27,6 +27,7 @@ export type RouteTemplate = (typeof routeTemplates)[number] | "/[...rest]";
 
 const localePath = new RegExp(
   `^(?:/(${routing.locales.join("|")})(?=/|$))?(/.*)?$`,
+  "i",
 );
 
 const examPath = /^(\/[^/]+\/[^/]+)(\/.*)?$/;
@@ -53,8 +54,11 @@ function match(
 const rest = { route: "/[...rest]" as const, params: [] };
 
 export function routeOf(pathname: string) {
-  const [, locale = routing.defaultLocale, path = "/"] =
+  const [, prefix = routing.defaultLocale, path = "/"] =
     localePath.exec(pathname) ?? [];
+  const locale =
+    routing.locales.find((l) => l.toLowerCase() === prefix.toLowerCase()) ??
+    routing.defaultLocale;
   const site = match(sitePatterns, path);
   if (site) return { locale, exam: null, ...site };
   const [, exam = null, within = "/"] = examPath.exec(path) ?? [];
