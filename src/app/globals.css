@@ -42,9 +42,6 @@
   --color-success: var(--success);
   --color-success-text: var(--success-text);
   --color-success-tint: var(--success-tint);
-  --color-daily: var(--daily);
-  --color-daily-muted: var(--daily-muted);
-  --color-daily-glyph: var(--daily-glyph);
   --color-progress: var(--progress);
   --color-progress-text: var(--progress-text);
   --color-progress-tint: var(--progress-tint);
@@ -101,23 +98,6 @@
     }
   }
 
-  --animate-rise: rise 20s linear infinite;
-
-  @keyframes rise {
-    from {
-      transform: translate3d(0, 20vh, 0);
-      opacity: 0;
-    }
-    25%,
-    75% {
-      opacity: 0.22;
-    }
-    to {
-      transform: translate3d(0, -20vh, 0);
-      opacity: 0;
-    }
-  }
-
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(20 20 30 / 0.05);
   --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.06);
   --shadow-current: inset 3px 0 0 var(--foreground);
@@ -161,9 +141,6 @@
   --success: #1a9d5a;
   --success-text: #15804a;
   --success-tint: #e2f6ea;
-  --daily: #2b2560;
-  --daily-muted: #b4b3ba;
-  --daily-glyph: #d9d4ff;
   --progress: #7b9cf0;
   --progress-text: #3557b7;
   --progress-tint: #e6edff;
