@@ -1,6 +1,6 @@
 import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
-import { sortBy } from "es-toolkit";
+import { pick, sortBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
 import { hourMs, minuteMs } from "@/lib/dates";
@@ -127,19 +127,10 @@ export function testFaculty(id: string) {
 
 export const examGroups = faculties
   .map((faculty) => ({
-    id: faculty.id,
-    short: faculty.short,
-    city: faculty.city,
+    ...pick(faculty, ["id", "short", "city"]),
     exams: openExams
       .filter((e) => e.faculty === faculty.id)
-      .map(({ id, path, title, name, label, tone }) => ({
-        id,
-        path,
-        title,
-        name,
-        label,
-        tone,
-      })),
+      .map((e) => pick(e, ["id", "path", "title", "name", "label", "tone"])),
   }))
   .filter((group) => group.exams.length > 0);
 

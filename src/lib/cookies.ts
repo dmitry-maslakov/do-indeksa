@@ -7,9 +7,6 @@ export const examCookie = "__Host-exam";
 export const readCookie = (name: string) =>
   document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1];
 
-function writeCookie(name: string, value: string, maxAge: number) {
-  document.cookie = `${name}=${value}; Max-Age=${maxAge}; Path=/; SameSite=Lax; Secure`;
+export function rememberExam(id: string) {
+  document.cookie = `${examCookie}=${id}; Max-Age=${365 * daySeconds}; Path=/; SameSite=Lax; Secure`;
 }
-
-export const rememberExam = (id: string) =>
-  writeCookie(examCookie, id, 365 * daySeconds);
