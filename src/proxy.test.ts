@@ -67,6 +67,9 @@ describe("proxy", () => {
     ["/ftn/p1/bank/topic/logarithms/1", "sr-Latn"],
     ["/ftn/p1/bank/topic/logarithms/02", "sr-Latn"],
     ["/ru/ftn/p1/bank/topic/logarithms/strana", "ru"],
+    ["/ftn/p1/bank?topic=nema-teme", "sr-Latn"],
+    ["/ftn/p1/bank?topic=..%2F..%2F..%2F..%2F%2Fevil.com", "sr-Latn"],
+    ["/ru/ftn/p1/bank?topic=logarithms%2F2", "ru"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });

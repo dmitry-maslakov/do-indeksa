@@ -83,6 +83,7 @@ async function respond(request: NextRequest) {
   if (exam && !examByPath(exam)) return notFound(request, locale);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {
+    if (topic && !bankTopicIds.has(topic)) return notFound(request, locale);
     const url = request.nextUrl.clone();
     url.pathname = url.pathname.replace(/\/bank$/, bankHref({ topic }));
     url.searchParams.delete("topic");
