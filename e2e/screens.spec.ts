@@ -14,6 +14,8 @@ test("serves pages with nothing personal whole from the cache", async ({
     "/terms",
     "/privacy",
     "/ftn",
+    "/about",
+    "/ru/about",
     "/theory",
     "/ru/theory/exponential-equations",
     "/theory/exponential-equations/methods",
@@ -45,6 +47,8 @@ test("serves robots and sitemap", async ({ request }) => {
   const [pages = "", ...tasks] = sitemaps;
   expect(pages).toContain("<loc>https://doindeksa.rs/ftn</loc>");
   expect(pages).not.toContain("<loc>https://doindeksa.rs/ru/ftn</loc>");
+  expect(pages).toContain("<loc>https://doindeksa.rs/ftn/p1/about</loc>");
+  expect(pages).not.toContain("/ru/ftn/p1/about</loc>");
   expect(pages).toContain("<loc>https://doindeksa.rs/ftn/p1/bank</loc>");
   expect(pages).toContain("<loc>https://doindeksa.rs/ru/ftn/p1/bank</loc>");
   expect(pages).toContain(
@@ -140,6 +144,7 @@ test("keeps other locales of Serbian content out of search", async ({
   const noindex = '<meta name="robots" content="noindex"/>';
   for (const path of [
     "/ru/bank/eks-001",
+    "/en/about",
     "/en/theory/exponential-equations",
     "/ru/theory/exponential-equations/methods",
     "/en/variants/ftn-p1-2025/solutions",
@@ -148,6 +153,7 @@ test("keeps other locales of Serbian content out of search", async ({
   }
   for (const path of [
     "/bank/eks-001",
+    "/about",
     "/theory/exponential-equations",
     "/variants/ftn-p1-2025/solutions",
     "/ru/bank",

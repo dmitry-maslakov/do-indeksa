@@ -58,6 +58,7 @@ const routes = [
   "/privacy",
   "/terms",
   "/ftn",
+  "/about",
   "/theory",
   "/theory/exponential-equations",
   "/theory/exponential-equations/methods",
