@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures";
 
 const figures = async (page: Page, cells: string) =>
   (await page.locator(cells).allInnerTexts()).flatMap(
-    (text) => text.match(/\d[\d.,]*/g) ?? [],
+    (text) => text.match(/—|\d[\d.,]*/g) ?? [],
   );
 
 async function firstProgram(page: Page) {
@@ -19,6 +19,7 @@ async function firstProgram(page: Page) {
     href: (await row.locator("th a").getAttribute("href")) ?? "",
     numbers: await figures(page, `[id="${await row.getAttribute("id")}"] td`),
     exam,
+    rows: await group.locator("tr[id]").count(),
     linked: await group.locator("tr[id] th a").count(),
   };
 }
@@ -29,6 +30,8 @@ test("shows the numbers of the faculty register on a programme page", async ({
   const program = await firstProgram(page);
   const res = await page.goto(program.href);
   expect(res?.status()).toBe(200);
+  expect(res?.headers()["x-nextjs-postponed"]).toBeUndefined();
+  expect(res?.headers()["cache-control"]).toContain("s-maxage");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   expect(await figures(page, "main table >> nth=0 >> tbody td")).toEqual(
     program.numbers,
@@ -36,9 +39,9 @@ test("shows the numbers of the faculty register on a programme page", async ({
   await expect(
     page.getByRole("button", { name: /^Vežbaj za/ }),
   ).toHaveAttribute("href", `/ftn/${program.exam}`);
-  await expect(
-    page.locator('section[aria-labelledby="h-susedi"] li'),
-  ).toHaveCount(program.linked - 1);
+  const neighbours = page.locator('section[aria-labelledby="h-neighbours"]');
+  await expect(neighbours.locator("li")).toHaveCount(program.rows - 1);
+  await expect(neighbours.locator("li a")).toHaveCount(program.linked - 1);
 });
 
 test("points every in-page link at a part of the page", async ({ page }) => {
@@ -82,7 +85,17 @@ test("lists checked programmes in the sitemap and in Serbian only", async ({
   expect(new URL(res.headers().location ?? "", res.url()).pathname).toBe(href);
 });
 
-test("answers 404 for a programme that has no page", async ({ request }) => {
-  const res = await request.get("/ftn/programs/nema-smera");
-  expect(res.status()).toBe(404);
+test("answers 404 for a programme that has no page", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/ftn");
+  const plain = page
+    .locator("#registar tr[id]")
+    .filter({ hasNot: page.locator("th a") })
+    .first();
+  for (const slug of ["nema-smera", await plain.getAttribute("id")]) {
+    const res = await request.get(`/ftn/programs/${slug}`);
+    expect(res.status(), slug ?? "").toBe(404);
+  }
 });

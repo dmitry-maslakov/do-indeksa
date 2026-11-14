@@ -1,8 +1,8 @@
 import { Fragment, type ReactNode } from "react";
 import { ExternalLink } from "@/components/external-link";
-import { sourceLink } from "@/features/admission/source-line";
+import { mutedSourceLink } from "@/features/admission/source-line";
 
-const link = `${sourceLink} hover:text-foreground`;
+export const sourceNotes = "mt-3 space-y-1.5 text-[13px] text-muted-foreground";
 
 interface SourceYearsProps {
   intro: (list: () => ReactNode) => ReactNode;
@@ -16,7 +16,11 @@ export function SourceYears({ intro, years }: SourceYearsProps) {
         years.map((y, i) => (
           <Fragment key={y.key}>
             {i > 0 && " · "}
-            <ExternalLink href={y.url} aria-label={y.label} className={link}>
+            <ExternalLink
+              href={y.url}
+              aria-label={y.label}
+              className={mutedSourceLink}
+            >
               {y.text}
             </ExternalLink>
           </Fragment>

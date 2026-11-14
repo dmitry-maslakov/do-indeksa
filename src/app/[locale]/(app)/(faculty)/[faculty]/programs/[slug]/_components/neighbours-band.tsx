@@ -16,6 +16,9 @@ import { intentOf } from "@/lib/analytics-browser";
 import { Band } from "./band";
 
 const action = "text-data underline-offset-3 hover:underline";
+const columns = 3;
+const row =
+  "flex min-h-13 items-center justify-between gap-3 border-b py-3.5 text-[15px]";
 
 export async function NeighboursBand({ program }: { program: Program }) {
   const list = neighbours(program);
@@ -28,33 +31,47 @@ export async function NeighboursBand({ program }: { program: Program }) {
   const exam = programExam(program);
   const { wishes } = currentAdmission(program.faculty);
   const papers = exam.about && officialYears(exam.id);
-  const rows = Math.ceil(list.length / 3);
+  const rows = Math.ceil(list.length / columns);
 
   return (
-    <Band name="susedi" title={t("neighboursTitle", { exam: exam.title })} wide>
+    <Band
+      name="neighbours"
+      title={t("neighboursTitle", { exam: exam.title })}
+      wide
+    >
       <ul
         style={{ "--rows": rows } as CSSProperties}
         className="lg:grid lg:grid-flow-col lg:grid-cols-3 lg:grid-rows-[repeat(var(--rows),auto)] lg:gap-x-6"
       >
-        {list.map((neighbour, i) => (
-          <li key={neighbour.slug}>
-            <Link
-              href={`/${neighbour.faculty}/programs/${neighbour.slug}`}
-              data-intent={intentOf({ via: "program_neighbours", rank: i })}
-              className={cn(
-                "flex min-h-13 items-center justify-between gap-3 border-b py-3.5 text-[15px] underline-offset-3 hover:[&>span]:underline",
-                i === 0 && "border-t",
-                i % rows === 0 && "lg:border-t",
+        {list.map((neighbour, i) => {
+          const edge = cn(
+            i === 0 && "border-t",
+            i % rows === 0 && "lg:border-t",
+          );
+          return (
+            <li key={neighbour.slug}>
+              {neighbour.linked ? (
+                <Link
+                  href={`/${neighbour.faculty}/programs/${neighbour.slug}`}
+                  data-intent={intentOf({ via: "program_neighbours", rank: i })}
+                  className={cn(
+                    row,
+                    edge,
+                    "underline-offset-3 hover:[&>span]:underline",
+                  )}
+                >
+                  <span>{neighbour.name}</span>
+                  <ChevronRightIcon
+                    aria-hidden
+                    className="size-4 shrink-0 text-subtle"
+                  />
+                </Link>
+              ) : (
+                <span className={cn(row, edge)}>{neighbour.name}</span>
               )}
-            >
-              <span>{neighbour.name}</span>
-              <ChevronRightIcon
-                aria-hidden
-                className="size-4 shrink-0 text-subtle"
-              />
-            </Link>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
       {wishes && (
         <p className="mt-4 text-[15px]">

@@ -54,3 +54,5 @@ export const resultYears = (history: ProgramYear[]) =>
   history.flatMap(({ statistics, cutoff, ...year }) =>
     statistics && cutoff ? [{ ...year, statistics, cutoff }] : [],
   );
+
+export type ResultYear = ReturnType<typeof resultYears>[number];

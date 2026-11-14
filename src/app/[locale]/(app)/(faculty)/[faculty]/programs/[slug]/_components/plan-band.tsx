@@ -2,15 +2,14 @@ import { upperFirst } from "es-toolkit";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { ExternalLink } from "@/components/external-link";
 import { MathHtml } from "@/components/math-html";
-import type { Program } from "@/features/admission/programs";
-import { sourceLink } from "@/features/admission/source-line";
+import { moduleKindOf, type Program } from "@/features/admission/programs";
+import { mutedSourceLink } from "@/features/admission/source-line";
 import { facultyOf } from "@/features/catalog/faculties";
 import { getFacts } from "@/i18n/facts";
 import { renderMarkdown } from "@/lib/markdown";
 import { Band } from "./band";
 
 const label = "block text-[13px] text-muted-foreground";
-const metaLink = `${sourceLink} hover:text-foreground`;
 
 async function Plan({ program }: { program: Program }) {
   const [t, format] = await Promise.all([
@@ -31,7 +30,7 @@ async function Plan({ program }: { program: Program }) {
 
   return items.map((item) => (
     <div key={item.title}>
-      <h3 className="font-semibold text-base">{item.title}</h3>
+      <h3 className="text-balance font-semibold text-base">{item.title}</h3>
       {item.subjects && (
         <ul className="mt-0.5 lg:columns-2 lg:gap-x-8">
           {item.subjects.map((subject) => (
@@ -64,7 +63,7 @@ async function Modules({ program }: { program: Program }) {
         >
           <h4
             id={program.moduleIds[i]}
-            className="scroll-mt-4 font-semibold text-base target:animate-target"
+            className="scroll-mt-4 text-balance font-semibold text-base target:animate-target"
           >
             {module.name}
           </h4>
@@ -75,7 +74,7 @@ async function Modules({ program }: { program: Program }) {
           {module.url && (
             <ExternalLink
               href={module.url}
-              className="mt-1.5 inline-block text-[13px] text-data underline-offset-3 hover:underline"
+              className="mt-1.5 inline-flex items-center gap-0.5 text-[13px] text-data underline-offset-3 hover:underline"
             >
               {t("modulePlan", { kind: program.moduleKind, short })}
             </ExternalLink>
@@ -95,30 +94,24 @@ async function Degree({ program }: { program: Program }) {
 
   return (
     <div className="border-t pt-3.5">
-      {degree && (
-        <>
-          <span className={label}>
-            {t("degreeAfter", {
-              word: facts.word(program.years),
-              years: program.years,
-            })}
-          </span>
-          <p className="font-semibold">
-            {degree.title}
-            {degree.abbreviation && ` (${degree.abbreviation})`}
-          </p>
-        </>
-      )}
-      {department && (
-        <p className="mt-1.5 text-[15px]">
-          {jointDepartments
-            ? t("jointDepartments", {
-                count: facts.word(jointDepartments),
-                department,
-              })
-            : t("department", { department })}
-        </p>
-      )}
+      <span className={label}>
+        {t("degreeAfter", {
+          word: facts.word(program.years),
+          years: program.years,
+        })}
+      </span>
+      <p className="font-semibold">
+        {degree.title}
+        {degree.abbreviation && ` (${degree.abbreviation})`}
+      </p>
+      <p className="mt-1.5 text-[15px]">
+        {jointDepartments
+          ? t("jointDepartments", {
+              count: facts.word(jointDepartments),
+              department,
+            })
+          : t("department", { department })}
+      </p>
     </div>
   );
 }
@@ -127,7 +120,7 @@ export async function PlanBand({ program }: { program: Program }) {
   const t = await getTranslations("Program");
   const { short } = facultyOf(program.faculty);
   const { plan, courseBook } = program.links;
-  const kind = program.modules.length > 0 ? program.moduleKind : "none";
+  const kind = moduleKindOf(program);
   const [notes, employment] = await Promise.all([
     Promise.all(program.planNotes.map((n) => renderMarkdown(n, program.id))),
     program.employment && renderMarkdown(program.employment, program.id),
@@ -140,26 +133,27 @@ export async function PlanBand({ program }: { program: Program }) {
       title={t("planTitle", { kind })}
       meta={
         <>
-          {plan && (
-            <p>
-              {t.rich("planSource", {
-                year: String(plan.accreditation),
-                short,
-                link: (chunks) => (
-                  <ExternalLink href={plan.url} className={metaLink}>
-                    {chunks}
-                  </ExternalLink>
-                ),
-              })}
-            </p>
-          )}
+          <p>
+            {t.rich("planSource", {
+              year: String(plan.accreditation),
+              short,
+              link: (chunks) => (
+                <ExternalLink href={plan.url} className={mutedSourceLink}>
+                  {chunks}
+                </ExternalLink>
+              ),
+            })}
+          </p>
           {courseBook && (
             <p>
               {t.rich("courseBook", {
                 year: String(courseBook.accreditation),
                 short,
                 link: (chunks) => (
-                  <ExternalLink href={courseBook.url} className={metaLink}>
+                  <ExternalLink
+                    href={courseBook.url}
+                    className={mutedSourceLink}
+                  >
                     {chunks}
                   </ExternalLink>
                 ),

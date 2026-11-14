@@ -478,7 +478,7 @@
     "scoringTitle": "Kako se računaju bodovi",
     "scoringTotal": "Najviše je {max} bodova: od {schoolMin} do {schoolMax} iz srednje škole i od {examMin} do {examMax} na prijemnom. Bodovi iz škole su zbir proseka sva četiri razreda, pomnožen sa 2.",
     "thresholds": "Za budžet treba biti na konačnoj rang listi u okviru broja budžetskih mesta i imati {budget}. Za samofinansiranje: u okviru broja samofinansirajućih mesta i {self}.",
-    "bound": "{kind, select, over {više od} other {najmanje}} {points} bodova",
+    "bound": "{kind, select, over {više od} other {najmanje}} {points}{unit, select, no {} other { bodova}}",
     "tieBreak": "Pri istom zbiru odlučuju bodovi sa prijemnog.",
     "cutoffsMeaning": "Najniži bodovi upisanih pokazuju gde se rang lista završila na upisu {year}. To je rezultat ranijeg upisa, a ne uslov za sledeći. Za upis je potrebno mesto na rang listi i broj bodova naveden iznad.",
     "admissionTitle": "Upis na {short}",
@@ -497,8 +497,6 @@
     "path": "<link>{name}</link> · {city}",
     "facts": "{level, select, academic {Osnovne akademske studije} other {Osnovne strukovne studije}} · {years, plural, one {# godina} few {# godine} other {# godina}} · {espb} ESPB",
     "examLabel": "Prijemni",
-    "exam": "{title} · {name}",
-    "practice": "Vežbaj za {exam}",
     "nowCaption": "Upis {year}. na smeru {name}",
     "nowHead": "Upis {year}.",
     "budget": "Budžet",
@@ -541,7 +539,6 @@
     "colYear": "Godina upisa",
     "dashNote": "— {short} u Statistici upisa {year} nije objavio ovaj podatak.",
     "rules": "{tense, select, present {Konkursi od {from}. traže} other {{single, select, yes {Konkurs {from}. tražio je} other {Konkursi {from}.–{to}. tražili su}}}} za budžet {budget}, za samofinansiranje {self}; {exam, select, none {minimum na prijemnom ne navode} other {za oba statusa najmanje {exam} bodova na prijemnom}}.",
-    "bound": "{kind, select, over {više od} other {najmanje}} {points}{unit, select, yes { bodova} other {}}",
     "statisticsMissing": "Statistiku upisa {year} {short} nije objavio do {date}",
     "statisticsSources": "Izvor: Statistika upisa {short}-a <list></list>",
     "statisticsLabel": "Statistika upisa {short}-a {year}",
@@ -553,7 +550,6 @@
     "officialTitle": "Zvanične stranice {short}-a",
     "page": "Stranica smera",
     "planPdf": "Plan studija (PDF)",
-    "konkurs": "Konkurs za upis {year}{pdf, select, yes { (PDF)} other {}}",
     "checked": "Podaci provereni: {date}"
   },
   "ProgramSearch": {

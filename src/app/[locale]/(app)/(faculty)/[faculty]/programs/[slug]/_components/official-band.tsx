@@ -9,8 +9,9 @@ import { getFacts } from "@/i18n/facts";
 import { Band } from "./band";
 
 export async function OfficialBand({ program }: { program: Program }) {
-  const [t, facts] = await Promise.all([
+  const [t, tf, facts] = await Promise.all([
     getTranslations("Program"),
+    getTranslations("Faculty"),
     getFacts(),
   ]);
   const { short, links } = facultyOf(program.faculty);
@@ -22,7 +23,7 @@ export async function OfficialBand({ program }: { program: Program }) {
       url: program.links.planPdf,
     },
     {
-      title: t("konkurs", {
+      title: tf("konkursLink", {
         year: facts.schoolYear(year),
         pdf: konkurs.toLowerCase().endsWith(".pdf") ? "yes" : "no",
       }),
@@ -33,7 +34,7 @@ export async function OfficialBand({ program }: { program: Program }) {
   ]);
 
   return (
-    <Band name="zvanicno" title={t("officialTitle", { short })}>
+    <Band name="official" title={t("officialTitle", { short })}>
       <ul className="mb-3 lg:flex lg:flex-wrap lg:gap-x-6 lg:gap-y-1">
         {list.map((link, i) => (
           <li key={link.url}>
@@ -49,11 +50,9 @@ export async function OfficialBand({ program }: { program: Program }) {
           </li>
         ))}
       </ul>
-      {program.checked && (
-        <p className="text-[13px] text-muted-foreground">
-          {t("checked", { date: facts.date(program.checked) })}
-        </p>
-      )}
+      <p className="text-[13px] text-muted-foreground">
+        {t("checked", { date: facts.date(program.checked) })}
+      </p>
     </Band>
   );
 }

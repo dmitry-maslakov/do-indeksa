@@ -7,7 +7,11 @@ import {
   programHistory,
   resultYears,
 } from "@/features/admission/admissions";
-import { facultyPrograms, getProgram } from "@/features/admission/programs";
+import {
+  facultyPrograms,
+  getProgram,
+  moduleKindOf,
+} from "@/features/admission/programs";
 import { faculties, facultyOf } from "@/features/catalog/faculties";
 import { untranslated } from "@/i18n/alternates";
 import { getFacts } from "@/i18n/facts";
@@ -44,10 +48,11 @@ export async function generateMetadata({
   const first = results.at(-1);
   const figure = (value: number | null | undefined) =>
     value === null || value === undefined ? "—" : facts.count(value);
+  const kind = moduleKindOf(program);
   const place = {
     name: program.name,
     short: faculty.short,
-    kind: program.modules.length > 0 ? program.moduleKind : "none",
+    kind,
     results: last ? "yes" : "no",
   };
 
@@ -56,7 +61,9 @@ export async function generateMetadata({
     description: t("metaDescription", {
       ...place,
       cityLocative: faculty.cityLocative,
-      from: t("fromYear", { n: program.modulesFrom ?? 0 }),
+      from: program.modulesFrom
+        ? t("fromYear", { n: program.modulesFrom })
+        : "",
       budget: figure(row?.budget),
       self: figure(row?.self),
       year: facts.schoolYear(current.year),

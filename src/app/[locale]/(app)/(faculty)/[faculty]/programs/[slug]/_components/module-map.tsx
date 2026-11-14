@@ -17,17 +17,11 @@ export async function ModuleMap({ program }: { program: Program }) {
     getTranslations("Program"),
     getFormatter(),
   ]);
-  const choice = program.choice
-    ? await renderMarkdown(program.choice, program.id)
-    : "";
+  const choice = await renderMarkdown(program.choice, program.id);
   const { modules, modulesFrom, moduleIds, years } = program;
 
   if (!modulesFrom || modules.length === 0)
-    return (
-      choice && (
-        <MathHtml html={choice} className="text-[15px] leading-normal" />
-      )
-    );
+    return <MathHtml html={choice} className="text-[15px] leading-normal" />;
 
   const label = (from: number, to: number) =>
     t("yearsLabel", {
