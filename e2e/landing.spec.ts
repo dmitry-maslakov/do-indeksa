@@ -25,6 +25,22 @@ test("shows the landing to a new visitor", async ({ page }) => {
   await expect(page.getByRole("banner").getByRole("navigation")).toHaveCount(0);
 });
 
+test("keeps the years of an exam button on one line", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 844 });
+  for (const path of ["/", "/ru", "/en"]) {
+    await page.goto(path);
+    const years = examButtons(page)
+      .first()
+      .getByText(/\d{4}–\d{4}/);
+    const lines = await years.evaluate((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return new Set([...range.getClientRects()].map((r) => r.top)).size;
+    });
+    expect(lines, path).toBe(1);
+  }
+});
+
 test("leads the exam button into its exam", async ({ page }) => {
   await page.goto("/");
   await examButtons(page).first().click();

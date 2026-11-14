@@ -32,7 +32,13 @@ function ExamButton({ exam, faculty, rank }: ExamButtonProps) {
         </span>
         <span className="font-medium text-[13px] leading-4.5 md:text-sm md:leading-5">
           {years
-            ? t("placeYears", { ...place, ...mapValues(years, String) })
+            ? t.rich("placeYears", {
+                ...place,
+                ...mapValues(years, String),
+                whole: (chunks) => (
+                  <span className="whitespace-nowrap">{chunks}</span>
+                ),
+              })
             : t("place", place)}
         </span>
       </span>
