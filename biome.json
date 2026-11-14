@@ -50,7 +50,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/lib/analytics-browser.ts"],
+      "includes": ["src/lib/analytics-browser.ts", "src/lib/cookies.ts"],
       "linter": {
         "rules": {
           "suspicious": {

@@ -37,6 +37,10 @@ export const openExamParams = openExams.map((e) => ({
 
 export const examByPath = (path: string) => openByPath.get(path);
 
+const openPathOf = new Map(openExams.map((e) => [e.id, e.path]));
+
+export const openExamPath = (id: string) => openPathOf.get(id);
+
 function openExamAt(path: string) {
   const id = openByPath.get(path);
   if (!id) throw new Error(`exam ${path} is not open`);
