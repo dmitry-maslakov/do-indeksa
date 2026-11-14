@@ -13,7 +13,7 @@ export function ExamYears({ examId }: { examId: string }) {
 
   return (
     <section className="rounded-xl border bg-card px-5 py-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
         <h2 className="font-semibold text-lg tracking-tight">{t("exams")}</h2>
         <div className="flex items-center gap-3 md:gap-4">
           {about && (

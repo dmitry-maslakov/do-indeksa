@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import ru from "../messages/ru.json";
 import { at, expect, test } from "./fixtures";
 
 test(
@@ -109,6 +110,10 @@ for (const path of routes) {
     await fitsPhone(page, errors, path, "Nalog");
   });
 }
+
+test("/ru fits a guest phone", { tag: "@mobile" }, ({ page, errors }) =>
+  fitsPhone(page, errors, "/ru", ru.UserMenu.signIn),
+);
 
 test("the nav comes back after leaving a task on a phone", {
   tag: "@mobile",
