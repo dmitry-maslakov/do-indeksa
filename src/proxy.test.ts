@@ -21,66 +21,96 @@ const redirect = async (path: string) => {
 
 describe("proxy", () => {
   it.each([
-    "/bank/eks-001",
-    "/theory/exponential-equations",
-    "/theory/exponential-equations/methods",
-    "/theory/exponential-equations/methods/substitution",
-    "/variants/ftn-p1-2025",
-    "/variants/set-eks-001.log-001",
-    "/bank/start/logarithms",
-    "/bank",
-    "/bank/topic/logarithms",
-    "/ru/bank/topic/logarithms?level=easy",
-    "/bank/topic/logarithms/2",
-    "/theory",
-    "/variants",
-    "/ru/theory/exponential-equations",
+    "/ftn/p1/bank/eks-001",
+    "/ftn/p1/theory/exponential-equations",
+    "/ftn/p1/theory/exponential-equations/methods",
+    "/ftn/p1/theory/exponential-equations/methods/substitution",
+    "/ftn/p1/variants/ftn-p1-2025",
+    "/ftn/p1/variants/set-eks-001.log-001",
+    "/ftn/p1/bank/start/logarithms",
+    "/ftn/p1/bank",
+    "/ftn/p1/bank/topic/logarithms",
+    "/ru/ftn/p1/bank/topic/logarithms?level=easy",
+    "/ftn/p1/bank/topic/logarithms/2",
+    "/ftn/p1/theory",
+    "/ftn/p1/variants",
+    "/ru/ftn/p1/theory/exponential-equations",
   ])("lets %s through", async (path) => {
     expect(await rewrite(path)).not.toMatch(/\/404$/);
   });
 
   it.each([
-    ["/bank/nema-zadatka", "sr-Latn"],
-    ["/theory/nema-teme", "sr-Latn"],
-    ["/theory/nema-teme/methods", "sr-Latn"],
-    ["/theory/exponential-equations/methods/nema-metoda", "sr-Latn"],
-    ["/theory/nema-teme/methods/substitution", "sr-Latn"],
-    ["/variants/nema-varijante", "sr-Latn"],
-    ["/variants/set-eks-001.nema-zadatka", "sr-Latn"],
-    ["/ru/theory/nema-teme", "ru"],
-    ["/en/variants/nema-varijante", "en"],
-    ["/sr-Latn/bank/nema-zadatka", "sr-Latn"],
-    ["/bank/topic/nema-teme", "sr-Latn"],
-    ["/en/bank/topic/nema-teme", "en"],
-    ["/bank/topic/nema-teme/2", "sr-Latn"],
-    ["/bank/topic/logarithms/1", "sr-Latn"],
-    ["/bank/topic/logarithms/02", "sr-Latn"],
-    ["/ru/bank/topic/logarithms/strana", "ru"],
+    ["/ftn/p1/bank/nema-zadatka", "sr-Latn"],
+    ["/ftn/p1/theory/nema-teme", "sr-Latn"],
+    ["/ftn/p1/theory/nema-teme/methods", "sr-Latn"],
+    ["/ftn/p1/theory/exponential-equations/methods/nema-metoda", "sr-Latn"],
+    ["/ftn/p1/theory/nema-teme/methods/substitution", "sr-Latn"],
+    ["/ftn/p1/variants/nema-varijante", "sr-Latn"],
+    ["/ftn/p1/variants/set-eks-001.nema-zadatka", "sr-Latn"],
+    ["/ru/ftn/p1/theory/nema-teme", "ru"],
+    ["/en/ftn/p1/variants/nema-varijante", "en"],
+    ["/sr-Latn/ftn/p1/bank/nema-zadatka", "sr-Latn"],
+    ["/ftn/p1/bank/topic/nema-teme", "sr-Latn"],
+    ["/en/ftn/p1/bank/topic/nema-teme", "en"],
+    ["/ftn/p1/bank/topic/nema-teme/2", "sr-Latn"],
+    ["/ftn/p1/bank/topic/logarithms/1", "sr-Latn"],
+    ["/ftn/p1/bank/topic/logarithms/02", "sr-Latn"],
+    ["/ru/ftn/p1/bank/topic/logarithms/strana", "ru"],
   ])("sends %s to the not found page", async (path, locale) => {
     expect(await rewrite(path)).toBe(missing(locale));
   });
 
   it.each([
-    ["/bank?topic=logarithms", "/bank/topic/logarithms"],
+    ["/ftn/p1/bank?topic=logarithms", "/ftn/p1/bank/topic/logarithms"],
     [
-      "/bank?q=log&topic=logarithms&level=easy",
-      "/bank/topic/logarithms?q=log&level=easy",
+      "/ftn/p1/bank?q=log&topic=logarithms&level=easy",
+      "/ftn/p1/bank/topic/logarithms?q=log&level=easy",
     ],
     [
-      "/ru/bank?topic=logarithms&sort=hard",
-      "/ru/bank/topic/logarithms?sort=hard",
+      "/ru/ftn/p1/bank?topic=logarithms&sort=hard",
+      "/ru/ftn/p1/bank/topic/logarithms?sort=hard",
     ],
-    ["/sr-Latn/bank?topic=logarithms", "/sr-Latn/bank/topic/logarithms"],
     [
-      "/en/bank?utm_source=ig&topic=logarithms",
-      "/en/bank/topic/logarithms?utm_source=ig",
+      "/sr-Latn/ftn/p1/bank?topic=logarithms",
+      "/sr-Latn/ftn/p1/bank/topic/logarithms",
     ],
-    ["/bank?topic=&level=easy", "/bank?level=easy"],
+    [
+      "/en/ftn/p1/bank?utm_source=ig&topic=logarithms",
+      "/en/ftn/p1/bank/topic/logarithms?utm_source=ig",
+    ],
+    ["/ftn/p1/bank?topic=&level=easy", "/ftn/p1/bank?level=easy"],
   ])("moves %s to %s", async (path, location) => {
     expect(await redirect(path)).toEqual([
       308,
       `https://doindeksa.rs${location}`,
     ]);
+  });
+
+  it.each([
+    ["/ftn/p3", "sr-Latn"],
+    ["/ftn/p9/bank", "sr-Latn"],
+    ["/ru/xyz/p1/bank", "ru"],
+    ["/bank/eks-001", "sr-Latn"],
+  ])(
+    "sends %s outside an open exam to the not found page",
+    async (path, locale) => {
+      expect(await rewrite(path)).toBe(missing(locale));
+    },
+  );
+
+  it.each([
+    ["/", "/ftn/p1"],
+    ["/sr-Latn", "/ftn/p1"],
+    ["/ru?utm_source=ig", "/ru/ftn/p1?utm_source=ig"],
+  ])("sends %s into the first open exam", async (path, location) => {
+    const response = await proxy(
+      new NextRequest(new URL(path, "https://doindeksa.rs")),
+    );
+    expect([response.status, response.headers.get("location")]).toEqual([
+      307,
+      `https://doindeksa.rs${location}`,
+    ]);
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
   it.each([

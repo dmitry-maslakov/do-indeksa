@@ -9,7 +9,12 @@ import {
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { bankHref, pageOf } from "@/features/bank/params";
-import { maxPlaces } from "@/features/catalog/exams";
+import {
+  examByPath,
+  examOf,
+  firstOpenExam,
+  maxPlaces,
+} from "@/features/catalog/exams";
 import { customTaskIds } from "@/features/variants/variant-id";
 import { type RouteTemplate, routeOf } from "@/lib/routes";
 import { routing } from "./i18n/routing";
@@ -47,8 +52,22 @@ function withTraceTiming(response: NextResponse) {
   return response;
 }
 
+const notFound = (request: NextRequest, locale: string) =>
+  NextResponse.rewrite(new URL(`/${locale}/404`, request.url));
+
+function toExam(request: NextRequest, locale: string) {
+  const url = request.nextUrl.clone();
+  const prefix = locale === routing.defaultLocale ? "" : `/${locale}`;
+  url.pathname = `${prefix}${examOf(firstOpenExam()).path}`;
+  const response = NextResponse.redirect(url, 307);
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
+
 async function respond(request: NextRequest) {
-  const { locale, route, params } = routeOf(request.nextUrl.pathname);
+  const { locale, exam, route, params } = routeOf(request.nextUrl.pathname);
+  if (route === "/" && !exam) return toExam(request, locale);
+  if (exam && !examByPath(exam)) return notFound(request, locale);
   const topic = request.nextUrl.searchParams.get("topic");
   if (route === "/bank" && topic !== null) {
     const url = request.nextUrl.clone();
@@ -57,7 +76,7 @@ async function respond(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
   return contentPages[route]?.(...params) === false
-    ? NextResponse.rewrite(new URL(`/${locale}/404`, request.url))
+    ? notFound(request, locale)
     : intl(request);
 }
 
