@@ -26,9 +26,9 @@ export function UserMenu() {
 
   if (isPending)
     return (
-      <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-3 font-semibold text-sm *:invisible sm:px-4 [&_svg]:size-4">
+      <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-2 font-semibold text-sm *:invisible sm:px-4 [&_svg]:size-4">
         <GoogleLogo />
-        <span className="max-[24rem]:sr-only">{t("signIn")}</span>
+        <span className="max-[24.25rem]:sr-only">{t("signIn")}</span>
       </Skeleton>
     );
 
@@ -38,10 +38,10 @@ export function UserMenu() {
         from="header"
         variant="tint"
         size="sm"
-        className="px-3 sm:px-4"
+        className="px-2 sm:px-4"
       >
         <GoogleLogo />
-        <span className="max-[24rem]:sr-only">{t("signIn")}</span>
+        <span className="max-[24.25rem]:sr-only">{t("signIn")}</span>
       </GoogleSignInButton>
     );
   }
