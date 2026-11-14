@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
-import { type Locale, useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,30 +39,25 @@ interface ExamListProps {
 
 const pickAll = { pathname: "/", query: { pick: "1" } };
 
-function entriesOf(groups: ExamGroup[], current: string, locale: Locale) {
+function entriesOf(groups: ExamGroup[], current: string) {
   const ranked = groups.flatMap((g) => g.exams);
   return groups.map(({ exams, ...group }) => ({
     ...group,
-    exams: exams.map((exam) => {
-      const labels: Partial<Record<Locale, string>> = exam.label ?? {};
-      return {
-        ...exam,
-        name: labels[locale] ?? exam.name,
-        checked: exam.id === current,
-        intent: intentOf({ via: "switcher", rank: ranked.indexOf(exam) + 1 }),
-      };
-    }),
+    exams: exams.map((exam) => ({
+      ...exam,
+      checked: exam.id === current,
+      intent: intentOf({ via: "switcher", rank: ranked.indexOf(exam) + 1 }),
+    })),
   }));
 }
 
 export function ExamSwitcher({ groups, current }: ExamSwitcherProps) {
   const t = useTranslations("ExamSwitcher");
-  const locale = useLocale();
   const group = groups.find((g) => g.exams.some((e) => e.id === current));
   const exam = group?.exams.find((e) => e.id === current);
   if (!group || !exam) return null;
   const pill = t("title", { faculty: group.short, exam: exam.title });
-  const entries = entriesOf(groups, current, locale);
+  const entries = entriesOf(groups, current);
 
   return (
     <>
