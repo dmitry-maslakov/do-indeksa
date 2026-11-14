@@ -72,10 +72,12 @@ for (const [from, to] of [
   ["/sr-Latn/launch", "/"],
   ["/ru/launch", "/ru"],
 ] as const) {
-  test(`moves ${from} to the start for now`, async ({ request }) => {
+  test(`moves ${from} to the landing in one hop`, async ({ request }) => {
     const res = await request.get(from, { maxRedirects: 0 });
     expect(res.status()).toBe(statusOf("/launch"));
     expect(res.headers().location).toBe(to);
+    const next = await request.get(to, { maxRedirects: 0 });
+    expect(next.status()).toBe(200);
   });
 }
 
@@ -108,7 +110,6 @@ for (const path of [
 }
 
 for (const [cookie, from, to] of [
-  ["", "/", "/ftn/p1"],
   ["__Host-exam=ftn-p1", "/", "/ftn/p1"],
   ["__Host-exam=ftn-p1", "/sr-Latn", "/ftn/p1"],
   ["__Host-exam=ftn-p1", "/ru", "/ru/ftn/p1"],
@@ -122,6 +123,22 @@ for (const [cookie, from, to] of [
     expect(res.status()).toBe(307);
     expect(res.headers().location).toBe(to);
     expect(res.headers()["cache-control"]).toContain("no-store");
+  });
+}
+
+for (const [cookie, path] of [
+  ["", "/"],
+  ["", "/ru"],
+  ["__Host-exam=nope", "/"],
+  ["__Host-exam=ftn-p1", "/?pick=1"],
+  ["__Host-profile=x", "/en?pick=1"],
+] as const) {
+  test(`shows the landing at ${path} with "${cookie}"`, async ({ request }) => {
+    const res = await request.get(path, {
+      maxRedirects: 0,
+      headers: cookie ? { cookie } : {},
+    });
+    expect(res.status()).toBe(200);
   });
 }
 
