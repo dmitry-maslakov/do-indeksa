@@ -1,6 +1,6 @@
 import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
-import { pick, sortBy } from "es-toolkit";
+import { pick, sortBy, uniqBy } from "es-toolkit";
 import type { Locale } from "next-intl";
 import { z } from "zod";
 import { hourMs, minuteMs } from "@/lib/dates";
@@ -111,6 +111,15 @@ export const examHours = ({ minutes }: Pick<Exam, "minutes">) =>
   ((minutes ?? 0) * minuteMs) / hourMs;
 
 export const aboutPaths = openExams.filter((e) => e.about).map((e) => e.path);
+
+export const examChoice = sortBy(openExams, [
+  (e) => facultyOf(e.faculty).order,
+  "order",
+]);
+
+export const openFaculties = uniqBy(examChoice, (e) => e.faculty).map((e) =>
+  facultyOf(e.faculty),
+);
 
 export const maxPlaces = Math.max(...allExams.map((e) => e.positions.length));
 
