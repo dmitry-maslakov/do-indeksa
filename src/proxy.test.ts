@@ -44,6 +44,8 @@ describe("proxy", () => {
     "/ftn/p1/theory",
     "/ftn/p1/variants",
     "/ru/ftn/p1/theory/exponential-equations",
+    "/RU/ftn/p1/bank",
+    "/En/privacy",
   ])("lets %s through", async (path) => {
     expect(await rewrite(path)).not.toMatch(/\/404$/);
   });
@@ -111,6 +113,7 @@ describe("proxy", () => {
     ["/", "/ftn/p1"],
     ["/sr-Latn", "/ftn/p1"],
     ["/ru?utm_source=ig", "/ru/ftn/p1?utm_source=ig"],
+    ["/RU", "/ru/ftn/p1"],
   ])("sends %s into the first open exam", async (path, location) => {
     const response = await proxy(
       new NextRequest(new URL(path, "https://doindeksa.rs")),

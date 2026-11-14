@@ -23,6 +23,8 @@ describe("routeOf", () => {
     ["/ftn", "sr-Latn", null, "/[...rest]"],
     ["/ftn/programs", "sr-Latn", "/ftn/programs", "/"],
     ["/ru/ftn/p1/bank/eks-001", "ru", "/ftn/p1", "/bank/[id]"],
+    ["/RU/ftn/p1/bank", "ru", "/ftn/p1", "/bank"],
+    ["/SR-LATN/privacy", "sr-Latn", null, "/privacy"],
     ["/a/b/c/d/e/f", "sr-Latn", "/a/b", "/[...rest]"],
   ])("maps %s", (pathname, locale, exam, route) => {
     expect(routeOf(pathname)).toMatchObject({ locale, exam, route });
