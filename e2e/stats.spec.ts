@@ -67,7 +67,7 @@ test("a signed-in student opens statistics from the account menu", async ({
   errors,
 }) => {
   await auth.signIn();
-  await page.goto("/");
+  await page.goto(at("/"));
   await page.getByRole("button", { name: "Nalog" }).click();
   await page.getByRole("menuitem", { name: "Statistika" }).click();
   await expect(page).toHaveURL(/\/stats$/);

@@ -15,7 +15,7 @@ const hydrated = (page: Page) =>
   );
 
 async function open(page: Page, path = "/bank") {
-  await page.goto(path);
+  await page.goto(at(path));
   await hydrated(page);
 }
 
@@ -253,7 +253,7 @@ test("Zadaci and Svi zadaci keep the student's filters", async ({
   await expect(page).toHaveURL(/\/bank\/(?!start\/|topic\/)[\w-]+$/);
   await backToList(zadaci);
 
-  await page.goto("/");
+  await page.goto(at("/"));
   await backToList(zadaci);
   expect(errors).toEqual([]);
 });

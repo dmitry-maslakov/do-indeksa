@@ -5,7 +5,7 @@ test(
   "the main navigation follows the breakpoint",
   { tag: "@responsive" },
   async ({ page }, { project }) => {
-    await page.goto("/");
+    await page.goto(at("/"));
     const nav = page.getByRole("navigation", { name: "Glavna navigacija" });
     await expect(nav).toHaveCount(1);
     await expect(page.getByRole("banner").getByRole("navigation")).toHaveCount(

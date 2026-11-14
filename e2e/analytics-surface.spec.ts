@@ -17,7 +17,7 @@ needsRecorder();
 test("home records the suggestion and the picks a visitor sees", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(at("/"));
   const start = page.getByRole("link", { name: "Počni →" });
   await expect(start).toBeVisible();
   await hydrated(page);
@@ -92,7 +92,7 @@ test("an opened suggestion keeps the id it was stored with", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/");
+  await page.goto(at("/"));
   await hydrated(page);
   await expect
     .poll(() => recorded(page, "suggestion_shown"))
