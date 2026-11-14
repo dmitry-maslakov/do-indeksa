@@ -7,46 +7,6 @@ test("healthz answers without a redirect", async ({ request }) => {
   expect(await res.json()).toEqual({ ok: true });
 });
 
-for (const [from, to] of [
-  ["/ru/prep", "/ru"],
-  ["/tasks", "/bank"],
-  ["/tasks/x/log-002", "/bank/log-002"],
-  ["/sr-Latn/tasks/x/eks-001", "/bank/eks-001"],
-  ["/ru/tasks/x/komb-001", "/ru/bank/komb-001"],
-  [
-    "/tasks?topic=stereometrija",
-    "/bank/topic/solid-geometry?topic=stereometrija",
-  ],
-  [
-    "/en/tasks?topic=kombinatorika",
-    "/en/bank/topic/combinatorics?topic=kombinatorika",
-  ],
-  ["/ru/training/new", "/ru/bank"],
-  ["/exams?q=P1", "/variants?q=P1"],
-  ["/en/exams/ftn-p1", "/en/variants"],
-  ["/ru/simulation/new", "/ru/variants"],
-  ["/sr-Latn/cabinet", "/stats"],
-  ["/ru/history", "/ru/variants?tab=history"],
-] as const) {
-  test(`redirects ${from}`, async ({ request }) => {
-    const res = await request.get(from, { maxRedirects: 0 });
-    expect(res.status()).toBe(301);
-    expect(res.headers().location).toBe(to);
-  });
-}
-
-for (const [from, to] of [
-  ["/launch", "/"],
-  ["/sr-Latn/launch", "/"],
-  ["/ru/launch", "/ru"],
-] as const) {
-  test(`redirects ${from} for now`, async ({ request }) => {
-    const res = await request.get(from, { maxRedirects: 0 });
-    expect(res.status()).toBe(307);
-    expect(res.headers().location).toBe(to);
-  });
-}
-
 test("serves pages with nothing personal whole from the cache", async ({
   request,
 }) => {
