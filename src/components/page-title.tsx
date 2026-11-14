@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 
 const sizes = {
   md: "text-2xl md:text-3xl",
-  lg: "text-[32px] leading-10",
+  lg: "text-balance text-[32px] leading-10",
 };
 
 export function PageTitle({
