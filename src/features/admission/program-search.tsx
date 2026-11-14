@@ -89,7 +89,10 @@ function LiveCount() {
   const { query, count } = useSearch();
   return (
     <p className="sr-only" aria-live="polite">
-      {normalize(query) && count > 0 ? t("found", { count }) : ""}
+      {normalize(query) &&
+        (count > 0
+          ? t("found", { count })
+          : t("none", { query: query.trim() }))}
     </p>
   );
 }
@@ -115,7 +118,7 @@ export function SearchField({
 
   return (
     <>
-      <search className={cn("relative block", className)}>
+      <search className={cn("relative block noscript:hidden", className)}>
         <SearchIcon
           aria-hidden="true"
           className="pointer-events-none absolute top-3.5 left-3.5 z-10 size-4 text-subtle"

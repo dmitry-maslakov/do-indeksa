@@ -107,6 +107,7 @@ export async function AdmissionSection({ faculty: id }: { faculty: string }) {
             <ExternalLink
               href={link.url}
               className="flex min-h-12 items-center justify-between gap-3 border-b font-medium text-[15px] text-data hover:underline"
+              iconClassName="size-4"
             >
               {link.title}
             </ExternalLink>

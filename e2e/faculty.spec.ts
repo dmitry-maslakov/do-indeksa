@@ -43,7 +43,10 @@ test("finds a programme and keeps the query in the address", async ({
   await expect(first).toBeVisible();
 
   await field.fill("qqqq");
-  await expect(page.getByText(/„qqqq“/)).toBeVisible();
+  await expect(page.locator("main [aria-live=polite]")).toHaveText(/„qqqq“/);
+  await expect(
+    page.getByRole("button", { name: "Obriši pretragu" }),
+  ).toBeVisible();
   await expect(rows.filter({ visible: true })).toHaveCount(0);
   await field.press("Escape");
   await expect(field).toHaveValue("");

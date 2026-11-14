@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   currentAdmission,
   latestResults,
+  maxPoints,
 } from "@/features/admission/admissions";
 import {
   FilterGroup,
@@ -62,9 +63,7 @@ async function ColumnHead({ faculty }: { faculty: string }) {
             <span className={caption}>
               {t.rich("colCutoffs", {
                 year,
-                max: String(
-                  current.scoring.school.max + current.scoring.exam.max,
-                ),
+                max: String(maxPoints(current)),
                 wide,
               })}
             </span>
@@ -120,7 +119,9 @@ export async function Register({ faculty }: { faculty: string }) {
         {closed.length > 0 && (
           <FilterGroup keys={closed.flatMap((g) => g.keys)}>
             <div className="pt-9">
-              <h2 className="font-semibold text-lg">{t("others")}</h2>
+              <h2 className="font-semibold text-lg tracking-normal">
+                {t("others")}
+              </h2>
               <p className="mt-0.5 text-[15px] text-muted-foreground">
                 {t("othersNote")}
               </p>

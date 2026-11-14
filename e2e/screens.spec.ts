@@ -122,7 +122,7 @@ const missing = [
   "/bank/topic/logarithms/1",
   "/bank/topic/logarithms/999",
   "/exams/ftn-p3",
-  "/nema-fakulteta",
+  "/no-such-faculty",
 ];
 
 for (const path of missing) {

@@ -1,14 +1,18 @@
 import { cn } from "cn";
+import type { Admission, Program } from "content-collections";
 import { getTranslations } from "next-intl/server";
 import { Figure } from "@/features/admission/figure";
 import { FilterRow } from "@/features/admission/program-search";
 import { Link } from "@/i18n/navigation";
+import { intentOf } from "@/lib/analytics-browser";
 
 export const tracks =
   "grid grid-cols-[minmax(0,--spacing(25))_minmax(0,1fr)_minmax(0,--spacing(29))] gap-x-3 lg:grid-cols-[minmax(0,1fr)_--spacing(44)_--spacing(40)_--spacing(64)] lg:gap-x-8";
 
 const cell = "text-[15px] tabular-nums lg:py-3.5 lg:text-right";
 const note = "block whitespace-nowrap text-subtle text-xs leading-3.5";
+
+type Places = Admission["programs"][string];
 
 interface Pair {
   budget?: number | null;
@@ -19,16 +23,10 @@ interface ProgramRowProps {
   faculty: string;
   short: string;
   searchKey: string;
-  program: {
-    slug: string;
-    name: string;
-    short?: string;
-    level: "academic" | "applied";
-    years: number;
-    checked?: string;
-  };
-  places?: Pair & { tuition?: number | null };
-  cutoff?: Pair;
+  rank: number;
+  program: Program;
+  places?: Places;
+  cutoff?: Places["cutoff"];
 }
 
 async function PairCell({
@@ -47,7 +45,7 @@ async function PairCell({
     <td className={cn(cell, "lg:grid lg:grid-cols-2 lg:gap-x-4")}>
       <span className="block whitespace-nowrap lg:contents">
         <span>
-          <span className="sr-only">{t("srBudget")} </span>
+          <span className="sr-only">{t("budget")} </span>
           <Figure value={pair?.budget} kind={kind} short={short} />
         </span>
         <span aria-hidden="true" className="whitespace-pre lg:hidden">
@@ -74,6 +72,7 @@ export async function ProgramRow({
   faculty,
   short,
   searchKey,
+  rank,
   program,
   places,
   cutoff,
@@ -97,6 +96,7 @@ export async function ProgramRow({
         {program.checked ? (
           <Link
             href={`/${faculty}/programs/${program.slug}`}
+            data-intent={intentOf({ via: "faculty_row", rank })}
             className="text-data underline-offset-3 hover:underline"
           >
             {program.name}
@@ -122,7 +122,7 @@ export async function ProgramRow({
       </th>
       <PairCell pair={places} kind="count" short={short} />
       <td className={cell}>
-        <Figure value={places?.tuition} kind="money" short={short} />
+        <Figure value={places?.tuition} kind="count" short={short} />
         {places?.tuition === null && (
           <span
             aria-hidden="true"

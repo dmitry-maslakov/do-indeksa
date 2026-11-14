@@ -25,7 +25,7 @@ describe("getFacts", () => {
     const facts = await getFacts();
     expect(facts.score(63.48)).toBe("63,48");
     expect(facts.score(32.8)).toBe("32,80");
-    expect(facts.money(140000)).toBe("140.000");
+    expect(facts.count(140000)).toBe("140.000");
     expect(facts.euro(2000)).toBe("2.000\u00a0€");
     expect(facts.schoolYear(2026)).toBe("2026/27");
     expect(facts.word(5)).toBe("pet");
