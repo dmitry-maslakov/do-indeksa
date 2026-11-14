@@ -605,5 +605,25 @@
     "scoring": "Za upis se sabiraju uspeh u srednjoj školi, od {schoolMin} do {schoolMax} bodova, i prijemni, od {examMin} do {examMax}; ukupno najviše {max}.",
     "scoringLink": "Kako se računaju bodovi za upis",
     "allPrograms": "Svi smerovi {short}-a"
+  },
+  "Landing": {
+    "metaTitle": "Do indeksa — prijemni iz matematike{count, select, 1 { za {faculties}} other {}}",
+    "metaDescription": "Besplatna priprema za prijemni iz matematike za upis na {faculties}: pravi {years} sa rešenjima, zadaci po temama i probni prijemni sa satom, bez naloga.",
+    "title": "Odradi prijemni pre prijemnog.",
+    "lead": "Priprema za prijemni iz matematike za upis na fakultet: stari prijemni sa rešenjima, zadaci po temama i probni prijemni sa satom.",
+    "choose": "Izaberi svoj prijemni",
+    "place": "{faculty} · {city}",
+    "years": "prijemni {first}–{last}",
+    "start": "Počni",
+    "byProgram": "Ne znaš koji prijemni polažeš? Po smeru",
+    "free": "Besplatno, bez naloga i bez reklama.",
+    "dailyTitle": "Svaki dan znaš šta da rešavaš.",
+    "dailyText": "Ne gubiš vreme na ono što već znaš, a teme koje ti ne idu ne ostaju po strani.",
+    "tasksTitle": "Zadataka ti neće ponestati.",
+    "tasksText": "Kad prođeš sve stare prijemne, vežbanje se nastavlja. Banka zadataka stalno raste, a svake nedelje izlazi nova varijanta.",
+    "sample": "Primer: {faculty} · {exam}",
+    "format": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · {points, plural, one {# poen} few {# poena} other {# poena}}",
+    "note": "Do indeksa je besplatna priprema za prijemni ispit iz matematike na {places}. Nije zvanični sajt fakulteta.",
+    "notePlace": "{name} ({short}) u {cityLocative}"
   }
 }

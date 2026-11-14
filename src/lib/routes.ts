@@ -1,6 +1,7 @@
 import { routing } from "@/i18n/routing";
 
 const siteTemplates = [
+  "/",
   "/privacy",
   "/terms",
   "/[faculty]",
@@ -44,7 +45,7 @@ const patternsOf = (templates: readonly RouteTemplate[]) =>
       [route, new RegExp(`^${route.replace(/\[\w+\]/g, "([^/]+)")}$`)] as const,
   );
 
-const sitePatterns = patternsOf(["/", ...siteTemplates]);
+const sitePatterns = patternsOf(siteTemplates);
 const examPatterns = patternsOf(examTemplates);
 
 function match(

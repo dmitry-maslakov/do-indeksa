@@ -99,8 +99,12 @@ function toExam(request: NextRequest, locale: string, path: string) {
 
 async function respond(request: NextRequest) {
   const { locale, exam, route, params } = routeOf(request.nextUrl.pathname);
-  if (route === "/" && !exam)
-    return toExam(request, locale, returningTo(request) ?? firstExamPath());
+  const target =
+    route === "/" &&
+    !exam &&
+    !request.nextUrl.searchParams.has("pick") &&
+    returningTo(request);
+  if (target) return toExam(request, locale, target);
   if (exam && !examByPath(exam)) return notFound(request, locale);
   if (route === "/about" && !(exam && aboutExams.has(exam)))
     return notFound(request, locale);
