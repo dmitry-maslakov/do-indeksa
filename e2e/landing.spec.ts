@@ -1,6 +1,6 @@
 import { allExams, allTasks, allTopics } from "content-collections";
 import { sortBy } from "es-toolkit";
-import { expect, test } from "./fixtures";
+import { expect, hydrated, test } from "./fixtures";
 
 const open = sortBy(
   allExams.filter((e) => e.open),
@@ -38,6 +38,61 @@ test("keeps the years of an exam button on one line", async ({ page }) => {
       return new Set([...range.getClientRects()].map((r) => r.top)).size;
     });
     expect(lines, path).toBe(1);
+  }
+});
+
+test("fits several exams with long names in their buttons", async ({
+  page,
+}) => {
+  const name =
+    "Mathematics with an aptitude test for environmental protection/occupational safety, invented to be longer than any real exam name";
+  for (const width of [1280, 360]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const path of ["/", "/ru", "/en"]) {
+      await page.goto(path);
+      await hydrated(page);
+      await examButtons(page)
+        .first()
+        .evaluate((button, name) => {
+          const copy = button.cloneNode(true) as Element;
+          const title = copy.children[1]?.firstElementChild;
+          if (title) title.textContent = name;
+          button.after(copy, button.cloneNode(true));
+        }, name);
+      const buttons = await examButtons(page).evaluateAll((all) =>
+        all.map((button) => {
+          const box = button.getBoundingClientRect();
+          const holds = (el: Element) => {
+            const r = el.getBoundingClientRect();
+            return (
+              Math.round(r.left) >= Math.round(box.left) &&
+              Math.round(r.right) <= Math.round(box.right) &&
+              Math.round(r.top) >= Math.round(box.top) &&
+              Math.round(r.bottom) <= Math.round(box.bottom)
+            );
+          };
+          const place = document.createRange();
+          place.selectNodeContents(
+            button.children[1]?.lastElementChild ?? button,
+          );
+          return {
+            fits: box.left >= 0 && box.right <= innerWidth,
+            holds: [...button.querySelectorAll("*")].every(holds),
+            placeLines: new Set(
+              [...place.getClientRects()].map((r) => Math.round(r.top)),
+            ).size,
+          };
+        }),
+      );
+      expect(buttons, `${path} ${width}px`).toHaveLength(open.length + 2);
+      for (const button of buttons) {
+        expect(button, `${path} ${width}px`).toMatchObject({
+          fits: true,
+          holds: true,
+        });
+        if (width > 768) expect(button.placeLines, path).toBe(1);
+      }
+    }
   }
 });
 

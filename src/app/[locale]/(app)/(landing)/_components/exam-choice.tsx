@@ -23,14 +23,14 @@ function ExamButton({ exam, faculty, rank }: ExamButtonProps) {
       exam={exam.path}
       href="/"
       data-intent={intentOf({ via: "landing_exam", rank })}
-      className="group flex min-h-19 items-center gap-3 rounded-3xl bg-muted py-3 pr-3 pl-2.5 outline-none transition-colors hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring md:h-21 md:w-115 md:gap-3.5 md:px-3.5 md:text-left"
+      className="group flex min-h-19 items-center gap-3 rounded-3xl bg-muted py-3 pr-3 pl-2.5 outline-none transition-colors hover:bg-untouched focus-visible:ring-2 focus-visible:ring-ring md:min-h-21 md:w-min md:min-w-115 md:gap-3.5 md:px-3.5 md:text-left"
     >
       <ExamBadge exam={exam} size="md" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 md:gap-0">
-        <span className="font-semibold text-base leading-[21px] md:text-[17px] md:leading-[23px]">
+        <span className="font-semibold text-base leading-[21px] wrap-anywhere md:text-[17px] md:leading-[23px]">
           {exam.name}
         </span>
-        <span className="font-medium text-[13px] leading-4.5 md:text-sm md:leading-5">
+        <span className="font-medium text-[13px] leading-4.5 md:whitespace-nowrap md:text-sm md:leading-5">
           {years
             ? t.rich("placeYears", {
                 ...place,
@@ -66,7 +66,7 @@ export function ExamChoice() {
       <p className="mt-8 font-semibold text-[17px] leading-6 md:mt-12 md:text-lg md:leading-6.5">
         {t("choose")}
       </p>
-      <div className="mt-3 flex flex-col gap-2 md:mt-4 md:w-full md:max-w-234 md:flex-row md:flex-wrap md:justify-center md:gap-x-4 md:gap-y-3">
+      <div className="mt-3 flex flex-col gap-2 md:mt-4 md:w-full md:max-w-250 md:flex-row md:flex-wrap md:justify-center md:gap-x-4 md:gap-y-3">
         {exams.map(({ exam, faculty }, i) => (
           <ExamButton
             key={exam.id}
