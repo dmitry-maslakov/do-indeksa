@@ -2,22 +2,19 @@ import { cn } from "cn";
 import { getFormatter, getTranslations } from "next-intl/server";
 import {
   currentAdmission,
-  type ProgramYear,
-  resultYears,
+  type ResultYear,
   ruleGroups,
 } from "@/features/admission/admissions";
-import { Figure } from "@/features/admission/figure";
+import { Figure, getBound } from "@/features/admission/figure";
 import type { Program } from "@/features/admission/programs";
 import { facultyOf } from "@/features/catalog/faculties";
 import { getFacts } from "@/i18n/facts";
 import { Link } from "@/i18n/navigation";
-import { SourceYears } from "./source-years";
+import { SourceYears, sourceNotes } from "./source-years";
 
 const head =
   "border-b pb-2 text-right align-bottom font-medium text-muted-foreground text-xs";
 const cell = "border-b py-2.5 text-right font-medium text-base";
-
-type Bound = { over: number } | { atLeast: number };
 
 async function Rules({
   program,
@@ -26,10 +23,11 @@ async function Rules({
   program: Program;
   years: number[];
 }) {
-  const [t, facts, format] = await Promise.all([
+  const [t, facts, format, bound] = await Promise.all([
     getTranslations("Program"),
     getFacts(),
     getFormatter(),
+    getBound(),
   ]);
   const current = currentAdmission(program.faculty).year;
   const groups = ruleGroups(program.faculty).filter((g) =>
@@ -41,14 +39,6 @@ async function Rules({
       {groups.map(({ value, years: span }) => {
         const present = span.includes(current);
         const unit = present ? "yes" : "no";
-        const bound = (b: Bound) =>
-          "over" in b
-            ? t("bound", { kind: "over", points: format.number(b.over), unit })
-            : t("bound", {
-                kind: "atLeast",
-                points: format.number(b.atLeast),
-                unit,
-              });
         const from = Math.min(...span);
         const to = Math.max(...span);
         return (
@@ -58,8 +48,8 @@ async function Rules({
               single: from === to ? "yes" : "no",
               from: facts.schoolYear(from),
               to: facts.schoolYear(to),
-              budget: bound(value.budget),
-              self: bound(value.self),
+              budget: bound(value.budget, unit),
+              self: bound(value.self, unit),
               exam:
                 value.examMin === undefined
                   ? "none"
@@ -74,10 +64,10 @@ async function Rules({
 
 export async function CutoffsTable({
   program,
-  history,
+  results,
 }: {
   program: Program;
-  history: ProgramYear[];
+  results: ResultYear[];
 }) {
   const [t, facts] = await Promise.all([
     getTranslations("Program"),
@@ -85,14 +75,15 @@ export async function CutoffsTable({
   ]);
   const { short } = facultyOf(program.faculty);
   const current = currentAdmission(program.faculty);
-  const rows = resultYears(history);
-  const dashes = rows.filter(
+  const dashes = results.filter(
     (y) => y.cutoff.budget === null || y.cutoff.self === null,
   );
 
   return (
     <div>
-      <h3 className="mb-2 font-semibold text-base">{t("cutoffsTitle")}</h3>
+      <h3 className="mb-2 text-balance font-semibold text-base">
+        {t("cutoffsTitle")}
+      </h3>
       <table className="w-full table-fixed border-collapse tabular-nums">
         <caption className="caption-top pb-2.5 text-left text-[13px] text-muted-foreground">
           {t.rich("cutoffsCaption", {
@@ -126,7 +117,7 @@ export async function CutoffsTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ year, cutoff }) => (
+          {results.map(({ year, cutoff }) => (
             <tr key={year}>
               <th
                 scope="row"
@@ -144,12 +135,12 @@ export async function CutoffsTable({
           ))}
         </tbody>
       </table>
-      <div className="mt-3 space-y-1.5 text-[13px] text-muted-foreground">
+      <div className={sourceNotes}>
         {dashes.map(({ year }) => (
           <p key={year}>{t("dashNote", { short, year: String(year) })}</p>
         ))}
-        <Rules program={program} years={rows.map((y) => y.year)} />
-        {!current.statistics && program.checked && (
+        <Rules program={program} years={results.map((y) => y.year)} />
+        {!current.statistics && (
           <p>
             {t("statisticsMissing", {
               year: String(current.year),
@@ -159,7 +150,7 @@ export async function CutoffsTable({
           </p>
         )}
         <SourceYears
-          years={rows.toReversed().map(({ year, statistics }) => ({
+          years={results.toReversed().map(({ year, statistics }) => ({
             key: year,
             text: String(year),
             label: t("statisticsLabel", { short, year: String(year) }),

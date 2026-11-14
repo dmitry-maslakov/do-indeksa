@@ -9,6 +9,8 @@ import { type Ref, resolveRefs } from "./sources";
 export const sourceLink =
   "underline decoration-1 decoration-input underline-offset-3 hover:decoration-current";
 
+export const mutedSourceLink = `${sourceLink} hover:text-foreground`;
+
 interface SourceLineProps {
   faculty: string;
   refs: Ref[];

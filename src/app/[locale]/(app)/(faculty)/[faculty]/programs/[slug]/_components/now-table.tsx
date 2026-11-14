@@ -4,8 +4,6 @@ import { getTranslations } from "next-intl/server";
 import {
   currentAdmission,
   latestResults,
-  programHistory,
-  resultYears,
 } from "@/features/admission/admissions";
 import { Figure } from "@/features/admission/figure";
 import type { Program } from "@/features/admission/programs";
@@ -35,9 +33,11 @@ function RowHead({ title, note }: { title: string; note?: string }) {
 
 export async function NowTable({
   program,
+  results,
   className,
 }: {
   program: Program;
+  results: boolean;
   className?: string;
 }) {
   const [t, facts] = await Promise.all([
@@ -52,7 +52,6 @@ export async function NowTable({
   const year = facts.schoolYear(current.year);
   const resultsYear = latest ? facts.schoolYear(latest.year) : "";
   const foreign = current.fees?.foreignTuition;
-  const results = resultYears(programHistory(program.faculty, program.slug));
   const note = [
     foreign && t("foreignTuition", { amount: facts.euro(foreign) }),
     cutoff && t("cutoffsMeaning", { year: resultsYear }),
@@ -129,11 +128,7 @@ export async function NowTable({
         href="#upis"
         className="mt-1 flex min-h-11 items-center justify-between gap-2 font-medium text-[15px] text-data underline-offset-4 hover:[&>span]:underline"
       >
-        <span>
-          {t("admissionTitle", {
-            results: results.length > 0 ? "yes" : "no",
-          })}
-        </span>
+        <span>{t("admissionTitle", { results: results ? "yes" : "no" })}</span>
         <ArrowDownIcon aria-hidden className="size-4 shrink-0" />
       </a>
     </div>

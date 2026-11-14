@@ -20,3 +20,17 @@ export async function Figure({ value, kind, short }: FigureProps) {
     </>
   );
 }
+
+export async function getBound() {
+  const [t, facts] = await Promise.all([
+    getTranslations("Faculty"),
+    getFacts(),
+  ]);
+  return (
+    b: { over: number } | { atLeast: number },
+    unit: "yes" | "no" = "yes",
+  ) =>
+    "over" in b
+      ? t("bound", { kind: "over", points: facts.count(b.over), unit })
+      : t("bound", { kind: "atLeast", points: facts.count(b.atLeast), unit });
+}

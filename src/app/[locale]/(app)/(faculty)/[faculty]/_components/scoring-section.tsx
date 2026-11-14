@@ -1,26 +1,23 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import {
   currentAdmission,
   latestResults,
   maxPoints,
 } from "@/features/admission/admissions";
+import { getBound } from "@/features/admission/figure";
 import { SourceLine } from "@/features/admission/source-line";
 import { getFacts } from "@/i18n/facts";
 import { InfoSection } from "./info-section";
 
 export async function ScoringSection({ faculty }: { faculty: string }) {
-  const [t, facts, format] = await Promise.all([
+  const [t, facts, bound] = await Promise.all([
     getTranslations("Faculty"),
     getFacts(),
-    getFormatter(),
+    getBound(),
   ]);
   const current = currentAdmission(faculty);
   const { year, scoring, thresholds, tieBreak } = current;
   const results = latestResults(faculty);
-  const bound = (b: { over: number } | { atLeast: number }) =>
-    "over" in b
-      ? t("bound", { kind: "over", points: format.number(b.over) })
-      : t("bound", { kind: "atLeast", points: format.number(b.atLeast) });
 
   return (
     <InfoSection id="bodovi" title={t("scoringTitle")}>
