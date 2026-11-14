@@ -80,7 +80,7 @@ for (const [from, to] of [
 ] as const) {
   test(`moves ${from} to the exam page`, async ({ request }) => {
     const res = await request.get(from, { maxRedirects: 0 });
-    expect(res.status()).toBe(307);
+    expect(res.status()).toBe(301);
     expect(res.headers().location).toBe(to);
   });
 }
