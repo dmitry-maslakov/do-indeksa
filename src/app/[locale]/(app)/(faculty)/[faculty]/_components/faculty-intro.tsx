@@ -58,7 +58,7 @@ export async function FacultyIntro({ faculty: id }: { faculty: string }) {
             ),
           })}{" "}
           {t("unofficial", { short })}
-        </p>
+        </p>{" "}
         <nav aria-label={t("onPage")} className="inline font-medium">
           <a href="#bodovi" className={jumpLink}>
             {t("scoringTitle")}

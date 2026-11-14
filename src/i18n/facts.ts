@@ -18,7 +18,6 @@ export async function getFacts() {
 
   return {
     count: (n: number) => format.number(n),
-    money: (n: number) => format.number(n),
     score: (n: number) =>
       format.number(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     euro: (n: number) =>

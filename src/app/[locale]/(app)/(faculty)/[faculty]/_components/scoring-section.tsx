@@ -2,6 +2,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import {
   currentAdmission,
   latestResults,
+  maxPoints,
 } from "@/features/admission/admissions";
 import { SourceLine } from "@/features/admission/source-line";
 import { getFacts } from "@/i18n/facts";
@@ -13,7 +14,8 @@ export async function ScoringSection({ faculty }: { faculty: string }) {
     getFacts(),
     getFormatter(),
   ]);
-  const { year, scoring, thresholds, tieBreak } = currentAdmission(faculty);
+  const current = currentAdmission(faculty);
+  const { year, scoring, thresholds, tieBreak } = current;
   const results = latestResults(faculty);
   const bound = (b: { over: number } | { atLeast: number }) =>
     "over" in b
@@ -24,7 +26,7 @@ export async function ScoringSection({ faculty }: { faculty: string }) {
     <InfoSection id="bodovi" title={t("scoringTitle")}>
       <p>
         {t("scoringTotal", {
-          max: String(scoring.school.max + scoring.exam.max),
+          max: String(maxPoints(current)),
           schoolMin: String(scoring.school.min),
           schoolMax: String(scoring.school.max),
           examMin: String(scoring.exam.min),

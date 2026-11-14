@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   currentAdmission,
   latestResults,
+  maxPoints,
 } from "@/features/admission/admissions";
 import { FilterGroup } from "@/features/admission/program-search";
 import type { facultyPrograms } from "@/features/admission/programs";
@@ -60,7 +61,7 @@ async function ExamHead({
         id={`h-${exam.segment}`}
         title={exam.officialName}
         className={cn(
-          "col-start-1 flex items-baseline gap-2.5",
+          "col-start-1 flex items-baseline gap-2.5 tracking-normal",
           open ? "font-semibold text-lg" : "font-medium text-base",
         )}
       >
@@ -108,7 +109,7 @@ export async function ExamGroup({
   const results = latestResults(id);
   const { exam, programs, keys } = group;
   const year = results ? facts.schoolYear(results.year) : "";
-  const max = String(current.scoring.school.max + current.scoring.exam.max);
+  const max = String(maxPoints(current));
   const head = <ExamHead exam={exam} open={exam.open} />;
 
   return (
@@ -154,6 +155,7 @@ export async function ExamGroup({
                   faculty={id}
                   short={short}
                   searchKey={keys[i] ?? ""}
+                  rank={i + 1}
                   program={program}
                   places={current.programs[program.slug]}
                   cutoff={results?.programs[program.slug]?.cutoff}

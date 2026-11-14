@@ -3,7 +3,7 @@ import { getFacts } from "@/i18n/facts";
 
 interface FigureProps {
   value: number | null | undefined;
-  kind: "count" | "score" | "money";
+  kind: "count" | "score";
   short: string;
 }
 
