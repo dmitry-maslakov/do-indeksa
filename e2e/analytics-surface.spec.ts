@@ -330,6 +330,11 @@ test("theory records how far a page was read", async ({ page }) => {
 test("a solutions page records how far it was read", async ({ page }) => {
   await page.goto(at("/variants/ftn-p1-2025/solutions"));
   await hydrated(page);
+  await page
+    .getByRole("complementary", { name: "Zadaci" })
+    .getByRole("link", { name: /^10 / })
+    .click();
+  await expect(page).toHaveURL(/#task-10$/);
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForFunction(
     () => innerHeight + scrollY >= document.documentElement.scrollHeight - 1,
