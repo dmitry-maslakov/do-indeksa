@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import {
   answer,
+  at,
   expect,
   flush,
   hydrated,
@@ -35,7 +36,7 @@ const inOrder = (rows: Row["props"][]) =>
   );
 
 test("a task opened from Preporučeno is a picker pick", async ({ page }) => {
-  await page.goto("/bank/topic/logarithms");
+  await page.goto(at("/bank/topic/logarithms"));
   await page.getByRole("link", { name: "Preporučeno" }).first().click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect
@@ -52,7 +53,7 @@ test("a task opened from Preporučeno is a picker pick", async ({ page }) => {
 });
 
 test("a task opened from a bank card is a list pick", async ({ page }) => {
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await hydrated(page);
   const card = page.locator("main article a").first();
   const href = await card.getAttribute("href");
@@ -73,7 +74,7 @@ test("a task opened from a bank card is a list pick", async ({ page }) => {
 test("checking an answer records the input and the attempt", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
@@ -173,7 +174,7 @@ test("checking an answer records the input and the attempt", async ({
 });
 
 test("opening Rezultat records the answer as revealed", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page.getByRole("button", { name: "Rezultat" }).click();
   await page.getByRole("link", { name: "Sledeći zadatak" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
@@ -199,11 +200,11 @@ test("an answer sent after Rezultat was opened elsewhere is not recorded", async
   auth,
 }) => {
   await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await hydrated(page);
   await page.waitForFunction(() => customElements.get("math-field"));
   const other = await page.context().newPage();
-  await other.goto("/bank/eks-001");
+  await other.goto(at("/bank/eks-001"));
   await other.getByRole("button", { name: "Rezultat" }).click();
   await flush(other);
   await expect
@@ -219,7 +220,7 @@ test("an answer sent after Rezultat was opened elsewhere is not recorded", async
 test("the answer field records the keyboard, text mode and structures", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "1/2");
   const field = page.locator("math-field").first();
   await field.press("Shift+Alt+Space");
@@ -250,7 +251,7 @@ test.describe("on a phone", () => {
   test("the answer field records the math keyboard", {
     tag: "@mobile",
   }, async ({ page }) => {
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await page.waitForFunction(() => customElements.get("math-field"));
     const keys = mathKeys(page);
     await page.locator("math-field").first().tap();
@@ -269,7 +270,7 @@ test.describe("on a phone", () => {
 test("an answer changed after going back is still recorded", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Nije tačno", { exact: true })).toBeVisible();
@@ -293,7 +294,7 @@ test("an answer changed after going back is still recorded", async ({
 });
 
 test("leaving a task records how it was left", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "1");
   await page.getByRole("link", { name: "Preskoči" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
@@ -328,7 +329,7 @@ test("opens from the hero, the next link and a reload are told apart", async ({
   await page.goto("/");
   await page.getByRole("link", { name: "Počni →" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page.getByRole("button", { name: "Rešenje" }).click();
   await page.getByRole("link", { name: "Sledeći zadatak" }).click();
   await expect(page).toHaveURL(/\/bank\/(?!eks-001$)[\w-]+$/);
@@ -359,7 +360,7 @@ test("opens from the hero, the next link and a reload are told apart", async ({
 test("opening the report form is recorded, closing it is not", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await hydrated(page);
   const report = page.getByText("Prijavi grešku u zadatku");
   await report.click();

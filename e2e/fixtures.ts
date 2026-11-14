@@ -8,6 +8,10 @@ export { expect } from "@playwright/test";
 
 const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
+const exam = "";
+
+export const at = (path: string) => `${exam}${path}`;
+
 export interface Row {
   name: string;
   source: string;

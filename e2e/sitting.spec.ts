@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import type { Client } from "pg";
-import { answer, expect, seedAttempt, seedReveal, test } from "./fixtures";
+import { answer, at, expect, seedAttempt, seedReveal, test } from "./fixtures";
 
 const chip = (page: Page, name: string | RegExp) =>
   page.getByRole("button", { name });
@@ -46,7 +46,7 @@ test("Rezultat keeps the field locked and filled after a reload", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await chip(page, "Rezultat").click();
   await expect(status(page)).toHaveText("Prikazan rezultat");
@@ -71,7 +71,7 @@ test("the solution keeps its card, the hints and the lock after a reload", async
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await chip(page, "Rešenje").click();
   await expect(status(page)).toHaveText("Rešenje otvoreno");
@@ -98,7 +98,7 @@ test("a hint opened alone is still open after a reload", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await expect
     .poll(() => recorded(auth.db, "reveals", profileId, "eks-001"))
@@ -117,7 +117,7 @@ test("a right answer stays green and locked after a reload", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await answer(page, "2");
   await chip(page, "Proveri").click();
@@ -143,7 +143,7 @@ test("a part solved alone stays locked after a reload and is sent with the other
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
@@ -172,10 +172,10 @@ test("an answer sent after Rezultat was opened elsewhere is not recorded", async
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page.waitForFunction(() => customElements.get("math-field"));
   const other = await page.context().newPage();
-  await other.goto("/bank/eks-001");
+  await other.goto(at("/bank/eks-001"));
   await chip(other, "Rezultat").click();
   await expect
     .poll(() => recorded(auth.db, "reveals", profileId, "eks-001"))
@@ -196,10 +196,10 @@ test("a second right answer sent from another page is not recorded", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page.waitForFunction(() => customElements.get("math-field"));
   const other = await page.context().newPage();
-  await other.goto("/bank/eks-001");
+  await other.goto(at("/bank/eks-001"));
   await answer(other, "2");
   await chip(other, "Proveri").click();
   await expect(status(other)).toHaveText("Tačno");
@@ -227,11 +227,11 @@ test("an answer that follows a reveal in the same sitting does not make a task s
   const card = (id: string) =>
     page.getByRole("main").locator(`a[href$="/bank/${id}"]`);
 
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect(card("fun-002").first()).toBeVisible();
   await expect(card("eks-001")).toHaveCount(0);
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect(
     page.getByRole("complementary").locator("a[data-id][aria-current=page]"),
   ).toBeVisible();

@@ -1,6 +1,7 @@
 import { algoVersion } from "@/features/bank/queue/recommendation";
 import {
   answer,
+  at,
   expect,
   flush,
   hydrated,
@@ -126,7 +127,7 @@ test("an opened suggestion keeps the id it was stored with", async ({
 });
 
 test("the task page records the picks next to a task", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await hydrated(page);
   const skip = page.getByRole("link", { name: "Preskoči" });
   const next = (await skip.getAttribute("href"))?.split("/").at(-1);
@@ -174,7 +175,7 @@ test("the task rail records its first pick again on a new visit to the task", as
     );
   };
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await hydrated(page);
   await expect.poll(firstPicks).toHaveLength(1);
   await page
@@ -194,7 +195,7 @@ test("the task rail records its first pick again on a new visit to the task", as
 test("the bank records its pick, results and filter changes", async ({
   page,
 }) => {
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await hydrated(page);
   const count = Number(
     (
@@ -257,7 +258,7 @@ test("the bank records its pick, results and filter changes", async ({
 });
 
 test("an empty bank search is recorded by its length", async ({ page }) => {
-  await page.goto("/bank?q=zzzzqq");
+  await page.goto(at("/bank?q=zzzzqq"));
   await expect(page.getByText("Nema zadataka za ove filtere.")).toBeVisible();
   await expect
     .poll(async () => {
@@ -268,7 +269,7 @@ test("an empty bank search is recorded by its length", async ({ page }) => {
 });
 
 test("theory records how far a page was read", async ({ page }) => {
-  await page.goto("/theory/exponential-equations");
+  await page.goto(at("/theory/exponential-equations"));
   await hydrated(page);
   const rail = page.getByRole("complementary", { name: "Teorija" });
   const last = rail.locator('a[href*="#"]').last();
@@ -327,7 +328,7 @@ test("theory records how far a page was read", async ({ page }) => {
 });
 
 test("a solutions page records how far it was read", async ({ page }) => {
-  await page.goto("/variants/ftn-p1-2025/solutions");
+  await page.goto(at("/variants/ftn-p1-2025/solutions"));
   await hydrated(page);
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForFunction(
@@ -357,7 +358,7 @@ test("a solutions page counts the time on the task in the middle of the screen",
   page,
 }) => {
   await page.clock.install();
-  await page.goto("/variants/ftn-p1-2025/solutions");
+  await page.goto(at("/variants/ftn-p1-2025/solutions"));
   await hydrated(page);
   await page
     .locator("#task-3")
@@ -381,7 +382,7 @@ test("a solutions page counts the time on the task in the middle of the screen",
 
 test("an idle theory page is not counted as reading", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/theory/exponential-equations");
+  await page.goto(at("/theory/exponential-equations"));
   await hydrated(page);
   await page.clock.fastForward("05:00");
   await flush(page);

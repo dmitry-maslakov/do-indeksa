@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { at } from "./fixtures";
 
 test("healthz answers without a redirect", async ({ request }) => {
   const res = await request.get("/api/healthz", { maxRedirects: 0 });
@@ -137,9 +138,9 @@ for (const [path, text, title] of screens) {
 
 test("names each bank page in its main heading", async ({ page }) => {
   const heading = page.getByRole("heading", { level: 1 });
-  await page.goto("/bank/topic/exponential-equations");
+  await page.goto(at("/bank/topic/exponential-equations"));
   await expect(heading).toHaveText("Eksponencijalne jednačine i nejednačine");
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect(heading).toHaveText(
     "Eksponencijalne jednačine i nejednačine, zadatak 1: Rešiti jednačinu",
   );
@@ -231,7 +232,7 @@ test("shares every page with the site image", async ({ page, request }) => {
 });
 
 test("switches the locale", async ({ page }) => {
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await page.getByRole("button", { name: /jezik/i }).click();
   await page.getByRole("menuitemradio", { name: "Русский" }).click();
   await expect(page).toHaveURL(/\/ru\/bank$/);

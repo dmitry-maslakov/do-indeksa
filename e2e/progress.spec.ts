@@ -1,6 +1,6 @@
 import type { Client } from "pg";
 import { checkerVersion } from "@/features/catalog/checker";
-import { answer, expect, seedAttempt, test } from "./fixtures";
+import { answer, at, expect, seedAttempt, test } from "./fixtures";
 
 async function seed(db: Client, profileId: string) {
   await seedAttempt(db, profileId, "eks-001", false, 7);
@@ -17,11 +17,11 @@ test("the bank filters tasks by their latest attempt", async ({
   const task = (id: string) =>
     page.getByRole("main").locator(`a[href$="/bank/${id}"]`);
 
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect(task("eks-001").first()).toBeVisible();
   await expect(task("fun-002")).toHaveCount(0);
 
-  await page.goto("/bank?status=wrong");
+  await page.goto(at("/bank?status=wrong"));
   await expect(task("fun-002").first()).toBeVisible();
   await expect(task("eks-001")).toHaveCount(0);
 });
@@ -35,13 +35,13 @@ test("a task and its rail row name the latest earlier attempt", async ({
     .getByRole("complementary")
     .locator("a[data-id][aria-current=page]");
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const meta = page.getByRole("article");
   await expect(meta.getByText("rešen ranije", { exact: true })).toBeVisible();
   await expect(current).toContainText("rešen ranije");
   await expect(current).not.toContainText("tačno");
 
-  await page.goto("/bank/fun-002");
+  await page.goto(at("/bank/fun-002"));
   await expect(meta.getByText("ranije netačno", { exact: true })).toBeVisible();
   await expect(current).toContainText("ranije netačno");
   await expect(current).not.toContainText(/(?<!ranije )netačno/);
@@ -66,7 +66,7 @@ test("the task rail keeps its rows while the student moves between tasks", async
       unmarked,
     );
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect(current).toHaveAttribute("href", /\/bank\/eks-001$/);
   const before = await hrefs();
   const next = before[before.indexOf("/bank/eks-001") + 1] ?? "";
@@ -99,7 +99,7 @@ test("the task rail keeps its rows while the student moves between tasks", async
 
 test("a topic starts from its recommended task", async ({ page, auth }) => {
   await seed(auth.db, (await auth.signIn()).profileId);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   await expect(page.getByLabel("Tema").filter({ visible: true })).toHaveValue(
     "exponential-equations",
@@ -124,7 +124,7 @@ test("opening hints and the solution is recorded around the check", async ({
     return rows.map((row) => row.event);
   };
 
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await open(/^Nagoveštaj/);
   await expect(page.getByText("Svi traženi izrazi")).toBeVisible();
   await expect.poll(events).toEqual(["hint1"]);
@@ -141,7 +141,7 @@ test("opening Rezultat is recorded as a reveal of the answer", async ({
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page.getByRole("button", { name: "Rezultat" }).click();
   await expect(
     page.getByRole("link", { name: "Sledeći zadatak" }),
@@ -162,7 +162,7 @@ test("an unreadable answer asks to check the entry and is not a mistake", async 
   auth,
 }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2+");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(
@@ -178,7 +178,7 @@ test("an unreadable answer asks to check the entry and is not a mistake", async 
     })
     .toEqual(["{unreadable}"]);
 
-  await page.goto("/bank?status=wrong");
+  await page.goto(at("/bank?status=wrong"));
   await expect(page.locator('a[href$="/bank/eks-001"]')).toHaveCount(0);
 });
 
@@ -198,7 +198,7 @@ test("a task visit is one session and a long pause starts another", async ({
       )
     ).rows;
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect.poll(async () => (await sessions()).length).toBe(1);
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
@@ -231,7 +231,7 @@ test.describe("attempt log", () => {
         )
       ).rows;
 
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await answer(page, "5");
     await page.getByRole("button", { name: "Proveri" }).click();
     await expect
@@ -265,7 +265,7 @@ test.describe("attempt log", () => {
       })
       .toBe(1);
 
-    await page.goto("/bank");
+    await page.goto(at("/bank"));
     for (const table of ["attempts", "skips"])
       await auth.db.query(
         `update ${table} set created_at = now() - interval '2 hours' where profile_id = $1`,
@@ -275,7 +275,7 @@ test.describe("attempt log", () => {
       "update task_sessions set last_seen_at = now() - interval '2 hours' where profile_id = $1",
       [profileId],
     );
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await expect
       .poll(async () => (await sessions()).map((s) => s.kind))
       .toEqual(["first", "retry"]);
@@ -295,7 +295,7 @@ test.describe("attempt log", () => {
         )
       ).rows.map((s) => s.kind);
 
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await page.getByRole("button", { name: "Nagoveštaj" }).click();
     await expect
       .poll(async () => {
@@ -307,7 +307,7 @@ test.describe("attempt log", () => {
       })
       .toBe(1);
 
-    await page.goto("/bank");
+    await page.goto(at("/bank"));
     await auth.db.query(
       "update reveals set created_at = now() - interval '2 hours' where profile_id = $1",
       [profileId],
@@ -316,7 +316,7 @@ test.describe("attempt log", () => {
       "update task_sessions set last_seen_at = now() - interval '2 hours' where profile_id = $1",
       [profileId],
     );
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await expect.poll(kinds).toEqual(["first", "first"]);
   });
 });

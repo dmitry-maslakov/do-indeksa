@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { BrowserContext, Page } from "@playwright/test";
 import type { Client } from "pg";
-import { answer, expect, finish, seedAttempt, test } from "./fixtures";
+import { answer, at, expect, finish, seedAttempt, test } from "./fixtures";
 
 async function openSheet(page: Page, topic: RegExp) {
   const sheet = page.getByRole("dialog", { name: "Zadaci teme" });
@@ -14,7 +14,7 @@ async function openSheet(page: Page, topic: RegExp) {
 }
 
 test("a guest checks an answer", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -23,12 +23,12 @@ test("a guest checks an answer", async ({ page }) => {
 test("a guest finds a solved task in the bank after a reload", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
   await page.reload();
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect(
     page.getByRole("main").locator('a[href$="/bank/eks-001"]').first(),
   ).toBeVisible();
@@ -46,7 +46,7 @@ async function guestProfileId(context: BrowserContext, db: Client) {
 }
 
 async function solveFirst(page: Page) {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -106,7 +106,7 @@ test("a guest back on another day with five solved tasks gets Google One Tap", a
   for (const taskId of ["eks-002", "kb-003", "log-001", "trig-001"])
     await seedAttempt(auth.db, profileId, taskId, true, 30);
 
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect(
     page.getByRole("link", { name: "Sledeći zadatak" }),
   ).toBeVisible();
@@ -138,7 +138,7 @@ test("a skipped task stays in the visit before the current one", async ({
   page,
   context,
 }) => {
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   await expect(page).toHaveURL(/\/bank\/(?!start\/)[\w-]+$/);
   const skipped = new URL(page.url()).pathname;
   await expect.poll(() => profileCookie(context)).toBe(true);
@@ -161,7 +161,7 @@ test("a task page shown again from history takes its next task from a fresh queu
   context,
   auth,
 }) => {
-  await page.goto("/bank/log-001");
+  await page.goto(at("/bank/log-001"));
   await page
     .getByRole("complementary")
     .getByLabel("Tema")
@@ -212,7 +212,7 @@ test.describe("a crawler", () => {
   });
 
   test("opens a task without getting a profile", async ({ page, context }) => {
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     await expect(page.getByRole("button", { name: "Proveri" })).toBeVisible();
     await page.waitForLoadState("networkidle");
     expect(await profileCookie(context)).toBe(false);
@@ -220,7 +220,7 @@ test.describe("a crawler", () => {
 });
 
 test("a guest opens the solution and moves on", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const skip = page.getByRole("link", { name: "Preskoči" });
   const next = await skip.getAttribute("href");
   expect(next).toMatch(/^\/bank\/[\w-]+$/);
@@ -234,7 +234,7 @@ test("a guest opens the solution and moves on", async ({ page }) => {
 test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const sheet = await openSheet(page, /Eksponencijalne/);
   await expect(sheet.getByRole("link", { name: "Svi zadaci" })).toHaveAttribute(
     "href",
@@ -255,7 +255,7 @@ test("a guest switches topics from the sheet", { tag: "@mobile" }, async ({
 test("the sheet opens with the list already in place", {
   tag: "@mobile",
 }, async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await page
     .locator("aside a[href^='/bank/']:not(nav a)")
     .first()
@@ -267,7 +267,7 @@ test("the sheet opens with the list already in place", {
 
 test("a guest finishes a test", { tag: "@mobile" }, async ({ page }) => {
   const bar = page.getByRole("navigation", { name: "Glavna navigacija" });
-  await page.goto("/variants/ftn-p1-2025");
+  await page.goto(at("/variants/ftn-p1-2025"));
   await page.getByRole("timer").waitFor();
   await expect(bar).toBeHidden();
   await page.reload();
@@ -288,7 +288,7 @@ const composer = (page: Page) =>
     .filter({ has: page.getByRole("heading", { name: "Sastavi svoj test" }) });
 
 test("a guest composes a short test without a topic", async ({ page }) => {
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   const card = composer(page);
   const topic = card.getByRole("button", { name: "Logaritmi" });
   await expect(topic).toHaveAttribute("aria-pressed", "true");
@@ -313,11 +313,11 @@ test("an old test link opens the test under its short code", async ({
     ["kb-003", "log-001"],
   ]);
   try {
-    await page.goto(`/v/${legacy}`);
+    await page.goto(at(`/v/${legacy}`));
     await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
     const code = page.url().split("/").at(-1) ?? "";
     await expect(page.getByText(`Kod ${code}`)).toBeVisible();
-    await page.goto(`/v/${code.toLowerCase()}`);
+    await page.goto(at(`/v/${code.toLowerCase()}`));
     await expect(page).toHaveURL(new RegExp(`/v/${code}$`));
   } finally {
     await auth.db.query("delete from sets where code = $1", [legacy]);
@@ -325,7 +325,7 @@ test("an old test link opens the test under its short code", async ({
 });
 
 test("a guest cannot compose a test without topics", async ({ page }) => {
-  await page.goto("/variants");
+  await page.goto(at("/variants"));
   const card = composer(page);
   const all = card.getByRole("button", { name: "Sve teme" });
   await expect(all).toHaveAttribute("aria-pressed", "true");
@@ -344,7 +344,7 @@ test("a guest cannot compose a test without topics", async ({ page }) => {
 
 test("a guest signs in straight with google", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
 
   const fromHeader = page.waitForRequest("**/api/auth/sign-in/social");
   await page

@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import type { MathfieldElement } from "mathlive";
-import { expect, mathKeys, test } from "./fixtures";
+import { at, expect, mathKeys, test } from "./fixtures";
 
 test.use({ hasTouch: true, isMobile: true });
 
@@ -31,7 +31,7 @@ test("the math keyboard opens on tap and closes when the answer is checked", {
   tag: "@mobile",
 }, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").last();
   await page.evaluate(
@@ -56,7 +56,7 @@ test("a swipe that starts on the answer field scrolls instead of opening it", {
   tag: "@mobile",
 }, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await page.waitForFunction(() => customElements.get("math-field"));
   const field = page.locator("math-field").last();
   await page.evaluate(

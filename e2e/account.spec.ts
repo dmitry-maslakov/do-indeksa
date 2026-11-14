@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import { dayMs } from "../src/lib/dates";
-import { answer, expect, seedAttempt, test } from "./fixtures";
+import { answer, at, expect, seedAttempt, test } from "./fixtures";
 
 const count = async (db: Client, table: string, column: string, id: string) =>
   (
@@ -74,7 +74,7 @@ const solvedTask = (page: Page, id: string) =>
 test("signing out hides the account's progress", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "eks-001", true);
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect(solvedTask(page, "eks-001").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Nalog" }).click();
@@ -86,7 +86,7 @@ test("signing out hides the account's progress", async ({ page, auth }) => {
 });
 
 const solveAsGuest = async (page: Page) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -98,7 +98,7 @@ const hasGuestCookie = async (page: Page) =>
 test("signing in keeps what a guest solved", async ({ page, auth }) => {
   await solveAsGuest(page);
   await auth.signIn();
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect.poll(() => hasGuestCookie(page)).toBe(false);
   await page.reload();
   await expect(solvedTask(page, "eks-001").first()).toBeVisible();
@@ -112,7 +112,7 @@ test("signing in to an account with history merges both", async ({
   await solveAsGuest(page);
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "fun-002", true);
-  await page.goto("/bank?status=solved");
+  await page.goto(at("/bank?status=solved"));
   await expect(
     page.getByText("Napredak sa ovog uređaja je spojen sa nalogom."),
   ).toBeVisible();

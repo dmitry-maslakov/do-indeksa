@@ -1,5 +1,5 @@
 import type { Locator } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 const topic = "Eksponencijalne jednačine i nejednačine";
 
@@ -9,7 +9,7 @@ test("reads a topic and walks through its methods", async ({
   page,
   errors,
 }) => {
-  await page.goto("/theory");
+  await page.goto(at("/theory"));
   await expect(page).toHaveTitle(
     "Teorija za prijemni iz matematike na FTN-u · Do indeksa",
   );
@@ -54,7 +54,7 @@ test("lists the methods as cards on a phone", { tag: "@mobile" }, async ({
   page,
   errors,
 }) => {
-  await page.goto("/theory/exponential-equations");
+  await page.goto(at("/theory/exponential-equations"));
   await expect(page.getByRole("complementary")).toBeHidden();
   await page.getByRole("link", { name: /^Metodi · \d+$/ }).click();
 

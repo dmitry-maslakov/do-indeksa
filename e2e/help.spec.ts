@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { secondMs } from "@/lib/dates";
-import { answer, expect, hydrated, test } from "./fixtures";
+import { answer, at, expect, hydrated, test } from "./fixtures";
 
 const chip = (page: Page, name: string | RegExp) =>
   page.getByRole("button", { name });
@@ -36,7 +36,7 @@ async function expectLocked(page: Page) {
 test("the help chips go from the weakest to the strongest", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect(chip(page, "Nagoveštaj 1/2")).toBeVisible();
   await expect(chip(page, "Rezultat")).toBeVisible();
   await expect(chip(page, "Rešenje")).toBeVisible();
@@ -54,7 +54,7 @@ test("the help chips go from the weakest to the strongest", async ({
 test("hints are numbered and the cards keep the order they were opened in", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await expect(
     page.getByRole("heading", { name: "Nagoveštaj 1 od 2" }),
@@ -74,7 +74,7 @@ test("hints are numbered and the cards keep the order they were opened in", asyn
 });
 
 test("the next hint chip keeps the keyboard focus", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await hydrated(page);
   await chip(page, "Nagoveštaj 1/2").focus();
   await page.keyboard.press("Enter");
@@ -84,7 +84,7 @@ test("the next hint chip keeps the keyboard focus", async ({ page }) => {
 test("Rezultat puts the answer into the field and locks it", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "3");
   await chip(page, "Rezultat").click();
   const field = fields(page).first();
@@ -102,7 +102,7 @@ test("Rezultat puts the answer into the field and locks it", async ({
 test("Rešenje puts the answer into the field and opens the solution", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await chip(page, "Rešenje").click();
   const field = fields(page).first();
@@ -120,7 +120,7 @@ test("Rešenje puts the answer into the field and opens the solution", async ({
 test("Rezultat keeps the answer text when it says more than the fields", async ({
   page,
 }) => {
-  await page.goto("/bank/plan-001");
+  await page.goto(at("/bank/plan-001"));
   await hydrated(page);
   await chip(page, "Rezultat").click();
   await expect(fields(page).first()).toHaveJSProperty("readOnly", true);
@@ -136,7 +136,7 @@ test("Rezultat keeps the answer text when it says more than the fields", async (
 test("Rešenje after Rezultat opens the solution without a second answer block", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Rezultat").click();
   await chip(page, "Rešenje").click();
   await expect(page.getByRole("heading", { name: "Rešenje" })).toBeVisible();
@@ -148,7 +148,7 @@ test("Rešenje after Rezultat opens the solution without a second answer block",
 test("after a correct answer only Rešenje stays and keeps the field green", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await chip(page, "Proveri").click();
   const field = fields(page).first();
@@ -168,7 +168,7 @@ test("after a correct answer only Rešenje stays and keeps the field green", asy
 test("a correct answer after a hint is labelled uz nagoveštaj", async ({
   page,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Nagoveštaj 1/2").click();
   await answer(page, "2");
   await chip(page, "Proveri").click();
@@ -179,7 +179,7 @@ test("a correct answer after a hint is labelled uz nagoveštaj", async ({
 test("a part solved alone locks at once while the others stay open", async ({
   page,
 }) => {
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
@@ -205,7 +205,7 @@ test("a part solved alone locks at once while the others stay open", async ({
 test("a corrected answer shows no verdict while it is being checked", async ({
   page,
 }) => {
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
@@ -229,7 +229,7 @@ test("a corrected answer shows no verdict while it is being checked", async ({
 test("Rezultat in a task with parts keeps the parts solved alone", async ({
   page,
 }) => {
-  await page.goto("/bank/kv-002");
+  await page.goto(at("/bank/kv-002"));
   await typeInto(page, 0, "5");
   await typeInto(page, 1, "1");
   await chip(page, "Proveri").click();
@@ -250,7 +250,7 @@ test("Rezultat in a task with parts keeps the parts solved alone", async ({
 });
 
 test("the help ladder fits a phone", { tag: "@mobile" }, async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await chip(page, "Rezultat").click();
   await expect(fields(page).first()).toHaveJSProperty("value", "2");
   await expect(status(page)).toHaveText("Prikazan rezultat");
@@ -268,7 +268,7 @@ test.describe("before scripts run", () => {
   test("the hints and the solution are in the page but closed", async ({
     page,
   }) => {
-    await page.goto("/bank/eks-001");
+    await page.goto(at("/bank/eks-001"));
     const headings = page
       .locator("article")
       .getByRole("heading", { level: 2, includeHidden: true });

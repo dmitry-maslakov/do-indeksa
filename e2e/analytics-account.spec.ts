@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import type { Client } from "pg";
 import {
   answer,
+  at,
   expect,
   finish,
   flush,
@@ -24,7 +25,7 @@ const accountProfile = async (db: Client, userId: string) =>
     .rows[0]?.id;
 
 async function solveAsGuest(page: Page) {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
   await expect(page.getByText("Tačno", { exact: true })).toBeVisible();
@@ -41,7 +42,7 @@ test("an account gets and records its profile on its first action", async ({
 }) => {
   const { userId, profileId } = await auth.signIn();
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   await expect.poll(() => accountProfile(auth.db, userId)).toBeDefined();
   const id = await accountProfile(auth.db, userId);
   await expect
@@ -53,7 +54,7 @@ test("a new account takes over the guest profile", async ({ page, auth }) => {
   const guest = await solveAsGuest(page);
   const { userId, profileId } = await auth.signIn();
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await expect
     .poll(() => named("profile_merged", (row) => row.profile_id === guest))
     .toEqual([
@@ -78,7 +79,7 @@ test("signing in on a task page takes over the guest profile", async ({
   const guest = await solveAsGuest(page);
   const { userId, profileId } = await auth.signIn();
   await auth.db.query(`delete from profiles where id = $1`, [profileId]);
-  await page.goto("/bank/eks-002");
+  await page.goto(at("/bank/eks-002"));
   await expect
     .poll(() => recorded(page, "profile_merged"))
     .toEqual([
@@ -97,7 +98,7 @@ test("signing in on a task page takes over the guest profile", async ({
 test("an account with a profile takes in the guest", async ({ page, auth }) => {
   const guest = await solveAsGuest(page);
   const { profileId } = await auth.signIn();
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await expect
     .poll(() => named("profile_merged", (row) => row.profile_id === profileId))
     .toEqual([
@@ -117,7 +118,7 @@ test("an account with a profile takes in the guest", async ({ page, auth }) => {
 test("the sign-in strip is recorded once per visit to the page", async ({
   page,
 }) => {
-  await page.goto("/variants/set-eks-001");
+  await page.goto(at("/variants/set-eks-001"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await answer(page, "0");
   await finish(page);
@@ -142,7 +143,7 @@ test("the sign-in strip is recorded once per visit to the page", async ({
   await flush(page);
   await expect.poll(prompts).toEqual([["result"], []]);
 
-  await page.goto("/variants?tab=history");
+  await page.goto(at("/variants?tab=history"));
   await page.locator(`main a[href$="${review}"]`).click();
   await strip.getByRole("button", { name: "Zatvori" }).click();
   await expect(strip).toHaveCount(0);
@@ -152,7 +153,7 @@ test("the sign-in strip is recorded once per visit to the page", async ({
 
 test("a Google button records where sign-in started", async ({ page }) => {
   await page.route("**/api/auth/sign-in/social", (route) => route.abort());
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   const signInRequest = page.waitForRequest("**/api/auth/sign-in/social");
   await page
     .getByRole("banner")
@@ -168,7 +169,7 @@ test("a Google button records where sign-in started", async ({ page }) => {
 
 test("signing out is recorded with the profile", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
-  await page.goto("/bank");
+  await page.goto(at("/bank"));
   await page.getByRole("button", { name: "Nalog" }).click();
   await page.getByRole("menuitem", { name: "Odjavi se" }).click();
   await expect(

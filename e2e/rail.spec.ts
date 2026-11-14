@@ -2,6 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import { secondMs } from "@/lib/dates";
 import {
   answer,
+  at,
   expect,
   hydrated,
   seedAttempt,
@@ -85,7 +86,7 @@ test("the rail names itself and marks the task the student is on", async ({
   page,
   errors,
 }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { aside, rows, current } = rail(page);
 
   await expect(aside).toBeVisible();
@@ -96,7 +97,7 @@ test("the rail names itself and marks the task the student is on", async ({
 
 test("a skipped task is named in words", async ({ page }) => {
   const opened = recorded(page, "eks-001");
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { rows } = rail(page);
   await expect(rows.first()).toBeVisible();
   await opened;
@@ -112,7 +113,7 @@ test("a task skipped before its opening is saved is skipped on the next page", a
   page,
 }) => {
   await slowActions(page);
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { rows } = rail(page);
   await hydrated(page);
   await skip(page);
@@ -123,7 +124,7 @@ test("a task skipped before its opening is saved is skipped on the next page", a
 });
 
 test("a right answer is named in words", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { current, rows } = rail(page);
   await answer(page, "2");
   await page.getByRole("button", { name: "Proveri" }).click();
@@ -136,7 +137,7 @@ test("a right answer is named in words", async ({ page }) => {
 });
 
 test("a wrong answer is named in words", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { current, rows } = rail(page);
   await answer(page, "5");
   await page.getByRole("button", { name: "Proveri" }).click();
@@ -151,7 +152,7 @@ test("a wrong answer is named in words", async ({ page }) => {
 test("a repeat stays a repeat once it is opened", async ({ page, auth }) => {
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "eks-001", false, 48);
-  await page.goto("/bank/eks-002");
+  await page.goto(at("/bank/eks-002"));
   const { rows, current } = rail(page);
   const repeat = rows.and(page.locator('[data-id="eks-001"]'));
   await expect(repeat).toContainText("ponavljanje");
@@ -170,7 +171,7 @@ test("a repeat stays a repeat once it is opened", async ({ page, auth }) => {
 
 test("a task whose result was shown says so", async ({ page }) => {
   const opened = recorded(page, "eks-001");
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { rows } = rail(page);
   await opened;
 
@@ -184,7 +185,7 @@ test("a task whose result was shown says so", async ({ page }) => {
 });
 
 test("Preskoči leads to the row after the current one", async ({ page }) => {
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const { rows, current } = rail(page);
   await expect(rows.nth(0)).toHaveAttribute("data-id", "eks-001");
   const id = (await rows.nth(1).getAttribute("data-id")) ?? "";
@@ -196,7 +197,7 @@ test("Preskoči leads to the row after the current one", async ({ page }) => {
 
 test("the rail shows five upcoming tasks", async ({ page }) => {
   bankOnly();
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { rows, current } = rail(page);
   await expect(current).toBeVisible();
 
@@ -208,7 +209,7 @@ test("the list follows the student and offers a way back once scrolled away", as
 }) => {
   bankOnly();
   await tall(page);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
 
@@ -247,7 +248,7 @@ test("steps taken in quick succession leave the current row where it was", async
 }) => {
   bankOnly();
   await tall(page);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
@@ -268,7 +269,7 @@ test("a step after going back to an earlier task still follows the current row",
 }) => {
   bankOnly();
   await tall(page);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
@@ -292,7 +293,7 @@ test("a click on a row brings it to where the open task was", async ({
 }) => {
   bankOnly();
   await tall(page);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
@@ -314,7 +315,7 @@ test("a click on an upcoming row keeps the rows around it steady", async ({
 }) => {
   bankOnly();
   await tall(page);
-  await page.goto("/bank/start/exponential-equations");
+  await page.goto(at("/bank/start/exponential-equations"));
   const { current, list, rows } = rail(page);
   await expect(current).toBeVisible();
   for (let i = 0; i < 8; i++) await skip(page);
@@ -361,7 +362,7 @@ test("the nearest earlier session shows above the visit and the rest load on scr
   await seedAttempt(auth.db, profileId, "eks-001", false, 72);
   await seedAttempt(auth.db, profileId, "eks-002", true, 26);
   await seedSkip(auth.db, profileId, "eks-002");
-  await page.goto("/bank/eks-003");
+  await page.goto(at("/bank/eks-003"));
   const { aside, rows, current, list } = rail(page);
   const headings = list.getByRole("heading");
   const earlier = aside.locator("a[data-earlier]");
@@ -421,7 +422,7 @@ test("a task opened again keeps its earlier result until it is answered", async 
 }) => {
   const { profileId } = await auth.signIn();
   await seedAttempt(auth.db, profileId, "eks-002", true, 240);
-  await page.goto("/bank/eks-002");
+  await page.goto(at("/bank/eks-002"));
   const { current } = rail(page);
   const earlier = page.getByText("rešen ranije", { exact: true });
   await expect(current).toHaveAttribute("data-id", "eks-002");
@@ -448,7 +449,7 @@ test("the phone bar says where the student is in the visit", {
   tag: "@mobile",
 }, async ({ page }) => {
   const opened = recorded(page, "eks-001");
-  await page.goto("/bank/eks-001");
+  await page.goto(at("/bank/eks-001"));
   const bar = page.getByRole("button", { name: /Eksponencijalne/ });
   await expect(bar).toContainText("1. zadatak");
   await opened;

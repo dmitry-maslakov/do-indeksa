@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, finish, test } from "./fixtures";
+import { at, expect, finish, test } from "./fixtures";
 
 test.skip(
   process.env.CONTENT_DIR === "bank",
@@ -23,7 +23,7 @@ test("one option is picked by click or letter and checked with Enter", async ({
   page,
   errors,
 }) => {
-  await page.goto("/bank/log-002");
+  await page.goto(at("/bank/log-002"));
   const group = page.getByRole("radiogroup", { name: "Odgovor" });
   await expect(group).toHaveAccessibleDescription("Jedan odgovor je tačan.");
 
@@ -47,7 +47,7 @@ test("one option is picked by click or letter and checked with Enter", async ({
 test("several options are marked and the marks are counted", async ({
   page,
 }) => {
-  await page.goto("/bank/fun-003");
+  await page.goto(at("/bank/fun-003"));
   const group = page.getByRole("group", { name: "Odgovor" });
   await expect(group).toHaveAccessibleDescription(
     "Tačnih odgovora može biti više. Označi sve tačne.",
@@ -71,7 +71,7 @@ test("several options are marked and the marks are counted", async ({
 test("a test scores options in proportion and shows them in the review", async ({
   page,
 }) => {
-  await page.goto("/variants/set-log-002.fun-003");
+  await page.goto(at("/variants/set-log-002.fun-003"));
   await expect(page).toHaveURL(/\/v\/[2-9A-HJKMNP-Z]{5}$/);
   await option(page, "radio", "A").click();
   await page.getByRole("button", { name: "Sledeći zadatak" }).click();

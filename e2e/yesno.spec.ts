@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { at, expect, test } from "./fixtures";
 
 test.skip(
   process.env.CONTENT_DIR === "bank",
@@ -15,7 +15,7 @@ const check = (page: Page) =>
   page.getByRole("button", { name: "Proveri" }).click();
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/bank/vek-002");
+  await page.goto(at("/bank/vek-002"));
   await page.waitForFunction(() => customElements.get("math-field"));
 });
 
