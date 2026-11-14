@@ -16,8 +16,6 @@ Cloudflare serves `/_next/static` on doindeksa.rs from the R2 bucket `do-indeksa
 
 A faculty has its names, university, city, site and its official pages under `links`. An exam names its faculty, its tests and points, and opens to students only with `open: true`; an exam without tests is a closed exam described by a `summary`, and an open exam with `about` gets an about page. A test names its faculty, subject, kind of answer, minutes, the penalty for a wrong answer, and the topic, points and minutes of each position. A variant names its test and lists one task per position. A programme is `programs/<faculty>/<slug>.md` with its intro as the body; an admissions file `admissions/<faculty>/<year>.yaml` holds that year's konkurs, scoring, thresholds and a row of places, tuition and cutoffs per programme, where `null` is a number the source does not publish. The newest year also holds the dates, wishes and fees. A programme gets a page only with `checked`, the date the owner compared it with the official sources, and the build then requires every field the page shows. Records refer to each other by id, an exam id starts with its faculty id, and the build fails on an unknown id or on points and minutes that do not add up. The code takes faculties, exams, tests and programmes from these records only, and a unit test fails when one of their ids appears in `src/`. Pages use the first open exam by `order`.
 
-A study programme is `programs/<faculty>/<slug>.md`: its name, level, years, ESPB, the exam it admits through, modules and sources in the frontmatter, the description and curriculum in the body. Its page is built only once a person sets `checked` to the date they compared it with the sources. Admission numbers are `admissions/<faculty>/<year>.yaml`: places on the budget and self-financed, tuition and cutoffs for each programme, with the sources they come from.
-
 A task's `check` lists the parts its answer field asks for. Each part has the `expected` LaTeX and may add:
 
 - `part`: the letter of the part in the statement, written as `**a)**` there. Latin and Serbian lettering both work: `a`, `b`, `v`, `g`, `d`, `đ`, `e`. The build rejects a letter the statement does not have. Several checked parts can share a letter.
@@ -52,8 +50,9 @@ A page cannot change its status once its shell has streamed, and the chrome is p
 - `tests` runs a variant as a test, grades it and shows the review.
 - `theory` renders theory pages.
 - `account` is Google sign-in, the prompts that ask a guest to save their progress, and merging a guest into an account.
+- `admission` checks programme and admission records against each other.
 
-`catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`. Biome rejects an import that goes the other way.
+`catalog` imports no other feature. `progress` builds on `catalog`, `practice` on both, `bank` on all three. `variants` builds on `catalog`, `tests` on `variants` and `practice`, `account` on `tests`, `admission` on `catalog`. Biome rejects an import that goes the other way.
 
 `src/components` is UI shared by several features, with shadcn in `components/ui`. `src/lib` is helpers that know nothing about exams or students. `src/db` has the Drizzle schema, the column types, shared SQL helpers and the migrate and cleanup scripts. `src/server` is infrastructure: the database client, env, auth, the current profile, the action clients and the analytics sinks. None of these import features or routes.
 
