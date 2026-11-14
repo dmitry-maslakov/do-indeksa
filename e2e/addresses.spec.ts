@@ -103,6 +103,11 @@ for (const path of [
   "/ftn/p1/theory/nope",
   "/exams/ftn-p7",
   "/exams/ftn-p8",
+  "/a/b/c.php",
+  "/ftn/p1/x.php",
+  "/ftn/p1/.env",
+  "/ru/a/b.php",
+  "/a/b/c/bank/x.php",
 ]) {
   test(`answers 404 at ${path}`, async ({ request }) => {
     expect((await request.get(path, { maxRedirects: 0 })).status()).toBe(404);

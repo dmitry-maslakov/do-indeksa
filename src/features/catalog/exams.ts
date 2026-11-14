@@ -1,6 +1,7 @@
 import "server-only";
 import { allExams, allTests, allTopics } from "content-collections";
 import { pick, sortBy } from "es-toolkit";
+import { notFound } from "next/navigation";
 import type { Locale } from "next-intl";
 import { z } from "zod";
 import { hourMs, minuteMs } from "@/lib/dates";
@@ -63,11 +64,7 @@ const openPathOf = new Map(openExams.map((e) => [e.id, e.path]));
 
 export const openExamPath = (id: string) => openPathOf.get(id);
 
-function openExamAt(path: string) {
-  const id = openByPath.get(path);
-  if (!id) throw new Error(`exam ${path} is not open`);
-  return id;
-}
+const openExamAt = (path: string) => openByPath.get(path) ?? notFound();
 
 export const examAt = (params: ExamParams) => openExamAt(pathOf(params));
 
