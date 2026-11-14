@@ -613,7 +613,7 @@
     "lead": "Priprema za prijemni iz matematike za upis na fakultet: stari prijemni sa rešenjima, zadaci po temama i probni prijemni sa satom.",
     "choose": "Izaberi svoj prijemni",
     "place": "{faculty} · {city}",
-    "placeYears": "{faculty} · {city} · prijemni {first}–{last}",
+    "placeYears": "{faculty} · {city} · <whole>prijemni {first}–{last}</whole>",
     "years": "prijemni {first}–{last}",
     "start": "Počni",
     "byProgram": "Ne znaš koji prijemni polažeš? Po smeru",

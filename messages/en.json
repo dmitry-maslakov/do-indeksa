@@ -497,7 +497,7 @@
     "lead": "Preparation for the university entrance exam in maths: past exams with solutions, tasks by topic and practice exams against the clock.",
     "choose": "Choose your entrance exam",
     "place": "{faculty} · {city}",
-    "placeYears": "{faculty} · {city} · exams {first}–{last}",
+    "placeYears": "{faculty} · {city} · <whole>exams {first}–{last}</whole>",
     "years": "exams {first}–{last}",
     "start": "Start",
     "byProgram": "Not sure which exam you take? By study programme",
