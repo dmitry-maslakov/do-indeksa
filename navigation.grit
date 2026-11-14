@@ -1,0 +1,15 @@
+language js
+
+or {
+  `import $_ from "next/link"`,
+  `import { $names } from "next/navigation"` where {
+    $names <: contains or {
+      `redirect`,
+      `permanentRedirect`,
+      `redirect as $_`,
+      `permanentRedirect as $_`
+    }
+  }
+} as $import where {
+  register_diagnostic(span=$import, message="Use Link and redirect from @/i18n/navigation.")
+}
