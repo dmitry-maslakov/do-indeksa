@@ -42,6 +42,20 @@ test("leads to the faculty page by programme", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
+test("spans the same years as the exam page", async ({ page }) => {
+  await page.goto("/");
+  const button = examButtons(page).first();
+  const href = await button.getAttribute("href");
+  const [, first = "", last = ""] =
+    /(\d{4})–(\d{4})/.exec(await button.innerText()) ?? [];
+  expect(first).not.toBe("");
+  await page.goto(`${href}/about`);
+  const years = page.locator("#arhiva ul > li");
+  await expect(page.locator("#arhiva")).toContainText(`${last}–${first}`);
+  await expect(years.first()).toContainText(last);
+  await expect(years.last()).toContainText(first);
+});
+
 test("shows the sample task of the exam", async ({ page }) => {
   const task = allTasks.find((t) => t._meta.path === open[0]?.sampleTask);
   test.skip(!task, "the first open exam has no sample task");
