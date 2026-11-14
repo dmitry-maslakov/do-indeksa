@@ -8,7 +8,7 @@ export { expect } from "@playwright/test";
 
 const { DATABASE_URL, BETTER_AUTH_SECRET = "" } = process.env;
 
-const exam = "";
+const exam = "/ftn/p1";
 
 export const at = (path: string) =>
   exam && path === "/" ? exam : `${exam}${path}`;
