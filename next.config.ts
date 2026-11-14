@@ -25,6 +25,15 @@ const nextConfig: NextConfig = {
   reactCompiler: { panicThreshold: "all_errors" },
   experimental: { isrFlushToDisk: false },
   serverExternalPackages: ["@cortex-js/compute-engine"],
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "header", key: "next-router-segment-prefetch" }],
+        headers: [{ key: "Cache-Control", value: "no-cache" }],
+      },
+    ];
+  },
   async redirects() {
     return legacyPages.flatMap(
       ({ source, destination, statusCode = 301, ...match }) => [
