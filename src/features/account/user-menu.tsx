@@ -28,7 +28,7 @@ export function UserMenu() {
     return (
       <Skeleton className="flex h-9 items-center gap-1.5 rounded-lg px-3 font-semibold text-sm *:invisible sm:px-4 [&_svg]:size-4">
         <GoogleLogo />
-        <span>{t("signIn")}</span>
+        <span className="max-[24rem]:sr-only">{t("signIn")}</span>
       </Skeleton>
     );
 
@@ -41,7 +41,7 @@ export function UserMenu() {
         className="px-3 sm:px-4"
       >
         <GoogleLogo />
-        {t("signIn")}
+        <span className="max-[24rem]:sr-only">{t("signIn")}</span>
       </GoogleSignInButton>
     );
   }
