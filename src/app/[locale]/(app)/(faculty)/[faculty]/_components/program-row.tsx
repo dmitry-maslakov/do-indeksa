@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import type { Admission, Program } from "content-collections";
 import { getTranslations } from "next-intl/server";
-import { Figure } from "@/features/admission/figure";
+import { Figure, figureNote, PairCell } from "@/features/admission/figure";
 import { FilterRow } from "@/features/admission/program-search";
 import { Link } from "@/i18n/navigation";
 import { intentOf } from "@/lib/analytics-browser";
@@ -10,14 +10,8 @@ export const tracks =
   "grid grid-cols-[minmax(0,--spacing(25))_minmax(0,1fr)_minmax(0,--spacing(29))] gap-x-3 lg:grid-cols-[minmax(0,1fr)_--spacing(44)_--spacing(40)_--spacing(64)] lg:gap-x-8";
 
 const cell = "text-[15px] tabular-nums lg:py-3.5 lg:text-right";
-const note = "block whitespace-nowrap text-subtle text-xs leading-3.5";
 
 type Places = Admission["programs"][string];
-
-interface Pair {
-  budget?: number | null;
-  self?: number | null;
-}
 
 interface ProgramRowProps {
   faculty: string;
@@ -27,45 +21,6 @@ interface ProgramRowProps {
   program: Program;
   places?: Places;
   cutoff?: Places["cutoff"];
-}
-
-async function PairCell({
-  pair,
-  kind,
-  short,
-}: {
-  pair?: Pair;
-  kind: "count" | "score";
-  short: string;
-}) {
-  const t = await getTranslations("Faculty");
-  const unpublished = await getTranslations("Facts");
-  const missing = pair?.budget === null || pair?.self === null;
-  return (
-    <td className={cn(cell, "lg:grid lg:grid-cols-2 lg:gap-x-4")}>
-      <span className="block whitespace-nowrap lg:contents">
-        <span>
-          <span className="sr-only">{t("budget")} </span>
-          <Figure value={pair?.budget} kind={kind} short={short} />
-        </span>
-        <span aria-hidden="true" className="whitespace-pre lg:hidden">
-          {" / "}
-        </span>
-        <span className="text-muted-foreground">
-          <span className="sr-only">{t("srSelf")} </span>
-          <Figure value={pair?.self} kind={kind} short={short} />
-        </span>
-      </span>
-      <span aria-hidden="true" className={cn(note, "lg:hidden")}>
-        {t("pairKey")}
-      </span>
-      {missing && (
-        <span aria-hidden="true" className={cn(note, "lg:col-start-2")}>
-          {unpublished("unpublished", { short })}
-        </span>
-      )}
-    </td>
-  );
 }
 
 export async function ProgramRow({
@@ -120,19 +75,19 @@ export async function ProgramRow({
           </>
         )}
       </th>
-      <PairCell pair={places} kind="count" short={short} />
+      <PairCell pair={places} kind="count" short={short} className={cell} />
       <td className={cell}>
         <Figure value={places?.tuition} kind="count" short={short} />
         {places?.tuition === null && (
           <span
             aria-hidden="true"
-            className={cn(note, "whitespace-normal lg:whitespace-nowrap")}
+            className={cn(figureNote, "whitespace-normal lg:whitespace-nowrap")}
           >
             {unpublished("unpublished", { short })}
           </span>
         )}
       </td>
-      <PairCell pair={cutoff} kind="score" short={short} />
+      <PairCell pair={cutoff} kind="score" short={short} className={cell} />
     </FilterRow>
   );
 }
