@@ -99,3 +99,36 @@ test("answers 404 for a programme that has no page", async ({
     expect(res.status(), slug ?? "").toBe(404);
   }
 });
+
+test("compares the programme with similar ones", {
+  tag: "@responsive",
+}, async ({ page, errors }) => {
+  await page.goto("/ftn/programs/ra");
+  const band = page.locator('section[aria-labelledby="h-slicni"]');
+  await expect(
+    band.getByRole("heading", { name: "Slični smerovi" }),
+  ).toBeVisible();
+  const rows = band.locator("tbody tr");
+  await expect(rows.first().getByRole("rowheader")).toContainText(/ovaj smer$/);
+  const other = rows
+    .filter({ has: page.locator('th a[href^="/ftn/programs/"]') })
+    .first();
+  await expect(other.locator("th a").first()).toHaveAttribute(
+    "href",
+    /^\/ftn\/programs\/(?!ra$)[a-z0-9-]+$/,
+  );
+  await expect(other).toContainText(
+    /(Isti naziv nosi \d+ od|Nijedan od) \d+ obavezn\S+ predmeta prve (dve )?godine/,
+  );
+  await expect(
+    other.getByRole("link", { name: /^Plan smera/ }),
+  ).toHaveAttribute("href", /^https?:\/\//);
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(0);
+  expect(errors).toEqual([]);
+});
