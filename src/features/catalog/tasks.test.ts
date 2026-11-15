@@ -197,7 +197,17 @@ describe("task descriptions", () => {
     expect(
       taskDescription(getTask("log-001") as Task, "sr-Latn", metaIn("sr-Latn")),
     ).toBe(
-      "Logaritmi, zadatak 1. Rešiti jednačinu… Sa nagoveštajima i rešenjem.",
+      "Logaritmi, zadatak 1 za prijemni iz matematike. Rešiti jednačinu… Sa nagoveštajima i rešenjem.",
+    );
+  });
+
+  it("name the exam of an exam task without more words", () => {
+    const task = {
+      ...getTask("log-001"),
+      source: "FTN prijemni 2025, zadatak 3",
+    } as Task;
+    expect(taskDescription(task, "sr-Latn", metaIn("sr-Latn"))).toBe(
+      "FTN prijemni 2025, zadatak 3. Rešiti jednačinu… Sa nagoveštajima i rešenjem.",
     );
   });
 

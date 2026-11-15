@@ -17,7 +17,7 @@
     "taskPlace": "{topic}, task {number, number}",
     "examTaskPlace": "FTN entrance exam {year}, task {position, number}",
     "task": "{place}: {subject}",
-    "taskDescription": "{place}. {excerpt} With hints and a full solution.",
+    "taskDescription": "{place}{exam, select, yes {} other {, a maths entrance exam task}}. {excerpt} With hints and a full solution.",
     "theoryTitle": "Theory for the FTN math entrance exam",
     "theoryDescription": "Theory for the FTN math entrance exam by topic: what to know, formulas and solving methods with examples.",
     "theoryTopic": "{topic}: theory",

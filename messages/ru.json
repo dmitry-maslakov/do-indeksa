@@ -17,7 +17,7 @@
     "taskPlace": "{topic}, задача {number, number}",
     "examTaskPlace": "Вступительный FTN {year}, задача {position, number}",
     "task": "{place}: {subject}",
-    "taskDescription": "{place}. {excerpt} С подсказками и решением.",
+    "taskDescription": "{place}{exam, select, yes {} other { к вступительному по математике}}. {excerpt} С подсказками и решением.",
     "theoryTitle": "Теория к вступительному по математике в FTN",
     "theoryDescription": "Теория к вступительному экзамену по математике в FTN по темам: что нужно знать, формулы и методы решения с примерами.",
     "theoryTopic": "{topic}: теория",
