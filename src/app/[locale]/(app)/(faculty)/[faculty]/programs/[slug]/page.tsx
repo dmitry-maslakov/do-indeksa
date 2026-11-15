@@ -51,6 +51,7 @@ export async function generateMetadata({
   const kind = moduleKindOf(program);
   const place = {
     name: program.name,
+    abbr: program.short ?? "none",
     short: faculty.short,
     kind,
     results: last ? "yes" : "no",
