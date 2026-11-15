@@ -57,6 +57,8 @@
     "title": "{faculty} · {exam}",
     "group": "{faculty} · {city}",
     "label": "Экзамен",
+    "about": "Об экзамене {exam}",
+    "faculty": "Направления {faculty}",
     "all": "Все экзамены"
   },
   "UserMenu": {

@@ -131,6 +131,7 @@ export const examGroups = (locale: Locale) =>
         .map((e) => ({
           ...pick(e, ["id", "path", "title", "tone"]),
           name: examLabel(e, locale),
+          about: e.about !== undefined,
         })),
     }))
     .filter((group) => group.exams.length > 0);

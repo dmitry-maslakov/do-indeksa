@@ -1,5 +1,6 @@
 "use client";
 
+import { compact } from "es-toolkit";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -34,7 +35,15 @@ type Entries = ReturnType<typeof entriesOf>;
 
 interface ExamListProps {
   entries: Entries;
+  links: ExamLink[];
   pill: string;
+}
+
+interface ExamLink {
+  label: string;
+  exam: string | null;
+  href: string | typeof pickAll;
+  intent?: string;
 }
 
 const pickAll = { pathname: "/", query: { pick: "1" } };
@@ -58,16 +67,36 @@ export function ExamSwitcher({ groups, current }: ExamSwitcherProps) {
   if (!group || !exam) return null;
   const pill = t("title", { faculty: group.short, exam: exam.title });
   const entries = entriesOf(groups, current);
+  const links: ExamLink[] = compact([
+    exam.about && {
+      label: t("about", { exam: exam.title }),
+      exam: exam.path,
+      href: "/about",
+      intent: intentOf({ via: "switcher_about" }),
+    },
+    {
+      label: t("faculty", { faculty: group.short }),
+      exam: null,
+      href: `/${group.id}`,
+      intent: intentOf({ via: "switcher_faculty" }),
+    },
+    { label: t("all"), exam: null, href: pickAll },
+  ]);
 
   return (
     <>
-      <ExamMenu entries={entries} pill={pill} />
-      <ExamSheet entries={entries} pill={pill} title={exam.title} />
+      <ExamMenu entries={entries} links={links} pill={pill} />
+      <ExamSheet
+        entries={entries}
+        links={links}
+        pill={pill}
+        title={exam.title}
+      />
     </>
   );
 }
 
-function ExamMenu({ entries, pill }: ExamListProps) {
+function ExamMenu({ entries, links, pill }: ExamListProps) {
   const t = useTranslations("ExamSwitcher");
 
   return (
@@ -114,13 +143,22 @@ function ExamMenu({ entries, pill }: ExamListProps) {
           </DropdownMenuGroup>
         ))}
         <DropdownMenuSeparator className="mx-1 mt-0.5 mb-1.5" />
-        <DropdownMenuItem
-          render={<Link exam={null} href={pickAll} />}
-          className="h-10 justify-between rounded-md px-2.5 font-medium text-data focus:text-data not-data-[variant=destructive]:focus:**:text-data"
-        >
-          {t("all")}
-          <span aria-hidden="true">→</span>
-        </DropdownMenuItem>
+        {links.map((link) => (
+          <DropdownMenuItem
+            key={link.label}
+            render={
+              <Link
+                exam={link.exam}
+                href={link.href}
+                data-intent={link.intent}
+              />
+            }
+            className="h-10 justify-between rounded-md px-2.5 font-medium text-data focus:text-data not-data-[variant=destructive]:focus:**:text-data"
+          >
+            {link.label}
+            <span aria-hidden="true">→</span>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -128,6 +166,7 @@ function ExamMenu({ entries, pill }: ExamListProps) {
 
 function ExamSheet({
   entries,
+  links,
   pill,
   title,
 }: ExamListProps & { title: string }) {
@@ -196,15 +235,19 @@ function ExamSheet({
             );
           })}
           <hr className="my-2" />
-          <Link
-            exam={null}
-            href={pickAll}
-            onClick={() => setOpen(false)}
-            className="flex min-h-12 items-center justify-between font-medium text-[15px] text-data leading-5"
-          >
-            {t("all")}
-            <span aria-hidden="true">→</span>
-          </Link>
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              exam={link.exam}
+              href={link.href}
+              data-intent={link.intent}
+              onClick={() => setOpen(false)}
+              className="flex min-h-12 items-center justify-between font-medium text-[15px] text-data leading-5"
+            >
+              {link.label}
+              <span aria-hidden="true">→</span>
+            </Link>
+          ))}
         </DrawerBody>
       </DrawerContent>
     </Drawer>

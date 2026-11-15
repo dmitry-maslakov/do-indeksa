@@ -57,6 +57,8 @@
     "title": "{faculty} · {exam}",
     "group": "{faculty} · {city}",
     "label": "Exam",
+    "about": "About {exam}",
+    "faculty": "{faculty} programmes",
     "all": "All exams"
   },
   "UserMenu": {
