@@ -19,9 +19,9 @@ function Headline({ topic, reason }: Hero) {
 
   return (
     <>
-      <h1 className="text-balance font-bold text-3xl leading-none tracking-tight md:text-display md:leading-none">
+      <h2 className="text-balance font-bold text-3xl leading-none tracking-tight md:text-display md:leading-none">
         {topicName(topic, locale)}
-      </h1>
+      </h2>
       <p className="mt-3 mb-5 max-w-140 text-muted-foreground md:mt-4 md:mb-7 md:text-lg">
         {t.rich("suggestion", {
           reason: t(`reason.${reason}`),

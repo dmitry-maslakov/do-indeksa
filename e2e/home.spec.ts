@@ -13,7 +13,7 @@ async function expectFirstVisit(page: Page) {
 
   await expect(page.getByText("Predlog za danas")).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 1, name: "Kompleksni brojevi" }),
+    page.getByRole("heading", { level: 2, name: "Kompleksni brojevi" }),
   ).toBeVisible();
   await expect(page.getByText("Kreni odavde.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Počni →" })).toHaveAttribute(
@@ -52,7 +52,7 @@ test("the home page suggests a topic and maps progress", async ({
 
   await expect(
     page.getByRole("heading", {
-      level: 1,
+      level: 2,
       name: "Eksponencijalne jednačine i nejednačine",
     }),
   ).toBeVisible();

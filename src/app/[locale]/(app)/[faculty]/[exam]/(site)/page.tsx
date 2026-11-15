@@ -8,18 +8,19 @@ import { Home } from "./_components/home";
 import { OneTapGate } from "./_components/one-tap-gate";
 import { loadHome } from "./_components/personal";
 
+async function homeTitle(params: Promise<{ faculty: string; exam: string }>) {
+  const t = await getTranslations("Metadata");
+  const exam = examOf(examAt(await params));
+  return t("examHomeTitle", { faculty: exam.facultyShort, exam: exam.title });
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/[faculty]/[exam]">): Promise<Metadata> {
   const t = await getTranslations("Metadata");
   const exam = examOf(examAt(await params));
   return {
-    title: {
-      absolute: t("examHomeTitle", {
-        faculty: exam.facultyShort,
-        exam: exam.title,
-      }),
-    },
+    title: { absolute: await homeTitle(params) },
     description: t("description"),
     alternates: alternates(exam.path, await getLocale()),
   };
@@ -33,6 +34,7 @@ export default async function HomePage({
 
   return (
     <>
+      <h1 className="sr-only">{await homeTitle(params)}</h1>
       <Home
         examId={examId}
         weekly={weekly}
