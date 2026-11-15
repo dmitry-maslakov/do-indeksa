@@ -57,6 +57,8 @@
     "title": "{faculty} · {exam}",
     "group": "{faculty} · {city}",
     "label": "Ispit",
+    "about": "O ispitu {exam}",
+    "faculty": "Smerovi {faculty}-a",
     "all": "Svi ispiti"
   },
   "UserMenu": {
