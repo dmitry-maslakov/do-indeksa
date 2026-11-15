@@ -1,7 +1,7 @@
 ---
 checked: 2026-01-01
 name: Softversko inženjerstvo i informacione tehnologije
-aliases: [SIIT]
+short: SIIT
 level: academic
 years: 4
 espb: 240
