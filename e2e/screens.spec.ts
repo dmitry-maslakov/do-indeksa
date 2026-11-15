@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { at } from "./fixtures";
 
 test("healthz answers without a redirect", async ({ request }) => {
@@ -112,6 +112,62 @@ test("names each bank page in its main heading", async ({ page }) => {
   await expect(heading).toHaveText(
     "Eksponencijalne jednačine i nejednačine, zadatak 1: Rešiti jednačinu",
   );
+});
+
+test.describe("names pages in the words people search for", () => {
+  const description = (page: Page) => page.locator('meta[name="description"]');
+
+  test("a programme by its abbreviation", async ({ page }) => {
+    await page.goto("/ftn/programs/siit");
+    const name = /^Softversko inženjerstvo i informacione tehnologije \(SIIT\)/;
+    await expect(page).toHaveTitle(new RegExp(`${name.source}, FTN: `));
+    await expect(description(page)).toHaveAttribute(
+      "content",
+      new RegExp(`${name.source} na FTN-u u `),
+    );
+  });
+
+  test("the test of a past exam by its faculty", async ({ page }) => {
+    await page.goto(at("/variants/ftn-p1-2025"));
+    await expect(page).toHaveTitle(
+      "FTN prijemni 2025: probni test · Do indeksa",
+    );
+    await expect(description(page)).toHaveAttribute(
+      "content",
+      /^Prijemni iz matematike na FTN-u 2025\. godine kao probni test: 10 zadataka, \d+ min, sa merenjem vremena\. Rešenja su na posebnoj strani\.$/,
+    );
+  });
+
+  test("a task as an entrance exam task", async ({ page }) => {
+    await page.goto(at("/bank/eks-001"));
+    await expect(description(page)).toHaveAttribute(
+      "content",
+      /^Eksponencijalne jednačine i nejednačine, zadatak 1 za prijemni iz matematike\. /,
+    );
+  });
+
+  test("an exam task by its exam alone", async ({ page }) => {
+    const res = await page.goto(at("/bank/ftn-2025-03"));
+    test.skip(res?.status() === 404, "no exam task in this content");
+    await expect(description(page)).toHaveAttribute(
+      "content",
+      /^FTN prijemni 2025, zadatak 3\. (?!.*za prijemni iz matematike)/,
+    );
+  });
+
+  test("a bank topic with its solutions", async ({ page }) => {
+    await page.goto(at("/bank/topic/exponential-equations"));
+    await expect(page).toHaveTitle(
+      "Eksponencijalne jednačine i nejednačine: zadaci sa rešenjima za prijemni · Do indeksa",
+    );
+  });
+
+  test("the exam home in its only main heading", async ({ page }) => {
+    await page.goto(at("/"));
+    const title = "FTN P1: priprema za prijemni iz matematike";
+    await expect(page).toHaveTitle(title);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText([title]);
+  });
 });
 
 const missing = [
