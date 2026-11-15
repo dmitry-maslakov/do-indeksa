@@ -5,6 +5,7 @@ import { NeighboursBand } from "./neighbours-band";
 import { OfficialBand } from "./official-band";
 import { PlanBand } from "./plan-band";
 import { ProgramHero } from "./program-hero";
+import { SimilarBand } from "./similar-band";
 
 export function ProgramView({ program }: { program: Program }) {
   const history = programHistory(program.faculty, program.slug);
@@ -15,6 +16,7 @@ export function ProgramView({ program }: { program: Program }) {
       <ProgramHero program={program} results={results.length > 0} />
       <PlanBand program={program} />
       <AdmissionBand program={program} history={history} results={results} />
+      <SimilarBand program={program} />
       <NeighboursBand program={program} />
       <OfficialBand program={program} />
     </main>

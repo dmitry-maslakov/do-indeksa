@@ -13,11 +13,14 @@ degree: { title: Diplomirani inženjer }
 department: Departman
 plan:
   - years: [1, 2]
-    subjects: [Prvi predmet, Drugi predmet]
+    subjects: [Prvi predmet, Treći predmet, Četvrti predmet]
   - years: [3, 4]
     text: Opis godina.
 planNotes: [Napomena o planu.]
 choice: Nema modula.
+similar:
+  - program: ra
+    text: Opis razlike.
 ---
 
 Opis smera.

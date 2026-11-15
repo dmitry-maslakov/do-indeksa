@@ -1,5 +1,6 @@
 import "server-only";
 import { allPrograms } from "content-collections";
+import { sharedSubjects } from "@/features/admission/content-rules";
 import { examRecord } from "@/features/catalog/exams";
 
 const collator = new Intl.Collator("sr-Latn");
@@ -39,6 +40,20 @@ export const neighbours = (program: Program) =>
         p.slug !== program.slug,
     )
     .map((p) => ({ ...p, linked: isChecked(p) }));
+
+export const similarPrograms = (program: Program) =>
+  program.similar.flatMap(({ program: slug, text }) => {
+    const other = facultyPrograms(program.faculty).find((p) => p.slug === slug);
+    if (!other) return [];
+    return [
+      {
+        program: other,
+        linked: isChecked(other),
+        text,
+        ...sharedSubjects(program.plan, other.plan),
+      },
+    ];
+  });
 
 export const moduleKindOf = (program: Program) =>
   program.modules.length > 0 ? program.moduleKind : "none";
