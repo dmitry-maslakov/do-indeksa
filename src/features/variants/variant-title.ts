@@ -20,13 +20,26 @@ export async function variantMetadata(
   examId: string,
   variant: ExamVariant,
 ): Promise<Metadata> {
+  const format = {
+    tasks: variant.taskIds.length,
+    minutes: minutesOf(examId, variant),
+  };
+  if (variant.kind === "official" && variant.year && variant.test) {
+    const t = await getTranslations("Metadata");
+    const facts = {
+      ...format,
+      faculty: testFaculty(variant.test),
+      year: String(variant.year),
+    };
+    return {
+      title: t("examTestTitle", facts),
+      description: t("examTestDescription", facts),
+    };
+  }
   const t = await getTranslations("Variants");
   return {
     title: await variantTitle(variant, await getLocale()),
-    description: t("format", {
-      tasks: variant.taskIds.length,
-      minutes: minutesOf(examId, variant),
-    }),
+    description: t("format", format),
   };
 }
 
