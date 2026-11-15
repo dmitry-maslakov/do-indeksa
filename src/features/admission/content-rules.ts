@@ -1,4 +1,4 @@
-import { compact, isEqual, range } from "es-toolkit";
+import { compact, intersection, isEqual, range, takeWhile } from "es-toolkit";
 import { slugOf } from "@/lib/text";
 
 export interface ProgramRecord {
@@ -19,12 +19,43 @@ export interface ProgramRecord {
   choice?: string;
   modulesFrom?: number;
   modules: { name: string }[];
+  similar: { program: string }[];
+}
+
+type PlanItem = ProgramRecord["plan"][number];
+
+const comparedYears = 2;
+
+const lastYear = (item: PlanItem) => Math.max(...item.years);
+
+const leadingLists = (plan: PlanItem[]) =>
+  takeWhile(
+    plan,
+    (item) => Boolean(item.subjects) && lastYear(item) <= comparedYears,
+  );
+
+const coveredYears = (plan: PlanItem[]) =>
+  Math.max(0, ...leadingLists(plan).map(lastYear));
+
+const subjectsUpTo = (plan: PlanItem[], years: number) =>
+  leadingLists(plan)
+    .filter((item) => lastYear(item) <= years)
+    .flatMap((item) => item.subjects ?? []);
+
+export function sharedSubjects(own: PlanItem[], other: PlanItem[]) {
+  const years = Math.min(coveredYears(own), coveredYears(other));
+  const mine = subjectsUpTo(own, years);
+  return {
+    years,
+    shared: intersection(mine, subjectsUpTo(other, years)).length,
+    total: mine.length,
+  };
 }
 
 export const moduleIdsOf = (modules: { name: string }[]) =>
   modules.map((m) => slugOf(m.name));
 
-const anchors = ["upis", "predmeti"];
+const anchors = ["upis", "predmeti", "slicni"];
 
 const tagsOf = (p: Pick<ProgramRecord, "short" | "aliases">) =>
   compact([p.short, ...p.aliases]);
@@ -68,6 +99,21 @@ function modulesProblem({ modules, modulesFrom, years }: ProgramRecord) {
   if (taken) return `"${taken}" cannot be a module id`;
 }
 
+function similarProblem(program: ProgramRecord, others: ProgramRecord[]) {
+  const slugs = program.similar.map((s) => s.program);
+  const twin = slugs.find((slug, i) => slugs.indexOf(slug) !== i);
+  if (twin) return `"${twin}" is listed twice in similar`;
+  if (slugs.includes(program.slug))
+    return "a programme is not similar to itself";
+  for (const slug of slugs) {
+    const other = others.find((p) => p.slug === slug);
+    if (!other)
+      return `similar names "${slug}", not a programme of the faculty`;
+    if (sharedSubjects(program.plan, other.plan).total === 0)
+      return `"${slug}" has nothing to compare in the first years`;
+  }
+}
+
 export function programProblem(
   program: ProgramRecord,
   siblings: ProgramRecord[],
@@ -94,6 +140,7 @@ export function programProblem(
     return `${program.level} studies do not last ${program.years} years`;
   if (program.jointDepartments && !program.department)
     return "jointDepartments needs the home department";
+  return similarProblem(program, others);
 }
 
 type Bound = { over: number } | { atLeast: number };

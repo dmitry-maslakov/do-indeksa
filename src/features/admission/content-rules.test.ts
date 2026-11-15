@@ -6,6 +6,7 @@ import {
   moduleIdsOf,
   type ProgramRecord,
   programProblem,
+  sharedSubjects,
 } from "./content-rules";
 
 const checked: ProgramRecord = {
@@ -27,6 +28,7 @@ const checked: ProgramRecord = {
   choice: "Opis.",
   modulesFrom: 3,
   modules: [{ name: "Modul A" }, { name: "Modul B" }],
+  similar: [{ program: "siit" }],
 };
 
 const plain: ProgramRecord = {
@@ -39,6 +41,21 @@ const plain: ProgramRecord = {
   links: {},
   plan: [],
   modules: [],
+  similar: [],
+};
+
+const siit: ProgramRecord = {
+  ...checked,
+  slug: "siit",
+  name: "Softversko",
+  aliases: [],
+  plan: [
+    { years: [1, 2], subjects: ["Algebra", "Fizika"] },
+    { years: [3, 4], text: "Opis." },
+  ],
+  modulesFrom: undefined,
+  modules: [],
+  similar: [{ program: "ra" }],
 };
 
 describe("moduleIdsOf", () => {
@@ -49,10 +66,53 @@ describe("moduleIdsOf", () => {
   });
 });
 
-describe("programProblem", () => {
-  const siblings = [checked, plain];
+describe("sharedSubjects", () => {
+  const year = (n: number, subjects: string[]) => ({ years: [n], subjects });
+  const text = { years: [3, 4], text: "Opis." };
 
-  it.each([checked, plain])("accepts $slug", (program) => {
+  it.each([
+    [
+      "two years on both sides",
+      [year(1, ["A", "B"]), year(2, ["C"]), text],
+      [{ years: [1, 2], subjects: ["A", "C", "D"] }, text],
+      { years: 2, shared: 2, total: 3 },
+    ],
+    [
+      "the first year when the other lists only that",
+      [year(1, ["A", "B"]), year(2, ["C"]), text],
+      [year(1, ["B"]), { years: [2, 3, 4], text: "Opis." }],
+      { years: 1, shared: 1, total: 2 },
+    ],
+    [
+      "nothing when a list spans the third year",
+      [year(1, ["A"]), year(2, ["B"]), text],
+      [
+        { years: [1, 2, 3], subjects: ["A"] },
+        { years: [4], text: "Opis." },
+      ],
+      { years: 0, shared: 0, total: 0 },
+    ],
+    [
+      "nothing before the first list",
+      [year(1, ["A"]), year(2, ["B"])],
+      [{ years: [1], text: "Opis." }, year(2, ["B"])],
+      { years: 0, shared: 0, total: 0 },
+    ],
+    [
+      "no shared names",
+      [year(1, ["A"]), year(2, ["B"])],
+      [year(1, ["C"]), year(2, ["D"])],
+      { years: 2, shared: 0, total: 2 },
+    ],
+  ])("compares %s", (_, own, other, expected) => {
+    expect(sharedSubjects(own, other)).toEqual(expected);
+  });
+});
+
+describe("programProblem", () => {
+  const siblings = [checked, plain, siit];
+
+  it.each([checked, plain, siit])("accepts $slug", (program) => {
     expect(programProblem(program, siblings, true)).toBeUndefined();
   });
 
@@ -151,6 +211,31 @@ describe("programProblem", () => {
       "academic studies of 3 years",
       { ...plain, level: "academic" },
       /do not last 3 years/,
+    ],
+    [
+      "a module named like the similar anchor",
+      { ...checked, modules: [{ name: "Slični" }] },
+      /cannot be a module id/,
+    ],
+    [
+      "an unknown similar programme",
+      { ...checked, similar: [{ program: "nema" }] },
+      /not a programme of the faculty/,
+    ],
+    [
+      "itself as similar",
+      { ...checked, similar: [{ program: "ra" }] },
+      /not similar to itself/,
+    ],
+    [
+      "a similar programme listed twice",
+      { ...checked, similar: [{ program: "siit" }, { program: "siit" }] },
+      /listed twice/,
+    ],
+    [
+      "a similar programme with nothing to compare",
+      { ...checked, similar: [{ program: "geodezija" }] },
+      /nothing to compare/,
     ],
     [
       "joint departments without a home",

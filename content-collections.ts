@@ -454,6 +454,14 @@ const programs = defineCollection({
         }),
       )
       .default([]),
+    similar: z
+      .array(
+        z.strictObject({
+          program: z.string().min(1),
+          text: z.string().min(1),
+        }),
+      )
+      .default([]),
     employment: md.optional(),
   }),
   transform: async (program, { documents, cache, collection }) => {

@@ -5,6 +5,7 @@ import {
   moduleKindOf,
   neighbours,
   programExam,
+  similarPrograms,
 } from "./programs";
 
 describe("programs", () => {
@@ -21,6 +22,21 @@ describe("programs", () => {
       ra && neighbours(ra).map(({ slug, linked }) => ({ slug, linked })),
     ).toEqual([{ slug: "siit", linked: true }]);
     expect(ra && programExam(ra).id).toBe("ftn-p1");
+  });
+
+  it("compares a programme with similar ones of its faculty", () => {
+    const pairs = checkedPrograms.flatMap((own) =>
+      similarPrograms(own).map((similar) => ({ own, ...similar })),
+    );
+    expect(pairs.length).toBeGreaterThan(0);
+    for (const { own, program, linked, years, shared, total } of pairs) {
+      expect(program.faculty).toBe(own.faculty);
+      expect(program.slug).not.toBe(own.slug);
+      expect(linked).toBe(Boolean(getProgram(own.faculty, program.slug)));
+      expect([1, 2]).toContain(years);
+      expect(total).toBeGreaterThan(0);
+      expect(shared).toBeLessThanOrEqual(total);
+    }
   });
 
   it("names the kind of choice only when there are modules", () => {

@@ -26,6 +26,9 @@ modules:
     url: https://example.com/
   - name: Modul B
     text: Opis modula B.
+similar:
+  - program: siit
+    text: Opis razlike.
 employment: Opis posla.
 ---
 
