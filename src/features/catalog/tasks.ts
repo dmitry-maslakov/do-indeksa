@@ -285,7 +285,11 @@ export function taskDescription(
 ) {
   const { place } = heading(task, locale, meta);
   return cut(
-    meta("taskDescription", { place, excerpt: task.excerpt }),
+    meta("taskDescription", {
+      place,
+      exam: examSource(task.source) ? "yes" : "no",
+      excerpt: task.excerpt,
+    }),
     descriptionLength,
   );
 }

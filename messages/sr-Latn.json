@@ -17,7 +17,7 @@
     "taskPlace": "{topic}, zadatak {number, number}",
     "examTaskPlace": "FTN prijemni {year}, zadatak {position, number}",
     "task": "{place}: {subject}",
-    "taskDescription": "{place}. {excerpt} Sa nagoveštajima i rešenjem.",
+    "taskDescription": "{place}{exam, select, yes {} other { za prijemni iz matematike}}. {excerpt} Sa nagoveštajima i rešenjem.",
     "theoryTitle": "Teorija za prijemni iz matematike na FTN-u",
     "theoryDescription": "Teorija za prijemni ispit iz matematike na FTN-u po temama: šta treba znati, formule i metodi rešavanja sa primerima.",
     "theoryTopic": "{topic}: teorija",
