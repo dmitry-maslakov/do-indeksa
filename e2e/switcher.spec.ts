@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { allExams, allFaculties } from "content-collections";
 import { sortBy } from "es-toolkit";
 import en from "../messages/en.json";
@@ -64,6 +64,46 @@ test(
   },
 );
 
+const menuLinks = ({ ExamSwitcher }: Pick<typeof en, "ExamSwitcher">) => ({
+  about: ExamSwitcher.about.replace("{exam}", exam.title),
+  programs: ExamSwitcher.faculty.replace("{faculty}", faculty.short),
+  all: ExamSwitcher.all,
+});
+
+test(
+  "the exam menu leads to the exam page and the faculty page",
+  { tag: "@responsive" },
+  async ({ page, errors }, { project }) => {
+    const phone = project.name === "mobile";
+    const { about, programs, all } = menuLinks(sr);
+    const rowOf = (list: Locator, name: string) =>
+      list.getByRole(phone ? "link" : "menuitem", { name });
+
+    await page.goto(at("/bank"));
+    let list = await openList(page, phone, "Ispit");
+    await expect(
+      list.getByRole(phone ? "link" : "menuitem").filter({ hasText: "→" }),
+    ).toHaveText([about, programs, all].map((name) => `${name}→`));
+    await expect(rowOf(list, about)).toHaveAttribute(
+      "href",
+      `${exam.path}/about`,
+    );
+    await expect(rowOf(list, programs)).toHaveAttribute(
+      "href",
+      `/${faculty.id}`,
+    );
+    await rowOf(list, about).click();
+    await expect(page).toHaveURL(new RegExp(`${exam.path}/about$`));
+    await expect(list).toBeHidden();
+
+    list = await openList(page, phone, "Ispit");
+    await rowOf(list, programs).click();
+    await expect(page).toHaveURL(new RegExp(`/${faculty.id}$`));
+    await expect(list).toBeHidden();
+    expect(errors).toEqual([]);
+  },
+);
+
 test(
   "the switcher keeps its labels in other languages",
   { tag: "@responsive" },
@@ -82,6 +122,17 @@ test(
         .getByRole("link", { name: "All exams" })
         .or(list.getByRole("menuitem", { name: "All exams" })),
     ).toHaveAttribute("href", "/en?pick=1");
+    const { about, programs } = menuLinks(en);
+    await expect(
+      list
+        .getByRole("link", { name: about })
+        .or(list.getByRole("menuitem", { name: about })),
+    ).toHaveAttribute("href", `/en${exam.path}/about`);
+    await expect(
+      list
+        .getByRole("link", { name: programs })
+        .or(list.getByRole("menuitem", { name: programs })),
+    ).toHaveAttribute("href", `/en/${faculty.id}`);
   },
 );
 
