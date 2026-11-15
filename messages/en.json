@@ -12,6 +12,8 @@
     "bankTopicPage": "{topic}: tasks, page {page, number}",
     "variantsTitle": "FTN maths practice entrance exams",
     "variantsDescription": "Practice maths entrance exams for FTN Novi Sad: tests in the exam format and our own tests, timed like the real exam.",
+    "examTestTitle": "{faculty} entrance exam {year}: practice test",
+    "examTestDescription": "The {year} {faculty} maths entrance exam as a timed practice test: {tasks, plural, one {# task} other {# tasks}}, {minutes, number} min. Solutions are on a separate page.",
     "taskPlace": "{topic}, task {number, number}",
     "examTaskPlace": "FTN entrance exam {year}, task {position, number}",
     "task": "{place}: {subject}",

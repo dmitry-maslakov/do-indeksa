@@ -12,6 +12,8 @@
     "bankTopicPage": "{topic}: задачи, страница {page, number}",
     "variantsTitle": "Пробный вступительный по математике в FTN",
     "variantsDescription": "Пробные вступительные по математике в FTN Нови-Сад: варианты в формате экзамена и наши подборки, с таймером, как на экзамене.",
+    "examTestTitle": "Вступительный {faculty} {year}: пробный вариант",
+    "examTestDescription": "Вступительный по математике в {faculty} {year} года как пробный вариант: {tasks, plural, one {# задача} few {# задачи} other {# задач}}, {minutes, number} мин, с таймером. Решения на отдельной странице.",
     "taskPlace": "{topic}, задача {number, number}",
     "examTaskPlace": "Вступительный FTN {year}, задача {position, number}",
     "task": "{place}: {subject}",

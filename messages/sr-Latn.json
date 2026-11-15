@@ -12,6 +12,8 @@
     "bankTopicPage": "{topic}: zadaci, strana {page, number}",
     "variantsTitle": "Probni prijemni iz matematike za FTN",
     "variantsDescription": "Probni prijemni iz matematike za FTN u Novom Sadu: testovi po formatu prijemnog i naši testovi, sa merenjem vremena kao na ispitu.",
+    "examTestTitle": "{faculty} prijemni {year}: probni test",
+    "examTestDescription": "Prijemni iz matematike na {faculty}-u {year}. godine kao probni test: {tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}}, {minutes, number} min, sa merenjem vremena. Rešenja su na posebnoj strani.",
     "taskPlace": "{topic}, zadatak {number, number}",
     "examTaskPlace": "FTN prijemni {year}, zadatak {position, number}",
     "task": "{place}: {subject}",
