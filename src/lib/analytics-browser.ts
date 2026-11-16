@@ -1,4 +1,5 @@
 import { attempt, noop, round } from "es-toolkit";
+import InAppSpy from "inapp-spy";
 import type { EventMap } from "./analytics-schema";
 import { readCookie } from "./cookies";
 import { daySeconds, secondMs } from "./dates";
@@ -132,6 +133,12 @@ function crossReferrer() {
   return url && url.host !== location.host ? url.origin : undefined;
 }
 
+function inApp() {
+  const { isInApp, appKey, ua } = InAppSpy();
+  if (/\bViber\//.test(ua)) return "viber";
+  return isInApp ? (appKey ?? "other") : undefined;
+}
+
 function startVisit() {
   const firstVisit = !readCookie(aidCookie);
   if (firstVisit)
@@ -156,6 +163,7 @@ function startVisit() {
       standalone: matchMedia("(display-mode: standalone)").matches,
       tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
       browser_lang: language,
+      in_app: inApp(),
     },
     loadPath,
     crossReferrer(),
