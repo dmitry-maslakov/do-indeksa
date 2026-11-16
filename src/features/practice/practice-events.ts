@@ -106,20 +106,32 @@ const answerInput = defineEvent("answer_input", {
     .optional(),
 });
 
-export const answerSubmitted = defineEvent("answer_submitted", {
-  ...task,
-  ...session,
-  ...answered,
-  answer_client_id: z.uuid(),
+const graded = {
   correct: z.boolean(),
   verdict: z.enum(verdicts),
   outcomes: z.array(z.enum(partOutcomes)).min(1).max(maxParts),
   answers: z.array(text).max(maxParts),
   reasons: z.array(z.enum(refusals).nullable()).max(maxParts),
   checker: z.int().min(1),
+};
+
+export const answerSubmitted = defineEvent("answer_submitted", {
+  ...task,
+  ...session,
+  ...answered,
+  ...graded,
+  answer_client_id: z.uuid(),
   variant_kind: z.enum(testKind.enumValues).optional(),
   duration_ms: count.optional(),
   visits: count.optional(),
+});
+
+export const answerSaved = defineEvent("answer_saved", {
+  ...task,
+  ...graded,
+  test_session_id: z.uuid(),
+  position: z.int().positive(),
+  variant_kind: z.enum(testKind.enumValues),
 });
 
 export const helpRevealed = defineEvent("help_revealed", {

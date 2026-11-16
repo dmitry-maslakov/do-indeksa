@@ -62,9 +62,19 @@ export async function submitAnswer(
   });
 }
 
-function reasonsOf({ taskId, answers }: typeof attempts.$inferSelect) {
+export function gradedFacts(taskId: string, answers: string[]) {
   const task = getTask(taskId);
-  return task ? gradeTask(task, answers).map(refusalOf) : [];
+  if (!task) throw new Error(`unknown task ${taskId}`);
+  const graded = gradeTask(task, answers);
+  const outcomes = graded.map((g) => g.outcome);
+  return {
+    correct: outcomes.every(isRight),
+    verdict: verdictOf(outcomes),
+    outcomes,
+    answers,
+    reasons: graded.map(refusalOf),
+    checker: checkerVersion,
+  };
 }
 
 export const attemptFacts = async (
@@ -84,6 +94,6 @@ export const attemptFacts = async (
   verdict: verdictOf(attempt.outcomes),
   outcomes: attempt.outcomes,
   answers: attempt.answers,
-  reasons: reasonsOf(attempt),
+  reasons: gradedFacts(attempt.taskId, attempt.answers).reasons,
   checker: attempt.checker,
 });
