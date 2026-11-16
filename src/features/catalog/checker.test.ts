@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { answerProblem, type GradedPart, gradeParts } from "./checker";
+import {
+  answerProblem,
+  type GradedPart,
+  gradeParts,
+  gradeTask,
+  refusalOf,
+} from "./checker";
 import type { Kind } from "./kinds";
 
 const isEquivalent = (input: string, expected: string) =>
@@ -489,6 +495,65 @@ describe("the box that cannot be read", () => {
       outcome: "unreadable",
       problem: { box: 0, reason: "expression" },
     });
+  });
+});
+
+describe("a part that is not accepted", () => {
+  const refusal = (input: string, expected: string) =>
+    gradeParts([{ expected }], [input]).map(refusalOf)[0];
+
+  it.each([
+    ["0{,}33", "\\frac{1}{3}"],
+    ["4{,}615", "\\frac{60}{13}"],
+    ["1{,}41", "\\sqrt{2}"],
+    ["(2,1,0)", "(0,1,2)"],
+    ["(-1,3)", "[-1,3]"],
+    ["(-\\infty,0]\\cup(2,\\infty)", "(-\\infty,0)\\cup(2,\\infty)"],
+    ["(3;2)", "(2;3)"],
+    ["3+2i", "2+3i"],
+  ])(
+    "has the numbers of the answer in another form: %s for %s",
+    (input, expected) => {
+      expect(refusal(input, expected)).toBe("form");
+    },
+  );
+
+  it.each([
+    ["x+1", "x-1"],
+    ["5", "7"],
+    ["0{,}3", "\\frac{1}{3}"],
+    ["4", "4, \\sqrt{2}"],
+    ["4, 4", "4, \\sqrt{2}"],
+    ["120", "\\frac{2\\pi}{3}"],
+    ["\\left\\lbrack0{,}3\\right\\rbrack", "[0,2]"],
+    ["(1;2);(3;5)", "(1;2);(3;4)"],
+    ["0", "0{,}001"],
+  ])("has another value: %s for %s", (input, expected) => {
+    expect(refusal(input, expected)).toBe("value");
+  });
+
+  it("names what could not be read", () => {
+    expect(refusal("\\frac{1}{}", "1")).toBe("fraction");
+    expect(refusal("(1", "1")).toBe("bracket");
+  });
+
+  it("has no reason when the part is right or empty", () => {
+    expect(refusal("1", "1")).toBeNull();
+    expect(refusal("", "1")).toBeNull();
+  });
+
+  it("calls a wrong option or a wrong yes a wrong value", () => {
+    const choice = {
+      many: false,
+      options: ["1", "2"],
+      correct: ["A" as const],
+    };
+    expect(gradeTask({ check: [], choice }, ["B"]).map(refusalOf)).toEqual([
+      "value",
+    ]);
+    expect(
+      gradeParts([{ expected: "yes", kind: "yesno" }], ["no"]).map(refusalOf),
+    ).toEqual(["value"]);
   });
 });
 

@@ -34,6 +34,10 @@ export const reasons = [
 
 export type Reason = (typeof reasons)[number];
 
+export const refusals = [...reasons, "form", "value"] as const;
+
+export type Refusal = (typeof refusals)[number];
+
 export interface Problem {
   box: number;
   reason: Reason;
