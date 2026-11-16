@@ -327,6 +327,54 @@ test("leaving a task records how it was left", async ({ page }) => {
     ]);
 });
 
+test("a task in a window behind another one adds nothing to the time on it", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto(at("/bank/eks-001"));
+  await hydrated(page);
+  await page.clock.fastForward("00:10");
+  await page.evaluate(() => {
+    document.hasFocus = () => false;
+    dispatchEvent(new Event("blur"));
+  });
+  await page.clock.fastForward("10:00");
+  await expect
+    .poll(async () => {
+      await flush(page);
+      return (await propsOf(page, "task_left")).at(0)?.visible_ms;
+    })
+    .toBeGreaterThanOrEqual(10_000);
+  const [left] = await propsOf(page, "task_left");
+  expect(left?.visible_ms).toBeLessThan(60_000);
+});
+
+test("the time on a task starts over when its session does", async ({
+  page,
+  auth,
+}) => {
+  const { profileId } = await auth.signIn();
+  await page.clock.install();
+  await page.goto(at("/bank/eks-001"));
+  await expect.poll(() => propsOf(page, "task_opened")).toHaveLength(1);
+  await page.clock.fastForward("05:00");
+  await auth.db.query(
+    "update task_sessions set last_seen_at = now() - interval '1 minute' where profile_id = $1",
+    [profileId],
+  );
+  await page.clock.fastForward("00:30");
+  await expect.poll(() => propsOf(page, "task_resumed")).toHaveLength(1);
+  const [resumed] = await propsOf(page, "task_resumed");
+  await expect
+    .poll(async () => {
+      await flush(page);
+      return (await propsOf(page, "task_left")).find(
+        (left) => left.task_session_id === resumed?.task_session_id,
+      )?.visible_ms;
+    })
+    .toBeLessThan(60_000);
+});
+
 test("opens from the hero, the next link and a reload are told apart", async ({
   page,
 }) => {

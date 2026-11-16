@@ -24,6 +24,7 @@ import {
   queueEvent,
   takeIntent,
 } from "@/lib/analytics-browser";
+import { watchAttention } from "@/lib/attention";
 import { localTimeZone } from "@/lib/time-zone";
 import { keepAliveMs } from "./session-kind";
 
@@ -33,8 +34,6 @@ const decides = (outcomes: PartOutcome[]) =>
 type Send = (sessionId?: string) => Promise<string | undefined>;
 
 interface Visit {
-  shownAt?: number;
-  visibleMs: number;
   seq: number;
   typed: number;
   verdict?: Verdict;
@@ -88,7 +87,6 @@ export function TaskSessionProvider({
   const latest = useRef(Promise.resolve<string | undefined>(undefined));
   const sessionId = useRef<string>(undefined);
   const visit = useRef<Visit>({
-    visibleMs: 0,
     seq: 0,
     typed: 0,
     revealed: false,
@@ -107,6 +105,7 @@ export function TaskSessionProvider({
   useEffect(() => {
     const current = visit.current;
     const path = location.pathname;
+    const attention = watchAttention();
     const keep = (intent?: Intent) => {
       if (document.visibilityState !== "visible") return;
       track(async (id) => {
@@ -118,23 +117,14 @@ export function TaskSessionProvider({
             intent,
           })
         )?.data;
-        if (id && kept && kept !== id)
-          Object.assign(current, {
-            visibleMs: 0,
-            verdict: undefined,
-            revealed: false,
-          });
+        if (id && kept && kept !== id) {
+          attention.restart();
+          Object.assign(current, { verdict: undefined, revealed: false });
+        }
         return kept;
       });
     };
-    const show = () => {
-      current.shownAt = performance.now();
-      keep();
-    };
     const leave = (exit: Exit) => {
-      if (current.shownAt !== undefined)
-        current.visibleMs += performance.now() - current.shownAt;
-      current.shownAt = undefined;
       current.seq += 1;
       queueEvent(
         "task_left",
@@ -144,7 +134,7 @@ export function TaskSessionProvider({
           seq: current.seq,
           exit,
           state: stateOf(current),
-          visible_ms: Math.round(current.visibleMs),
+          visible_ms: Math.round(attention.read()),
           typed_len: current.typed,
           field_ready_ms: current.readyMs,
         },
@@ -152,13 +142,11 @@ export function TaskSessionProvider({
       );
     };
     const toggle = () =>
-      document.visibilityState === "visible" ? show() : leave("hidden");
+      document.visibilityState === "visible" ? keep() : leave("hidden");
     const hide = () => leave("pagehide");
     whenFieldReady((ms) => {
       current.readyMs = ms;
     });
-    if (document.visibilityState === "visible")
-      current.shownAt = performance.now();
     keep(takeIntent());
     const timer = setInterval(keep, keepAliveMs);
     document.addEventListener("visibilitychange", toggle);
@@ -168,6 +156,7 @@ export function TaskSessionProvider({
       document.removeEventListener("visibilitychange", toggle);
       removeEventListener("pagehide", hide);
       leave("navigate");
+      attention.stop();
     };
   }, [taskId, track]);
 
