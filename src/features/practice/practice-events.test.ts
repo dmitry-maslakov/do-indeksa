@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { taskFacts, tasks } from "@/features/catalog/tasks";
 import {
+  answerSaved,
   answerSubmitted,
   clientEvents,
   helpRevealed,
@@ -38,6 +39,7 @@ const events = [
   taskOpened,
   taskResumed,
   answerSubmitted,
+  answerSaved,
   helpRevealed,
   taskSkipped,
   taskReported,
@@ -96,6 +98,18 @@ const valid = {
     reasons: [null, "fraction"],
     checker: 1,
   },
+  answer_saved: {
+    ...task,
+    correct: false,
+    verdict: "wrong",
+    outcomes: ["wrong"],
+    answers: ["3"],
+    reasons: ["value"],
+    checker: 1,
+    test_session_id: id,
+    position: 4,
+    variant_kind: "official",
+  },
   help_revealed: {
     ...task,
     ...session,
@@ -132,6 +146,7 @@ const invalid = {
   task_resumed: { task_id: "eks-001", task_session_id: id },
   answer_input: { ...valid.answer_input, answer: "x=2" },
   answer_submitted: { ...valid.answer_submitted, verdict: "partial" },
+  answer_saved: { ...valid.answer_saved, position: 0 },
   help_revealed: { ...valid.help_revealed, part: "hint4" },
   task_skipped: { ...task, ...session, attempts_before: -1 },
   task_left: { ...valid.task_left, seq: 0 },

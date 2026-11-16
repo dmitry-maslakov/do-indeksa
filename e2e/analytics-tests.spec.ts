@@ -299,6 +299,50 @@ test("a test records its answers, controls and where it was started", async ({
   expect(inputs[0]).not.toHaveProperty("structures");
 });
 
+test("a test that is never finished records each answer once it is saved", async ({
+  page,
+}) => {
+  await page.goto(at("/variants"));
+  await hydrated(page);
+  await page
+    .getByRole("main")
+    .getByRole("link", { name: /^\d{4}$/ })
+    .first()
+    .click();
+  await expect(shown(page, /^Zadatak 1 · /)).toBeVisible();
+  await answer(page, "1");
+  const saved = {
+    test_session_id: expect.any(String),
+    answers: expect.arrayContaining(["1"]),
+  };
+  await expect
+    .poll(() => propsOf(page, "answer_saved"))
+    .toEqual([expect.objectContaining({ ...saved, position: 1 })]);
+  await page
+    .getByRole("complementary", { name: "Zadaci" })
+    .getByRole("button", { name: /^bez odgovora 3 / })
+    .click();
+  await expect(shown(page, /^Zadatak 3 · /)).toBeVisible();
+  await answer(page, "1");
+  await expect
+    .poll(() => propsOf(page, "answer_saved"))
+    .toEqual([
+      expect.objectContaining({ ...saved, position: 1 }),
+      expect.objectContaining({ ...saved, position: 3 }),
+    ]);
+  const [first] = await propsOf(page, "answer_saved");
+  expect(first).toMatchObject({
+    task_id: expect.any(String),
+    verdict: expect.stringMatching(/^(correct|wrong|incomplete)$/),
+    outcomes: expect.arrayContaining([
+      expect.stringMatching(/^(right|wrong)$/),
+    ]),
+    reasons: expect.any(Array),
+    variant_kind: "official",
+  });
+  expect(await propsOf(page, "answer_submitted")).toEqual([]);
+});
+
 test("tests started from home record the year or the weekly card", async ({
   page,
 }) => {

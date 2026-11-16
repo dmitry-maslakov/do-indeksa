@@ -1,6 +1,6 @@
 import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { clamp, sumBy } from "es-toolkit";
+import { clamp, isEqual, sumBy } from "es-toolkit";
 import { cache } from "react";
 import { z } from "zod";
 import { testDraft, type Visit } from "@/db/columns";
@@ -20,7 +20,7 @@ import { minuteMs } from "@/lib/dates";
 import { db, type Tx } from "@/server/db";
 import { gradeTest } from "./grade";
 import { review } from "./review";
-import { overtimeAt } from "./state";
+import { isAnswered, overtimeAt } from "./state";
 
 export const testInput = z.object({
   id: z.uuid(),
@@ -79,7 +79,21 @@ export async function saveDraft(
   examId: string,
   test: TestInput,
 ) {
-  await upsert(db, profileId, examId, test, {});
+  const [before] = await db
+    .select({ draft: testSessions.draft })
+    .from(testSessions)
+    .where(
+      and(eq(testSessions.id, test.id), eq(testSessions.profileId, profileId)),
+    );
+  const [stored] = await upsert(db, profileId, examId, test, {});
+  const answered = test.draft.answers.flatMap((answers, index) => {
+    const taskId = stored?.taskIds[index];
+    const changed = !isEqual(answers, before?.draft?.answers[index]);
+    return taskId && changed && isAnswered(answers)
+      ? [{ taskId, position: index + 1, answers }]
+      : [];
+  });
+  return { kind: variantOf(examId, test.variantId).kind, answered };
 }
 
 function sessionsOf(
