@@ -1,8 +1,18 @@
 import { useRouter } from "next/navigation";
 import { observe } from "react-intersection-observer";
-import { type BrowserEvents, queueEvent } from "./analytics-browser";
+import {
+  type BrowserEvents,
+  queueEvent,
+  shownAttribute,
+} from "./analytics-browser";
 
-const exposed = new Set<string>();
+type Shown = {
+  [Name in keyof BrowserEvents]: "shown_id" extends keyof BrowserEvents[Name]
+    ? Name
+    : never;
+}[keyof BrowserEvents];
+
+const exposed = new Map<string, string>();
 
 const pageOf = (entry?: NavigationHistoryEntry) => entry?.url?.split("#")[0];
 
@@ -14,7 +24,7 @@ export function viewKey(bfcacheId: string, subject: string) {
   return `${entries[index]?.key ?? bfcacheId} ${subject}`;
 }
 
-export function useExposure<Name extends keyof BrowserEvents>(
+export function useExposure<Name extends Shown>(
   name: Name,
   props?: BrowserEvents[Name],
   page = "",
@@ -32,9 +42,12 @@ export function useExposure<Name extends keyof BrowserEvents>(
           bfcacheId,
           `${name} ${page} ${JSON.stringify(props)}`,
         );
-        if (exposed.has(key)) return;
-        exposed.add(key);
-        queueEvent(name, props);
+        const before = exposed.get(key);
+        const id = before ?? crypto.randomUUID();
+        node.setAttribute(shownAttribute, id);
+        if (before) return;
+        exposed.set(key, id);
+        queueEvent(name, { ...props, shown_id: id });
       },
       { threshold: 0.5 },
     );

@@ -12,6 +12,7 @@ export const consentCookie = "analytics";
 export const analyticsCookieAge = 400 * daySeconds;
 export const batchBytes = 32 * 1024;
 export const shareSource = "share";
+export const shownAttribute = "data-shown";
 
 export interface BrowserEvents extends EventMap<typeof clientEvents> {}
 
@@ -32,6 +33,7 @@ export interface Intent {
   via: string;
   placement?: string;
   rank?: number;
+  shown_id?: string;
 }
 
 interface BrowserExtras {
@@ -196,8 +198,12 @@ function clicked(event: MouseEvent) {
   if (control && !control.matches("details[open] > summary"))
     enqueue("control_used", dataOf(control, "data-control"));
   if (event.button || event.metaKey || event.ctrlKey || event.shiftKey) return;
-  pendingIntent =
-    dataOf(target.closest?.("[data-intent]"), "data-intent") ?? null;
+  const link = target.closest?.("[data-intent]");
+  const intent: Intent | undefined = dataOf(link, "data-intent");
+  const shown = link?.closest(`[${shownAttribute}]`);
+  pendingIntent = intent
+    ? { ...intent, shown_id: shown?.getAttribute(shownAttribute) ?? undefined }
+    : null;
 }
 
 const sharedIntent = (): Intent | undefined =>
