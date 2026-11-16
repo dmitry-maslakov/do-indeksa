@@ -17,7 +17,7 @@ export async function AdmissionSection({ faculty: id }: { faculty: string }) {
     getFormatter(),
   ]);
   const faculty = facultyOf(id);
-  const { short, checked, links } = faculty;
+  const { short, links } = faculty;
   const { year, konkurs, schedule, wishes } = currentAdmission(id);
   const exams = facultyExams(id);
   const titleOf = (exam: string) =>
@@ -59,11 +59,7 @@ export async function AdmissionSection({ faculty: id }: { faculty: string }) {
   return (
     <InfoSection id="upis" title={t("admissionTitle", { short })}>
       <p>
-        {t("nextCycle", {
-          year: facts.schoolYear(year + 1),
-          checked: checked ? "yes" : "no",
-          date: checked ? facts.date(checked) : "",
-        })}
+        {t("nextCycle", { year: facts.schoolYear(year + 1) })}
         {schedule &&
           ` ${t("schedule", {
             year: facts.schoolYear(year),

@@ -444,7 +444,6 @@
     "sourceLine": "Source: {lead, select, yes {{short}, } other {}}<list></list>.",
     "konkurs": "{short} admission call for {year}",
     "section": ", section {section}{more, select, yes {,} other {}}",
-    "checkedOn": "Checked on {date}",
     "linkTitle": "{mixed, select, yes {“<link>{title}</link>”} other {<link>{title}</link>}}",
     "clock": "{whole, select, yes {{hours}} other {{hours}:{minutes}}}"
   },

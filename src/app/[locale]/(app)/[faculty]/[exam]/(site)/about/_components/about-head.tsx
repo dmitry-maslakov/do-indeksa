@@ -113,7 +113,6 @@ export async function AboutHead({ examId }: { examId: string }) {
           <SourceLine
             faculty={faculty.id}
             refs={exam.about?.rulesSources ?? []}
-            checked={exam.about?.checked}
             linkClassName={quietLink}
             className="mt-2"
           />

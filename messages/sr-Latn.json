@@ -444,7 +444,6 @@
     "sourceLine": "Izvor: {lead, select, yes {{short}, } other {}}<list></list>.",
     "konkurs": "konkurs {short}-a za upis {year}.",
     "section": ", tačka {section}{more, select, yes {,} other {}}",
-    "checkedOn": "Provereno {date}",
     "linkTitle": "{mixed, select, yes {„<link>{title}</link>“} other {<link>{title}</link>}}",
     "clock": "{whole, select, yes {{hours}} other {{hours}.{minutes}}}"
   },
@@ -452,9 +451,7 @@
     "metaTitle": "Smerovi {short}-a u {cityLocative}: prijemni, mesta{results, select, yes { i bodovi za upis} other {}}",
     "metaDescription": "{count, plural, one {Jedini smer} few {Sva # smera} other {Svih # smerova}} {short}-a u {cityLocative} po prijemnom ispitu: broj mesta i školarina za {places}{results, select, yes { i najniži bodovi upisanih {year}} other {}}, sa izvorima.",
     "title": "Smerovi i prijemni na {short}-u",
-    "lead": "{name} u {cityLocative} ima {programs, plural, one {# smer} few {# smera} other {# smerova}} i {exams, plural, one {# prijemni ispit} few {# prijemna ispita} other {# prijemnih ispita}}.",
-    "sources": "{results, select, yes {Izvori} other {Izvor}}: <konkurs>konkurs {short}-a za upis {year}.</konkurs>{results, select, yes { i <statistics>Statistika upisa {short}-a {resultsYear}</statistics>} other {}}{checked, select, yes {, provereno {date}} other {.}}",
-    "unofficial": "Nije zvanični sajt {short}-a.",
+    "lead": "<item>{name}</item> · <item>{city}</item> · <item>{programs, plural, one {# smer} few {# smera} other {# smerova}}</item> · <item>{exams, plural, one {# prijemni ispit} few {# prijemna ispita} other {# prijemnih ispita}}</item>",
     "onPage": "Na ovoj stranici",
     "examLabel": "{title} · {name}",
     "composition": "{tasks, plural, one {# zadatak} few {# zadatka} other {# zadataka}} · {hours, plural, one {# sat} few {# sata} other {# sati}} · do {points} bodova",
@@ -487,7 +484,7 @@
     "tieBreak": "Pri istom zbiru odlučuju bodovi sa prijemnog.",
     "cutoffsMeaning": "Najniži bodovi upisanih pokazuju gde se rang lista završila na upisu {year}. To je rezultat ranijeg upisa, a ne uslov za sledeći. Za upis je potrebno mesto na rang listi i broj bodova naveden iznad.",
     "admissionTitle": "Upis na {short}",
-    "nextCycle": "Konkurs za upis {year}. još nije objavljen{checked, select, yes {, provereno {date}} other {.}}",
+    "nextCycle": "Konkurs za upis {year}. još nije objavljen.",
     "schedule": "Za upis {year}. elektronska prijava trajala je {application}, prijemni ispiti bili su {exams}, a konačne rang liste objavljene su {lists}",
     "wishes": "Prijava ide na najviše {max} {count, plural, one {smer} few {smera} other {smerova}}, po redu želja.",
     "wishesAlso": "Ko polaže {exam}, kao želje može da navede i smerove sa prijemnim {exams} i bira da li će {count, plural, one {taj ispit} other {te ispite}} posebno polagati.",
@@ -561,8 +558,7 @@
     "allPrograms": "Svi smerovi {short}-a",
     "officialTitle": "Zvanične stranice {short}-a",
     "page": "Stranica smera",
-    "planPdf": "Plan studija (PDF)",
-    "checked": "Podaci provereni: {date}"
+    "planPdf": "Plan studija (PDF)"
   },
   "ProgramSearch": {
     "label": "Nađi smer",

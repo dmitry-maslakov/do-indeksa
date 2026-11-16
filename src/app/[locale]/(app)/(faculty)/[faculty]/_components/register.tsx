@@ -36,46 +36,41 @@ async function ColumnHead({ faculty }: { faculty: string }) {
   const year = results ? facts.schoolYear(results.year) : "";
 
   return (
-    <>
-      <div
-        aria-hidden="true"
-        className={cn(
-          tracks,
-          "sticky top-0 z-2 border-y bg-background py-2 font-medium text-muted-foreground text-xs lg:items-end lg:text-right",
-        )}
-      >
-        <div className="hidden text-left lg:block">{t("colProgram")}</div>
+    <div
+      aria-hidden="true"
+      className={cn(
+        tracks,
+        "sticky top-0 z-2 border-y bg-background py-2 font-medium text-muted-foreground text-xs lg:items-end lg:text-right",
+      )}
+    >
+      <div className="hidden text-left lg:block">{t("colProgram")}</div>
+      <div className="lg:grid lg:grid-cols-2 lg:gap-x-4">
+        <span className={caption}>{t("colPlaces", { year: places })}</span>
+        <span className={unit}>{t("budget")}</span>
+        <span className={unit}>{t("self")}</span>
+      </div>
+      <div>
+        <span className={caption}>
+          {t.rich("colTuition", { year: places, wide })}
+        </span>{" "}
+        <span className="lg:block lg:font-normal lg:text-subtle">
+          {t.rich("colTuitionUnit", { wide })}
+        </span>
+      </div>
+      {results && (
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-4">
-          <span className={caption}>{t("colPlaces", { year: places })}</span>
+          <span className={caption}>
+            {t.rich("colCutoffs", {
+              year,
+              max: String(maxPoints(current)),
+              wide,
+            })}
+          </span>
           <span className={unit}>{t("budget")}</span>
           <span className={unit}>{t("self")}</span>
         </div>
-        <div>
-          <span className={caption}>
-            {t.rich("colTuition", { year: places, wide })}
-          </span>{" "}
-          <span className="lg:block lg:font-normal lg:text-subtle">
-            {t.rich("colTuitionUnit", { wide })}
-          </span>
-        </div>
-        {results && (
-          <div className="lg:grid lg:grid-cols-2 lg:gap-x-4">
-            <span className={caption}>
-              {t.rich("colCutoffs", {
-                year,
-                max: String(maxPoints(current)),
-                wide,
-              })}
-            </span>
-            <span className={unit}>{t("budget")}</span>
-            <span className={unit}>{t("self")}</span>
-          </div>
-        )}
-      </div>
-      <p className="border-b py-1.5 text-muted-foreground text-xs lg:py-2">
-        {t("keyLine", { results: results ? "yes" : "no", year })}
-      </p>
-    </>
+      )}
+    </div>
   );
 }
 

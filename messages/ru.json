@@ -444,7 +444,6 @@
     "sourceLine": "Источник: {lead, select, yes {{short}, } other {}}<list></list>.",
     "konkurs": "конкурс {short} на {year}",
     "section": ", пункт {section}{more, select, yes {,} other {}}",
-    "checkedOn": "Проверено {date}",
     "linkTitle": "{mixed, select, yes {«<link>{title}</link>»} other {<link>{title}</link>}}",
     "clock": "{whole, select, yes {{hours}} other {{hours}:{minutes}}}"
   },

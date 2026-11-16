@@ -60,9 +60,8 @@ export async function ArchiveSection({
   examId: string;
   years: Years;
 }) {
-  const [t, factsT, facts] = await Promise.all([
+  const [t, facts] = await Promise.all([
     getTranslations("ExamAbout"),
-    getTranslations("Facts"),
     getFacts(),
   ]);
   const exam = examRecord(examId);
@@ -147,8 +146,6 @@ export async function ArchiveSection({
               ? "no"
               : "yes",
           })}`}
-        {exam.about?.checked &&
-          ` ${factsT("checkedOn", { date: facts.date(exam.about.checked) })}`}
       </p>
     </AboutSection>
   );
