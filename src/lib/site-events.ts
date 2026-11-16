@@ -12,6 +12,7 @@ const visitStarted = defineEvent("visit_started", {
   standalone: z.boolean(),
   tz: text,
   browser_lang: text,
+  in_app: text.optional(),
 });
 
 const pageView = defineEvent("page_view", {

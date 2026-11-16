@@ -14,6 +14,7 @@ const valid = {
     standalone: false,
     tz: "Europe/Belgrade",
     browser_lang: "sr-Latn-RS",
+    in_app: "instagram",
   },
   page_view: {
     path: "/ru/variants",

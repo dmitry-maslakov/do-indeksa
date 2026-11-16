@@ -46,6 +46,7 @@ test("a first visit records the visit and the page", async ({ page }) => {
     locale: "sr-Latn",
     props: { first_visit: true },
   });
+  expect(visit?.props).not.toHaveProperty("in_app");
   await expect(page).toHaveURL(/\/bank$/);
 
   await page.getByRole("banner").getByRole("link", { name: "Teorija" }).click();
@@ -66,6 +67,44 @@ test("a first visit records the visit and the page", async ({ page }) => {
     )
     .toContain("/bank");
 });
+
+const webView =
+  "Mozilla/5.0 (Linux; Android 15; SM-A556B; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/139.0.0.0 Mobile Safari/537.36";
+
+const builtIn: { app: string; userAgent?: string; global?: string }[] = [
+  {
+    app: "instagram",
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/22F76 Instagram 385.0.0.29.74",
+  },
+  { app: "viber", userAgent: `${webView} Viber/26.0.2.0` },
+  { app: "other", userAgent: webView },
+  { app: "telegram", global: "TelegramWebviewProxy" },
+];
+
+for (const { app, userAgent, global } of builtIn)
+  test(`a visit in a built-in browser is marked ${app}`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ userAgent });
+    if (global)
+      await context.addInitScript(
+        (name) => Object.assign(window, { [name]: {} }),
+        global,
+      );
+    const campaign = randomUUID();
+    await (await context.newPage()).goto(at(`/bank?utm_campaign=${campaign}`));
+    await expect
+      .poll(async () => {
+        const [visit] = await rows(
+          (row) =>
+            row.utm_campaign === campaign && row.name === "visit_started",
+        );
+        return visit?.props.in_app;
+      })
+      .toBe(app);
+    await context.close();
+  });
 
 test("a missing page records error_shown", async ({ page }) => {
   await page.goto(at("/bank/nema-zadatka"));
