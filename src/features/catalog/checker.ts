@@ -19,6 +19,7 @@ import {
   type Piece,
   type Problem,
   type Reason,
+  type Refusal,
   sentForm,
   sentOf,
 } from "./boxes";
@@ -36,6 +37,7 @@ export interface GradedPart {
 interface Graded {
   outcome: PartOutcome;
   problem?: Problem;
+  close?: boolean;
 }
 
 const script = String.raw`(\{[^{}]*\}|[^{}\\\s])`;
@@ -76,6 +78,12 @@ const items = (expr: BoxedExpression) =>
     : [expr];
 
 const samplePoints = [0.37, 1.29, 2.53, 0.81];
+const rounding = 0.02;
+
+const pointAt = (names: string[], shift: number) =>
+  Object.fromEntries(
+    names.map((name, i) => [name, shift + (samplePoints[i] ?? 0)]),
+  );
 
 const hasUnknowns = (expr: BoxedExpression) => expr.unknowns.length > 0;
 
@@ -87,9 +95,7 @@ const oneSide = (expr: BoxedExpression) =>
 function ratioAt(a: BoxedExpression, b: BoxedExpression) {
   const names = [...new Set([...a.unknowns, ...b.unknowns])];
   for (const shift of samplePoints) {
-    const point = Object.fromEntries(
-      names.map((name, i) => [name, shift + (samplePoints[i] ?? 0)]),
-    );
+    const point = pointAt(names, shift);
     const ratio = a.subs(point).N().re / b.subs(point).N().re;
     if (Number.isFinite(ratio) && ratio !== 0) return ratio;
   }
@@ -132,6 +138,29 @@ function matches(input: string, expected: string, target: BoxedExpression) {
   return candidates.some((c) => sameItems(items(target), items(c)));
 }
 
+function numbersOf(
+  expr: BoxedExpression,
+  point: Record<string, number>,
+): number[] {
+  const { re, im } = expr.subs(point).N();
+  if (!Number.isNaN(re)) return [re, im];
+  return isFunction(expr)
+    ? expr.ops.flatMap((op) => numbersOf(op, point))
+    : [re];
+}
+
+const near = (a: number, b: number) =>
+  a === b || Math.abs(a - b) <= rounding * Math.max(Math.abs(a), Math.abs(b));
+
+function sameNumbers(given: BoxedExpression[], expected: BoxedExpression[]) {
+  const names = [given, expected].flat().flatMap((expr) => expr.unknowns);
+  const point = pointAt([...new Set(names)], 0);
+  const [a = [], b = []] = [given, expected].map((side) =>
+    side.flatMap((expr) => numbersOf(expr, point)).sort((x, y) => x - y),
+  );
+  return a.length === b.length && a.every((x, i) => near(x, b[i] ?? NaN));
+}
+
 function reasonOf(box: string): Reason {
   if (/\\placeholder|\{\}/.test(box)) return "fraction";
   const opened = box.match(/[([]/g)?.length ?? 0;
@@ -147,10 +176,11 @@ function gradeSingle(input: string, expected: string): Graded {
       problem: { box: 0, reason: reasonOf(input) },
     };
   const target = parseMath(expected);
+  if (given.some((reading) => matches(reading, expected, target)))
+    return { outcome: "right" };
   return {
-    outcome: given.some((reading) => matches(reading, expected, target))
-      ? "right"
-      : "wrong",
+    outcome: "wrong",
+    close: given.some((reading) => sameNumbers([parseMath(reading)], [target])),
   };
 }
 
@@ -307,8 +337,12 @@ function gradeBoxes(part: GradedPart, kind: BoxKind, text: string): Graded {
   const problem = problemOf(layout);
   if (problem) return { outcome: "unreadable", problem };
   const target = layoutOf(kind, part.expected);
+  if (target && sameLayout(target, layout)) return { outcome: "right" };
   return {
-    outcome: target && sameLayout(target, layout) ? "right" : "wrong",
+    outcome: "wrong",
+    close:
+      target !== null &&
+      sameNumbers(parsed(boxesOf(layout)), parsed(boxesOf(target))),
   };
 }
 
@@ -344,6 +378,13 @@ export const gradeTask = (
   choice
     ? gradeChoice(choice, answers).map((outcome) => ({ outcome }))
     : gradeParts(check, answers);
+
+export const refusalOf = ({
+  outcome,
+  problem,
+  close,
+}: Graded): Refusal | null =>
+  outcome === "wrong" ? (close ? "form" : "value") : (problem?.reason ?? null);
 
 export function answerProblem(part: GradedPart) {
   const sent = sentForm(part);
