@@ -9,7 +9,6 @@ import {
 } from "@/features/admission/admissions";
 import { FilterGroup } from "@/features/admission/program-search";
 import type { facultyPrograms } from "@/features/admission/programs";
-import { ExamBadge } from "@/features/catalog/exam-badge";
 import { examHours, type facultyExams } from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import { getFacts } from "@/i18n/facts";
@@ -51,9 +50,9 @@ async function ExamHead({
   return (
     <div
       className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 pt-4 pb-2.5",
+        "grid pt-4 pb-2.5",
         open
-          ? "lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center lg:gap-x-6 lg:pt-7 lg:pb-4"
+          ? "lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-6 lg:pt-7 lg:pb-4"
           : "border-b lg:pt-6 lg:pb-3.5",
       )}
     >
@@ -61,44 +60,42 @@ async function ExamHead({
         id={`h-${exam.segment}`}
         title={exam.officialName}
         className={cn(
-          "col-start-1 flex items-baseline gap-2.5 tracking-normal",
+          "tracking-normal",
           open ? "font-semibold text-lg" : "font-medium text-base",
         )}
       >
-        <ExamBadge exam={exam} size="dot" />
         {t("examLabel", { title: exam.title, name: exam.name })}
       </Heading>
-      <p className="col-start-1 pl-4.5 text-balance text-[13px] text-muted-foreground">
+      <p className="text-balance text-[13px] text-muted-foreground">
         {composition}
       </p>
       {open && (
-        <Button
-          variant="lime"
-          nativeButton={false}
-          render={
+        <div className="mt-3 flex items-center gap-x-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:gap-x-6">
+          <Button
+            variant="lime"
+            nativeButton={false}
+            render={
+              <Link
+                exam={exam.path}
+                href="/"
+                data-intent={intentOf({ via: "faculty" })}
+              />
+            }
+            className="px-4.5"
+          >
+            {t("practice", { exam: exam.title })}
+          </Button>
+          {exam.about && (
             <Link
               exam={exam.path}
-              href="/"
-              data-intent={intentOf({ via: "faculty" })}
-            />
-          }
-          className={cn(
-            "col-start-2 row-start-1 self-center px-3 lg:row-span-2 lg:row-start-1 lg:px-4.5",
-            exam.about ? "row-span-3" : "row-span-2",
+              href="/about"
+              data-intent={intentOf({ via: "faculty_about" })}
+              className="font-medium text-[15px] text-data underline-offset-3 hover:underline"
+            >
+              {t("aboutExam", { exam: exam.title })}
+            </Link>
           )}
-        >
-          {t("practice", { exam: exam.title })}
-        </Button>
-      )}
-      {open && exam.about && (
-        <Link
-          exam={exam.path}
-          href="/about"
-          data-intent={intentOf({ via: "faculty_about" })}
-          className="col-start-1 mt-0.5 justify-self-start pl-4.5 font-medium text-[15px] text-data underline-offset-3 hover:underline lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:self-center lg:pl-0"
-        >
-          {t("aboutExam", { exam: exam.title })}
-        </Link>
+        </div>
       )}
     </div>
   );
@@ -133,12 +130,11 @@ export async function ExamGroup({
         <section
           id={exam.segment}
           aria-labelledby={`h-${exam.segment}`}
-          className={cn(
+          className={
             exam.open
-              ? "scroll-mt-42 lg:scroll-mt-46"
-              : "scroll-mt-13 lg:scroll-mt-15",
-            exam.open && exam.about && "scroll-mt-48",
-          )}
+              ? "scroll-mt-46 lg:scroll-mt-39"
+              : "scroll-mt-13 lg:scroll-mt-15"
+          }
         >
           {!exam.open && head}
           <table className="block w-full">

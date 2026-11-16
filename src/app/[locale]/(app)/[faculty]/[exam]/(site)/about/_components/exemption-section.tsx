@@ -20,7 +20,6 @@ export async function ExemptionSection({ examId }: { examId: string }) {
       <SourceLine
         faculty={exam.faculty}
         refs={exemption.sources}
-        checked={exam.about?.checked}
         linkClassName={quietLink}
         className="mt-3"
       />

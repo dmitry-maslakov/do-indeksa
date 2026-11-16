@@ -50,9 +50,6 @@ export async function OfficialBand({ program }: { program: Program }) {
           </li>
         ))}
       </ul>
-      <p className="text-[13px] text-muted-foreground">
-        {t("checked", { date: facts.date(program.checked) })}
-      </p>
     </Band>
   );
 }

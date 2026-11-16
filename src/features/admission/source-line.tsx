@@ -14,7 +14,6 @@ export const mutedSourceLink = `${sourceLink} hover:text-foreground`;
 interface SourceLineProps {
   faculty: string;
   refs: Ref[];
-  checked?: string;
   className?: string;
   linkClassName?: string;
   children?: ReactNode;
@@ -23,7 +22,6 @@ interface SourceLineProps {
 export async function SourceLine({
   faculty,
   refs,
-  checked,
   className,
   linkClassName = sourceLink,
   children,
@@ -70,7 +68,6 @@ export async function SourceLine({
         lead: sources[0]?.kind === "link" ? "yes" : "no",
         list: () => format.list(items),
       })}
-      {checked && ` ${t("checkedOn", { date: facts.date(checked) })}`}
       {children && <> {children}</>}
     </p>
   );
