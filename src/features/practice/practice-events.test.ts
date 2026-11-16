@@ -56,6 +56,7 @@ const valid = {
     via: "list",
     placement: "card",
     rank: 3,
+    shown_id: id,
     status_before: "wrong",
   },
   task_resumed: {

@@ -19,6 +19,7 @@ const recommendationMade = defineEvent("recommendation_made", {
   repeat: z.boolean(),
   reason: z.enum(pickReasons),
   slot: z.int().min(1).max(20),
+  shown_id: z.uuid().optional(),
 });
 
 const bankResultsShown = defineEvent("bank_results_shown", {
@@ -30,6 +31,7 @@ const bankResultsShown = defineEvent("bank_results_shown", {
   sort: z.enum(sorts).optional(),
   q_len: z.int().min(1).max(100).optional(),
   results: z.int().min(0),
+  shown_id: z.uuid().optional(),
 });
 
 export const clientEvents = [recommendationMade, bankResultsShown] as const;

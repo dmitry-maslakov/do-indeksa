@@ -25,6 +25,11 @@ describe("bank events", () => {
     });
   });
 
+  it("accepts the id of the showing", () => {
+    const shown = { ...picked, shown_id: crypto.randomUUID() };
+    expect(schemaOf("recommendation_made")?.parse(shown)).toEqual(shown);
+  });
+
   it.each([
     ["no pick", undefined],
     ["a pick without a reason (the fallback start)", { id: "kb-003" }],

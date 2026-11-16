@@ -38,6 +38,7 @@ test("home records the suggestion and the picks a visitor sees", async ({
       repeat: false,
       reason: "levelFit",
       slot: 1,
+      shown_id: expect.any(String),
     });
   expect(await propsOf(page, "recommendation_made")).toContainEqual(
     expect.objectContaining({ surface: "topic_row" }),
@@ -73,6 +74,14 @@ test("home records the suggestion and the picks a visitor sees", async ({
 
   await start.click();
   await expect(page).toHaveURL(new RegExp(`/bank/${taskId}$`));
+  await expect
+    .poll(() => propsOf(page, "task_opened"))
+    .toEqual([
+      expect.objectContaining({
+        placement: "home_hero",
+        shown_id: heroes[0]?.shown_id,
+      }),
+    ]);
   await expect
     .poll(async () => {
       await flush(page);
@@ -138,6 +147,7 @@ test("the task page records the picks next to a task", async ({ page }) => {
     repeat: false,
     reason: "levelFit",
     slot: 1,
+    shown_id: expect.any(String),
   };
 
   await expect
@@ -208,7 +218,7 @@ test("the bank records its pick, results and filter changes", async ({
       await flush(page);
       return propsOf(page, "bank_results_shown");
     })
-    .toEqual([{ results: count }]);
+    .toEqual([{ results: count, shown_id: expect.any(String) }]);
   await expect
     .poll(async () =>
       (await propsOf(page, "recommendation_made")).map(
@@ -245,9 +255,9 @@ test("the bank records its pick, results and filter changes", async ({
       return propsOf(page, "bank_results_shown");
     })
     .toEqual([
-      { results: count },
+      expect.objectContaining({ results: count }),
       expect.objectContaining({ topic: "logarithms" }),
-      { results: count },
+      expect.objectContaining({ results: count }),
     ]);
   expect(
     (await propsOf(page, "recommendation_made")).map(({ topic }) => topic),
@@ -265,7 +275,7 @@ test("an empty bank search is recorded by its length", async ({ page }) => {
       await flush(page);
       return propsOf(page, "bank_results_shown");
     })
-    .toEqual([{ q_len: 6, results: 0 }]);
+    .toEqual([{ q_len: 6, results: 0, shown_id: expect.any(String) }]);
 });
 
 test("theory records how far a page was read", async ({ page }) => {
