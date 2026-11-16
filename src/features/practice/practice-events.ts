@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { partOutcomes, reportKinds, sessionKinds } from "@/db/columns";
 import { revealPart, testKind } from "@/db/schema";
+import { refusals } from "@/features/catalog/boxes";
 import { picks } from "@/features/catalog/choice";
 import { kinds } from "@/features/catalog/kinds";
 import { levels } from "@/features/catalog/level";
@@ -112,6 +113,8 @@ export const answerSubmitted = defineEvent("answer_submitted", {
   correct: z.boolean(),
   verdict: z.enum(verdicts),
   outcomes: z.array(z.enum(partOutcomes)).min(1).max(maxParts),
+  answers: z.array(text).max(maxParts),
+  reasons: z.array(z.enum(refusals).nullable()).max(maxParts),
   checker: z.int().min(1),
   variant_kind: z.enum(testKind.enumValues).optional(),
   duration_ms: count.optional(),
