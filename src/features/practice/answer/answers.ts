@@ -1,7 +1,11 @@
 import "server-only";
 import { isRight } from "@/db/columns";
 import { attempts } from "@/db/schema";
-import { checkerVersion, gradeTask } from "@/features/catalog/checker";
+import {
+  checkerVersion,
+  gradeTask,
+  refusalOf,
+} from "@/features/catalog/checker";
 import { getTask } from "@/features/catalog/tasks";
 import {
   factsAt,
@@ -58,6 +62,11 @@ export async function submitAnswer(
   });
 }
 
+function reasonsOf({ taskId, answers }: typeof attempts.$inferSelect) {
+  const task = getTask(taskId);
+  return task ? gradeTask(task, answers).map(refusalOf) : [];
+}
+
 export const attemptFacts = async (
   profileId: string,
   examId: string,
@@ -74,5 +83,7 @@ export const attemptFacts = async (
   correct: attempt.correct,
   verdict: verdictOf(attempt.outcomes),
   outcomes: attempt.outcomes,
+  answers: attempt.answers,
+  reasons: reasonsOf(attempt),
   checker: attempt.checker,
 });

@@ -125,6 +125,8 @@ test("checking an answer records the input and the attempt", async ({
       expect.objectContaining({
         ...session,
         verdict: "wrong",
+        answers: ["3"],
+        reasons: ["value"],
         attempts_before: 0,
         last_verdict: "none",
         hints_before: 0,
@@ -134,6 +136,8 @@ test("checking an answer records the input and the attempt", async ({
         verdict: "correct",
         correct: true,
         outcomes: ["right"],
+        answers: ["2"],
+        reasons: [null],
         attempts_before: 1,
         last_verdict: "wrong",
         hints_before: 1,

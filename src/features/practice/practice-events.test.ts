@@ -91,6 +91,8 @@ const valid = {
     correct: false,
     verdict: "unreadable",
     outcomes: ["right", "unreadable"],
+    answers: ["2", "\\frac{1}{}"],
+    reasons: [null, "fraction"],
     checker: 1,
   },
   help_revealed: {
