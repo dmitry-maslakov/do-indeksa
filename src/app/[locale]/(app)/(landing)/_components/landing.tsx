@@ -6,6 +6,7 @@ import { examRecord } from "@/features/catalog/exams";
 import { facultyOf } from "@/features/catalog/faculties";
 import type { WeeklyVariant } from "@/features/variants/weekly";
 import { ExamChoice } from "./exam-choice";
+import { FormulaPoster } from "./formula-poster";
 import { SuggestionSample } from "./suggestion-sample";
 import { TaskSample } from "./task-sample";
 import { TopicMapSample } from "./topic-map-sample";
@@ -76,7 +77,8 @@ export function Landing({ sample, weekly }: LandingProps) {
 
   return (
     <main className="pb-14 lg:pb-30">
-      <div className="flex flex-col px-4 pt-10 md:items-center md:px-10 md:pt-20 md:text-center">
+      <div className="relative isolate flex flex-col px-4 pt-10 md:items-center md:px-10 md:pt-20 md:text-center">
+        <FormulaPoster />
         <h1 className="wrap-break-word font-bold text-[44px] leading-11.5 md:max-w-150 md:text-7xl md:leading-19">
           {t("title")}
         </h1>
