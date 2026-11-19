@@ -1,15 +1,14 @@
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { Await } from "@/components/await";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { topicName } from "@/features/catalog/topics";
-import hero from "./hero.webp";
 import { HeroBackdrop } from "./hero-backdrop";
 import type { HomeData } from "./personal";
 import { SuggestionLink } from "./suggestion-link";
 import { TopicMapLink } from "./topic-map";
+import { TopicSketch } from "./topic-sketch";
 
 type Hero = NonNullable<HomeData["hero"]>;
 
@@ -76,12 +75,11 @@ export function TodayHero({
   return (
     <section className="relative pt-5 pb-7 md:pt-7 md:pb-10">
       <HeroBackdrop />
-      <Image
-        src={hero}
-        unoptimized
-        alt=""
-        className="pointer-events-none absolute -top-4 -right-2 h-75 w-auto max-xl:hidden"
-      />
+      <Suspense>
+        <Await promise={suggestion}>
+          {(hero) => hero && <TopicSketch topic={hero.topic} />}
+        </Await>
+      </Suspense>
       <div className="relative xl:max-w-3xl">
         <div className="flex min-h-35 flex-col justify-end md:min-h-49">
           <Suspense fallback={<HeadlineSkeleton />}>
