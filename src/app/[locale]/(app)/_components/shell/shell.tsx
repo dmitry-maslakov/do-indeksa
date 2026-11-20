@@ -22,6 +22,7 @@ export function Shell({
   return (
     <div
       className={cn(
+        "mx-auto max-w-320",
         exam &&
           "max-lg:pb-[calc(var(--nav-bottom)+env(safe-area-inset-bottom))]",
         mode === "task" && "max-md:[--nav-bottom:0rem]",

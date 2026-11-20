@@ -2,7 +2,7 @@ export function HeroBackdrop() {
   return (
     <>
       <div className="absolute -inset-x-4 -top-4 -bottom-8 bg-[linear-gradient(var(--background),var(--muted)_22%,var(--muted)_80%,var(--background))] md:hidden" />
-      <div className="absolute -inset-x-10 -top-6 -bottom-36 max-md:hidden">
+      <div className="absolute inset-x-[calc(50%-50vw)] -top-6 -bottom-36 max-md:hidden">
         <svg
           aria-hidden
           viewBox="0 0 1440 360"
