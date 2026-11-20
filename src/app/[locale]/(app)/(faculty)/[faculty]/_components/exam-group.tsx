@@ -51,9 +51,7 @@ async function ExamHead({
     <div
       className={cn(
         "grid pt-4 pb-2.5",
-        open
-          ? "lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-6 lg:pt-7 lg:pb-4"
-          : "border-b lg:pt-6 lg:pb-3.5",
+        open ? "lg:pt-7 lg:pb-4" : "border-b lg:pt-6 lg:pb-3.5",
       )}
     >
       <Heading
@@ -66,11 +64,11 @@ async function ExamHead({
       >
         {t("examLabel", { title: exam.title, name: exam.name })}
       </Heading>
-      <p className="text-balance text-[13px] text-muted-foreground">
+      <p className="max-w-[56ch] text-balance text-[13px] text-muted-foreground">
         {composition}
       </p>
       {open && (
-        <div className="mt-3 flex items-center gap-x-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:gap-x-6">
+        <div className="mt-3 flex items-center gap-x-6">
           <Button
             variant="lime"
             nativeButton={false}
@@ -132,8 +130,8 @@ export async function ExamGroup({
           aria-labelledby={`h-${exam.segment}`}
           className={
             exam.open
-              ? "scroll-mt-46 lg:scroll-mt-39"
-              : "scroll-mt-13 lg:scroll-mt-15"
+              ? "scroll-mt-46 lg:scroll-mt-56"
+              : "scroll-mt-13 lg:scroll-mt-20"
           }
         >
           {!exam.open && head}
