@@ -466,7 +466,7 @@
     "tocPrograms": "Programmes",
     "topicsTitle": "Topics by task",
     "topicsCaption": "Which topic sits in which task in the papers <nowrap>{from}–{to}</nowrap>, each with its task from {latest}. The layout is our own review; {short} does not publish it.",
-    "placeNote": "{years} as task {place}: {topic}",
+    "placeNote": "{years}: this task was {topic}",
     "year": "{year}",
     "taskSummary": "Task {year}",
     "taskSummaryDetail": "number {place}, {topic}",

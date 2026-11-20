@@ -39,7 +39,7 @@ export async function ProgramsSection({ examId }: { examId: string }) {
         pages: programs.some((p) => p.checked) ? "yes" : "no",
       })}
     >
-      <ul className={listClass}>
+      <ul className={cn(listClass, "sm:grid sm:grid-cols-2 sm:gap-x-6")}>
         {programs.map((program) => (
           <li key={program.slug}>
             {program.checked ? (

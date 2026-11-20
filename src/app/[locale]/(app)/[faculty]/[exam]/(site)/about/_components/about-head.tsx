@@ -16,7 +16,7 @@ import { intentOf } from "@/lib/analytics-browser";
 import { quietLink } from "./about-section";
 
 const tocLink =
-  "inline-flex min-h-11 items-center text-muted-foreground text-sm underline decoration-border decoration-1 underline-offset-4 hover:text-foreground hover:decoration-current";
+  "flex h-9 items-center rounded-full bg-muted px-4 font-medium text-muted-foreground text-sm hover:text-foreground";
 
 export async function AboutHead({ examId }: { examId: string }) {
   const [t, meta, locale] = await Promise.all([
@@ -30,6 +30,18 @@ export async function AboutHead({ examId }: { examId: string }) {
   const [test] = tests;
   const points = uniq(exam.positions.map((p) => p.points));
   const aids = exam.about?.aids ?? [];
+  const rules = [
+    t("answers", { answers: test?.answers ?? "" }),
+    t("points", {
+      same: points.length === 1 ? "yes" : "no",
+      max: String(Math.max(...points)),
+      grading: exam.about?.grading ?? "",
+    }),
+    t("penalty", {
+      penalty: tests.some((x) => x.penalty > 0) ? "yes" : "no",
+    }),
+    t("aids", { aids: aids.length === 2 ? "both" : (aids[0] ?? "none") }),
+  ].filter(Boolean);
   const toc = [
     ["teme", t("tocTopics")],
     ["arhiva", t("tocArchive")],
@@ -65,69 +77,52 @@ export async function AboutHead({ examId }: { examId: string }) {
           </li>
         </ol>
       </nav>
-      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-20">
-        <div>
-          <PageTitle size="lg" className="mt-2">
-            {t("title", {
-              exam: exam.title,
-              short: faculty.short,
-              subject: test?.subject ?? "",
-            })}
-          </PageTitle>
-          <p className="mt-1 text-[15px] text-muted-foreground">
-            {t("faculty", {
-              name: faculty.name,
-              cityLocative: faculty.cityLocative,
-            })}
-          </p>
-          <p className="mt-3 whitespace-nowrap font-medium text-lg leading-6.5 tabular-nums lg:text-xl lg:leading-7">
-            {t.rich("format", {
-              tasks: exam.positions.length,
-              hours: examHours(exam),
-              points: String(exam.points),
-              dot: () => (
-                <span aria-hidden className="px-1 text-subtle">
-                  ·
-                </span>
-              ),
-            })}
-          </p>
-        </div>
-        <div className="lg:mt-3.5">
-          <p className="mt-2">
-            {[
-              t("answers", { answers: test?.answers ?? "" }),
-              t("points", {
-                same: points.length === 1 ? "yes" : "no",
-                max: String(Math.max(...points)),
-                grading: exam.about?.grading ?? "",
-              }),
-              t("penalty", {
-                penalty: tests.some((x) => x.penalty > 0) ? "yes" : "no",
-              }),
-              t("aids", {
-                aids: aids.length === 2 ? "both" : (aids[0] ?? "none"),
-              }),
-            ].join(" ")}
-          </p>
-          <SourceLine
-            faculty={faculty.id}
-            refs={exam.about?.rulesSources ?? []}
-            linkClassName={quietLink}
-            className="mt-2"
-          />
-        </div>
-      </div>
+      <PageTitle size="lg" className="mt-2">
+        {t("title", {
+          exam: exam.title,
+          short: faculty.short,
+          subject: test?.subject ?? "",
+        })}
+      </PageTitle>
+      <p className="mt-1 text-[15px] text-muted-foreground">
+        {t("faculty", {
+          name: faculty.name,
+          cityLocative: faculty.cityLocative,
+        })}
+      </p>
+      <p className="mt-4 whitespace-nowrap font-medium text-lg leading-6.5 tabular-nums lg:text-xl lg:leading-7">
+        {t.rich("format", {
+          tasks: exam.positions.length,
+          hours: examHours(exam),
+          points: String(exam.points),
+          dot: () => (
+            <span aria-hidden className="px-1 text-subtle">
+              ·
+            </span>
+          ),
+        })}
+      </p>
+      <ul className="mt-3 max-w-read list-disc space-y-1 pl-5 marker:text-subtle">
+        {rules.map((rule) => (
+          <li key={rule}>{rule}</li>
+        ))}
+      </ul>
+      <SourceLine
+        faculty={faculty.id}
+        refs={exam.about?.rulesSources ?? []}
+        linkClassName={quietLink}
+        className="mt-2"
+      />
       <Button
         variant="lime"
         nativeButton={false}
         render={<Link href="/" data-intent={intentOf({ via: "about" })} />}
-        className="mt-5 h-12 w-full text-base lg:w-auto"
+        className="mt-6 h-12 w-full text-base lg:w-auto"
       >
         {t("practice", { exam: exam.title })}
       </Button>
-      <nav aria-label={t("onPage")} className="mt-1">
-        <ul className="flex flex-wrap justify-between lg:justify-start lg:gap-x-6">
+      <nav aria-label={t("onPage")} className="mt-4">
+        <ul className="flex flex-wrap gap-2">
           {toc.map(([id, label]) => (
             <li key={id}>
               <a href={`#${id}`} className={tocLink}>
