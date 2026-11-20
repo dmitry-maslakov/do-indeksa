@@ -586,7 +586,7 @@
     "tocPrograms": "Smerovi",
     "topicsTitle": "Oblasti po zadacima",
     "topicsCaption": "Koja tema je na kom zadatku, prijemni <nowrap>{from}–{to}</nowrap>, i uz svaku zadatak sa prijemnog {latest}. Raspored je naš pregled; {short} ga ne objavljuje.",
-    "placeNote": "{years} kao {place}. zadatak: {topic}",
+    "placeNote": "{years} ovde je bila tema: {topic}",
     "year": "{year}.",
     "taskSummary": "Zadatak {year}",
     "taskSummaryDetail": "broj {place}, {topic}",

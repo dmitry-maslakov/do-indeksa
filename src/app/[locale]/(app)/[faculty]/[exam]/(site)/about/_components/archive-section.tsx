@@ -13,6 +13,7 @@ import {
   AboutSection,
   actionClass,
   listClass,
+  noteClass,
   nowrap,
   quietLink,
   type Years,
@@ -85,19 +86,19 @@ export async function ArchiveSection({
         nowrap,
       })}
     >
-      <ul className={listClass}>
+      <ul className={cn(listClass, "sm:max-w-88")}>
         {papers.map((paper, i) => {
           const year = String(paper.year);
           return (
             <li
               key={paper.id}
-              className="grid grid-cols-[1fr_auto] items-center gap-x-5 py-0.5"
+              className="grid grid-cols-[auto_auto_1fr] items-center gap-x-6 py-0.5"
             >
               <Link
                 href={`/variants/${paper.id}/solutions`}
                 aria-label={t("solutionsLabel", { year })}
                 data-intent={intentOf({ via: "about_archive", rank: i + 1 })}
-                className="group flex min-h-11 items-center justify-between gap-4"
+                className="group flex min-h-11 items-center gap-6"
               >
                 <span className="whitespace-nowrap font-medium tabular-nums">
                   {t("yearName", { year })}
@@ -124,7 +125,7 @@ export async function ArchiveSection({
           );
         })}
       </ul>
-      <p className="mt-3 text-[13px] text-muted-foreground">
+      <p className={noteClass}>
         {papersLink &&
           t.rich("papers", {
             link: () => (

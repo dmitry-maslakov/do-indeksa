@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { ExternalLink } from "@/components/external-link";
 import { MathHtml } from "@/components/math-html";
@@ -20,6 +20,7 @@ import {
   AboutSection,
   actionClass,
   listClass,
+  noteClass,
   nowrap,
   quietLink,
   type Years,
@@ -42,7 +43,7 @@ async function TaskSheet({
 
   return (
     <details className="group ml-7">
-      <summary className="-mt-1 inline-flex min-h-11 cursor-pointer list-none items-center gap-1 font-medium text-data text-sm [&::-webkit-details-marker]:hidden">
+      <summary className="-mt-1 inline-flex min-h-11 cursor-pointer list-none items-center gap-1 text-muted-foreground text-sm hover:text-foreground [&::-webkit-details-marker]:hidden">
         <span className="underline-offset-3 group-hover:underline">
           {t("taskSummary", { year: String(year) })}
         </span>
@@ -55,7 +56,7 @@ async function TaskSheet({
           className="size-4 shrink-0 group-open:rotate-180"
         />
       </summary>
-      <div className="-ml-7 mb-4 rounded-xl bg-muted p-4 lg:max-w-task lg:px-6 lg:py-5">
+      <div className="-ml-7 mb-4 rounded-xl bg-muted p-4 lg:px-6 lg:py-5">
         <MathHtml
           html={await renderStatement(task)}
           className="leading-normal [&_strong]:font-semibold"
@@ -129,10 +130,6 @@ export async function TopicsSection({
                 <span className="min-w-0 flex-1 font-medium underline-offset-3 group-hover:underline">
                   {name}
                 </span>
-                <ChevronRightIcon
-                  aria-hidden
-                  className="mt-1 ml-3 size-4 shrink-0 text-subtle group-hover:text-foreground"
-                />
               </Link>
               {notes[i]?.map((note) => (
                 <p
@@ -145,7 +142,6 @@ export async function TopicsSection({
                         t("year", { year: String(year) }),
                       ),
                     ),
-                    place: String(number),
                     topic: topicName(note.topic, locale),
                   })}
                 </p>
@@ -162,7 +158,7 @@ export async function TopicsSection({
           );
         })}
       </ol>
-      <p className="mt-3 text-[13px] text-muted-foreground">
+      <p className={noteClass}>
         {t.rich("areas", {
           syllabus: syllabus ? "yes" : "no",
           short,

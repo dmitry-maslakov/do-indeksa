@@ -20,27 +20,25 @@ export function AboutSection({
     <section
       id={id}
       aria-labelledby={`${id}-h`}
-      className="mt-10 scroll-mt-4 lg:mt-20 lg:grid lg:grid-cols-[--spacing(80)_minmax(0,1fr)] lg:items-start lg:gap-x-20"
+      className="mt-12 scroll-mt-4 lg:mt-16"
     >
-      <div className="lg:sticky lg:top-6">
-        <h2 id={`${id}-h`} className="font-semibold text-[22px] leading-7.5">
-          {title}
-        </h2>
-        {caption && (
-          <p className="mt-2 text-[15px] text-muted-foreground lg:max-w-80">
-            {caption}
-          </p>
-        )}
-      </div>
-      <div className="min-w-0">{children}</div>
+      <h2 id={`${id}-h`} className="font-semibold text-[22px] leading-7.5">
+        {title}
+      </h2>
+      {caption && (
+        <p className="mt-2 max-w-read text-muted-foreground">{caption}</p>
+      )}
+      <div className="mt-4 max-w-read">{children}</div>
     </section>
   );
 }
 
-export const listClass = "mt-3 border-t lg:mt-0 [&>li]:border-b";
+export const listClass = "border-t [&>li]:border-b";
 
 export const actionClass =
   "inline-flex min-h-11 items-center font-medium text-[15px] text-data underline-offset-3 hover:underline";
+
+export const noteClass = "mt-3 max-w-[56ch] text-[13px] text-muted-foreground";
 
 export const quietLink =
   "underline decoration-1 underline-offset-2 hover:text-foreground";

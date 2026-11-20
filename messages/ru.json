@@ -466,7 +466,7 @@
     "tocPrograms": "Направления",
     "topicsTitle": "Темы по задачам",
     "topicsCaption": "Какая тема на каком месте в экзаменах <nowrap>{from}–{to}</nowrap>, и к каждой — задача с экзамена {latest} года. Раскладка — наш обзор; {short} её не публикует.",
-    "placeNote": "{years} на {place}-м месте: {topic}",
+    "placeNote": "{years}: здесь была тема «{topic}»",
     "year": "{year}",
     "taskSummary": "Задача {year}",
     "taskSummaryDetail": "номер {place}, {topic}",
