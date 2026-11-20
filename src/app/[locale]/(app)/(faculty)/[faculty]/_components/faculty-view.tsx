@@ -6,11 +6,11 @@ import { ScoringSection } from "./scoring-section";
 
 export function FacultyView({ faculty }: { faculty: string }) {
   return (
-    <main className="px-4 pt-4 pb-6 md:px-10 md:pt-6 md:pb-8">
+    <main className="mx-auto box-content max-w-224 px-4 pt-4 pb-6 md:px-10 md:pt-6 md:pb-8">
       <FacultyIntro faculty={faculty} />
       <Register faculty={faculty} />
       <FacultyFacts faculty={faculty} />
-      <div className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-[repeat(2,minmax(0,--spacing(140)))] lg:gap-x-20">
+      <div className="mt-12 max-w-read space-y-12 lg:mt-16 lg:space-y-16">
         <ScoringSection faculty={faculty} />
         <AdmissionSection faculty={faculty} />
       </div>

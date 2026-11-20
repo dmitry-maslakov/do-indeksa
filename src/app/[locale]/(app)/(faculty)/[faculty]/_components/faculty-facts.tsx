@@ -18,7 +18,7 @@ export async function FacultyFacts({ faculty: id }: { faculty: string }) {
   const foreign = currentAdmission(id).fees?.foreignTuition;
 
   return (
-    <p className="mt-4 text-[13px] text-muted-foreground lg:max-w-220">
+    <p className="mt-4 max-w-[56ch] text-[13px] text-muted-foreground">
       {foreign && t("foreignTuition", { amount: facts.euro(foreign) })}{" "}
       {academicYears.size === 1 &&
         years &&
