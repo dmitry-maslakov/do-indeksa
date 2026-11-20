@@ -1,5 +1,4 @@
 import { cn } from "cn";
-import { ChevronRightIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { currentAdmission } from "@/features/admission/admissions";
 import { facultyPrograms } from "@/features/admission/programs";
@@ -17,6 +16,7 @@ import {
 } from "./about-section";
 
 const rowClass = "flex min-h-13 items-center py-3.5 font-medium";
+const linkClass = "text-data underline-offset-3 hover:underline";
 
 export async function ProgramsSection({ examId }: { examId: string }) {
   const [t, facts] = await Promise.all([
@@ -39,7 +39,7 @@ export async function ProgramsSection({ examId }: { examId: string }) {
         pages: programs.some((p) => p.checked) ? "yes" : "no",
       })}
     >
-      <ul className={cn(listClass, "sm:grid sm:grid-cols-2 sm:gap-x-6")}>
+      <ul className={listClass}>
         {programs.map((program) => (
           <li key={program.slug}>
             {program.checked ? (
@@ -47,15 +47,9 @@ export async function ProgramsSection({ examId }: { examId: string }) {
                 exam={null}
                 locale={routing.defaultLocale}
                 href={`/${faculty.id}/programs/${program.slug}`}
-                className={cn("group", rowClass)}
+                className={cn(rowClass, linkClass)}
               >
-                <span className="min-w-0 flex-1 underline-offset-3 group-hover:underline">
-                  {program.name}
-                </span>
-                <ChevronRightIcon
-                  aria-hidden
-                  className="ml-3 size-4 shrink-0 text-subtle group-hover:text-foreground"
-                />
+                {program.name}
               </Link>
             ) : (
               <p className={rowClass}>{program.name}</p>
