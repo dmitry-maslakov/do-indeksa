@@ -1,5 +1,7 @@
 import { cn } from "cn";
 import type { ReactNode } from "react";
+import { examOf } from "@/features/catalog/exams";
+import { ExamBase } from "@/i18n/navigation";
 import { BottomNav } from "./bottom-nav";
 import { Footer } from "./footer";
 import { TopNav } from "./top-nav";
@@ -10,6 +12,14 @@ interface ShellProps {
   languages?: boolean;
   note?: ReactNode;
   children: ReactNode;
+}
+
+function ExamNav({ exam, children }: { exam?: string; children: ReactNode }) {
+  return exam ? (
+    <ExamBase path={examOf(exam).path}>{children}</ExamBase>
+  ) : (
+    children
+  );
 }
 
 export function Shell({
@@ -29,11 +39,13 @@ export function Shell({
         mode === "exam" && "[--nav-bottom:0rem]",
       )}
     >
-      <TopNav
-        exam={exam}
-        languages={languages}
-        className={cn(mode !== "site" && "max-md:hidden")}
-      />
+      <ExamNav exam={exam}>
+        <TopNav
+          exam={exam}
+          languages={languages}
+          className={cn(mode !== "site" && "max-md:hidden")}
+        />
+      </ExamNav>
       {children}
       {mode !== "exam" && (
         <>
@@ -42,7 +54,9 @@ export function Shell({
             className={cn(mode === "task" && "max-md:hidden")}
           />
           {exam && (
-            <BottomNav className={cn(mode === "task" && "max-md:hidden")} />
+            <ExamNav exam={exam}>
+              <BottomNav className={cn(mode === "task" && "max-md:hidden")} />
+            </ExamNav>
           )}
         </>
       )}
