@@ -35,13 +35,13 @@ export async function OfficialBand({ program }: { program: Program }) {
 
   return (
     <Band name="official" title={t("officialTitle", { short })}>
-      <ul className="mb-3 lg:flex lg:flex-wrap lg:gap-x-6 lg:gap-y-1">
+      <ul className="mb-3">
         {list.map((link, i) => (
           <li key={link.url}>
             <ExternalLink
               href={link.url}
               className={cn(
-                "flex min-h-11 items-center gap-1 border-b text-[15px] text-data underline-offset-3 hover:underline lg:min-h-0 lg:border-0",
+                "flex min-h-11 items-center gap-1 border-b text-[15px] text-data underline-offset-3 hover:underline",
                 i === 0 && "border-t",
               )}
             >

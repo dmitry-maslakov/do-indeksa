@@ -32,9 +32,12 @@ async function Plan({ program }: { program: Program }) {
     <div key={item.title}>
       <h3 className="text-balance font-semibold text-base">{item.title}</h3>
       {item.subjects && (
-        <ul className="mt-0.5 lg:columns-2 lg:gap-x-8">
+        <ul className="mt-1 lg:columns-2 lg:gap-x-8">
           {item.subjects.map((subject) => (
-            <li key={subject} className="break-inside-avoid text-[15px]">
+            <li
+              key={subject}
+              className="break-inside-avoid pb-1.5 text-[15px] leading-snug"
+            >
               {subject}
             </li>
           ))}
@@ -121,9 +124,10 @@ export async function PlanBand({ program }: { program: Program }) {
   const { short } = facultyOf(program.faculty);
   const { plan, courseBook } = program.links;
   const kind = moduleKindOf(program);
-  const [notes, employment] = await Promise.all([
+  const [notes, employment, choice] = await Promise.all([
     Promise.all(program.planNotes.map((n) => renderMarkdown(n, program.id))),
     program.employment && renderMarkdown(program.employment, program.id),
+    !program.modulesFrom && renderMarkdown(program.choice, program.id),
   ]);
 
   return (
@@ -162,15 +166,18 @@ export async function PlanBand({ program }: { program: Program }) {
           )}
         </>
       }
-      className="max-w-170 space-y-5"
+      className="space-y-5"
     >
+      {choice && (
+        <MathHtml html={choice} className="text-[15px] leading-normal" />
+      )}
       <Plan program={program} />
       {program.modules.length > 0 && <Modules program={program} />}
       {notes.map((html) => (
         <MathHtml
           key={html}
           html={html}
-          className="text-[15px] text-muted-foreground leading-normal"
+          className="text-[15px] leading-normal"
         />
       ))}
       <Degree program={program} />

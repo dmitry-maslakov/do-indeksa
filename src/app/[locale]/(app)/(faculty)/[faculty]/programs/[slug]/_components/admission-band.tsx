@@ -25,8 +25,7 @@ export async function AdmissionBand({
       title={t("admissionTitle", {
         results: results.length > 0 ? "yes" : "no",
       })}
-      wide
-      className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-x-14"
+      className="space-y-10"
     >
       <MoneyFacts program={program} history={history} />
       {results.length > 0 && (

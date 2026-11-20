@@ -16,7 +16,7 @@ import { intentOf } from "@/lib/analytics-browser";
 import { Band } from "./band";
 
 const action = "text-data underline-offset-3 hover:underline";
-const columns = 3;
+const columns = 2;
 const row =
   "flex min-h-13 items-center justify-between gap-3 border-b py-3.5 text-[15px]";
 
@@ -34,14 +34,10 @@ export async function NeighboursBand({ program }: { program: Program }) {
   const rows = Math.ceil(list.length / columns);
 
   return (
-    <Band
-      name="neighbours"
-      title={t("neighboursTitle", { exam: exam.title })}
-      wide
-    >
+    <Band name="neighbours" title={t("neighboursTitle", { exam: exam.title })}>
       <ul
         style={{ "--rows": rows } as CSSProperties}
-        className="lg:grid lg:grid-flow-col lg:grid-cols-3 lg:grid-rows-[repeat(var(--rows),auto)] lg:gap-x-6"
+        className="lg:grid lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-[repeat(var(--rows),auto)] lg:gap-x-6"
       >
         {list.map((neighbour, i) => {
           const edge = cn(

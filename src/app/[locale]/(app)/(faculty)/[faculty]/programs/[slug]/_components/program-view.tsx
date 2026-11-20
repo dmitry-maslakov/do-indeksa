@@ -12,7 +12,7 @@ export function ProgramView({ program }: { program: Program }) {
   const results = resultYears(history);
 
   return (
-    <main className="text-pretty px-4 pt-4 pb-6 md:px-10 md:pt-6 md:pb-8">
+    <main className="mx-auto box-content max-w-read text-pretty px-4 pt-4 pb-6 md:px-10 md:pt-6 md:pb-8">
       <ProgramHero program={program} results={results.length > 0} />
       <PlanBand program={program} />
       <AdmissionBand program={program} history={history} results={results} />

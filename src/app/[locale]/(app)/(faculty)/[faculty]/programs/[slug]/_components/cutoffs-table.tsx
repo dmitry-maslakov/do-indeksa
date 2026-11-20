@@ -84,7 +84,7 @@ export async function CutoffsTable({
       <h3 className="mb-2 text-balance font-semibold text-base">
         {t("cutoffsTitle")}
       </h3>
-      <table className="w-full table-fixed border-collapse tabular-nums">
+      <table className="w-full max-w-72 table-fixed border-collapse tabular-nums">
         <caption className="caption-top pb-2.5 text-left text-[13px] text-muted-foreground">
           {t.rich("cutoffsCaption", {
             max: String(current.scoring.school.max + current.scoring.exam.max),
@@ -99,9 +99,9 @@ export async function CutoffsTable({
           })}
         </caption>
         <colgroup>
+          <col />
+          <col className="w-18" />
           <col className="w-28" />
-          <col />
-          <col />
         </colgroup>
         <thead>
           <tr>
