@@ -127,7 +127,7 @@ export async function NowTable({
       )}
       <Link
         href="#upis"
-        className="mt-1 flex min-h-11 items-center justify-between gap-2 font-medium text-[15px] text-data underline-offset-4 hover:[&>span]:underline"
+        className="mt-1 inline-flex min-h-11 items-center gap-1.5 font-medium text-[15px] text-data underline-offset-4 hover:[&>span]:underline"
       >
         <span>{t("admissionTitle", { results: results ? "yes" : "no" })}</span>
         <ArrowDownIcon aria-hidden className="size-4 shrink-0" />

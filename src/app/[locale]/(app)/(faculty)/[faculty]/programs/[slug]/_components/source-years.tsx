@@ -2,7 +2,8 @@ import { Fragment, type ReactNode } from "react";
 import { ExternalLink } from "@/components/external-link";
 import { mutedSourceLink } from "@/features/admission/source-line";
 
-export const sourceNotes = "mt-3 space-y-1.5 text-[13px] text-muted-foreground";
+export const sourceNotes =
+  "mt-3 max-w-[56ch] space-y-1.5 text-[13px] text-muted-foreground";
 
 interface SourceYearsProps {
   intro: (list: () => ReactNode) => ReactNode;

@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { renderMarkdown } from "@/lib/markdown";
 
 const year =
-  "col-start-1 pt-3 font-medium text-[13px] text-muted-foreground leading-4.5 lg:pr-3";
+  "col-start-1 pt-3 font-medium text-[13px] text-muted-foreground leading-4.5";
 const plate = "overflow-hidden bg-muted font-medium text-[15px] leading-5";
 const plateLink =
   "flex h-full items-center px-3.5 py-3 underline-offset-3 hover:bg-untouched hover:underline";
@@ -21,8 +21,7 @@ export async function ModuleMap({ program }: { program: Program }) {
   const choice = await renderMarkdown(program.choice, program.id);
   const { modules, modulesFrom, moduleIds, years } = program;
 
-  if (!modulesFrom || modules.length === 0)
-    return <MathHtml html={choice} className="text-[15px] leading-normal" />;
+  if (!modulesFrom) return null;
 
   const label = (from: number, to: number) =>
     t("yearsLabel", {
@@ -30,21 +29,13 @@ export async function ModuleMap({ program }: { program: Program }) {
     });
 
   return (
-    <figure
-      style={{ "--n": modules.length } as CSSProperties}
-      className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-6"
-    >
-      <figcaption className="lg:col-span-3 lg:pt-2.5">
+    <figure style={{ "--n": modules.length } as CSSProperties}>
+      <figcaption>
         <MathHtml html={choice} className="text-[15px] leading-normal" />
       </figcaption>
-      <dl className="mt-3 grid grid-cols-[--spacing(17)_minmax(0,1fr)] gap-x-2 gap-y-0.5 lg:col-span-9 lg:col-start-4 lg:mt-0 lg:grid-cols-[--spacing(28)_repeat(var(--n),minmax(0,1fr))] lg:gap-x-0.5">
+      <dl className="mt-3 grid grid-cols-[--spacing(17)_minmax(0,1fr)] gap-x-2 gap-y-0.5">
         <dt className={cn(year, "row-start-1")}>{label(1, modulesFrom - 1)}</dt>
-        <dd
-          className={cn(
-            plate,
-            "col-start-2 row-start-1 rounded-xl lg:-col-end-1 lg:rounded-b-none",
-          )}
-        >
+        <dd className={cn(plate, "col-start-2 row-start-1 rounded-xl")}>
           <Link
             href="#predmeti"
             className={cn(plateLink, "min-h-11 text-muted-foreground")}
@@ -52,7 +43,7 @@ export async function ModuleMap({ program }: { program: Program }) {
             {t("shared")}
           </Link>
         </dd>
-        <dt className={cn(year, "row-[2/span_var(--n)] mt-2 lg:row-2 lg:mt-0")}>
+        <dt className={cn(year, "row-[2/span_var(--n)] mt-2")}>
           {label(modulesFrom, years)}
         </dt>
         {modules.map((module, i) => (
@@ -60,16 +51,14 @@ export async function ModuleMap({ program }: { program: Program }) {
             key={module.name}
             className={cn(
               plate,
-              "col-start-2 lg:col-start-auto lg:row-start-2",
-              i === 0 &&
-                "mt-2 rounded-t-xl lg:mt-0 lg:rounded-t-none lg:rounded-bl-xl",
-              i > 0 && i === modules.length - 1 && "lg:rounded-bl-none",
-              i === modules.length - 1 && "rounded-b-xl lg:rounded-br-xl",
+              "col-start-2",
+              i === 0 && "mt-2 rounded-t-xl",
+              i === modules.length - 1 && "rounded-b-xl",
             )}
           >
             <Link
               href={`#${moduleIds[i]}`}
-              className={cn(plateLink, "min-h-13 lg:min-h-16 lg:items-start")}
+              className={cn(plateLink, "min-h-11")}
             >
               {module.name}
             </Link>

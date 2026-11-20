@@ -20,7 +20,7 @@ async function ExamRow({ program }: { program: Program }) {
   const label = tf("examLabel", { title: exam.title, name: exam.name });
 
   return (
-    <div className="mt-4 flex items-center justify-between gap-3 border-t pt-3 lg:mt-5">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-10 gap-y-3 border-t pt-3 lg:mt-5 lg:justify-start">
       <div>
         <span className="block text-[13px] text-muted-foreground">
           {t("examLabel")}
@@ -29,10 +29,10 @@ async function ExamRow({ program }: { program: Program }) {
           <Link
             exam={exam.path}
             href="/about"
-            className="inline-flex items-center gap-0.5 font-semibold text-data text-lg underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-0.5 font-semibold text-lg underline-offset-4 hover:underline"
           >
             {label}
-            <ChevronRightIcon aria-hidden className="size-4" />
+            <ChevronRightIcon aria-hidden className="size-4 text-subtle" />
           </Link>
         ) : (
           <span className="font-semibold text-lg">{label}</span>
@@ -68,47 +68,47 @@ export async function ProgramHero({
   const intro = await renderMarkdown(program.content, program.id);
 
   return (
-    <div className="pb-6 lg:grid lg:grid-cols-12 lg:gap-x-6 lg:pb-8">
-      <div className="lg:col-span-6 lg:col-start-1 lg:row-start-1">
-        <p className="font-medium text-[13px] text-muted-foreground">
-          {t.rich("path", {
-            name: faculty.name,
-            city: faculty.city,
-            link: (chunks) => (
-              <Link
-                href={`/${faculty.id}`}
-                className="underline decoration-1 decoration-input underline-offset-3"
-              >
-                {chunks}
-              </Link>
-            ),
-          })}
-        </p>
-        <PageTitle size="lg" className="mt-1">
-          {program.name}
-          {program.short && ` (${program.short})`}
-        </PageTitle>
-        <MathHtml
-          html={intro}
-          className="mt-2 max-w-140 text-base text-muted-foreground leading-snug lg:mt-2.5"
-        />
-        <p className="mt-1.5 text-[13px] text-muted-foreground">
-          {t("facts", {
-            level: program.level,
-            years: program.years,
-            espb: String(program.espb),
-          })}
-        </p>
-        <ExamRow program={program} />
-      </div>
+    <div>
+      <p className="font-medium text-[13px] text-muted-foreground">
+        {t.rich("path", {
+          name: faculty.name,
+          city: faculty.city,
+          link: (chunks) => (
+            <Link
+              href={`/${faculty.id}`}
+              className="underline decoration-1 decoration-input underline-offset-3"
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
+      <PageTitle size="lg" className="mt-1">
+        {program.name}
+        {program.short && ` (${program.short})`}
+      </PageTitle>
+      <MathHtml
+        html={intro}
+        className="mt-2 text-base text-muted-foreground leading-snug lg:mt-2.5"
+      />
+      <p className="mt-1.5 text-[13px] text-muted-foreground">
+        {t("facts", {
+          level: program.level,
+          years: program.years,
+          espb: String(program.espb),
+        })}
+      </p>
+      <ExamRow program={program} />
       <NowTable
         program={program}
         results={results}
-        className="mt-4 border-t pt-2.5 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:mt-0 lg:self-end lg:border-t-0 lg:pt-0"
+        className="mt-6 max-w-100 lg:mt-8"
       />
-      <div className="mt-4 lg:col-span-12 lg:row-start-2 lg:mt-7 lg:border-t lg:pt-6">
-        <ModuleMap program={program} />
-      </div>
+      {program.modulesFrom && (
+        <div className="mt-4 lg:mt-8 lg:border-t lg:pt-6">
+          <ModuleMap program={program} />
+        </div>
+      )}
     </div>
   );
 }

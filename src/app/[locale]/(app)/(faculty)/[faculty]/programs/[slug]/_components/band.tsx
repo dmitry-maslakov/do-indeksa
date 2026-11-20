@@ -24,25 +24,21 @@ export function Band({
     <section
       id={id}
       aria-labelledby={`h-${name}`}
-      className="scroll-mt-4 border-t pt-8 pb-9 lg:grid lg:grid-cols-12 lg:gap-x-6 lg:pt-10 lg:pb-11"
+      className="mt-12 scroll-mt-4 lg:mt-16"
     >
-      <div className="lg:col-span-3">
-        <h2
-          id={`h-${name}`}
-          className="text-balance font-semibold text-lg in-target:animate-target lg:text-[22px] lg:leading-7.5"
-        >
-          {title}
-        </h2>
-        {meta && (
-          <div className="mt-1 text-[13px] text-muted-foreground lg:mt-2">
-            {meta}
-          </div>
-        )}
-      </div>
+      <h2
+        id={`h-${name}`}
+        className="text-balance font-semibold text-lg in-target:animate-target lg:text-[22px] lg:leading-7.5"
+      >
+        {title}
+      </h2>
+      {meta && (
+        <div className="mt-1 text-[13px] text-muted-foreground">{meta}</div>
+      )}
       <div
         className={cn(
-          "mt-4 lg:col-start-4 lg:mt-0",
-          wide ? "lg:col-span-9" : "lg:col-span-8",
+          "mt-4 min-w-0",
+          wide && "lg:mx-[calc(50%-(--spacing(100)))]",
           className,
         )}
       >
