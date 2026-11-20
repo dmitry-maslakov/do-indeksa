@@ -40,7 +40,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={golos.variable}>
-      <body>
+      <body className="overflow-x-clip">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Suspense>
           <PageAnalytics />

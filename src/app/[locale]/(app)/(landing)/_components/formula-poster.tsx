@@ -73,7 +73,7 @@ export function FormulaPoster() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 hidden select-none overflow-x-clip [--g:clamp(.45px,calc((100vw-680px)/760),1.15px)] lg:block"
+      className="pointer-events-none absolute inset-y-0 inset-x-[calc(50%-50vw)] -z-10 hidden select-none overflow-x-clip [--g:clamp(.45px,calc((100vw-680px)/760),1.15px)] lg:block"
     >
       {formulas.map((formula) => (
         <FormulaView key={formula.tex} {...formula} />
