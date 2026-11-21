@@ -12,6 +12,7 @@ import {
   AboutSection,
   actionClass,
   listClass,
+  noteClass,
   quietLink,
 } from "./about-section";
 
@@ -57,7 +58,7 @@ export async function ProgramsSection({ examId }: { examId: string }) {
           </li>
         ))}
       </ul>
-      <div className="mt-4 text-[15px]">
+      <div className={noteClass}>
         <p className="inline">
           {t("scoring", {
             schoolMin: String(scoring.school.min),
