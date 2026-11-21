@@ -17,11 +17,7 @@ export function AboutSection({
   children,
 }: AboutSectionProps) {
   return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-h`}
-      className="mt-12 scroll-mt-4 lg:mt-16"
-    >
+    <section id={id} aria-labelledby={`${id}-h`} className="mt-12 lg:mt-16">
       <h2 id={`${id}-h`} className="font-semibold text-[22px] leading-7.5">
         {title}
       </h2>

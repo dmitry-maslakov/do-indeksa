@@ -138,7 +138,7 @@ export async function SolutionsView({
             <li
               key={s.taskId}
               id={anchor(s.number)}
-              className="scroll-mt-4 py-8 first:pt-0 md:py-0"
+              className="py-8 first:pt-0 md:py-0"
             >
               <SolutionTask solution={s} />
             </li>

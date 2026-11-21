@@ -10,11 +10,7 @@ export function InfoSection({
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      aria-labelledby={`h-${id}`}
-      className="scroll-mt-4 [&>p+p]:mt-3"
-    >
+    <section id={id} aria-labelledby={`h-${id}`} className="[&>p+p]:mt-3">
       <h2
         id={`h-${id}`}
         className="mb-3 font-semibold text-[22px] leading-7.5 tracking-normal"
