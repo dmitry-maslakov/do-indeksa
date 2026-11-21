@@ -39,7 +39,11 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale} className={golos.variable}>
+    <html
+      lang={locale}
+      className={golos.variable}
+      data-scroll-behavior="smooth"
+    >
       <body className="overflow-x-clip">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Suspense>

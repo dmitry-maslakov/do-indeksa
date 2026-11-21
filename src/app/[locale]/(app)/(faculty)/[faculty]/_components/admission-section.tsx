@@ -78,7 +78,7 @@ export async function AdmissionSection({ faculty: id }: { faculty: string }) {
           })}`}
       </p>
       {wishesHtml && (
-        <div id="zelje" className="mt-3 scroll-mt-4">
+        <div id="zelje" className="mt-3">
           <MathHtml html={wishesHtml} className="leading-normal" />
         </div>
       )}

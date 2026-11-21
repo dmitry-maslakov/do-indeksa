@@ -66,7 +66,7 @@ async function Modules({ program }: { program: Program }) {
         >
           <h4
             id={program.moduleIds[i]}
-            className="scroll-mt-4 text-balance font-semibold text-base target:animate-target"
+            className="text-balance font-semibold text-base"
           >
             {module.name}
           </h4>

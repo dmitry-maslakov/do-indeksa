@@ -89,15 +89,11 @@
     }
   }
 
-  --animate-target: target 1.5s ease-in forwards;
+  --animate-target: target 1.8s ease-in-out;
 
   @keyframes target {
-    0%,
-    40% {
-      background-color: var(--data-tint);
-    }
-    100% {
-      background-color: transparent;
+    25% {
+      color: var(--data);
     }
   }
 
@@ -197,7 +193,7 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans;
+    @apply scroll-pt-24 font-sans motion-safe:scroll-smooth;
   }
   @media (width < 64rem) {
     html {
@@ -257,7 +253,7 @@
       @apply mt-3.5;
     }
     & > h2 {
-      @apply clear-both mt-10 flex scroll-mt-6 items-center gap-3 font-semibold text-[22px] leading-tight tracking-[-0.02em];
+      @apply clear-both mt-10 flex items-center gap-3 font-semibold text-[22px] leading-tight tracking-[-0.02em];
     }
     &[data-variant="method"] > :where(h2, [data-block="mistake"]) {
       @apply mt-7.5;

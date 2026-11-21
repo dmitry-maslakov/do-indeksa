@@ -21,14 +21,10 @@ export function Band({
   children,
 }: BandProps) {
   return (
-    <section
-      id={id}
-      aria-labelledby={`h-${name}`}
-      className="mt-12 scroll-mt-4 lg:mt-16"
-    >
+    <section id={id} aria-labelledby={`h-${name}`} className="mt-12 lg:mt-16">
       <h2
         id={`h-${name}`}
-        className="text-balance font-semibold text-lg in-target:animate-target lg:text-[22px] lg:leading-7.5"
+        className="text-balance font-semibold text-lg lg:text-[22px] lg:leading-7.5"
       >
         {title}
       </h2>
