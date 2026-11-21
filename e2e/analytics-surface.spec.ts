@@ -377,7 +377,9 @@ test("a solutions page counts the time on the task in the middle of the screen",
   await hydrated(page);
   await page
     .locator("#task-3")
-    .evaluate((task) => task.scrollIntoView({ block: "center" }));
+    .evaluate((task) =>
+      task.scrollIntoView({ block: "center", behavior: "instant" }),
+    );
   await page.mouse.move(10, 10);
   await page.clock.fastForward("00:20");
   await page.mouse.move(20, 20);
