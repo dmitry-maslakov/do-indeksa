@@ -13,10 +13,7 @@ import { facultyOf } from "@/features/catalog/faculties";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { intentOf } from "@/lib/analytics-browser";
-import { quietLink } from "./about-section";
-
-const tocLink =
-  "flex h-9 items-center rounded-full bg-muted px-4 font-medium text-muted-foreground text-sm hover:text-foreground";
+import { actionClass, quietLink } from "./about-section";
 
 export async function AboutHead({ examId }: { examId: string }) {
   const [t, meta, locale] = await Promise.all([
@@ -121,11 +118,11 @@ export async function AboutHead({ examId }: { examId: string }) {
       >
         {t("practice", { exam: exam.title })}
       </Button>
-      <nav aria-label={t("onPage")} className="mt-4">
-        <ul className="flex flex-wrap gap-2">
+      <nav aria-label={t("onPage")} className="mt-3">
+        <ul className="flex flex-wrap gap-x-5">
           {toc.map(([id, label]) => (
             <li key={id}>
-              <a href={`#${id}`} className={tocLink}>
+              <a href={`#${id}`} className={actionClass}>
                 {label}
               </a>
             </li>
