@@ -41,7 +41,7 @@ export async function ProgramRow({
       searchKey={searchKey}
       className={cn(
         tracks,
-        "scroll-mt-14 border-b py-2 target:animate-target lg:min-h-13 lg:scroll-mt-20 lg:items-start lg:py-0",
+        "scroll-mt-14 border-b py-2 lg:min-h-13 lg:scroll-mt-20 lg:items-start lg:py-0",
       )}
     >
       <th
